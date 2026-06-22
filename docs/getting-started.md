@@ -61,6 +61,8 @@ Read environment state or call utilities directly:
 <button @click="await $clipboard('Hello')">Copy</button>
 
 <p x-show="$touch.isTouch">Touch-optimized UI</p>
+
+<button @click="$notify.sendIfPermitted('Task complete')">Notify</button>
 ```
 
 ## Combining packages
@@ -154,4 +156,4 @@ npm install -D @types/alpinejs @ailuracode/alpine-clipboard
 ## Next steps
 
 - [Architecture: stores vs magics](./architecture.md) — when to use each pattern
-- Individual package docs: [theme](./theme.md), [screen](./screen.md), [network](./network.md), [clipboard](./clipboard.md), [scroll](./scroll.md), [touch](./touch.md)
+- Individual package docs: [theme](./theme.md), [screen](./screen.md), [network](./network.md), [clipboard](./clipboard.md), [scroll](./scroll.md), [touch](./touch.md), [notify](./notify.md)
