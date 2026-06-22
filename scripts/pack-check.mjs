@@ -3,7 +3,7 @@ import { execSync } from "node:child_process";
 const workspaces = [
   "@ailuracode/alpine-theme",
   "@ailuracode/alpine-screen",
-  "@ailuracode/alpine-online",
+  "@ailuracode/alpine-network",
   "@ailuracode/alpine-clipboard",
   "@ailuracode/alpine-scroll",
   "@ailuracode/alpine-touch",

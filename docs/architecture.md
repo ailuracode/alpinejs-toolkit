@@ -50,14 +50,14 @@ Use a **magic** when you need:
 
 | Package | Magic | Purpose |
 |---------|-------|---------|
-| `@ailuracode/alpine-online` | `$online` | `navigator.onLine` |
+| `@ailuracode/alpine-network` | `$network` | `navigator.onLine` |
 | `@ailuracode/alpine-touch` | `$touch` | Pointer / touch capabilities |
 | `@ailuracode/alpine-clipboard` | `$clipboard` | Async copy function |
 
 ### Template usage
 
 ```html
-<div x-show="!$online.isOnline">Offline</div>
+<div x-show="!$network.isOnline">Offline</div>
 <p x-text="$touch.maxTouchPoints"></p>
 <button @click="await $clipboard(url)">Copy URL</button>
 ```
@@ -66,7 +66,7 @@ Use a **magic** when you need:
 
 Magics expose a namespace object with descriptive boolean properties:
 
-- `$online.isOnline` — not `$online.online`
+- `$network.isOnline` — not `$network.online`
 - `$touch.isTouch` — consistent `is*` pattern
 
 ## CSS framework agnostic
@@ -75,7 +75,7 @@ Plugins do **not** assume Tailwind, shadcn, or any CSS framework.
 
 - **Theme** — only manages state; you apply styles via `onChange`
 - **Scroll lock** — adds `.scroll-locked` classes; you define the CSS
-- **Screen / online / touch** — no DOM styling
+- **Screen / network / touch** — no DOM styling
 
 ### Theme example (Tailwind)
 

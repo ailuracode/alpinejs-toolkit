@@ -1,7 +1,7 @@
 {
-  "name": "@ailuracode/alpine-online",
+  "name": "@ailuracode/alpine-network",
   "version": "0.2.0",
-  "description": "Alpine.js online/offline connectivity magic",
+  "description": "Alpine.js network connectivity magic",
   "type": "module",
   "license": "MIT",
   "author": "ailuracode",
@@ -11,12 +11,12 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ailuracode/alpine.git",
-    "directory": "packages/online"
+    "directory": "packages/network"
   },
   "bugs": {
     "url": "https://github.com/ailuracode/alpine/issues"
   },
-  "homepage": "https://github.com/ailuracode/alpine/tree/master/packages/online#readme",
+  "homepage": "https://github.com/ailuracode/alpine/tree/master/packages/network#readme",
   "files": [
     "dist",
     "README.md"
@@ -49,6 +49,7 @@
     "alpinejs",
     "alpine",
     "plugin",
+    "network",
     "online",
     "offline",
     "connectivity"

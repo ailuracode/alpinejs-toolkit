@@ -11,7 +11,7 @@ Alpine.js plugin monorepo by **ailuracode**. Six independent npm packages under 
 | `@ailuracode/alpine-theme` | Store | `$store.theme` |
 | `@ailuracode/alpine-screen` | Store | `$store.device` |
 | `@ailuracode/alpine-scroll` | Store | `$store.scroll` |
-| `@ailuracode/alpine-online` | Magic | `$online` |
+| `@ailuracode/alpine-network` | Magic | `$network` |
 | `@ailuracode/alpine-clipboard` | Magic | `$clipboard` |
 | `@ailuracode/alpine-touch` | Magic | `$touch` |
 
@@ -54,13 +54,13 @@ Do **not** bump `version` in `package.json` manually for releases — use Change
 ### Stores vs magics
 
 - **Store** — shared mutable state, actions, cross-component coordination (`theme`, `screen`, `scroll`).
-- **Magic** — read-only environment data or one-off utilities (`online`, `touch`, `clipboard`).
+- **Magic** — read-only environment data or one-off utilities (`network`, `touch`, `clipboard`).
 
 ### Naming
 
 - npm scope: `@ailuracode/alpine-*`
 - Author: `ailuracode` (not `airluracode`)
-- Boolean derived state: **getters** — `$store.theme.isLight`, `$online.isOnline` (no `()` in templates)
+- Boolean derived state: **getters** — `$store.theme.isLight`, `$network.isOnline` (no `()` in templates)
 - Actions: **methods** — `$store.theme.set('dark')`, `$store.scroll.lock()`
 - Avoid React patterns: no `use*Store`, no hooks naming
 

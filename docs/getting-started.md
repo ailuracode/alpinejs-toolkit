@@ -21,11 +21,11 @@ Register plugins **before** `Alpine.start()`:
 import Alpine from "alpinejs";
 import theme from "@ailuracode/alpine-theme";
 import screen from "@ailuracode/alpine-screen";
-import online from "@ailuracode/alpine-online";
+import network from "@ailuracode/alpine-network";
 
 Alpine.plugin(theme({ onChange: applyTheme }));
 Alpine.plugin(screen);
-Alpine.plugin(online);
+Alpine.plugin(network);
 
 Alpine.start();
 ```
@@ -34,7 +34,7 @@ Some plugins accept options (e.g. `theme`). Others are plain functions:
 
 ```js
 Alpine.plugin(screen);
-Alpine.plugin(online);
+Alpine.plugin(network);
 ```
 
 ## Using in HTML
@@ -56,7 +56,7 @@ Access global reactive state with `$store`:
 Read environment state or call utilities directly:
 
 ```html
-<div x-show="!$online.isOnline">You are offline</div>
+<div x-show="!$network.isOnline">You are offline</div>
 
 <button @click="await $clipboard('Hello')">Copy</button>
 
@@ -154,4 +154,4 @@ npm install -D @types/alpinejs @ailuracode/alpine-clipboard
 ## Next steps
 
 - [Architecture: stores vs magics](./architecture.md) — when to use each pattern
-- Individual package docs: [theme](./theme.md), [screen](./screen.md), [online](./online.md), [clipboard](./clipboard.md), [scroll](./scroll.md), [touch](./touch.md)
+- Individual package docs: [theme](./theme.md), [screen](./screen.md), [network](./network.md), [clipboard](./clipboard.md), [scroll](./scroll.md), [touch](./touch.md)

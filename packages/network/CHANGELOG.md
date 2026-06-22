@@ -1,4 +1,4 @@
-# @ailuracode/alpine-online
+# @ailuracode/alpine-network
 
 ## 0.2.0
 

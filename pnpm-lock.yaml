@@ -45,7 +45,7 @@ importers:
         specifier: ^3.0.0
         version: 3.15.12
 
-  packages/online:
+  packages/network:
     dependencies:
       '@types/alpinejs':
         specifier: ^3.13.11

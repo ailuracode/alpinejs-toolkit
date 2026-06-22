@@ -6,7 +6,7 @@
 packages/
   theme/       @ailuracode/alpine-theme
   screen/      @ailuracode/alpine-screen
-  online/      @ailuracode/alpine-online
+  network/     @ailuracode/alpine-network
   clipboard/   @ailuracode/alpine-clipboard
   scroll/      @ailuracode/alpine-scroll
   touch/       @ailuracode/alpine-touch
@@ -48,7 +48,7 @@ pnpm run test:coverage       # with coverage thresholds
 pnpm run lint                # biome check (strict)
 pnpm run lint:fix            # auto-fix
 pnpm run pack:check          # validate publish tarballs
-pnpm run changeset:check -- --since=origin/master
+pnpm run changeset:check origin/master
 ```
 
 Tests use [Vitest](https://vitest.dev/) with [happy-dom](https://github.com/capricorn86/happy-dom).

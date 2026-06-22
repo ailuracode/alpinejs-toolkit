@@ -111,4 +111,4 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Require changeset for package changes
-        run: pnpm run changeset:check -- --since=origin/${{ github.base_ref }}
+        run: pnpm run changeset:check origin/${{ github.base_ref }}

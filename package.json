@@ -14,7 +14,7 @@
     "test:coverage": "vitest run --coverage",
     "test:watch": "vitest",
     "pack:check": "pnpm run build && node scripts/pack-check.mjs",
-    "changeset:check": "changeset status",
+    "changeset:check": "node scripts/changeset-check.mjs",
     "test:packages": "pnpm -r --if-present test",
     "changeset": "changeset",
     "version": "changeset version",
