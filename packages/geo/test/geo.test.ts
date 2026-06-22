@@ -138,6 +138,54 @@ describe("@ailuracode/alpine-geo", () => {
     expect(store.unwatch()).toBe(false);
   });
 
+  it("watch() captures geolocation errors", () => {
+    watchPosition.mockImplementation((_success, error) => {
+      error(createError(3, "Position request timed out"));
+      return 7;
+    });
+
+    const started = store.watch();
+
+    expect(started).toBe(true);
+    expect(store.hasError).toBe(true);
+    expect(store.error).toBe("Position request timed out");
+    expect(store.errorCode).toBe(3);
+    expect(store.isWatching).toBe(true);
+  });
+
+  it("watch() returns false when geolocation is unsupported", () => {
+    Object.defineProperty(navigator, "geolocation", {
+      configurable: true,
+      writable: true,
+      value: {},
+    });
+
+    const stores: Record<string, unknown> = {};
+    const Alpine = {
+      store(name: string, value?: unknown) {
+        if (value !== undefined) {
+          stores[name] = value;
+        }
+        return stores[name];
+      },
+    };
+
+    geoPlugin(Alpine as unknown as AlpineType.Alpine);
+    const unsupported = stores.geo as GeoStore;
+
+    expect(unsupported.watch()).toBe(false);
+    expect(unsupported.isWatching).toBe(false);
+
+    Object.defineProperty(navigator, "geolocation", {
+      configurable: true,
+      value: {
+        getCurrentPosition,
+        watchPosition,
+        clearWatch,
+      },
+    });
+  });
+
   it("reset() clears position and error state", async () => {
     getCurrentPosition.mockImplementation((success) => {
       success(createPosition());
