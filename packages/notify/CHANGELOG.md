@@ -1,5 +1,13 @@
 # @ailuracode/alpine-notify
 
+## 0.3.1
+
+### Patch Changes
+
+- 9fcf3ed: Reuse `@ailuracode/alpine-platform` for iOS and Android detection in mobile notification delivery.
+- Updated dependencies [9fcf3ed]
+  - @ailuracode/alpine-platform@1.1.0
+
 ## 0.3.0
 
 ### Minor Changes
