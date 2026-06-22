@@ -51,6 +51,7 @@ Use a **magic** when you need:
 | Package | Magic | Purpose |
 |---------|-------|---------|
 | `@ailuracode/alpine-network` | `$network` | `navigator.onLine` |
+| `@ailuracode/alpine-visibility` | `$visibility` | Tab visibility state |
 | `@ailuracode/alpine-battery` | `$battery` | Battery level and charging state |
 | `@ailuracode/alpine-touch` | `$touch` | Pointer / touch capabilities |
 | `@ailuracode/alpine-platform` | `$platform` | Client OS and platform detection |
@@ -61,6 +62,7 @@ Use a **magic** when you need:
 
 ```html
 <div x-show="!$network.isOnline">Offline</div>
+<div x-show="!$visibility.isVisible">Tab in background</div>
 <p x-text="$touch.maxTouchPoints"></p>
 <button @click="await $clipboard(url)">Copy URL</button>
 
@@ -72,6 +74,7 @@ Use a **magic** when you need:
 Magics expose a namespace object with descriptive boolean properties:
 
 - `$network.isOnline` — not `$network.online`
+- `$visibility.isVisible` — not `$visibility.visible`
 - `$touch.isTouch` — consistent `is*` pattern
 
 ## CSS framework agnostic

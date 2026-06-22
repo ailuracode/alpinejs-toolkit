@@ -80,6 +80,19 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 		</section>
 
 		<section class="card">
+			<h2>Visibility <code>$visibility</code></h2>
+			<p
+				class="status"
+				x-bind:class="$visibility.isVisible ? 'status--ok' : 'status--warn'"
+				x-text="$visibility.isVisible ? 'Tab visible' : 'Tab hidden'"
+			></p>
+			<ul class="list">
+				<li>State: <strong x-text="$visibility.state"></strong></li>
+			</ul>
+			<p class="hint">Switch to another tab to see the state update.</p>
+		</section>
+
+		<section class="card">
 			<h2>Battery <code>$battery</code></h2>
 			<template x-if="$battery.isAvailable">
 				<div>

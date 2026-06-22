@@ -68,6 +68,9 @@ importers:
       '@ailuracode/alpine-touch':
         specifier: workspace:*
         version: link:../packages/touch
+      '@ailuracode/alpine-visibility':
+        specifier: workspace:*
+        version: link:../packages/visibility
       '@types/alpinejs':
         specifier: ^3.13.11
         version: 3.13.11
@@ -154,6 +157,15 @@ importers:
         version: 3.15.12
 
   packages/touch:
+    dependencies:
+      '@types/alpinejs':
+        specifier: ^3.13.11
+        version: 3.13.11
+      alpinejs:
+        specifier: ^3.0.0
+        version: 3.15.12
+
+  packages/visibility:
     dependencies:
       '@types/alpinejs':
         specifier: ^3.13.11

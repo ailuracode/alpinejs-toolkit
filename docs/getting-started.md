@@ -58,6 +58,8 @@ Read environment state or call utilities directly:
 ```html
 <div x-show="!$network.isOnline">You are offline</div>
 
+<div x-show="!$visibility.isVisible">Tab is in the background</div>
+
 <div x-show="$battery.isAvailable">
   Battery: <span x-text="Math.round($battery.level * 100)"></span>%
 </div>
@@ -160,4 +162,4 @@ npm install -D @types/alpinejs @ailuracode/alpine-clipboard
 ## Next steps
 
 - [Architecture: stores vs magics](./architecture.md) — when to use each pattern
-- Individual package docs: [theme](./theme.md), [screen](./screen.md), [network](./network.md), [battery](./battery.md), [clipboard](./clipboard.md), [scroll](./scroll.md), [touch](./touch.md), [notify](./notify.md)
+- Individual package docs: [theme](./theme.md), [screen](./screen.md), [network](./network.md), [visibility](./visibility.md), [battery](./battery.md), [clipboard](./clipboard.md), [scroll](./scroll.md), [touch](./touch.md), [notify](./notify.md)

@@ -12,7 +12,8 @@
       "@ailuracode/alpine-screen": ["../packages/screen/src/index.ts"],
       "@ailuracode/alpine-scroll": ["../packages/scroll/src/index.ts"],
       "@ailuracode/alpine-theme": ["../packages/theme/src/index.ts"],
-      "@ailuracode/alpine-touch": ["../packages/touch/src/index.ts"]
+      "@ailuracode/alpine-touch": ["../packages/touch/src/index.ts"],
+      "@ailuracode/alpine-visibility": ["../packages/visibility/src/index.ts"]
     },
     "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
