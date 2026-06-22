@@ -118,6 +118,8 @@ pnpm run format     # format all files
 
 Packages are versioned **independently**. One changeset can touch multiple packages.
 
+**New packages:** set `"version": "0.0.0"` in `package.json`. A `minor` changeset then produces the first publishable version (`0.1.0`). Do **not** start at `0.1.0` with a `minor` changeset — Changesets will bump to `0.2.0` before the first npm release.
+
 ## Publishing
 
 - Registry: npm, scope `@ailuracode`, public access
