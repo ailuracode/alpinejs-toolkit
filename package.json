@@ -11,7 +11,10 @@
     "lint:fix": "biome check --write .",
     "format": "biome format --write .",
     "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
     "test:watch": "vitest",
+    "pack:check": "node scripts/pack-check.mjs",
+    "changeset:check": "changeset status",
     "test:packages": "npm run test --workspaces --if-present",
     "changeset": "changeset",
     "version": "changeset version",
@@ -22,8 +25,9 @@
   "devDependencies": {
     "@biomejs/biome": "^2.5.0",
     "@changesets/cli": "^2.29.4",
+    "@vitest/coverage-v8": "^3.2.4",
     "alpinejs": "^3.14.9",
-    "happy-dom": "^17.4.4",
+    "happy-dom": "^20.10.6",
     "vitest": "^3.2.4"
   }
 }

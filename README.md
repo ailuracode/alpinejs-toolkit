@@ -54,6 +54,8 @@ npm install
 npm test              # all packages
 npm run lint          # biome check (strict)
 npm run lint:fix      # auto-fix
+npm run test:coverage # coverage thresholds
+npm run pack:check    # validate npm tarballs
 npm run changeset     # after user-facing changes
 ```
 

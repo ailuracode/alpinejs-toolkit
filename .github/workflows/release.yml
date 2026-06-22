@@ -30,9 +30,6 @@ jobs:
       - name: Run tests
         run: npm test
 
-      - name: Lint
-        run: npm run lint
-
       - name: Create Release Pull Request or Publish
         uses: changesets/action@v1
         with:

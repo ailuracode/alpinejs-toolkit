@@ -35,6 +35,9 @@ npm test             # run full test suite (required before release)
 npm run lint         # biome check (strict)
 npm run lint:fix     # biome check --write
 npm run format       # biome format --write
+npm run test:coverage # vitest with coverage thresholds
+npm run pack:check   # npm pack dry-run for all workspaces
+npm run changeset:check # verify pending changesets
 npm run test:watch   # vitest watch mode
 npm run changeset    # create a changeset after user-facing changes
 npm run version      # apply changesets → bump package.json versions + CHANGELOGs

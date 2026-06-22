@@ -27,13 +27,28 @@ Each package contains:
 npm install
 ```
 
+## CI checks
+
+| Job | Command | When |
+|-----|---------|------|
+| Lint | `npm run lint` | every push / PR |
+| Test | `npm test` | Node 20 + 22 |
+| Coverage | `npm run test:coverage` | Node 22 (≥80% lines, ≥70% functions) |
+| Pack | `npm run pack:check` | validates npm tarballs |
+| Audit | `npm audit --audit-level=critical` | blocks on critical CVEs |
+| Changeset | `npm run changeset:check` | PRs only — requires changeset when `packages/*` changes |
+
+Dependabot opens weekly PRs for npm and GitHub Actions updates.
+
 ## Running tests
 
 ```bash
 npm test                    # all tests
+npm run test:coverage       # with coverage thresholds
 npm run lint                # biome check (strict)
 npm run lint:fix            # auto-fix
-npm run test:watch          # watch mode
+npm run pack:check          # validate publish tarballs
+npm run changeset:check -- --since=origin/master
 ```
 
 Tests use [Vitest](https://vitest.dev/) with [happy-dom](https://github.com/capricorn86/happy-dom).
