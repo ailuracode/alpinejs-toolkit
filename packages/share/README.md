@@ -23,7 +23,7 @@ Alpine.start();
 ```html
 <button
   x-show="$share.isSupported()"
-  @click="await $share.share({ title: 'Hello', url: window.location.href })"
+  @click="await $share({ title: 'Hello', url: window.location.href })"
 >
   Share page
 </button>
@@ -34,10 +34,10 @@ Alpine.start();
 | | |
 |-|-|
 | **Store** | `$store.share` |
-| **Magic** | `$share` |
-| **Methods** | `share(data)`, `isSupported()`, `canShare(data?)` |
+| **Magic** | `$share(data)` |
+| **Methods** | Store: `share(data)`, `isSupported()`, `canShare(data?)` — Magic: `await $share(data)`, `$share.isSupported()`, `$share.canShare(data?)` |
 
-Both `$store.share` and `$share` expose the same API object.
+The magic is callable like `$clipboard`. Use `$store.share` when you prefer an object API.
 
 ## License
 

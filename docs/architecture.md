@@ -18,7 +18,7 @@ Use a **store** when you need:
 | `@ailuracode/alpine-geo` | `$store.geo` | Geolocation state + tracking |
 | `@ailuracode/alpine-share` | `$store.share` | Web Share API actions |
 
-Both `$store.share` and magic `$share` expose the same API object.
+Both `$store.share` and magic `$share` expose the same capabilities. The magic is callable: `await $share(data)`.
 
 ### Template usage
 
@@ -61,7 +61,7 @@ Use a **magic** when you need:
 | `@ailuracode/alpine-touch` | `$touch` | Pointer / touch capabilities |
 | `@ailuracode/alpine-platform` | `$platform` | Client OS and platform detection |
 | `@ailuracode/alpine-clipboard` | `$clipboard` | Async copy function |
-| `@ailuracode/alpine-share` | `$share` | Web Share API (`share`, `canShare`, `isSupported`) |
+| `@ailuracode/alpine-share` | `$share` | Web Share API — `await $share(data)`, `$share.isSupported()`, `$share.canShare()` |
 | `@ailuracode/alpine-notify` | `$notify` | Web Notifications API |
 
 ### Template usage

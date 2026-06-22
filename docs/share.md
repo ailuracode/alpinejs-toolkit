@@ -2,7 +2,7 @@
 
 Package: `@ailuracode/alpine-share`
 
-Lightweight wrapper around the [Web Share API](https://developer.mozilla.org/en-US/docs/Web/API/Navigator/share). Registers both `$store.share` and magic `$share` with the same API.
+Lightweight wrapper around the [Web Share API](https://developer.mozilla.org/en-US/docs/Web/API/Navigator/share). Registers `$store.share` and callable magic `$share`.
 
 ## Install
 
@@ -28,13 +28,23 @@ TypeScript consumers can add:
 
 ## API
 
-Both `$store.share` and `$share` expose:
+### Store — `$store.share`
 
 | Method | Returns | Description |
 |--------|---------|-------------|
 | `share(data)` | `Promise<boolean>` | Opens the native share sheet. Resolves `true` on success, `false` on cancel, denial, or unsupported payloads. Never throws. |
 | `isSupported()` | `boolean` | `true` when `navigator.share` is available in a secure context. |
 | `canShare(data?)` | `boolean` | Uses `navigator.canShare` when present; otherwise checks for shareable fields. Without `data`, returns whether sharing is generally available. |
+
+### Magic — `$share`
+
+Callable like `$clipboard`:
+
+| Usage | Returns | Description |
+|-------|---------|-------------|
+| `await $share(data)` | `Promise<boolean>` | Same as `$store.share.share(data)`. |
+| `$share.isSupported()` | `boolean` | Same as `$store.share.isSupported()`. |
+| `$share.canShare(data?)` | `boolean` | Same as `$store.share.canShare(data?)`. |
 
 `data` follows the platform `ShareData` shape (`title`, `text`, `url`, `files`).
 
@@ -45,7 +55,7 @@ Both `$store.share` and `$share` expose:
 ```html
 <button
   x-show="$share.isSupported()"
-  @click="shared = await $share.share({
+  @click="shared = await $share({
     title: document.title,
     url: window.location.href
   })"
@@ -72,7 +82,7 @@ Both `$store.share` and `$share` expose:
   x-data="{
   status: 'idle',
   async sharePage() {
-    const ok = await $share.share({
+    const ok = await $share({
       title: document.title,
       url: window.location.href
     });
