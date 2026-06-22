@@ -13,6 +13,7 @@
     "changeset": "changeset",
     "version": "changeset version",
     "release": "npm test && changeset publish",
+    "publish:ci": "changeset publish",
     "publish:packages": "npm run release"
   },
   "devDependencies": {

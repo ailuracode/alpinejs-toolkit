@@ -27,11 +27,14 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Run tests
+        run: npm test
+
       - name: Create Release Pull Request or Publish
         uses: changesets/action@v1
         with:
           version: npm run version
-          publish: npm run release
+          publish: npm run publish:ci
           title: "Version Packages"
           commit: "Version Packages"
         env:
