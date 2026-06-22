@@ -1,6 +1,6 @@
 # @ailuracode/alpine
 
-Alpine.js plugin monorepo by **ailuracode**. Independent npm packages for common UI utilities — theme, viewport, connectivity, clipboard, scroll, touch detection, and web notifications.
+Alpine.js plugin monorepo by **ailuracode**. Independent npm packages for common UI utilities — theme, viewport, connectivity, clipboard, scroll, touch detection, geolocation, and web notifications.
 
 ## Packages
 
@@ -16,6 +16,7 @@ Alpine.js plugin monorepo by **ailuracode**. Independent npm packages for common
 | [`@ailuracode/alpine-touch`](./packages/touch/README.md) | Magic | Touch and pointer capabilities |
 | [`@ailuracode/alpine-platform`](./packages/platform/README.md) | Magic | Client OS and platform detection |
 | [`@ailuracode/alpine-notify`](./packages/notify/README.md) | Magic | Web Notifications API |
+| [`@ailuracode/alpine-geo`](./packages/geo/README.md) | Store | Browser geolocation state and tracking |
 
 ## Quick start
 
@@ -73,6 +74,7 @@ See [AGENTS.md](./AGENTS.md) for the full checklist.
 - [Touch](./docs/touch.md)
 - [Platform](./docs/platform.md)
 - [Notify](./docs/notify.md)
+- [Geo](./docs/geo.md)
 - [Contributing](./docs/contributing.md)
 - [AGENTS.md](./AGENTS.md) — guide for AI agents and maintainers
 

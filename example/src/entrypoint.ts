@@ -1,6 +1,7 @@
 import type { Alpine } from "alpinejs";
 import battery from "@ailuracode/alpine-battery";
 import clipboard from "@ailuracode/alpine-clipboard";
+import geo from "@ailuracode/alpine-geo";
 import network from "@ailuracode/alpine-network";
 import visibility from "@ailuracode/alpine-visibility";
 import notify from "@ailuracode/alpine-notify";
@@ -25,6 +26,7 @@ export default (Alpine: Alpine) => {
 	Alpine.plugin(visibility);
 	Alpine.plugin(battery);
 	Alpine.plugin(clipboard);
+	Alpine.plugin(geo);
 	Alpine.plugin(touch);
 	Alpine.plugin(platform);
 	Alpine.plugin(notify);
