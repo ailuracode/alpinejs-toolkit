@@ -8,7 +8,19 @@
     "noEmit": true,
     "isolatedModules": true,
     "verbatimModuleSyntax": true,
-    "lib": ["ES2022", "DOM", "DOM.Iterable"]
+    "ignoreDeprecations": "6.0",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "baseUrl": ".",
+    "paths": {
+      "@ailuracode/alpine-clipboard": ["packages/clipboard/src/index.ts"],
+      "@ailuracode/alpine-network": ["packages/network/src/index.ts"],
+      "@ailuracode/alpine-notify": ["packages/notify/src/index.ts"],
+      "@ailuracode/alpine-platform": ["packages/platform/src/index.ts"],
+      "@ailuracode/alpine-screen": ["packages/screen/src/index.ts"],
+      "@ailuracode/alpine-scroll": ["packages/scroll/src/index.ts"],
+      "@ailuracode/alpine-theme": ["packages/theme/src/index.ts"],
+      "@ailuracode/alpine-touch": ["packages/touch/src/index.ts"]
+    }
   },
   "include": ["packages/*/src/**/*.ts", "packages/*/test/**/*.ts", "test/**/*.ts"]
 }
