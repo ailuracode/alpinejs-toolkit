@@ -65,6 +65,9 @@ importers:
       '@ailuracode/alpine-scroll':
         specifier: workspace:*
         version: link:../packages/scroll
+      '@ailuracode/alpine-share':
+        specifier: workspace:*
+        version: link:../packages/share
       '@ailuracode/alpine-theme':
         specifier: workspace:*
         version: link:../packages/theme
@@ -151,6 +154,15 @@ importers:
         version: 3.15.12
 
   packages/scroll:
+    dependencies:
+      '@types/alpinejs':
+        specifier: ^3.13.11
+        version: 3.13.11
+      alpinejs:
+        specifier: ^3.0.0
+        version: 3.15.12
+
+  packages/share:
     dependencies:
       '@types/alpinejs':
         specifier: ^3.13.11

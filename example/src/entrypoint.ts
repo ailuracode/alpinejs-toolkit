@@ -8,6 +8,7 @@ import notify from "@ailuracode/alpine-notify";
 import platform from "@ailuracode/alpine-platform";
 import screen from "@ailuracode/alpine-screen";
 import scroll from "@ailuracode/alpine-scroll";
+import share from "@ailuracode/alpine-share";
 import theme from "@ailuracode/alpine-theme";
 import touch from "@ailuracode/alpine-touch";
 
@@ -22,6 +23,7 @@ export default (Alpine: Alpine) => {
 	);
 	Alpine.plugin(screen);
 	Alpine.plugin(scroll);
+	Alpine.plugin(share);
 	Alpine.plugin(network);
 	Alpine.plugin(visibility);
 	Alpine.plugin(battery);

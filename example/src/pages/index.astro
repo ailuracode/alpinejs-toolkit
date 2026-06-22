@@ -150,6 +150,29 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 		</section>
 
 		<section class="card">
+			<h2>Share <code>$share</code></h2>
+			<p class="hint" x-show="!$share.isSupported()" x-cloak>
+				Web Share API is not available in this browser.
+			</p>
+			<template x-if="$share.isSupported()">
+				<div>
+					<button
+						type="button"
+						@click="shared = await $share.share({
+							title: document.title,
+							text: 'Check out this Alpine.js plugin demo',
+							url: window.location.href
+						})"
+					>
+						Share page
+					</button>
+					<p class="hint" x-show="shared === true" x-cloak x-transition>Thanks for sharing!</p>
+					<p class="hint" x-show="shared === false" x-cloak x-transition>Share cancelled.</p>
+				</div>
+			</template>
+		</section>
+
+		<section class="card">
 			<h2>Geo <code>$store.geo</code></h2>
 			<p class="hint" x-show="!$store.geo.isSupported" x-cloak>
 				Geolocation is not available in this browser.

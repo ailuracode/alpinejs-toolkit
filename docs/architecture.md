@@ -16,6 +16,9 @@ Use a **store** when you need:
 | `@ailuracode/alpine-screen` | `$store.device` | Breakpoints and viewport width |
 | `@ailuracode/alpine-scroll` | `$store.scroll` | Scroll metrics + body lock |
 | `@ailuracode/alpine-geo` | `$store.geo` | Geolocation state + tracking |
+| `@ailuracode/alpine-share` | `$store.share` | Web Share API actions |
+
+Both `$store.share` and magic `$share` expose the same API object.
 
 ### Template usage
 
@@ -58,6 +61,7 @@ Use a **magic** when you need:
 | `@ailuracode/alpine-touch` | `$touch` | Pointer / touch capabilities |
 | `@ailuracode/alpine-platform` | `$platform` | Client OS and platform detection |
 | `@ailuracode/alpine-clipboard` | `$clipboard` | Async copy function |
+| `@ailuracode/alpine-share` | `$share` | Web Share API (`share`, `canShare`, `isSupported`) |
 | `@ailuracode/alpine-notify` | `$notify` | Web Notifications API |
 
 ### Template usage

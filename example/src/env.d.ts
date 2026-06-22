@@ -3,6 +3,7 @@
 /// <reference path="../../packages/theme/src/global.d.ts" />
 /// <reference path="../../packages/screen/src/global.d.ts" />
 /// <reference path="../../packages/scroll/src/global.d.ts" />
+/// <reference path="../../packages/share/src/global.d.ts" />
 /// <reference path="../../packages/network/src/global.d.ts" />
 /// <reference path="../../packages/visibility/src/global.d.ts" />
 /// <reference path="../../packages/battery/src/global.d.ts" />

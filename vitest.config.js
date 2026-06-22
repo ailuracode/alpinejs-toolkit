@@ -6,13 +6,16 @@ const root = path.dirname(fileURLToPath(import.meta.url));
 const packageNames = [
   "battery",
   "clipboard",
+  "geo",
   "network",
   "notify",
   "platform",
   "screen",
   "scroll",
+  "share",
   "theme",
   "touch",
+  "visibility",
 ];
 
 export default defineConfig({
