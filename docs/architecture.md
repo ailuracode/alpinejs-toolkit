@@ -15,6 +15,7 @@ Use a **store** when you need:
 | `@ailuracode/alpine-theme` | `$store.theme` | User theme preference + persistence |
 | `@ailuracode/alpine-screen` | `$store.device` | Breakpoints and viewport width |
 | `@ailuracode/alpine-scroll` | `$store.scroll` | Scroll metrics + body lock |
+| `@ailuracode/alpine-geo` | `$store.geo` | Geolocation state + tracking |
 
 ### Template usage
 
@@ -22,6 +23,7 @@ Use a **store** when you need:
 <p x-text="$store.theme.mode"></p>
 <p x-text="$store.device.width"></p>
 <button @click="$store.scroll.lock()">Lock scroll</button>
+<button @click="$store.geo.request()">Get location</button>
 ```
 
 ### Getters vs methods

@@ -9,6 +9,9 @@ const workspaces = [
   "@ailuracode/alpine-touch",
   "@ailuracode/alpine-platform",
   "@ailuracode/alpine-notify",
+  "@ailuracode/alpine-geo",
+  "@ailuracode/alpine-visibility",
+  "@ailuracode/alpine-battery",
 ];
 
 for (const workspace of workspaces) {

@@ -150,6 +150,49 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 		</section>
 
 		<section class="card">
+			<h2>Geo <code>$store.geo</code></h2>
+			<p class="hint" x-show="!$store.geo.isSupported" x-cloak>
+				Geolocation is not available in this browser.
+			</p>
+			<template x-if="$store.geo.isSupported">
+				<div>
+					<div class="btn-group">
+						<button
+							type="button"
+							@click="$store.geo.request({ enableHighAccuracy: true })"
+							x-bind:disabled="$store.geo.isLoading"
+						>
+							<span x-text="$store.geo.isLoading ? 'Locating…' : 'Get location'"></span>
+						</button>
+						<button
+							type="button"
+							x-show="!$store.geo.isWatching"
+							x-cloak
+							@click="$store.geo.watch()"
+						>
+							Start tracking
+						</button>
+						<button
+							type="button"
+							x-show="$store.geo.isWatching"
+							x-cloak
+							@click="$store.geo.unwatch()"
+						>
+							Stop tracking
+						</button>
+						<button type="button" @click="$store.geo.reset()">Reset</button>
+					</div>
+					<p x-show="$store.geo.hasPosition" x-cloak>
+						Lat: <strong x-text="$store.geo.latitude?.toFixed(4)"></strong>,
+						Lng: <strong x-text="$store.geo.longitude?.toFixed(4)"></strong>
+						(±<strong x-text="Math.round($store.geo.accuracy ?? 0)"></strong> m)
+					</p>
+					<p class="hint hint--error" x-show="$store.geo.hasError" x-cloak x-text="$store.geo.error"></p>
+				</div>
+			</template>
+		</section>
+
+		<section class="card">
 			<h2>Touch <code>$touch</code></h2>
 			<ul class="list">
 				<li>Touch: <strong x-text="$touch.isTouch"></strong></li>

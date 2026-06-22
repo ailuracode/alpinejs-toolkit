@@ -12,13 +12,17 @@ packages/
   scroll/      @ailuracode/alpine-scroll
   touch/       @ailuracode/alpine-touch
   platform/    @ailuracode/alpine-platform
+  notify/      @ailuracode/alpine-notify
+  geo/         @ailuracode/alpine-geo
+  visibility/  @ailuracode/alpine-visibility
+  battery/     @ailuracode/alpine-battery
 test/          shared Vitest setup and helpers
 docs/          documentation
 ```
 
 Each package contains:
 
-- `src/index.js` — plugin source
+- `src/index.ts` — plugin source
 - `test/` — package tests
 - `README.md` — package overview
 - `package.json` — independent npm manifest
@@ -80,7 +84,7 @@ Plugins must stay CSS-framework agnostic. DOM styling belongs in the consumer ap
 
 ## Adding a new package
 
-1. Create `packages/my-feature/` with `src/index.js`, `package.json`, `test/`, `README.md`
+1. Create `packages/my-feature/` with `src/index.ts`, `package.json`, `test/`, `README.md`
 2. Add `"name": "@ailuracode/alpine-my-feature"` with `peerDependencies.alpinejs`
 3. Add docs in `docs/my-feature.md` and link from root README
 4. Ensure `pnpm test` passes
