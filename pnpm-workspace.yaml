@@ -3,3 +3,6 @@ packages:
 
 allowBuilds:
   esbuild: true
+
+patchedDependencies:
+  tsup@8.5.1: patches/tsup@8.5.1.patch
