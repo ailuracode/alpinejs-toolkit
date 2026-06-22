@@ -53,6 +53,7 @@ Use a **magic** when you need:
 | `@ailuracode/alpine-network` | `$network` | `navigator.onLine` |
 | `@ailuracode/alpine-touch` | `$touch` | Pointer / touch capabilities |
 | `@ailuracode/alpine-clipboard` | `$clipboard` | Async copy function |
+| `@ailuracode/alpine-notify` | `$notify` | Web Notifications API |
 
 ### Template usage
 
@@ -60,6 +61,8 @@ Use a **magic** when you need:
 <div x-show="!$network.isOnline">Offline</div>
 <p x-text="$touch.maxTouchPoints"></p>
 <button @click="await $clipboard(url)">Copy URL</button>
+
+<button @click="$notify.sendIfPermitted('Saved')">Notify</button>
 ```
 
 ### Naming convention
