@@ -32,7 +32,7 @@ pnpm install
 | Job | Command | When |
 |-----|---------|------|
 | Lint | `pnpm run lint` | every push / PR |
-| Test | `pnpm test` | Node 20 + 22 |
+| Test | `pnpm test` | Node 22 |
 | Coverage | `pnpm run test:coverage` | Node 22 (≥80% lines, ≥70% functions) |
 | Pack | `pnpm run pack:check` | validates npm tarballs |
 | Audit | `pnpm audit --audit-level critical` | blocks on critical CVEs |
