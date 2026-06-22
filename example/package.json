@@ -3,7 +3,7 @@
   "private": true,
   "description": "Interactive Astro demo for @ailuracode Alpine.js plugins",
   "type": "module",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "author": "ailuracode",
   "license": "MIT",
   "engines": {

@@ -1,5 +1,11 @@
 # @ailuracode/alpine-notify
 
+## 0.3.0
+
+### Minor Changes
+
+- d5d8583: Add mobile notification support via service worker delivery, `sendAsync()` API, and iOS Home Screen install detection.
+
 ## 0.2.0
 
 ### Minor Changes
