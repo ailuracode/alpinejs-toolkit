@@ -18,11 +18,12 @@ Alpine.js plugin monorepo by **ailuracode**. Six independent npm packages under 
 ## Repository layout
 
 ```
-packages/<name>/src/index.js   # plugin entry (default export)
+packages/<name>/src/index.ts   # plugin source (TypeScript)
+packages/<name>/dist/            # compiled output published to npm
 packages/<name>/test/            # Vitest tests
 packages/<name>/README.md        # npm package readme
 docs/                            # full documentation
-test/                            # shared test setup (setup.js, helpers.js, mock-alpine.js)
+test/                            # shared test setup (setup.ts, helpers.ts, mock-alpine.ts)
 .changeset/                      # versioning changesets
 .github/workflows/               # CI + release automation
 ```
@@ -31,6 +32,8 @@ test/                            # shared test setup (setup.js, helpers.js, mock
 
 ```bash
 pnpm install          # install all workspaces
+pnpm run build        # compile all packages to dist/
+pnpm run typecheck    # TypeScript check without emit
 pnpm test             # run full test suite (required before release)
 pnpm run lint         # biome check (strict)
 pnpm run lint:fix     # biome check --write
@@ -86,10 +89,10 @@ export default function themePlugin(options = {}) {
 ## Testing
 
 - Framework: Vitest + happy-dom
-- Include pattern: `packages/*/test/**/*.test.js`
-- Store plugins: use `startAlpine()` from `test/helpers.js`
-- Magic plugins: use `createMagicHarness()` from `test/mock-alpine.js`
-- `matchMedia`: use `setMatchMedia()` from `test/setup.js`
+- Include pattern: `packages/*/test/**/*.test.ts`
+- Store plugins: use `startAlpine()` from `test/helpers.ts`
+- Magic plugins: use `createMagicHarness()` from `test/mock-alpine.ts`
+- `matchMedia`: use `setMatchMedia()` from `test/setup.ts`
 
 Every change to plugin behavior must include or update tests. Run `pnpm test` and `pnpm run lint` before finishing.
 

@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { createMagicHarness } from "../../../test/mock-alpine.js";
 import { setMatchMedia } from "../../../test/setup.js";
-import touchPlugin from "../src/index.js";
+import touchPlugin, { type TouchMagic } from "../src/index.js";
 
 describe("@ailuracode/alpine-touch", () => {
   it("registers $touch with pointer capabilities", () => {
@@ -14,7 +14,7 @@ describe("@ailuracode/alpine-touch", () => {
       value: 2,
     });
 
-    const { touch } = createMagicHarness(touchPlugin);
+    const { touch } = createMagicHarness(touchPlugin) as { touch: TouchMagic };
 
     expect(touch.isTouch).toBe(true);
     expect(touch.isCoarse).toBe(true);
@@ -32,7 +32,7 @@ describe("@ailuracode/alpine-touch", () => {
       value: 0,
     });
 
-    const { touch } = createMagicHarness(touchPlugin);
+    const { touch } = createMagicHarness(touchPlugin) as { touch: TouchMagic };
 
     expect(touch.isTouch).toBe(false);
     expect(touch.isFine).toBe(true);
@@ -53,7 +53,7 @@ describe("@ailuracode/alpine-touch", () => {
       value: null,
     });
 
-    const { touch } = createMagicHarness(touchPlugin);
+    const { touch } = createMagicHarness(touchPlugin) as { touch: TouchMagic };
 
     expect(touch.isTouch).toBe(true);
   });
@@ -63,7 +63,7 @@ describe("@ailuracode/alpine-touch", () => {
     setMatchMedia("(pointer: fine)", true);
     setMatchMedia("(hover: hover)", false);
 
-    const { touch } = createMagicHarness(touchPlugin);
+    const { touch } = createMagicHarness(touchPlugin) as { touch: TouchMagic };
     expect(touch.isCoarse).toBe(false);
 
     setMatchMedia("(pointer: coarse)", true);

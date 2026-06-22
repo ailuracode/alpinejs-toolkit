@@ -1,16 +1,14 @@
-/**
- * @typedef {Object} TouchSnapshot
- * @property {boolean} isTouch Whether the device supports touch input.
- * @property {boolean} isCoarse Whether the primary pointer is coarse (e.g. finger).
- * @property {boolean} isFine Whether a fine pointer (e.g. mouse) is available.
- * @property {boolean} canHover Whether the primary input can hover.
- * @property {number} maxTouchPoints Maximum simultaneous touch points reported by the browser.
- */
+import type AlpineType from "alpinejs";
 
-/** @typedef {TouchSnapshot} TouchMagic */
+export interface TouchMagic {
+  isTouch: boolean;
+  isCoarse: boolean;
+  isFine: boolean;
+  canHover: boolean;
+  maxTouchPoints: number;
+}
 
-/** @returns {TouchSnapshot} */
-function readTouchState() {
+function readTouchState(): TouchMagic {
   const coarse = window.matchMedia("(pointer: coarse)").matches;
   const hover = window.matchMedia("(hover: hover)").matches;
   const maxTouchPoints = navigator.maxTouchPoints || 0;
@@ -25,13 +23,8 @@ function readTouchState() {
   };
 }
 
-/**
- * Alpine.js touch plugin. Registers reactive magic `$touch`.
- *
- * @param {import('alpinejs').Alpine} Alpine
- */
-export default function touchPlugin(Alpine) {
-  /** @type {TouchMagic} */
+/** Alpine.js touch plugin. Registers reactive magic `$touch`. */
+export default function touchPlugin(Alpine: AlpineType.Alpine): void {
   const state = Alpine.reactive(readTouchState());
 
   Alpine.magic("touch", () => state);
@@ -41,4 +34,12 @@ export default function touchPlugin(Alpine) {
   window.matchMedia("(pointer: coarse)").addEventListener("change", update);
   window.matchMedia("(pointer: fine)").addEventListener("change", update);
   window.matchMedia("(hover: hover)").addEventListener("change", update);
+}
+
+declare global {
+  namespace Alpine {
+    interface Magics<T> {
+      $touch: TouchMagic;
+    }
+  }
 }

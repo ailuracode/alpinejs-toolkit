@@ -1,17 +1,17 @@
 import { beforeAll, describe, expect, it, vi } from "vitest";
 import { startAlpine } from "../../../test/helpers.js";
 import { setMatchMedia } from "../../../test/setup.js";
-import screenPlugin from "../src/index.js";
+import screenPlugin, { type DeviceStore } from "../src/index.js";
 
 describe("@ailuracode/alpine-screen", () => {
-  let store;
+  let store: DeviceStore;
 
   beforeAll(() => {
     setMatchMedia("(max-width: 767px)", true);
     setMatchMedia("(min-width: 768px) and (max-width: 1023px)", false);
 
     const Alpine = startAlpine(screenPlugin);
-    store = Alpine.store("device");
+    store = Alpine.store("device") as DeviceStore;
   });
 
   it("registers the device store", () => {
@@ -75,7 +75,7 @@ describe("@ailuracode/alpine-screen desktop", () => {
     setMatchMedia("(min-width: 768px) and (max-width: 1023px)", false);
 
     const Alpine = startAlpine(screenPlugin);
-    const device = Alpine.store("device");
+    const device = Alpine.store("device") as DeviceStore;
 
     expect(device.type).toBe("desktop");
     expect(device.isDesktop).toBe(true);
@@ -87,7 +87,7 @@ describe("@ailuracode/alpine-screen desktop", () => {
     setMatchMedia("(min-width: 768px) and (max-width: 1023px)", false);
 
     const Alpine = startAlpine(screenPlugin);
-    const device = Alpine.store("device");
+    const device = Alpine.store("device") as DeviceStore;
 
     device.setBreakpoints({ mobileMax: 600 });
     expect(device.mobileMax).toBe(600);

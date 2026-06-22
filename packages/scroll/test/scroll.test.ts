@@ -1,9 +1,9 @@
 import { beforeAll, describe, expect, it, vi } from "vitest";
 import { startAlpine } from "../../../test/helpers.js";
-import scrollPlugin from "../src/index.js";
+import scrollPlugin, { type ScrollStore } from "../src/index.js";
 
 describe("@ailuracode/alpine-scroll", () => {
-  let store;
+  let store: ScrollStore;
 
   beforeAll(() => {
     vi.stubGlobal("scrollTo", vi.fn());
@@ -25,7 +25,7 @@ describe("@ailuracode/alpine-scroll", () => {
     });
 
     const Alpine = startAlpine(scrollPlugin);
-    store = Alpine.store("scroll");
+    store = Alpine.store("scroll") as ScrollStore;
   });
 
   it("tracks scroll progress", () => {

@@ -7,7 +7,14 @@
   },
   "files": {
     "ignoreUnknown": false,
-    "includes": ["**/*.js", "**/*.mjs", "**/*.json", "!**/pnpm-lock.yaml", "!**/.changeset/*.json"]
+    "includes": [
+      "**/*.js",
+      "**/*.ts",
+      "**/*.mjs",
+      "**/*.json",
+      "!**/pnpm-lock.yaml",
+      "!**/.changeset/*.json"
+    ]
   },
   "formatter": {
     "enabled": true,
@@ -106,7 +113,7 @@
       }
     },
     {
-      "includes": ["**/test/**", "**/*.test.js"],
+      "includes": ["**/test/**", "**/*.test.ts"],
       "linter": {
         "rules": {
           "suspicious": {

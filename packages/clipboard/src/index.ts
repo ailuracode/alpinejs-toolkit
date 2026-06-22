@@ -1,25 +1,13 @@
-/**
- * Copies text to the system clipboard. Resolves when the write completes.
- *
- * @typedef {(text: string) => Promise<void>} ClipboardMagic
- */
+import type AlpineType from "alpinejs";
 
-/**
- * Legacy copy fallback for non-secure contexts without `navigator.clipboard`.
- *
- * @param {Document} doc
- * @returns {boolean}
- */
-function copyViaLegacyCommand(doc) {
+export type ClipboardMagic = (text: string) => Promise<void>;
+
+function copyViaLegacyCommand(doc: Document): boolean {
   const run = Reflect.get(doc, "execCommand");
   return typeof run === "function" && run.call(doc, "copy", false);
 }
 
-/**
- * @param {string} text
- * @returns {Promise<void>}
- */
-async function writeClipboard(text) {
+async function writeClipboard(text: string): Promise<void> {
   const value = String(text);
 
   if (navigator.clipboard?.writeText) {
@@ -38,11 +26,15 @@ async function writeClipboard(text) {
   document.body.removeChild(area);
 }
 
-/**
- * Alpine.js clipboard plugin. Registers magic `$clipboard(text)`.
- *
- * @param {import('alpinejs').Alpine} Alpine
- */
-export default function clipboardPlugin(Alpine) {
+/** Alpine.js clipboard plugin. Registers magic `$clipboard(text)`. */
+export default function clipboardPlugin(Alpine: AlpineType.Alpine): void {
   Alpine.magic("clipboard", () => writeClipboard);
+}
+
+declare global {
+  namespace Alpine {
+    interface Magics<T> {
+      $clipboard: ClipboardMagic;
+    }
+  }
 }

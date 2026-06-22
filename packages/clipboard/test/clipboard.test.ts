@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import { createMagicHarness } from "../../../test/mock-alpine.js";
-import clipboardPlugin from "../src/index.js";
+import clipboardPlugin, { type ClipboardMagic } from "../src/index.js";
 
 describe("@ailuracode/alpine-clipboard", () => {
   it("copies text via navigator.clipboard", async () => {
@@ -10,7 +10,7 @@ describe("@ailuracode/alpine-clipboard", () => {
       value: { writeText },
     });
 
-    const { clipboard } = createMagicHarness(clipboardPlugin);
+    const { clipboard } = createMagicHarness(clipboardPlugin) as { clipboard: ClipboardMagic };
     await clipboard("hola");
 
     expect(writeText).toHaveBeenCalledWith("hola");
@@ -23,7 +23,9 @@ describe("@ailuracode/alpine-clipboard", () => {
       value: { writeText },
     });
 
-    const { clipboard } = createMagicHarness(clipboardPlugin);
+    const { clipboard } = createMagicHarness(clipboardPlugin) as {
+      clipboard: (text: string | number) => Promise<void>;
+    };
     await clipboard(42);
 
     expect(writeText).toHaveBeenCalledWith("42");
@@ -42,7 +44,7 @@ describe("@ailuracode/alpine-clipboard", () => {
     });
     const select = vi.spyOn(HTMLTextAreaElement.prototype, "select").mockImplementation(vi.fn());
 
-    const { clipboard } = createMagicHarness(clipboardPlugin);
+    const { clipboard } = createMagicHarness(clipboardPlugin) as { clipboard: ClipboardMagic };
     await clipboard("fallback");
 
     expect(execCommand).toHaveBeenCalledWith("copy", false);

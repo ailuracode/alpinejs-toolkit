@@ -18,16 +18,16 @@
   },
   "homepage": "https://github.com/ailuracode/alpine/tree/master/packages/screen#readme",
   "files": [
-    "src",
+    "dist",
     "README.md"
   ],
   "exports": {
     ".": {
-      "types": "./src/index.d.ts",
-      "default": "./src/index.js"
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
     }
   },
-  "types": "./src/index.d.ts",
+  "types": "./dist/index.d.ts",
   "peerDependencies": {
     "alpinejs": "^3.0.0",
     "@types/alpinejs": "^3.13.11"
@@ -38,6 +38,8 @@
     }
   },
   "scripts": {
+    "build": "tsup src/index.ts --format esm --dts --clean --sourcemap --out-dir dist",
+    "prepublishOnly": "pnpm run build",
     "test": "vitest run --config ../../vitest.config.js test"
   },
   "keywords": [

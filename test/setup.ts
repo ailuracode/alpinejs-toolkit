@@ -1,9 +1,17 @@
 import { beforeEach, vi } from "vitest";
 
-const mediaListeners = new Map();
+const mediaListeners = new Map<string, Set<() => void>>();
 
-function createMediaQueryList(query, matches = false) {
-  const listeners = new Set();
+interface MockMediaQueryList {
+  media: string;
+  matches: boolean;
+  addEventListener(_event: string, listener: () => void): void;
+  removeEventListener(_event: string, listener: () => void): void;
+  dispatch(matches: boolean): void;
+}
+
+function createMediaQueryList(query: string, matches = false): MockMediaQueryList {
+  const listeners = new Set<() => void>();
 
   return {
     media: query,
@@ -24,11 +32,11 @@ function createMediaQueryList(query, matches = false) {
   };
 }
 
-const mediaQueries = new Map();
+const mediaQueries = new Map<string, MockMediaQueryList>();
 
 vi.stubGlobal(
   "matchMedia",
-  vi.fn((query) => {
+  vi.fn((query: string) => {
     if (!mediaQueries.has(query)) {
       mediaQueries.set(query, createMediaQueryList(query));
     }
@@ -36,16 +44,16 @@ vi.stubGlobal(
   })
 );
 
-export function setMatchMedia(query, matches) {
+export function setMatchMedia(query: string, matches: boolean): void {
   if (!mediaQueries.has(query)) {
     mediaQueries.set(query, createMediaQueryList(query, matches));
     return;
   }
 
-  mediaQueries.get(query).dispatch(matches);
+  mediaQueries.get(query)?.dispatch(matches);
 }
 
-export function resetMatchMedia() {
+export function resetMatchMedia(): void {
   mediaQueries.clear();
   mediaListeners.clear();
 }

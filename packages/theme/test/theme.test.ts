@@ -1,16 +1,16 @@
 import { beforeAll, describe, expect, it, vi } from "vitest";
 import { startAlpine } from "../../../test/helpers.js";
 import { setMatchMedia } from "../../../test/setup.js";
-import themePlugin from "../src/index.js";
+import themePlugin, { type ThemeMode, type ThemeStore } from "../src/index.js";
 
 describe("@ailuracode/alpine-theme", () => {
   const onChange = vi.fn();
-  let store;
+  let store: ThemeStore;
 
   beforeAll(() => {
     localStorage.setItem("test-theme", "light");
     const Alpine = startAlpine(themePlugin({ onChange, storageKey: "test-theme" }));
-    store = Alpine.store("theme");
+    store = Alpine.store("theme") as ThemeStore;
   });
 
   it("bootstraps from localStorage and notifies onChange", () => {
@@ -56,7 +56,7 @@ describe("@ailuracode/alpine-theme", () => {
     store.set("dark");
     onChange.mockClear();
 
-    store.set("invalid");
+    store.set("invalid" as ThemeMode);
     expect(store.mode).toBe("dark");
     expect(onChange).not.toHaveBeenCalled();
 
@@ -76,7 +76,7 @@ describe("@ailuracode/alpine-theme system mode", () => {
     setMatchMedia("(prefers-color-scheme: dark)", true);
 
     const Alpine = startAlpine(themePlugin({ storageKey: "system-theme" }));
-    const theme = Alpine.store("theme");
+    const theme = Alpine.store("theme") as ThemeStore;
 
     expect(theme.mode).toBe("system");
     expect(theme.isSystem).toBe(true);
@@ -89,7 +89,7 @@ describe("@ailuracode/alpine-theme system mode", () => {
     setMatchMedia("(prefers-color-scheme: dark)", false);
 
     const Alpine = startAlpine(themePlugin({ storageKey: "invalid-theme" }));
-    const theme = Alpine.store("theme");
+    const theme = Alpine.store("theme") as ThemeStore;
 
     expect(theme.mode).toBe("system");
     expect(theme.resolved).toBe("light");
@@ -101,7 +101,7 @@ describe("@ailuracode/alpine-theme system mode", () => {
     setMatchMedia("(prefers-color-scheme: dark)", true);
 
     const Alpine = startAlpine(themePlugin({ storageKey: "system-theme" }));
-    const theme = Alpine.store("theme");
+    const theme = Alpine.store("theme") as ThemeStore;
 
     setMatchMedia("(prefers-color-scheme: dark)", false);
     theme.refresh();
