@@ -4,6 +4,7 @@ import { defineConfig } from "vitest/config";
 
 const root = path.dirname(fileURLToPath(import.meta.url));
 const packageNames = [
+  "battery",
   "clipboard",
   "network",
   "notify",

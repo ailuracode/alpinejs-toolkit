@@ -1,4 +1,5 @@
 import type { Alpine } from "alpinejs";
+import battery from "@ailuracode/alpine-battery";
 import clipboard from "@ailuracode/alpine-clipboard";
 import network from "@ailuracode/alpine-network";
 import notify from "@ailuracode/alpine-notify";
@@ -20,6 +21,7 @@ export default (Alpine: Alpine) => {
 	Alpine.plugin(screen);
 	Alpine.plugin(scroll);
 	Alpine.plugin(network);
+	Alpine.plugin(battery);
 	Alpine.plugin(clipboard);
 	Alpine.plugin(touch);
 	Alpine.plugin(platform);

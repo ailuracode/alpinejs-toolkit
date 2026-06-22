@@ -41,6 +41,9 @@ importers:
 
   example:
     dependencies:
+      '@ailuracode/alpine-battery':
+        specifier: workspace:*
+        version: link:../packages/battery
       '@ailuracode/alpine-clipboard':
         specifier: workspace:*
         version: link:../packages/clipboard
@@ -74,6 +77,15 @@ importers:
       astro:
         specifier: ^7.0.0
         version: 7.0.0(@emnapi/core@1.10.0)(@emnapi/runtime@1.11.1)(@types/node@26.0.0)(rollup@4.62.2)
+
+  packages/battery:
+    dependencies:
+      '@types/alpinejs':
+        specifier: ^3.13.11
+        version: 3.13.11
+      alpinejs:
+        specifier: ^3.0.0
+        version: 3.15.12
 
   packages/clipboard:
     dependencies:

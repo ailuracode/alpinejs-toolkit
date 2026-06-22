@@ -80,6 +80,25 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 		</section>
 
 		<section class="card">
+			<h2>Battery <code>$battery</code></h2>
+			<template x-if="$battery.isAvailable">
+				<ul class="list">
+					<li>Level: <strong x-text="Math.round($battery.level * 100) + '%'"></strong></li>
+					<li>Charging: <strong x-text="$battery.isCharging"></strong></li>
+					<li x-show="$battery.chargingTime !== null">
+						Time to full: <strong x-text="$battery.chargingTime + 's'"></strong>
+					</li>
+					<li x-show="$battery.dischargingTime !== null">
+						Time to empty: <strong x-text="$battery.dischargingTime + 's'"></strong>
+					</li>
+				</ul>
+			</template>
+			<p class="hint" x-show="!$battery.isAvailable" x-cloak>
+				Battery status is not available on this device or browser.
+			</p>
+		</section>
+
+		<section class="card">
 			<h2>Clipboard <code>$clipboard</code></h2>
 			<button
 				type="button"

@@ -12,6 +12,7 @@
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
     "baseUrl": ".",
     "paths": {
+      "@ailuracode/alpine-battery": ["packages/battery/src/index.ts"],
       "@ailuracode/alpine-clipboard": ["packages/clipboard/src/index.ts"],
       "@ailuracode/alpine-network": ["packages/network/src/index.ts"],
       "@ailuracode/alpine-notify": ["packages/notify/src/index.ts"],

@@ -9,6 +9,7 @@ Alpine.js plugin monorepo by **ailuracode**. Independent npm packages for common
 | [`@ailuracode/alpine-theme`](./packages/theme/README.md) | Store | Light / dark / system theme preference |
 | [`@ailuracode/alpine-screen`](./packages/screen/README.md) | Store | Responsive device type and viewport width |
 | [`@ailuracode/alpine-network`](./packages/network/README.md) | Magic | Network online / offline state |
+| [`@ailuracode/alpine-battery`](./packages/battery/README.md) | Magic | Device battery level and charging state |
 | [`@ailuracode/alpine-clipboard`](./packages/clipboard/README.md) | Magic | Copy text to clipboard |
 | [`@ailuracode/alpine-scroll`](./packages/scroll/README.md) | Store | Scroll position tracking and body lock |
 | [`@ailuracode/alpine-touch`](./packages/touch/README.md) | Magic | Touch and pointer capabilities |
@@ -52,6 +53,7 @@ pnpm run dev:example
 - [Theme](./docs/theme.md)
 - [Screen](./docs/screen.md)
 - [Network](./docs/network.md)
+- [Battery](./docs/battery.md)
 - [Clipboard](./docs/clipboard.md)
 - [Scroll](./docs/scroll.md)
 - [Touch](./docs/touch.md)

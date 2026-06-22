@@ -17,6 +17,7 @@
     "typecheck": "astro sync && tsc --noEmit"
   },
   "dependencies": {
+    "@ailuracode/alpine-battery": "workspace:*",
     "@ailuracode/alpine-clipboard": "workspace:*",
     "@ailuracode/alpine-network": "workspace:*",
     "@ailuracode/alpine-notify": "workspace:*",

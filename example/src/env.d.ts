@@ -4,6 +4,7 @@
 /// <reference path="../../packages/screen/src/global.d.ts" />
 /// <reference path="../../packages/scroll/src/global.d.ts" />
 /// <reference path="../../packages/network/src/global.d.ts" />
+/// <reference path="../../packages/battery/src/global.d.ts" />
 /// <reference path="../../packages/clipboard/src/global.d.ts" />
 /// <reference path="../../packages/touch/src/global.d.ts" />
 /// <reference path="../../packages/platform/src/global.d.ts" />

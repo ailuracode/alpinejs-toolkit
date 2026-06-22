@@ -51,6 +51,7 @@ Use a **magic** when you need:
 | Package | Magic | Purpose |
 |---------|-------|---------|
 | `@ailuracode/alpine-network` | `$network` | `navigator.onLine` |
+| `@ailuracode/alpine-battery` | `$battery` | Battery level and charging state |
 | `@ailuracode/alpine-touch` | `$touch` | Pointer / touch capabilities |
 | `@ailuracode/alpine-platform` | `$platform` | Client OS and platform detection |
 | `@ailuracode/alpine-clipboard` | `$clipboard` | Async copy function |

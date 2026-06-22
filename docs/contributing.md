@@ -7,6 +7,7 @@ packages/
   theme/       @ailuracode/alpine-theme
   screen/      @ailuracode/alpine-screen
   network/     @ailuracode/alpine-network
+  battery/     @ailuracode/alpine-battery
   clipboard/   @ailuracode/alpine-clipboard
   scroll/      @ailuracode/alpine-scroll
   touch/       @ailuracode/alpine-touch
