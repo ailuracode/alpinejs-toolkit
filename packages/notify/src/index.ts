@@ -1,4 +1,7 @@
+import { isAndroidDevice, isIosDevice } from "@ailuracode/alpine-platform";
 import type AlpineType from "alpinejs";
+
+export { isIosDevice } from "@ailuracode/alpine-platform";
 
 export interface NotifyPluginOptions {
   /** URL of the minimal service worker script (must be same-origin). */
@@ -56,20 +59,6 @@ function hasServiceWorkerSupport(): boolean {
   );
 }
 
-/** Detects iOS/iPadOS (including iPadOS desktop UA). */
-export function isIosDevice(): boolean {
-  if (typeof navigator === "undefined") {
-    return false;
-  }
-
-  const ua = navigator.userAgent;
-  if (/iPad|iPhone|iPod/i.test(ua)) {
-    return true;
-  }
-
-  return navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1;
-}
-
 /** True when the page runs as an installed web app (Home Screen on iOS). */
 export function isStandaloneDisplayMode(): boolean {
   if (typeof window === "undefined") {
@@ -91,8 +80,7 @@ export function requiresServiceWorkerNotifications(): boolean {
     return false;
   }
 
-  const ua = typeof navigator !== "undefined" ? navigator.userAgent : "";
-  return /Android|iPad|iPhone|iPod/i.test(ua);
+  return isIosDevice() || isAndroidDevice();
 }
 
 /** Returns whether direct `new Notification()` construction is available. */

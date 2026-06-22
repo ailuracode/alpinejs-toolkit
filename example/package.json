@@ -20,6 +20,7 @@
     "@ailuracode/alpine-clipboard": "workspace:*",
     "@ailuracode/alpine-network": "workspace:*",
     "@ailuracode/alpine-notify": "workspace:*",
+    "@ailuracode/alpine-platform": "workspace:*",
     "@ailuracode/alpine-screen": "workspace:*",
     "@ailuracode/alpine-scroll": "workspace:*",
     "@ailuracode/alpine-theme": "workspace:*",

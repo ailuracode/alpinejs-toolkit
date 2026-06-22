@@ -2,6 +2,7 @@ import type { Alpine } from "alpinejs";
 import clipboard from "@ailuracode/alpine-clipboard";
 import network from "@ailuracode/alpine-network";
 import notify from "@ailuracode/alpine-notify";
+import platform from "@ailuracode/alpine-platform";
 import screen from "@ailuracode/alpine-screen";
 import scroll from "@ailuracode/alpine-scroll";
 import theme from "@ailuracode/alpine-theme";
@@ -21,5 +22,6 @@ export default (Alpine: Alpine) => {
 	Alpine.plugin(network);
 	Alpine.plugin(clipboard);
 	Alpine.plugin(touch);
+	Alpine.plugin(platform);
 	Alpine.plugin(notify);
 };

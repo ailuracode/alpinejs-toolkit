@@ -10,6 +10,7 @@ packages/
   clipboard/   @ailuracode/alpine-clipboard
   scroll/      @ailuracode/alpine-scroll
   touch/       @ailuracode/alpine-touch
+  platform/    @ailuracode/alpine-platform
 test/          shared Vitest setup and helpers
 docs/          documentation
 ```

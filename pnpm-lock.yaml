@@ -50,6 +50,9 @@ importers:
       '@ailuracode/alpine-notify':
         specifier: workspace:*
         version: link:../packages/notify
+      '@ailuracode/alpine-platform':
+        specifier: workspace:*
+        version: link:../packages/platform
       '@ailuracode/alpine-screen':
         specifier: workspace:*
         version: link:../packages/screen
@@ -91,6 +94,18 @@ importers:
         version: 3.15.12
 
   packages/notify:
+    dependencies:
+      '@ailuracode/alpine-platform':
+        specifier: workspace:*
+        version: link:../platform
+      '@types/alpinejs':
+        specifier: ^3.13.11
+        version: 3.13.11
+      alpinejs:
+        specifier: ^3.0.0
+        version: 3.15.12
+
+  packages/platform:
     dependencies:
       '@types/alpinejs':
         specifier: ^3.13.11

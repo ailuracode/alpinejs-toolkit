@@ -1,7 +1,7 @@
 {
-  "name": "@ailuracode/alpine-notify",
-  "version": "0.3.0",
-  "description": "Alpine.js Web Notifications API magic",
+  "name": "@ailuracode/alpine-platform",
+  "version": "1.0.0",
+  "description": "Alpine.js client platform and operating system detection magic",
   "type": "module",
   "license": "MIT",
   "author": "ailuracode",
@@ -11,12 +11,12 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ailuracode/alpine.git",
-    "directory": "packages/notify"
+    "directory": "packages/platform"
   },
   "bugs": {
     "url": "https://github.com/ailuracode/alpine/issues"
   },
-  "homepage": "https://github.com/ailuracode/alpine/tree/master/packages/notify#readme",
+  "homepage": "https://github.com/ailuracode/alpine/tree/master/packages/platform#readme",
   "files": [
     "dist",
     "README.md"
@@ -28,13 +28,9 @@
     },
     "./global": {
       "types": "./dist/global.d.ts"
-    },
-    "./notify-sw.js": "./dist/notify-sw.js"
+    }
   },
   "types": "./dist/global.d.ts",
-  "dependencies": {
-    "@ailuracode/alpine-platform": "workspace:*"
-  },
   "peerDependencies": {
     "alpinejs": "^3.0.0",
     "@types/alpinejs": "^3.13.11"
@@ -45,7 +41,7 @@
     }
   },
   "scripts": {
-    "build": "tsup src/index.ts --format esm --dts --clean --sourcemap --out-dir dist && cp src/global.d.ts dist/global.d.ts && cp src/notify-sw.js dist/notify-sw.js",
+    "build": "tsup src/index.ts --format esm --dts --clean --sourcemap --out-dir dist && cp src/global.d.ts dist/global.d.ts",
     "prepublishOnly": "pnpm run build",
     "test": "vitest run --config ../../vitest.config.js test"
   },
@@ -53,9 +49,14 @@
     "alpinejs",
     "alpine",
     "plugin",
-    "notifications",
-    "web-notifications",
-    "notify",
-    "permission"
+    "platform",
+    "os",
+    "operating-system",
+    "user-agent",
+    "macos",
+    "windows",
+    "linux",
+    "ios",
+    "android"
   ]
 }

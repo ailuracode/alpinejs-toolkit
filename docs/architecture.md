@@ -52,6 +52,7 @@ Use a **magic** when you need:
 |---------|-------|---------|
 | `@ailuracode/alpine-network` | `$network` | `navigator.onLine` |
 | `@ailuracode/alpine-touch` | `$touch` | Pointer / touch capabilities |
+| `@ailuracode/alpine-platform` | `$platform` | Client OS and platform detection |
 | `@ailuracode/alpine-clipboard` | `$clipboard` | Async copy function |
 | `@ailuracode/alpine-notify` | `$notify` | Web Notifications API |
 

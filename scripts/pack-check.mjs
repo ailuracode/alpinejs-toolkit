@@ -7,6 +7,7 @@ const workspaces = [
   "@ailuracode/alpine-clipboard",
   "@ailuracode/alpine-scroll",
   "@ailuracode/alpine-touch",
+  "@ailuracode/alpine-platform",
   "@ailuracode/alpine-notify",
 ];
 

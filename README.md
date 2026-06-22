@@ -12,6 +12,7 @@ Alpine.js plugin monorepo by **ailuracode**. Independent npm packages for common
 | [`@ailuracode/alpine-clipboard`](./packages/clipboard/README.md) | Magic | Copy text to clipboard |
 | [`@ailuracode/alpine-scroll`](./packages/scroll/README.md) | Store | Scroll position tracking and body lock |
 | [`@ailuracode/alpine-touch`](./packages/touch/README.md) | Magic | Touch and pointer capabilities |
+| [`@ailuracode/alpine-platform`](./packages/platform/README.md) | Magic | Client OS and platform detection |
 | [`@ailuracode/alpine-notify`](./packages/notify/README.md) | Magic | Web Notifications API |
 
 ## Quick start
@@ -54,6 +55,7 @@ pnpm run dev:example
 - [Clipboard](./docs/clipboard.md)
 - [Scroll](./docs/scroll.md)
 - [Touch](./docs/touch.md)
+- [Platform](./docs/platform.md)
 - [Notify](./docs/notify.md)
 - [Contributing](./docs/contributing.md)
 - [AGENTS.md](./AGENTS.md) — guide for AI agents and maintainers

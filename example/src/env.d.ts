@@ -6,6 +6,7 @@
 /// <reference path="../../packages/network/src/global.d.ts" />
 /// <reference path="../../packages/clipboard/src/global.d.ts" />
 /// <reference path="../../packages/touch/src/global.d.ts" />
+/// <reference path="../../packages/platform/src/global.d.ts" />
 /// <reference path="../../packages/notify/src/global.d.ts" />
 
 interface Window {
