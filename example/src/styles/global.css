@@ -4,6 +4,18 @@
 	box-sizing: border-box;
 }
 
+[x-cloak] {
+	display: none !important;
+}
+
+html:not(.alpine-ready) [x-show] {
+	display: none !important;
+}
+
+html:not(.alpine-ready) [x-text] {
+	visibility: hidden;
+}
+
 :root {
 	--bg: #f4f6fb;
 	--surface: #ffffff;

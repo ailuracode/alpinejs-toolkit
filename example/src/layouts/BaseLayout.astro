@@ -23,13 +23,23 @@ const {
 		<meta name="generator" content={Astro.generator} />
 		<title>{title}</title>
 		<style is:inline>
+			[x-cloak] {
+				display: none !important;
+			}
+			/* Hide Alpine-bound UI until start() so x-show/x-text do not flash */
+			html:not(.alpine-ready) [x-show] {
+				display: none !important;
+			}
+			html:not(.alpine-ready) [x-text] {
+				visibility: hidden;
+			}
 			[data-theme="dark"] body {
 				background: #0b1120;
 				color: #f8fafc;
 			}
 		</style>
 	</head>
-	<body>
+	<body x-data>
 		<div
 			class="scroll-progress"
 			:style="`width: ${$store.scroll.progress}%`"
@@ -88,10 +98,14 @@ const {
 			↑
 		</button>
 
-		<style>
-			[x-cloak] {
-				display: none !important;
-			}
-		</style>
+		<script>
+			import Alpine from "alpinejs";
+			import register from "../entrypoint";
+
+			register(Alpine);
+			window.Alpine = Alpine;
+			Alpine.start();
+			document.documentElement.classList.add("alpine-ready");
+		</script>
 	</body>
 </html>
