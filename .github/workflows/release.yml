@@ -70,13 +70,12 @@ jobs:
             git remote set-url origin "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
             git push origin "HEAD:${GITHUB_REF_NAME}"
             echo "Version Packages commit pushed to ${GITHUB_REF_NAME}."
-            exit 0
           fi
 
           case "${GITHUB_REF_NAME}" in
             main|master) ;;
             *)
-              echo "No pending changesets on ${GITHUB_REF_NAME}. Skipping publish."
+              echo "Publishing runs only on main/master. Skipping."
               exit 0
               ;;
           esac
