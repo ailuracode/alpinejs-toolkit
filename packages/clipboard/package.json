@@ -1,6 +1,6 @@
 {
   "name": "@ailuracode/alpine-clipboard",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Alpine.js clipboard copy magic",
   "type": "module",
   "license": "MIT",

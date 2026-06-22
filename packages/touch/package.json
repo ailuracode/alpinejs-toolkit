@@ -1,6 +1,6 @@
 {
   "name": "@ailuracode/alpine-touch",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Alpine.js touch and pointer capability magic",
   "type": "module",
   "license": "MIT",

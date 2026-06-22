@@ -1,6 +1,6 @@
 {
   "name": "@ailuracode/alpine-scroll",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Alpine.js scroll position and body lock store",
   "type": "module",
   "license": "MIT",
