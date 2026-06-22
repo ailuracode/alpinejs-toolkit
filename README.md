@@ -17,7 +17,7 @@ Alpine.js plugin monorepo by **ailuracode**. Independent npm packages for common
 | [`@ailuracode/alpine-platform`](./packages/platform/README.md) | Magic | Client OS and platform detection |
 | [`@ailuracode/alpine-notify`](./packages/notify/README.md) | Magic | Web Notifications API |
 | [`@ailuracode/alpine-geo`](./packages/geo/README.md) | Store | Browser geolocation state and tracking |
-| [`@ailuracode/alpine-share`](./packages/share/README.md) | Store + Magic | Web Share API wrapper |
+| [`@ailuracode/alpine-share`](./packages/share/README.md) | Magic | Web Share API wrapper |
 
 ## Quick start
 

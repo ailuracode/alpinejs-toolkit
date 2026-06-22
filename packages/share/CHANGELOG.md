@@ -4,10 +4,10 @@
 
 ### Minor Changes
 
-- 1268584: Add `@ailuracode/alpine-share` — Web Share API wrapper with `$store.share` and callable `$share` magic.
+- 1268584: Add `@ailuracode/alpine-share` — Web Share API wrapper with callable `$share` magic.
 
 ## 0.1.0
 
 ### Minor Changes
 
-- 6b74e56: Add `@ailuracode/alpine-share` — Web Share API wrapper with `$store.share` and `$share` magic.
+- 6b74e56: Add `@ailuracode/alpine-share` — Web Share API wrapper with callable `$share` magic.

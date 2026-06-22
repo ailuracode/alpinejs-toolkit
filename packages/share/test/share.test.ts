@@ -1,14 +1,11 @@
 import type AlpineType from "alpinejs";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { startAlpine } from "../../../test/helpers.js";
 import { createMagicHarness } from "../../../test/mock-alpine.js";
 import sharePlugin, {
   canShareData,
   createShareMagic,
-  createShareStore,
   isShareSupported,
   type ShareMagic,
-  type ShareStore,
   shareData,
 } from "../src/index.js";
 
@@ -115,17 +112,15 @@ describe("@ailuracode/alpine-share", () => {
   });
 
   describe("plugin registration", () => {
-    it("registers distinct store and callable magic APIs", () => {
+    it("registers only the $share magic", () => {
       installSecureContext();
       installShareApi();
 
-      let stored: ShareStore | undefined;
+      const store = vi.fn();
       let magicApi: ShareMagic | undefined;
 
       const Alpine = {
-        store(_name: string, value: ShareStore) {
-          stored = value;
-        },
+        store,
         magic(_name: string, factory: () => ShareMagic) {
           magicApi = factory();
         },
@@ -133,27 +128,13 @@ describe("@ailuracode/alpine-share", () => {
 
       sharePlugin(Alpine as unknown as AlpineType.Alpine);
 
-      expect(stored).not.toBe(magicApi);
-      expect(stored?.isSupported()).toBe(true);
-      expect(typeof stored?.share).toBe("function");
+      expect(store).not.toHaveBeenCalled();
       expect(typeof magicApi).toBe("function");
       expect(magicApi?.isSupported()).toBe(true);
       expect(typeof magicApi?.canShare).toBe("function");
     });
 
-    it("registers $store.share in Alpine", () => {
-      installSecureContext();
-      installShareApi();
-
-      const Alpine = startAlpine(sharePlugin);
-      const store = Alpine.store("share") as ShareStore;
-
-      expect(store.isSupported()).toBe(true);
-      expect(typeof store.share).toBe("function");
-      expect(typeof store.canShare).toBe("function");
-    });
-
-    it("registers callable $share magic in Alpine", async () => {
+    it("registers callable $share magic", async () => {
       installSecureContext();
       const navigatorShare = installShareApi();
       const data = { title: "Hello", url: "https://example.com" };
@@ -166,14 +147,9 @@ describe("@ailuracode/alpine-share", () => {
       expect(navigatorShare).toHaveBeenCalledWith(data);
     });
 
-    it("createShareStore() and createShareMagic() expose the public API", () => {
-      const store = createShareStore();
+    it("createShareMagic() exposes the public API", () => {
       const magic = createShareMagic();
 
-      expect(store.share).toBe(shareData);
-      expect(store.canShare).toBe(canShareData);
-      expect(store.isSupported).toBe(isShareSupported);
-      expect(magic).not.toBe(store.share);
       expect(magic.isSupported).toBe(isShareSupported);
       expect(magic.canShare).toBe(canShareData);
     });

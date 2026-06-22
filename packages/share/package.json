@@ -1,7 +1,7 @@
 {
   "name": "@ailuracode/alpine-share",
   "version": "0.2.0",
-  "description": "Alpine.js Web Share API store and magic",
+  "description": "Alpine.js Web Share API magic",
   "type": "module",
   "license": "MIT",
   "author": "ailuracode",

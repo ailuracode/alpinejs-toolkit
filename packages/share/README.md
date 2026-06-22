@@ -1,6 +1,6 @@
 # @ailuracode/alpine-share
 
-Web Share API wrapper for Alpine.js.
+Web Share API magic for Alpine.js.
 
 **[Full documentation →](../../docs/share.md)**
 
@@ -33,11 +33,10 @@ Alpine.start();
 
 | | |
 |-|-|
-| **Store** | `$store.share` |
 | **Magic** | `$share(data)` |
-| **Methods** | Store: `share(data)`, `isSupported()`, `canShare(data?)` — Magic: `await $share(data)`, `$share.isSupported()`, `$share.canShare(data?)` |
+| **Helpers** | `$share.isSupported()`, `$share.canShare(data?)` |
 
-The magic is callable like `$clipboard`. Use `$store.share` when you prefer an object API.
+Callable like `$clipboard`.
 
 ## License
 

@@ -19,7 +19,7 @@ Alpine.js plugin monorepo by **ailuracode**. Twelve independent npm packages und
 | `@ailuracode/alpine-platform` | Magic | `$platform` |
 | `@ailuracode/alpine-notify` | Magic | `$notify` |
 | `@ailuracode/alpine-geo` | Store | `$store.geo` |
-| `@ailuracode/alpine-share` | Store + Magic | `$store.share` / `$share` |
+| `@ailuracode/alpine-share` | Magic | `$share` |
 
 ## Repository layout
 

@@ -2,7 +2,7 @@
 
 Package: `@ailuracode/alpine-share`
 
-Lightweight wrapper around the [Web Share API](https://developer.mozilla.org/en-US/docs/Web/API/Navigator/share). Registers `$store.share` and callable magic `$share`.
+Lightweight wrapper around the [Web Share API](https://developer.mozilla.org/en-US/docs/Web/API/Navigator/share). Registers callable magic `$share`.
 
 ## Install
 
@@ -26,25 +26,15 @@ TypeScript consumers can add:
 /// <reference types="@ailuracode/alpine-share/global" />
 ```
 
-## API
-
-### Store — `$store.share`
-
-| Method | Returns | Description |
-|--------|---------|-------------|
-| `share(data)` | `Promise<boolean>` | Opens the native share sheet. Resolves `true` on success, `false` on cancel, denial, or unsupported payloads. Never throws. |
-| `isSupported()` | `boolean` | `true` when `navigator.share` is available in a secure context. |
-| `canShare(data?)` | `boolean` | Uses `navigator.canShare` when present; otherwise checks for shareable fields. Without `data`, returns whether sharing is generally available. |
-
-### Magic — `$share`
+## Magic API
 
 Callable like `$clipboard`:
 
 | Usage | Returns | Description |
 |-------|---------|-------------|
-| `await $share(data)` | `Promise<boolean>` | Same as `$store.share.share(data)`. |
-| `$share.isSupported()` | `boolean` | Same as `$store.share.isSupported()`. |
-| `$share.canShare(data?)` | `boolean` | Same as `$store.share.canShare(data?)`. |
+| `await $share(data)` | `Promise<boolean>` | Opens the native share sheet. Resolves `true` on success, `false` on cancel, denial, or unsupported payloads. Never throws. |
+| `$share.isSupported()` | `boolean` | `true` when `navigator.share` is available in a secure context. |
+| `$share.canShare(data?)` | `boolean` | Uses `navigator.canShare` when present; otherwise checks for shareable fields. Without `data`, returns whether sharing is generally available. |
 
 `data` follows the platform `ShareData` shape (`title`, `text`, `url`, `files`).
 
@@ -68,8 +58,8 @@ Callable like `$clipboard`:
 
 ```html
 <button
-  x-show="$store.share.canShare({ title: 'News', url: articleUrl })"
-  @click="$store.share.share({ title: 'News', url: articleUrl })"
+  x-show="$share.canShare({ title: 'News', url: articleUrl })"
+  @click="await $share({ title: 'News', url: articleUrl })"
 >
   Share article
 </button>
@@ -106,4 +96,4 @@ Callable like `$clipboard`:
 
 ## Security
 
-`navigator.share` must be triggered by a user gesture (click). Call `share()` from event handlers, not on page load.
+`navigator.share` must be triggered by a user gesture (click). Call `$share()` from event handlers, not on page load.
