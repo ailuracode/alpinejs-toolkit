@@ -1,0 +1,56 @@
+{
+  "name": "@ailuracode/alpine-fullscreen",
+  "version": "1.0.0",
+  "description": "Alpine.js Fullscreen API magic",
+  "type": "module",
+  "license": "MIT",
+  "author": "ailuracode",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ailuracode/alpine.git",
+    "directory": "packages/fullscreen"
+  },
+  "bugs": {
+    "url": "https://github.com/ailuracode/alpine/issues"
+  },
+  "homepage": "https://github.com/ailuracode/alpine/tree/master/packages/fullscreen#readme",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./global": {
+      "types": "./dist/global.d.ts"
+    }
+  },
+  "types": "./dist/global.d.ts",
+  "peerDependencies": {
+    "alpinejs": "^3.0.0",
+    "@types/alpinejs": "^3.13.11"
+  },
+  "peerDependenciesMeta": {
+    "@types/alpinejs": {
+      "optional": true
+    }
+  },
+  "scripts": {
+    "build": "tsup src/index.ts --format esm --dts --clean --sourcemap --out-dir dist && cp src/global.d.ts dist/global.d.ts",
+    "prepublishOnly": "pnpm run build",
+    "test": "vitest run --config ../../vitest.config.js test"
+  },
+  "keywords": [
+    "alpinejs",
+    "alpine",
+    "plugin",
+    "fullscreen",
+    "fullscreen-api",
+    "media"
+  ]
+}

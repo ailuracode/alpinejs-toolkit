@@ -1,6 +1,6 @@
 # @ailuracode/alpine
 
-Alpine.js plugin monorepo by **ailuracode**. Independent npm packages for common UI utilities — theme, viewport, connectivity, clipboard, scroll, touch detection, and web notifications.
+Alpine.js plugin monorepo by **ailuracode**. Independent npm packages for common UI utilities — theme, viewport, connectivity, clipboard, scroll, touch detection, web notifications, and fullscreen.
 
 ## Packages
 
@@ -13,6 +13,7 @@ Alpine.js plugin monorepo by **ailuracode**. Independent npm packages for common
 | [`@ailuracode/alpine-scroll`](./packages/scroll/README.md) | Store | Scroll position tracking and body lock |
 | [`@ailuracode/alpine-touch`](./packages/touch/README.md) | Magic | Touch and pointer capabilities |
 | [`@ailuracode/alpine-notify`](./packages/notify/README.md) | Magic | Web Notifications API |
+| [`@ailuracode/alpine-fullscreen`](./packages/fullscreen/README.md) | Magic | Fullscreen API |
 
 ## Quick start
 
@@ -55,6 +56,7 @@ pnpm run dev:example
 - [Scroll](./docs/scroll.md)
 - [Touch](./docs/touch.md)
 - [Notify](./docs/notify.md)
+- [Fullscreen](./docs/fullscreen.md)
 - [Contributing](./docs/contributing.md)
 - [AGENTS.md](./AGENTS.md) — guide for AI agents and maintainers
 

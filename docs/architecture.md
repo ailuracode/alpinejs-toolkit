@@ -54,6 +54,7 @@ Use a **magic** when you need:
 | `@ailuracode/alpine-touch` | `$touch` | Pointer / touch capabilities |
 | `@ailuracode/alpine-clipboard` | `$clipboard` | Async copy function |
 | `@ailuracode/alpine-notify` | `$notify` | Web Notifications API |
+| `@ailuracode/alpine-fullscreen` | `$fullscreen` | Fullscreen API |
 
 ### Template usage
 
@@ -63,6 +64,7 @@ Use a **magic** when you need:
 <button @click="await $clipboard(url)">Copy URL</button>
 
 <button @click="$notify.sendIfPermitted('Saved')">Notify</button>
+<button @click="$fullscreen.toggle($el)">Fullscreen</button>
 ```
 
 ### Naming convention
