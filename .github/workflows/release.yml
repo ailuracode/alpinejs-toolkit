@@ -42,6 +42,11 @@ jobs:
             echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" >> "$HOME/.npmrc"
           fi
 
+          is_release_branch=false
+          case "${GITHUB_REF_NAME}" in
+            main|master) is_release_branch=true ;;
+          esac
+
           shopt -s nullglob
           pending=(.changeset/*.md)
           has_changesets=false
@@ -54,14 +59,6 @@ jobs:
           done
 
           if [ "$has_changesets" = true ]; then
-            case "${GITHUB_REF_NAME}" in
-              main|master) ;;
-              *)
-                echo "Pending changesets on ${GITHUB_REF_NAME}. Versioning runs only on main/master."
-                exit 0
-                ;;
-            esac
-
             pnpm run version
             git config user.name "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -70,15 +67,17 @@ jobs:
             git remote set-url origin "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
             git push origin "HEAD:${GITHUB_REF_NAME}"
             echo "Version Packages commit pushed to ${GITHUB_REF_NAME}."
+
+            if [ "$is_release_branch" = false ]; then
+              echo "Versioning completed on the PR branch. Publish runs after merge to master."
+              exit 0
+            fi
           fi
 
-          case "${GITHUB_REF_NAME}" in
-            main|master) ;;
-            *)
-              echo "Publishing runs only on main/master. Skipping."
-              exit 0
-              ;;
-          esac
+          if [ "$is_release_branch" = false ]; then
+            echo "Publishing runs only on main/master. Skipping."
+            exit 0
+          fi
 
           if [ -z "${NPM_TOKEN:-}" ]; then
             echo "::error::NPM_TOKEN is not configured. Add an npm publish token in repository secrets before releasing."

@@ -82,7 +82,7 @@ pnpm run version     # bump versions + changelogs
 pnpm run release     # test + publish to npm
 ```
 
-GitHub Actions applies pending changesets on the same branch on push, then publishes to npm when `master` has no pending changesets. Set the `NPM_TOKEN` repository secret for automated npm publish.
+GitHub Actions versions packages on the **same PR branch** that contains pending changesets, then publishes to npm on `master` after merge when no changesets remain. Set the `NPM_TOKEN` repository secret for automated npm publish.
 
 ## Publishing (manual)
 

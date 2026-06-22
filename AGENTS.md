@@ -113,7 +113,7 @@ pnpm run format     # format all files
 1. After a user-facing change, run `pnpm run changeset`.
 2. Select affected package(s) and semver bump (`patch`, `minor`, `major`).
 3. Write a short changelog summary (English).
-4. On merge to `master`, the **Release** workflow applies pending changesets on the same branch, then publishes to npm.
+4. On merge to `master`, the **Release** workflow publishes to npm when no pending changesets remain (version bumps land on the PR branch before merge).
 
 Packages are versioned **independently**. One changeset can touch multiple packages.
 
