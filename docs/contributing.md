@@ -68,13 +68,49 @@ Plugins must stay CSS-framework agnostic. DOM styling belongs in the consumer ap
 3. Add docs in `docs/my-feature.md` and link from root README
 4. Ensure `npm test` passes
 
-## Publishing
+## Versioning
+
+This repo uses [Changesets](https://github.com/changesets/changesets) for independent package versioning.
+
+### Add a changeset
+
+After a user-facing change:
 
 ```bash
-npm publish -w @ailuracode/alpine-theme
+npm run changeset
 ```
 
-Bump version in the package's `package.json` before publishing. Packages are versioned independently.
+Select package(s), semver bump (`patch` / `minor` / `major`), and write a short summary in English.
+
+### Automated release (GitHub)
+
+1. Merge changesets to `master`.
+2. The **Release** workflow opens a **Version Packages** PR (bumps versions + generates CHANGELOGs).
+3. Merge that PR → changed packages publish to npm.
+
+Requires a repository secret:
+
+| Secret | Description |
+|--------|-------------|
+| `NPM_TOKEN` | npm granular token with publish access to `@ailuracode` |
+
+### Manual release
+
+```bash
+npm run version   # apply pending changesets
+npm run release   # test + publish to npm
+```
+
+Do not bump `version` in `package.json` manually for releases.
+
+## Publishing (manual)
+
+```bash
+npm login
+npm run release
+```
+
+Requires npm 2FA or a granular access token with publish permissions.
 
 ## License
 

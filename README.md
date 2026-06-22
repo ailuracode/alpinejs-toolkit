@@ -45,6 +45,7 @@ Install only the packages you need. Each one is a separate dependency.
 - [Scroll](./docs/scroll.md)
 - [Touch](./docs/touch.md)
 - [Contributing](./docs/contributing.md)
+- [AGENTS.md](./AGENTS.md) — guide for AI agents and maintainers
 
 ## Development
 
@@ -52,15 +53,28 @@ Install only the packages you need. Each one is a separate dependency.
 npm install
 npm test              # all packages
 npm run test:watch    # watch mode
-npm run test:packages # run tests in each workspace
+npm run changeset     # after user-facing changes
 ```
 
-## Publishing
+## Versioning & release
 
-Requires an npm account with access to the `@ailuracode` scope:
+Uses [Changesets](https://github.com/changesets/changesets) for independent package versions.
 
 ```bash
-npm publish -w @ailuracode/alpine-theme
+npm run changeset   # create a changeset
+npm run version     # bump versions + changelogs
+npm run release     # test + publish to npm
+```
+
+GitHub Actions opens a **Version Packages** PR on merge to `master`, then publishes when merged. Set the `NPM_TOKEN` repository secret for automated npm publish.
+
+## Publishing (manual)
+
+Requires npm 2FA and access to `@ailuracode`:
+
+```bash
+npm login
+npm run release
 ```
 
 Each package under `packages/*` has its own version, tests, and README.

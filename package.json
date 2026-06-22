@@ -10,9 +10,13 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:packages": "npm run test --workspaces --if-present",
-    "publish:packages": "npm publish --workspaces --access public"
+    "changeset": "changeset",
+    "version": "changeset version",
+    "release": "npm test && changeset publish",
+    "publish:packages": "npm run release"
   },
   "devDependencies": {
+    "@changesets/cli": "^2.29.4",
     "alpinejs": "^3.14.9",
     "happy-dom": "^17.4.4",
     "vitest": "^3.2.4"
