@@ -12,6 +12,7 @@ Alpine.js plugin monorepo by **ailuracode**. Independent npm packages for common
 | [`@ailuracode/alpine-visibility`](./packages/visibility/README.md) | Magic | Tab visibility state |
 | [`@ailuracode/alpine-battery`](./packages/battery/README.md) | Magic | Device battery level and charging state |
 | [`@ailuracode/alpine-clipboard`](./packages/clipboard/README.md) | Magic | Copy text to clipboard |
+| [`@ailuracode/alpine-download`](./packages/download/README.md) | Magic | Programmatic file downloads |
 | [`@ailuracode/alpine-scroll`](./packages/scroll/README.md) | Store | Scroll position tracking and body lock |
 | [`@ailuracode/alpine-touch`](./packages/touch/README.md) | Magic | Touch and pointer capabilities |
 | [`@ailuracode/alpine-platform`](./packages/platform/README.md) | Magic | Client OS and platform detection |
@@ -71,6 +72,7 @@ See [AGENTS.md](./AGENTS.md) for the full checklist.
 - [Visibility](./docs/visibility.md)
 - [Battery](./docs/battery.md)
 - [Clipboard](./docs/clipboard.md)
+- [Download](./docs/download.md)
 - [Scroll](./docs/scroll.md)
 - [Touch](./docs/touch.md)
 - [Platform](./docs/platform.md)

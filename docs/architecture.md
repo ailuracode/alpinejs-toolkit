@@ -58,6 +58,7 @@ Use a **magic** when you need:
 | `@ailuracode/alpine-touch` | `$touch` | Pointer / touch capabilities |
 | `@ailuracode/alpine-platform` | `$platform` | Client OS and platform detection |
 | `@ailuracode/alpine-clipboard` | `$clipboard` | Async copy function |
+| `@ailuracode/alpine-download` | `$download` | Programmatic file downloads |
 | `@ailuracode/alpine-share` | `$share` | Web Share API — `await $share(data)`, `$share.isSupported()`, `$share.canShare()` |
 | `@ailuracode/alpine-notify` | `$notify` | Web Notifications API |
 

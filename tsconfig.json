@@ -14,6 +14,7 @@
     "paths": {
       "@ailuracode/alpine-battery": ["packages/battery/src/index.ts"],
       "@ailuracode/alpine-clipboard": ["packages/clipboard/src/index.ts"],
+      "@ailuracode/alpine-download": ["packages/download/src/index.ts"],
       "@ailuracode/alpine-network": ["packages/network/src/index.ts"],
       "@ailuracode/alpine-notify": ["packages/notify/src/index.ts"],
       "@ailuracode/alpine-platform": ["packages/platform/src/index.ts"],

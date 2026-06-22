@@ -19,6 +19,7 @@
   "dependencies": {
     "@ailuracode/alpine-battery": "workspace:*",
     "@ailuracode/alpine-clipboard": "workspace:*",
+    "@ailuracode/alpine-download": "workspace:*",
     "@ailuracode/alpine-geo": "workspace:*",
     "@ailuracode/alpine-network": "workspace:*",
     "@ailuracode/alpine-notify": "workspace:*",
