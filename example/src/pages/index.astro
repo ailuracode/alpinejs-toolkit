@@ -101,6 +101,28 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 		</section>
 
 		<section class="card">
+			<h2>Platform <code>$platform</code></h2>
+			<p>
+				Detected OS: <strong x-text="$platform.name"></strong>
+			</p>
+			<div class="badges">
+				<span class="badge" x-bind:class="{ on: $platform.isMac }">macOS</span>
+				<span class="badge" x-bind:class="{ on: $platform.isWindows }">Windows</span>
+				<span class="badge" x-bind:class="{ on: $platform.isLinux }">Linux</span>
+				<span class="badge" x-bind:class="{ on: $platform.isIos }">iOS</span>
+				<span class="badge" x-bind:class="{ on: $platform.isAndroid }">Android</span>
+				<span class="badge" x-bind:class="{ on: $platform.isChromeos }">ChromeOS</span>
+			</div>
+			<p class="hint" x-show="$platform.isMac" x-cloak>Use <kbd>⌘</kbd> + <kbd>C</kbd> to copy.</p>
+			<p class="hint" x-show="$platform.isWindows || $platform.isLinux" x-cloak>
+				Use <kbd>Ctrl</kbd> + <kbd>C</kbd> to copy.
+			</p>
+			<p class="hint" x-show="$platform.isIos || $platform.isAndroid" x-cloak>
+				Touch-optimized shortcuts may differ from desktop.
+			</p>
+		</section>
+
+		<section class="card">
 			<h2>Notify <code>$notify</code></h2>
 			<ul class="list">
 				<li>Supported: <strong x-text="$notify.isSupported()"></strong></li>

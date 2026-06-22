@@ -201,6 +201,16 @@ button:disabled {
 	color: var(--warn);
 }
 
+kbd {
+	display: inline-block;
+	padding: 0.1rem 0.35rem;
+	border: 1px solid var(--border);
+	border-radius: 0.25rem;
+	background: var(--bg);
+	font-family: inherit;
+	font-size: 0.85em;
+}
+
 .list {
 	margin: 0;
 	padding-left: 1.25rem;
