@@ -66,6 +66,9 @@ importers:
       '@ailuracode/alpine-platform':
         specifier: workspace:*
         version: link:../packages/platform
+      '@ailuracode/alpine-query':
+        specifier: workspace:*
+        version: link:../packages/query
       '@ailuracode/alpine-screen':
         specifier: workspace:*
         version: link:../packages/screen
@@ -161,6 +164,15 @@ importers:
         version: 3.15.12
 
   packages/platform:
+    dependencies:
+      '@types/alpinejs':
+        specifier: ^3.13.11
+        version: 3.13.11
+      alpinejs:
+        specifier: ^3.0.0
+        version: 3.15.12
+
+  packages/query:
     dependencies:
       '@types/alpinejs':
         specifier: ^3.13.11

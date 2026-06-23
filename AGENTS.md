@@ -22,6 +22,7 @@ Alpine.js plugin monorepo by **ailuracode**. Twelve independent npm packages und
 | `@ailuracode/alpine-geo` | Store | `$store.geo` |
 | `@ailuracode/alpine-share` | Magic | `$share` |
 | `@ailuracode/alpine-attention` | Magic | `$wakelock`, `$idle` |
+| `@ailuracode/alpine-query` | Store | `$store.query` |
 
 ## Repository layout
 

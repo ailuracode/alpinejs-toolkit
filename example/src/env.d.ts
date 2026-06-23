@@ -13,6 +13,7 @@
 /// <reference path="../../packages/geo/src/global.d.ts" />
 /// <reference path="../../packages/touch/src/global.d.ts" />
 /// <reference path="../../packages/platform/src/global.d.ts" />
+/// <reference path="../../packages/query/src/global.d.ts" />
 /// <reference path="../../packages/notify/src/global.d.ts" />
 
 interface Window {

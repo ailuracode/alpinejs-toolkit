@@ -25,6 +25,7 @@
     "@ailuracode/alpine-network": "workspace:*",
     "@ailuracode/alpine-notify": "workspace:*",
     "@ailuracode/alpine-platform": "workspace:*",
+    "@ailuracode/alpine-query": "workspace:*",
     "@ailuracode/alpine-screen": "workspace:*",
     "@ailuracode/alpine-scroll": "workspace:*",
     "@ailuracode/alpine-share": "workspace:*",

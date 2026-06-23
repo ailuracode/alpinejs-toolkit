@@ -19,6 +19,7 @@
       "@ailuracode/alpine-network": ["packages/network/src/index.ts"],
       "@ailuracode/alpine-notify": ["packages/notify/src/index.ts"],
       "@ailuracode/alpine-platform": ["packages/platform/src/index.ts"],
+      "@ailuracode/alpine-query": ["packages/query/src/index.ts"],
       "@ailuracode/alpine-screen": ["packages/screen/src/index.ts"],
       "@ailuracode/alpine-scroll": ["packages/scroll/src/index.ts"],
       "@ailuracode/alpine-theme": ["packages/theme/src/index.ts"],

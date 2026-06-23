@@ -288,6 +288,47 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 		</section>
 
 		<section class="card">
+			<h2>Query <code>$store.query</code></h2>
+			<div
+				x-data="{
+					...$store.query.observe(['demo-todos'], async () => {
+						await new Promise((resolve) => setTimeout(resolve, 600));
+						return [
+							{ id: 1, title: 'Cache responses' },
+							{ id: 2, title: 'Invalidate after mutations' },
+							{ id: 3, title: 'Refetch when stale' },
+						];
+					}, { staleTime: 10_000 }),
+					addTodo() {
+						this.createTodo.mutate(`Task ${Date.now()}`);
+					},
+					createTodo: $store.query.mutate({
+						mutationFn: async (title) => {
+							await new Promise((resolve) => setTimeout(resolve, 400));
+							return { id: Date.now(), title };
+						},
+						onSuccess: (todo) => {
+							$store.query.setData(['demo-todos'], (current = []) => [...current, todo]);
+						},
+					}),
+				}"
+			>
+				<p x-show="isLoading" class="hint">Loading todos…</p>
+				<p x-show="isError" class="hint hint--error" x-text="error?.message"></p>
+				<ul class="list" x-show="isSuccess">
+					<template x-for="todo in data" :key="todo.id">
+						<li x-text="todo.title"></li>
+					</template>
+				</ul>
+				<div class="btn-group">
+					<button type="button" @click="refetch()" x-bind:disabled="isFetching">Refresh</button>
+					<button type="button" @click="addTodo()" x-bind:disabled="createTodo.isPending">Add todo</button>
+					<button type="button" @click="$store.query.invalidate(['demo-todos'])">Invalidate</button>
+				</div>
+			</div>
+		</section>
+
+		<section class="card">
 			<h2>Touch <code>$touch</code></h2>
 			<ul class="list">
 				<li>Touch: <strong x-text="$touch.isTouch"></strong></li>
