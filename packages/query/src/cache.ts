@@ -245,7 +245,10 @@ export class QueryCache {
     options?: QueryOptions<TData>
   ): QueryEntry<TData> {
     const keyHash = hashKey(key);
-    const resolvedOptions = resolveQueryOptions(options, this.config.defaultQueryOptions);
+    const resolvedOptions = resolveQueryOptions<TData>(
+      options,
+      this.config.defaultQueryOptions as Partial<QueryOptions<TData>>
+    );
 
     const existing = this.entries.get(keyHash) as QueryEntry<TData> | undefined;
     if (existing) {
