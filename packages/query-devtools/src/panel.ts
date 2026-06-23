@@ -1,4 +1,4 @@
-import type { QueryKey, QueryStore } from "@ailuracode/alpine-query";
+import type { QueryStore } from "@ailuracode/alpine-query";
 import { type AdapterBadgeTheme, createAdapterBadge } from "./adapter-badge.js";
 import { formatDuration } from "./format-duration.js";
 import { formatKeyJson, formatQueryKeyLabel } from "./format-key.js";
@@ -1033,33 +1033,23 @@ export function mountQueryDevtools(options: QueryDevtoolsMountOptions): QueryDev
     return entity === "queries" ? "No queries cached yet." : "No mutations yet.";
   };
 
-  const renderQueries = (snapshot: QueryDevtoolsSnapshotView): void => {
-    const queries = sortQueries(
-      snapshot.queries.filter(
-        (entry) =>
-          matchesAdapter(entry.storeId) &&
-          matchesFilter(`${entry.adapterName} ${formatKeyJson(entry.key)}`, search)
-      ),
-      querySort
-    );
-
-    if (queries.length === 0) {
-      list.append(createEmptyState(emptyListMessage("queries")));
+  const applyFollowLatestQuery = (queries: QueryDevtoolsEntryView[]): void => {
+    if (!followLatest) {
       return;
     }
 
-    list.append(createListHeader("Queries", queries.length));
-
-    if (followLatest) {
-      const latest = pickLatestQuery(queries);
-      if (latest) {
-        selectedQueryEntryId = latest.entryId;
-        if (isCompactLayout()) {
-          mobileStackView = "detail";
-        }
-      }
+    const latest = pickLatestQuery(queries);
+    if (!latest) {
+      return;
     }
 
+    selectedQueryEntryId = latest.entryId;
+    if (isCompactLayout()) {
+      mobileStackView = "detail";
+    }
+  };
+
+  const renderQueryListItems = (queries: QueryDevtoolsEntryView[]): void => {
     for (const entry of queries) {
       list.append(
         createQueryListItem(
@@ -1078,55 +1068,49 @@ export function mountQueryDevtools(options: QueryDevtoolsMountOptions): QueryDev
         )
       );
     }
+  };
 
-    scrollSelectedListItemIntoView(list);
-
+  const renderSelectedQueryDetail = (queries: QueryDevtoolsEntryView[]): void => {
     if (isCompactLayout()) {
-      if (mobileStackView === "detail") {
-        const selected = queries.find((entry) => entry.entryId === selectedQueryEntryId);
-        if (selected) {
-          renderQueryDetail(selected);
-        } else {
-          mobileStackView = "list";
-        }
+      if (mobileStackView !== "detail") {
+        return;
+      }
+
+      const selected = queries.find((entry) => entry.entryId === selectedQueryEntryId);
+      if (selected) {
+        renderQueryDetail(selected);
+      } else {
+        mobileStackView = "list";
       }
       return;
     }
 
     const selected = queries.find((entry) => entry.entryId === selectedQueryEntryId) ?? queries[0];
-    if (selected) {
-      selectedQueryEntryId = selected.entryId;
-      renderQueryDetail(selected);
-    }
-  };
-
-  const renderMutations = (snapshot: QueryDevtoolsSnapshotView): void => {
-    const mutations = sortMutations(
-      snapshot.mutations.filter(
-        (entry) =>
-          matchesAdapter(entry.storeId) &&
-          matchesFilter(`${entry.adapterName} ${entry.id} ${formatJson(entry.variables)}`, search)
-      ),
-      mutationSort
-    );
-
-    if (mutations.length === 0) {
-      list.append(createEmptyState(emptyListMessage("mutations")));
+    if (!selected) {
       return;
     }
 
-    list.append(createListHeader("Mutations", mutations.length));
+    selectedQueryEntryId = selected.entryId;
+    renderQueryDetail(selected);
+  };
 
-    if (followLatest) {
-      const latest = pickLatestMutation(mutations);
-      if (latest) {
-        selectedMutationEntryId = latest.entryId;
-        if (isCompactLayout()) {
-          mobileStackView = "detail";
-        }
-      }
+  const applyFollowLatestMutation = (mutations: MutationDevtoolsEntryView[]): void => {
+    if (!followLatest) {
+      return;
     }
 
+    const latest = pickLatestMutation(mutations);
+    if (!latest) {
+      return;
+    }
+
+    selectedMutationEntryId = latest.entryId;
+    if (isCompactLayout()) {
+      mobileStackView = "detail";
+    }
+  };
+
+  const renderMutationListItems = (mutations: MutationDevtoolsEntryView[]): void => {
     for (const entry of mutations) {
       list.append(
         createMutationListItem(
@@ -1145,27 +1129,75 @@ export function mountQueryDevtools(options: QueryDevtoolsMountOptions): QueryDev
         )
       );
     }
+  };
 
-    scrollSelectedListItemIntoView(list);
-
+  const renderSelectedMutationDetail = (mutations: MutationDevtoolsEntryView[]): void => {
     if (isCompactLayout()) {
-      if (mobileStackView === "detail") {
-        const selected = mutations.find((entry) => entry.entryId === selectedMutationEntryId);
-        if (selected) {
-          renderMutationDetail(selected);
-        } else {
-          mobileStackView = "list";
-        }
+      if (mobileStackView !== "detail") {
+        return;
+      }
+
+      const selected = mutations.find((entry) => entry.entryId === selectedMutationEntryId);
+      if (selected) {
+        renderMutationDetail(selected);
+      } else {
+        mobileStackView = "list";
       }
       return;
     }
 
     const selected =
       mutations.find((entry) => entry.entryId === selectedMutationEntryId) ?? mutations[0];
-    if (selected) {
-      selectedMutationEntryId = selected.entryId;
-      renderMutationDetail(selected);
+    if (!selected) {
+      return;
     }
+
+    selectedMutationEntryId = selected.entryId;
+    renderMutationDetail(selected);
+  };
+
+  const renderQueries = (snapshot: QueryDevtoolsSnapshotView): void => {
+    const queries = sortQueries(
+      snapshot.queries.filter(
+        (entry) =>
+          matchesAdapter(entry.storeId) &&
+          matchesFilter(`${entry.adapterName} ${formatKeyJson(entry.key)}`, search)
+      ),
+      querySort
+    );
+
+    if (queries.length === 0) {
+      list.append(createEmptyState(emptyListMessage("queries")));
+      return;
+    }
+
+    list.append(createListHeader("Queries", queries.length));
+    applyFollowLatestQuery(queries);
+    renderQueryListItems(queries);
+    scrollSelectedListItemIntoView(list);
+    renderSelectedQueryDetail(queries);
+  };
+
+  const renderMutations = (snapshot: QueryDevtoolsSnapshotView): void => {
+    const mutations = sortMutations(
+      snapshot.mutations.filter(
+        (entry) =>
+          matchesAdapter(entry.storeId) &&
+          matchesFilter(`${entry.adapterName} ${entry.id} ${formatJson(entry.variables)}`, search)
+      ),
+      mutationSort
+    );
+
+    if (mutations.length === 0) {
+      list.append(createEmptyState(emptyListMessage("mutations")));
+      return;
+    }
+
+    list.append(createListHeader("Mutations", mutations.length));
+    applyFollowLatestMutation(mutations);
+    renderMutationListItems(mutations);
+    scrollSelectedListItemIntoView(list);
+    renderSelectedMutationDetail(mutations);
   };
 
   const syncMobileStackView = (): void => {

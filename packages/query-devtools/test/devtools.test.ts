@@ -296,7 +296,7 @@ describe("@ailuracode/alpine-query-devtools", () => {
 
     store.observe(
       ["broken"],
-      async () => {
+      () => {
         throw new Error("boom");
       },
       { retry: 0 }
@@ -489,8 +489,11 @@ describe("@ailuracode/alpine-query-devtools", () => {
     const sortSelect = panel.querySelector(".aq-devtools-select--sort") as HTMLSelectElement;
     const tabs = panel.querySelector(".aq-devtools-tabs") as HTMLElement;
     const tabButtons = [...tabs.querySelectorAll(".aq-devtools-tab")] as HTMLButtonElement[];
-    const queriesTab = tabButtons.find((button) => button.textContent === "Queries")!;
-    const mutationsTab = tabButtons.find((button) => button.textContent === "Mutations")!;
+    const queriesTab = tabButtons.find((button) => button.textContent === "Queries");
+    const mutationsTab = tabButtons.find((button) => button.textContent === "Mutations");
+    if (!(queriesTab && mutationsTab)) {
+      throw new Error("Missing devtools tabs");
+    }
     const resizeHandle = panel.querySelector(".aq-devtools-resize-handle") as HTMLElement;
 
     applyResponsiveLayout(

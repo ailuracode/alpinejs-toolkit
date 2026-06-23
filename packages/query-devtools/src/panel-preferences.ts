@@ -53,6 +53,22 @@ function isPanelTab(value: unknown): value is PanelTab {
   return value === "queries" || value === "mutations";
 }
 
+function readOptionalBoolean(value: unknown, fallback: boolean): boolean {
+  return typeof value === "boolean" ? value : fallback;
+}
+
+function readOptionalString(value: unknown, fallback: string): string {
+  return typeof value === "string" ? value : fallback;
+}
+
+function normalizeMobilePanelHeight(value: unknown): number | null {
+  if (typeof value === "number" && Number.isFinite(value) && value > 0) {
+    return value;
+  }
+
+  return DEFAULT_PREFERENCES.mobilePanelHeight;
+}
+
 function normalizePreferences(
   value: unknown,
   defaults: PanelPreferencesDefaults = {}
@@ -69,29 +85,18 @@ function normalizePreferences(
     mutationSort: isMutationSort(source.mutationSort)
       ? source.mutationSort
       : DEFAULT_PREFERENCES.mutationSort,
-    search:
-      typeof source.search === "string"
-        ? source.search
-        : (defaults.filter ?? DEFAULT_PREFERENCES.search),
+    search: readOptionalString(source.search, defaults.filter ?? DEFAULT_PREFERENCES.search),
     activeTab: isPanelTab(source.activeTab) ? source.activeTab : DEFAULT_PREFERENCES.activeTab,
-    followLatest:
-      typeof source.followLatest === "boolean"
-        ? source.followLatest
-        : (defaults.followLatest ?? DEFAULT_PREFERENCES.followLatest),
-    mobilePanelHeight:
-      typeof source.mobilePanelHeight === "number" &&
-      Number.isFinite(source.mobilePanelHeight) &&
-      source.mobilePanelHeight > 0
-        ? source.mobilePanelHeight
-        : DEFAULT_PREFERENCES.mobilePanelHeight,
-    isOpen:
-      typeof source.isOpen === "boolean"
-        ? source.isOpen
-        : (defaults.initialOpen ?? DEFAULT_PREFERENCES.isOpen),
-    rememberOpenState:
-      typeof source.rememberOpenState === "boolean"
-        ? source.rememberOpenState
-        : (defaults.rememberOpenState ?? DEFAULT_PREFERENCES.rememberOpenState),
+    followLatest: readOptionalBoolean(
+      source.followLatest,
+      defaults.followLatest ?? DEFAULT_PREFERENCES.followLatest
+    ),
+    mobilePanelHeight: normalizeMobilePanelHeight(source.mobilePanelHeight),
+    isOpen: readOptionalBoolean(source.isOpen, defaults.initialOpen ?? DEFAULT_PREFERENCES.isOpen),
+    rememberOpenState: readOptionalBoolean(
+      source.rememberOpenState,
+      defaults.rememberOpenState ?? DEFAULT_PREFERENCES.rememberOpenState
+    ),
   };
 }
 
