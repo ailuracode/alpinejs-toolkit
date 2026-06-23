@@ -745,7 +745,7 @@ describe("@ailuracode/alpine-query-devtools", () => {
 
     const adapterBadges = [
       ...document.querySelectorAll(".aq-devtools-list .aq-devtools-badge--adapter"),
-    ];
+    ] as HTMLElement[];
     expect(adapterBadges).toHaveLength(2);
     expect(adapterBadges.map((badge) => badge.textContent).sort()).toEqual([
       "Alpine.reactive",
