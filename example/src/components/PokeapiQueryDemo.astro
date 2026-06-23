@@ -1,0 +1,70 @@
+---
+interface Props {
+	dataName: string;
+	title: string;
+	badgeClass?: string;
+}
+
+const { dataName, title, badgeClass = "" } = Astro.props;
+---
+
+<article
+	class="query-adapter"
+	x-data={dataName}
+	x-init="init()"
+	@destroy="destroy()"
+>
+	<h3 class="query-adapter__title">
+		{title}
+		<span
+			class:list={["badge", badgeClass]}
+			x-bind:class="{ on: query?.isSuccess }"
+			x-text="badge"
+		></span>
+	</h3>
+	<p class="hint">
+		<slot name="description" />
+	</p>
+
+	<p x-show="query?.isLoading" class="hint">Loading Pokémon…</p>
+	<p x-show="query?.isFetching && !query?.isLoading" class="hint" x-cloak>Refreshing page…</p>
+	<p x-show="query?.isError" class="hint hint--error" x-text="query?.error?.message"></p>
+
+	<template x-if="query?.isSuccess">
+		<div>
+			<p class="hint">
+				Page <strong x-text="page"></strong>
+				· showing <strong x-text="query.data.results.length"></strong>
+				of <strong x-text="query.data.count"></strong> Pokémon
+			</p>
+			<div class="badges">
+				<template x-for="pokemon in query.data.results" :key="pokemon.name">
+					<span class="badge on" x-text="pokemon.name"></span>
+				</template>
+			</div>
+		</div>
+	</template>
+
+	<div class="btn-group">
+		<button type="button" @click="prevPage()" x-bind:disabled="page <= 1 || query?.isFetching">
+			Previous
+		</button>
+		<button
+			type="button"
+			@click="query?.refetch()"
+			x-bind:disabled="!query || query.isFetching"
+		>
+			Refresh
+		</button>
+		<button
+			type="button"
+			@click="nextPage()"
+			x-bind:disabled="!query?.data?.next || query?.isFetching"
+		>
+			Next
+		</button>
+	</div>
+	<p class="hint" x-show="query?.isSuccess && !query?.isFetching" x-cloak>
+		Go back to a previous page to see the cache serve instantly.
+	</p>
+</article>

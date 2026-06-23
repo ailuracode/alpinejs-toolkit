@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import PokeapiQueryDemo from "../components/PokeapiQueryDemo.astro";
 ---
 
 <BaseLayout>
@@ -332,163 +333,33 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 			<h2>Query <code>$store.query</code></h2>
 			<p class="hint">
 				Three state adapters — pick one for <code>query(&#123; adapter &#125;)</code>, then register
-				<code>$store.query</code>. This demo uses <strong>Nanostores</strong> globally; Alpine.reactive
-				and Zustand run via <code>createQueryClient</code> below. Open the <strong>Query</strong>
-				devtools button (bottom-right) to see the active adapter name.
+				<code>$store.query</code>. Each column runs the same paginated
+				<a href="https://pokeapi.co/" target="_blank" rel="noreferrer">PokeAPI</a> demo.
+				Nanostores uses <code>$store.query</code> globally; Alpine.reactive and Zustand use
+				<code>createQueryClient</code>. Open the <strong>Query</strong> devtools button
+				(bottom-right) to inspect the Nanostores cache.
 			</p>
 
 			<div class="query-adapters">
-				<article class="query-adapter">
-					<h3 class="query-adapter__title">
-						Nanostores
-						<span class="badge on">recommended · $store.query</span>
-					</h3>
-					<p class="hint">
+				<PokeapiQueryDemo dataName="queryNanostoresAdapterDemo" title="Nanostores" badgeClass="on">
+					<Fragment slot="description">
 						<code>query(&#123; adapter: createAlpineNanostoresAdapter &#125;)</code> +
 						<code>NanoStores</code> — paginated fetch from
 						<a href="https://pokeapi.co/" target="_blank" rel="noreferrer">PokeAPI</a>.
-					</p>
-					<div
-						x-data="{
-							page: 1,
-							pageSize: 12,
-							query: null,
-							loadPage() {
-								if (this.query?.destroy) {
-									this.query.destroy();
-								}
-
-								const page = this.page;
-								const pageSize = this.pageSize;
-
-								this.query = $store.query.observe(
-									['pokemon', page],
-									async () => {
-										const response = await fetch(
-											'https://pokeapi.co/api/v2/pokemon?limit=' + pageSize + '&offset=' + ((page - 1) * pageSize)
-										);
-
-										if (!response.ok) {
-											throw new Error('PokeAPI request failed (' + response.status + ')');
-										}
-
-										return response.json();
-									},
-									{ staleTime: 5 * 60_000 }
-								);
-							},
-							prevPage() {
-								if (this.page > 1) {
-									this.page--;
-									this.loadPage();
-								}
-							},
-							nextPage() {
-								if (this.query?.data?.next) {
-									this.page++;
-									this.loadPage();
-								}
-							},
-						}"
-						x-init="loadPage()"
-					>
-						<p x-show="query?.isLoading" class="hint">Loading Pokémon…</p>
-						<p x-show="query?.isFetching && !query?.isLoading" class="hint" x-cloak>Refreshing page…</p>
-						<p x-show="query?.isError" class="hint hint--error" x-text="query?.error?.message"></p>
-
-						<template x-if="query?.isSuccess">
-							<div>
-								<p class="hint">
-									Page <strong x-text="page"></strong>
-									· showing <strong x-text="query.data.results.length"></strong>
-									of <strong x-text="query.data.count"></strong> Pokémon
-								</p>
-								<div class="badges">
-									<template x-for="pokemon in query.data.results" :key="pokemon.name">
-										<span class="badge on" x-text="pokemon.name"></span>
-									</template>
-								</div>
-							</div>
-						</template>
-
-						<div class="btn-group">
-							<button
-								type="button"
-								@click="prevPage()"
-								x-bind:disabled="page <= 1 || query?.isFetching"
-							>
-								Previous
-							</button>
-							<button
-								type="button"
-								@click="query?.refetch()"
-								x-bind:disabled="!query || query.isFetching"
-							>
-								Refresh
-							</button>
-							<button
-								type="button"
-								@click="nextPage()"
-								x-bind:disabled="!query?.data?.next || query?.isFetching"
-							>
-								Next
-							</button>
-						</div>
-						<p class="hint" x-show="query?.isSuccess && !query?.isFetching" x-cloak>
-							Go back to a previous page to see the cache serve instantly.
-						</p>
-					</div>
-				</article>
-
-				<article class="query-adapter" x-data="queryAlpineAdapterDemo" x-init="init()" @destroy="destroy()">
-					<h3 class="query-adapter__title">
-						Alpine.reactive
-						<span class="badge" x-bind:class="{ on: query?.isSuccess }" x-text="adapterName"></span>
-					</h3>
-					<p class="hint">
+					</Fragment>
+				</PokeapiQueryDemo>
+				<PokeapiQueryDemo dataName="queryAlpineAdapterDemo" title="Alpine.reactive">
+					<Fragment slot="description">
 						<code>createQueryClient(&#123; adapter: createAlpineStoreAdapter(Alpine) &#125;)</code>
-						— native <code>Alpine.reactive</code>, zero extra store deps.
-					</p>
-					<p x-show="query?.isLoading" class="hint">Loading user…</p>
-					<p x-show="query?.isError" class="hint hint--error" x-text="query?.error?.message"></p>
-					<template x-if="query?.isSuccess">
-						<p>
-							<strong x-text="query.data.name"></strong>
-							(<span x-text="query.data.username"></span>) —
-							<span x-text="query.data.email"></span>
-						</p>
-					</template>
-					<div class="btn-group">
-						<button type="button" @click="query?.refetch()" x-bind:disabled="!query || query.isFetching">
-							Refresh
-						</button>
-					</div>
-				</article>
-
-				<article class="query-adapter" x-data="queryZustandAdapterDemo" x-init="init()" @destroy="destroy()">
-					<h3 class="query-adapter__title">
-						Zustand
-						<span class="badge" x-bind:class="{ on: query?.isSuccess }" x-text="adapterName"></span>
-					</h3>
-					<p class="hint">
+						— native <code>Alpine.reactive</code>, zero extra store deps. Same PokeAPI pagination demo.
+					</Fragment>
+				</PokeapiQueryDemo>
+				<PokeapiQueryDemo dataName="queryZustandAdapterDemo" title="Zustand">
+					<Fragment slot="description">
 						<code>createQueryClient(&#123; adapter: createAlpineZustandAdapter(Alpine) &#125;)</code>
-						— Zustand vanilla bridged into Alpine.reactive.
-					</p>
-					<p x-show="query?.isLoading" class="hint">Loading user…</p>
-					<p x-show="query?.isError" class="hint hint--error" x-text="query?.error?.message"></p>
-					<template x-if="query?.isSuccess">
-						<p>
-							<strong x-text="query.data.name"></strong>
-							(<span x-text="query.data.username"></span>) —
-							<span x-text="query.data.email"></span>
-						</p>
-					</template>
-					<div class="btn-group">
-						<button type="button" @click="query?.refetch()" x-bind:disabled="!query || query.isFetching">
-							Refresh
-						</button>
-					</div>
-				</article>
+						— Zustand vanilla bridged into Alpine.reactive. Same PokeAPI pagination demo.
+					</Fragment>
+				</PokeapiQueryDemo>
 			</div>
 		</section>
 
