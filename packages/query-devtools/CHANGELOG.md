@@ -1,5 +1,11 @@
 # @ailuracode/alpine-query-devtools
 
+## 0.1.7
+
+### Patch Changes
+
+- c7952c7: Add dark mode to the devtools panel. Follows the host app theme via `data-theme`, `.dark`, or system preference, with optional `theme: "light" | "dark" | "system"`.
+
 ## 0.1.6
 
 ### Patch Changes
