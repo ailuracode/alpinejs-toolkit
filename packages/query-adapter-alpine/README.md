@@ -1,8 +1,8 @@
 # @ailuracode/alpine-query-adapter-alpine
 
-Native [`Alpine.reactive`](https://alpinejs.dev) adapter plugin for [`@ailuracode/alpine-query`](../query/README.md).
+Native [`Alpine.reactive`](https://alpinejs.dev) adapter for [`@ailuracode/alpine-query`](../query/README.md).
 
-No external store library. Best when you want the smallest dependency footprint and already rely on Alpine's built-in reactivity.
+No external store library. Best when you want the smallest dependency footprint.
 
 ## Install
 
@@ -14,18 +14,20 @@ npm install @ailuracode/alpine-query @ailuracode/alpine-query-adapter-alpine alp
 
 ```js
 import Alpine from "alpinejs";
-import alpineStoreQuery from "@ailuracode/alpine-query-adapter-alpine";
+import query from "@ailuracode/alpine-query";
+import { createAlpineStoreAdapter } from "@ailuracode/alpine-query-adapter-alpine";
 
-Alpine.plugin(alpineStoreQuery());
+Alpine.plugin(query({ adapter: createAlpineStoreAdapter }));
 Alpine.start();
 ```
 
-## Imperative adapter
+## Exports
 
-```js
-import { createQueryClient, createAlpineStoreAdapter } from "@ailuracode/alpine-query-adapter-alpine";
-// createAlpineStoreAdapter(Alpine) is exported from this package
-```
+| Export | Description |
+|--------|-------------|
+| `createAlpineStoreAdapter` | Factory for `query({ adapter })` |
+| `alpineStoreQueryAdapter` | Alias of `createAlpineStoreAdapter` |
+| `default` | Convenience plugin wrapping `query({ adapter })` |
 
 ## Integration note
 

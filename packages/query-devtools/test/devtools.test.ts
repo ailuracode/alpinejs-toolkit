@@ -1,10 +1,13 @@
 import type { QueryStore } from "@ailuracode/alpine-query";
-import nanostoresQueryPlugin from "@ailuracode/alpine-query-adapter-nanostores";
+import query from "@ailuracode/alpine-query";
+import { createAlpineNanostoresAdapter } from "@ailuracode/alpine-query-adapter-nanostores";
 import queryDevtoolsPlugin from "@ailuracode/alpine-query-devtools";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { startAlpine } from "../../../test/helpers.js";
 import { getQueryStore, mountQueryDevtools } from "../src/panel.js";
 import { DEFAULT_TOGGLE_CORNER_STORAGE_KEY } from "../src/toggle-corner.js";
+
+const nanostoresQuery = () => query({ adapter: createAlpineNanostoresAdapter });
 
 describe("@ailuracode/alpine-query-devtools", () => {
   beforeEach(() => {
@@ -20,7 +23,7 @@ describe("@ailuracode/alpine-query-devtools", () => {
   it("mounts a panel and reflects query cache updates", async () => {
     vi.useFakeTimers();
 
-    const Alpine = startAlpine(nanostoresQueryPlugin());
+    const Alpine = startAlpine(nanostoresQuery());
     const store = Alpine.store("query") as QueryStore;
 
     const controller = mountQueryDevtools({ store, initialOpen: true });
@@ -45,7 +48,7 @@ describe("@ailuracode/alpine-query-devtools", () => {
   });
 
   it("positions the toggle in a selected corner and persists it", () => {
-    const Alpine = startAlpine(nanostoresQueryPlugin());
+    const Alpine = startAlpine(nanostoresQuery());
     const store = Alpine.store("query") as QueryStore;
 
     const controller = mountQueryDevtools({
@@ -70,7 +73,7 @@ describe("@ailuracode/alpine-query-devtools", () => {
   });
 
   it("supports panel interactions and filtering", async () => {
-    const Alpine = startAlpine(nanostoresQueryPlugin());
+    const Alpine = startAlpine(nanostoresQuery());
     const store = Alpine.store("query") as QueryStore;
     const controller = mountQueryDevtools({ store, initialOpen: true });
 
@@ -117,7 +120,7 @@ describe("@ailuracode/alpine-query-devtools", () => {
   });
 
   it("registers through the alpine plugin on alpine:initialized", () => {
-    const Alpine = startAlpine(nanostoresQueryPlugin(), queryDevtoolsPlugin());
+    const Alpine = startAlpine(nanostoresQuery(), queryDevtoolsPlugin());
     document.dispatchEvent(new Event("alpine:initialized"));
 
     expect(document.querySelector(".aq-devtools-toggle")).toBeTruthy();
@@ -160,7 +163,7 @@ describe("@ailuracode/alpine-query-devtools", () => {
   it("devtools actions refetch, invalidate, and remove queries", async () => {
     vi.useFakeTimers();
 
-    const Alpine = startAlpine(nanostoresQueryPlugin());
+    const Alpine = startAlpine(nanostoresQuery());
     const store = Alpine.store("query") as QueryStore;
     const queryFn = vi
       .fn()

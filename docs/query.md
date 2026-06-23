@@ -10,13 +10,18 @@ npm install @ailuracode/alpine-query @ailuracode/alpine-query-adapter-nanostores
 
 ## Quick start
 
-Pick an adapter plugin for Alpine. **Nanostores** is recommended (`@nanostores/alpine` provides `x-nano` and `$nano`):
+Pick an adapter, pass it to `query()`, then register the plugin. **Nanostores** is recommended (`@nanostores/alpine` provides `x-nano` and `$nano`):
 
 ```js
 import Alpine from "alpinejs";
-import nanostoresQuery from "@ailuracode/alpine-query-adapter-nanostores";
+import query from "@ailuracode/alpine-query";
+import {
+  createAlpineNanostoresAdapter,
+  NanoStores,
+} from "@ailuracode/alpine-query-adapter-nanostores";
 
-Alpine.plugin(nanostoresQuery());
+Alpine.plugin(NanoStores);
+Alpine.plugin(query({ adapter: createAlpineNanostoresAdapter }));
 Alpine.start();
 ```
 
@@ -201,24 +206,23 @@ Wire the store's native `subscribe` / `listen` into `listen` instead of a manual
 
 ### Alpine plugin from a custom adapter
 
-Register `$store.query` with `createQueryPlugin`:
+Register `$store.query` with `query({ adapter })`:
 
 ```js
-import Alpine from "alpinejs";
-import { createQueryPlugin } from "@ailuracode/alpine-query";
+import query from "@ailuracode/alpine-query";
 import { myStoreAdapter } from "./my-store-adapter.js";
 
-Alpine.plugin(createQueryPlugin(myStoreAdapter));
+Alpine.plugin(query({ adapter: myStoreAdapter }));
 Alpine.start();
 ```
 
-If the adapter is **not** already bound to Alpine templates, wrap it with `createAlpineBridgedAdapter` (used by the Nanostores and Zustand plugins):
+If the adapter is **not** already bound to Alpine templates, wrap it with `createAlpineBridgedAdapter`:
 
 ```js
-import { createAlpineBridgedAdapter, createQueryPlugin } from "@ailuracode/alpine-query";
+import query, { createAlpineBridgedAdapter } from "@ailuracode/alpine-query";
 
 Alpine.plugin(
-  createQueryPlugin((Alpine) => createAlpineBridgedAdapter(Alpine, myStoreAdapter))
+  query({ adapter: (Alpine) => createAlpineBridgedAdapter(Alpine, myStoreAdapter) })
 );
 ```
 
@@ -226,10 +230,10 @@ For native `Alpine.reactive` storage, use [`createAlpineStoreAdapter`](../packag
 
 ### Adapter factory
 
-`createQueryPlugin` accepts a factory `(Alpine) => QueryStateAdapter` when the adapter needs the Alpine instance at registration time:
+`query({ adapter })` accepts a factory `(Alpine) => QueryStateAdapter` when the adapter needs the Alpine instance at registration time:
 
 ```js
-createQueryPlugin((Alpine) => createAlpineBridgedAdapter(Alpine, myStoreAdapter));
+query({ adapter: (Alpine) => createAlpineBridgedAdapter(Alpine, myStoreAdapter) });
 ```
 
 ### Publishing a plugin package
@@ -237,8 +241,8 @@ createQueryPlugin((Alpine) => createAlpineBridgedAdapter(Alpine, myStoreAdapter)
 The official adapters are independent npm packages (`@ailuracode/alpine-query-adapter-*`). To ship your own:
 
 1. Depend on `@ailuracode/alpine-query` and your store library.
-2. Export the adapter and a default plugin: `(options) => createQueryPlugin(adapter, options)`.
-3. Add tests with `createQueryClient({ adapter })` and, for Alpine, `startAlpine(createQueryPlugin(adapter))`.
+2. Export the adapter; consumers call `query({ adapter })` from `@ailuracode/alpine-query`.
+3. Add tests with `createQueryClient({ adapter })` and `startAlpine(query({ adapter }))`.
 
 Only **`patch` + `listen`** need to connect to your store; the cache engine handles fetching, retries, invalidation, and GC.
 

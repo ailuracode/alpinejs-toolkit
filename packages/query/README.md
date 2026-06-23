@@ -20,11 +20,18 @@ npm install @ailuracode/alpine-query @ailuracode/alpine-query-adapter-nanostores
 
 ```js
 import Alpine from "alpinejs";
-import nanostoresQuery from "@ailuracode/alpine-query-adapter-nanostores";
+import query from "@ailuracode/alpine-query";
+import {
+  createAlpineNanostoresAdapter,
+  NanoStores,
+} from "@ailuracode/alpine-query-adapter-nanostores";
 
-Alpine.plugin(nanostoresQuery());
+Alpine.plugin(NanoStores);
+Alpine.plugin(query({ adapter: createAlpineNanostoresAdapter }));
 Alpine.start();
 ```
+
+Pass the adapter to `query()`, then it registers `$store.query`.
 
 ## Framework-agnostic client
 
@@ -136,16 +143,15 @@ Replace the manual `Set` with your store's `subscribe` / `listen` API when avail
 ### Register as an Alpine plugin
 
 ```js
-import { createQueryPlugin, createAlpineBridgedAdapter } from "@ailuracode/alpine-query";
+import query, { createAlpineBridgedAdapter } from "@ailuracode/alpine-query";
 import { myStoreAdapter } from "./my-store-adapter.js";
 
-// Store-backed: bridge into Alpine.reactive
 Alpine.plugin(
-  createQueryPlugin((Alpine) => createAlpineBridgedAdapter(Alpine, myStoreAdapter))
+  query({ adapter: (Alpine) => createAlpineBridgedAdapter(Alpine, myStoreAdapter) })
 );
 
 // Or pass the adapter directly if it already uses Alpine.reactive
-Alpine.plugin(createQueryPlugin(myAlpineNativeAdapter));
+Alpine.plugin(query({ adapter: myAlpineNativeAdapter }));
 ```
 
 ### Headless usage
@@ -172,9 +178,9 @@ Full guide: [docs/query.md — Custom adapter](../docs/query.md#custom-adapter).
 ## Custom Alpine plugin (quick)
 
 ```js
-import { createQueryPlugin, vanillaQueryAdapter } from "@ailuracode/alpine-query";
+import query, { vanillaQueryAdapter } from "@ailuracode/alpine-query";
 
-Alpine.plugin(createQueryPlugin(vanillaQueryAdapter));
+Alpine.plugin(query({ adapter: vanillaQueryAdapter }));
 ```
 
 ## Queries
@@ -208,8 +214,9 @@ Call `destroy()` when the subscription is no longer needed so unused cache entri
 
 | Export | Description |
 |--------|-------------|
+| `query({ adapter })` | **Alpine plugin** — pass adapter, registers `$store.query` |
 | `createQueryClient()` | Store-agnostic client (`adapter` defaults to vanilla) |
-| `createQueryPlugin(adapter)` | Register `$store.query` with any adapter |
+| `createQueryPlugin(adapter)` | Lower-level registration (prefer `query({ adapter })`) |
 | `createAlpineBridgedAdapter(Alpine, base)` | Bridge any adapter into Alpine.reactive |
 | `QueryStateAdapter` | Pluggable adapter interface |
 | `vanillaQueryAdapter` | Built-in zero-dep adapter |

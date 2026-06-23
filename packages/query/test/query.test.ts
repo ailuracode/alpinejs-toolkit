@@ -1,7 +1,7 @@
-import alpineStoreQueryPlugin from "@ailuracode/alpine-query-adapter-alpine";
+import query, { createQueryClient } from "@ailuracode/alpine-query";
+import { createAlpineStoreAdapter } from "@ailuracode/alpine-query-adapter-alpine";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { startAlpine } from "../../../test/helpers.js";
-import { createQueryClient } from "../src/index.js";
 import type { QueryStore } from "../src/types.js";
 
 type Todo = { id: number; title: string };
@@ -11,7 +11,7 @@ describe("@ailuracode/alpine-query", () => {
 
   beforeEach(() => {
     vi.useFakeTimers();
-    const Alpine = startAlpine(alpineStoreQueryPlugin());
+    const Alpine = startAlpine(query({ adapter: createAlpineStoreAdapter }));
     store = Alpine.store("query") as QueryStore;
   });
 
@@ -20,7 +20,7 @@ describe("@ailuracode/alpine-query", () => {
     vi.useRealTimers();
   });
 
-  it("registers $store.query via adapter plugin", () => {
+  it("registers $store.query via query({ adapter })", () => {
     expect(store).toBeDefined();
     expect(typeof store.observe).toBe("function");
     expect(typeof store.mutate).toBe("function");

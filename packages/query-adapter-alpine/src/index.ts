@@ -1,12 +1,15 @@
-import { createQueryPlugin, type QueryPluginOptions } from "@ailuracode/alpine-query";
+import { type QueryPluginOptions, query } from "@ailuracode/alpine-query";
 import type AlpineType from "alpinejs";
 import { createAlpineStoreAdapter } from "./adapter.js";
 
 export { alpineStoreQueryAdapter, createAlpineStoreAdapter } from "./adapter.js";
 
-/** Alpine.js query plugin using native `Alpine.reactive` state. */
+/**
+ * Convenience plugin for native `Alpine.reactive`.
+ * Prefer `query({ adapter: createAlpineStoreAdapter })` from `@ailuracode/alpine-query`.
+ */
 export default function alpineStoreQueryPlugin(
   options: QueryPluginOptions = {}
 ): AlpineType.PluginCallback {
-  return createQueryPlugin(createAlpineStoreAdapter, options);
+  return query({ adapter: createAlpineStoreAdapter, ...options });
 }

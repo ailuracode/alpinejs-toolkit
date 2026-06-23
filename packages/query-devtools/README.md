@@ -10,14 +10,19 @@ npm install @ailuracode/alpine-query-devtools @ailuracode/alpine-query @ailuraco
 
 ## Setup
 
-Register **after** a query adapter plugin:
+Register **after** `query({ adapter })`:
 
 ```js
 import Alpine from "alpinejs";
-import nanostoresQuery from "@ailuracode/alpine-query-adapter-nanostores";
+import query from "@ailuracode/alpine-query";
+import {
+  createAlpineNanostoresAdapter,
+  NanoStores,
+} from "@ailuracode/alpine-query-adapter-nanostores";
 import queryDevtools from "@ailuracode/alpine-query-devtools";
 
-Alpine.plugin(nanostoresQuery());
+Alpine.plugin(NanoStores);
+Alpine.plugin(query({ adapter: createAlpineNanostoresAdapter }));
 Alpine.plugin(queryDevtools({ initialOpen: false, position: "bottom" }));
 Alpine.start();
 ```

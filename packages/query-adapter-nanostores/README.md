@@ -1,8 +1,8 @@
 # @ailuracode/alpine-query-adapter-nanostores
 
-**Recommended** [Nanostores](https://github.com/nanostores/nanostores) adapter plugin for [`@ailuracode/alpine-query`](../query/README.md).
+**Recommended** [Nanostores](https://github.com/nanostores/nanostores) adapter for [`@ailuracode/alpine-query`](../query/README.md).
 
-Registers [`@nanostores/alpine`](https://github.com/nanostores/alpine) by default (`x-nano`, `$nano`) and bridges Nanostores `map()` stores into Alpine templates.
+Provides `nanostoresQueryAdapter` and `createAlpineNanostoresAdapter`. Register with `query({ adapter })` from the core package.
 
 ## Install
 
@@ -14,25 +14,34 @@ npm install @ailuracode/alpine-query @ailuracode/alpine-query-adapter-nanostores
 
 ```js
 import Alpine from "alpinejs";
-import nanostoresQuery from "@ailuracode/alpine-query-adapter-nanostores";
+import query from "@ailuracode/alpine-query";
+import {
+  createAlpineNanostoresAdapter,
+  NanoStores,
+} from "@ailuracode/alpine-query-adapter-nanostores";
 
-Alpine.plugin(nanostoresQuery());
+Alpine.plugin(NanoStores);
+Alpine.plugin(query({ adapter: createAlpineNanostoresAdapter }));
 Alpine.start();
 ```
 
-Disable automatic `@nanostores/alpine` registration if you already load it:
+## Convenience plugin
+
+This package also exports a default plugin that registers `@nanostores/alpine` and `$store.query` in one step:
 
 ```js
-Alpine.plugin(nanostoresQuery({ registerNanoStores: false }));
+import nanostoresQuery from "@ailuracode/alpine-query-adapter-nanostores";
+
+Alpine.plugin(nanostoresQuery());
 ```
 
 ## Exports
 
 | Export | Description |
 |--------|-------------|
-| `default` | Alpine plugin — registers `$store.query` |
 | `nanostoresQueryAdapter` | Adapter for `createQueryClient({ adapter })` |
-| `createAlpineNanostoresAdapter` | Nanostores + Alpine.reactive bridge |
+| `createAlpineNanostoresAdapter` | Factory for `query({ adapter })` |
+| `default` | Convenience plugin (Nanostores + query) |
 | `NanoStores`, `directivePlugin`, `magicPlugin` | Re-exported from `@nanostores/alpine` |
 
 ## Alpine integration

@@ -1,7 +1,8 @@
 import type { QueryStore } from "@ailuracode/alpine-query";
+import query from "@ailuracode/alpine-query";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { startAlpine } from "../../../test/helpers.js";
-import alpineStoreQueryPlugin from "../src/index.js";
+import { createAlpineStoreAdapter } from "../src/adapter.js";
 
 describe("@ailuracode/alpine-query-adapter-alpine", () => {
   beforeEach(() => {
@@ -13,16 +14,16 @@ describe("@ailuracode/alpine-query-adapter-alpine", () => {
   });
 
   it("registers $store.query with native Alpine.reactive", async () => {
-    const Alpine = startAlpine(alpineStoreQueryPlugin());
+    const Alpine = startAlpine(query({ adapter: createAlpineStoreAdapter }));
     const store = Alpine.store("query") as QueryStore;
     const queryFn = vi.fn().mockResolvedValue("native");
-    const query = store.observe(["native"], queryFn);
+    const entry = store.observe(["native"], queryFn);
 
     await vi.runAllTimersAsync();
 
-    expect(query.isSuccess).toBe(true);
-    expect(query.data).toBe("native");
-    query.destroy?.();
+    expect(entry.isSuccess).toBe(true);
+    expect(entry.data).toBe("native");
+    entry.destroy?.();
     store.reset?.();
   });
 });

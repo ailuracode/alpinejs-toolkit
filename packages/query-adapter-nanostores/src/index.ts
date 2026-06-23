@@ -1,7 +1,7 @@
 import {
   createAlpineBridgedAdapter,
-  createQueryPlugin,
   type QueryPluginOptions,
+  query,
 } from "@ailuracode/alpine-query";
 import { NanoStores } from "@nanostores/alpine";
 import type AlpineType from "alpinejs";
@@ -19,14 +19,14 @@ export function createAlpineNanostoresAdapter(Alpine: AlpineType.Alpine) {
 }
 
 /**
- * Recommended Alpine.js query plugin.
- * Uses Nanostores internally and registers `@nanostores/alpine` for `x-nano` / `$nano`.
+ * Convenience plugin: registers `@nanostores/alpine` (optional) and `$store.query`.
+ * Prefer `query({ adapter: createAlpineNanostoresAdapter })` from `@ailuracode/alpine-query`.
  */
 export default function nanostoresQueryPlugin(
   options: NanostoresQueryPluginOptions = {}
 ): AlpineType.PluginCallback {
   const { registerNanoStores = true, ...queryOptions } = options;
-  const registerQuery = createQueryPlugin(createAlpineNanostoresAdapter, queryOptions);
+  const registerQuery = query({ adapter: createAlpineNanostoresAdapter, ...queryOptions });
 
   return function nanostoresQuery(Alpine) {
     if (registerNanoStores) {

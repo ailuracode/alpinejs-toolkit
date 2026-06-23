@@ -9,7 +9,11 @@ import network from "@ailuracode/alpine-network";
 import visibility from "@ailuracode/alpine-visibility";
 import notify from "@ailuracode/alpine-notify";
 import platform from "@ailuracode/alpine-platform";
-import nanostoresQuery from "@ailuracode/alpine-query-adapter-nanostores";
+import query from "@ailuracode/alpine-query";
+import {
+	createAlpineNanostoresAdapter,
+	NanoStores,
+} from "@ailuracode/alpine-query-adapter-nanostores";
 import queryDevtools from "@ailuracode/alpine-query-devtools";
 import screen from "@ailuracode/alpine-screen";
 import scroll from "@ailuracode/alpine-scroll";
@@ -39,7 +43,8 @@ export default (Alpine: Alpine) => {
 	Alpine.plugin(geo);
 	Alpine.plugin(touch);
 	Alpine.plugin(platform);
-	Alpine.plugin(nanostoresQuery());
+	Alpine.plugin(NanoStores);
+	Alpine.plugin(query({ adapter: createAlpineNanostoresAdapter }));
 	Alpine.plugin(queryDevtools({ position: "bottom" }));
 	Alpine.plugin(notify);
 };

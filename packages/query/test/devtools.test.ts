@@ -1,4 +1,5 @@
-import alpineStoreQueryPlugin from "@ailuracode/alpine-query-adapter-alpine";
+import query from "@ailuracode/alpine-query";
+import { createAlpineStoreAdapter } from "@ailuracode/alpine-query-adapter-alpine";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { startAlpine } from "../../../test/helpers.js";
 import type { QueryStore } from "../src/index.js";
@@ -7,7 +8,7 @@ describe("@ailuracode/alpine-query devtools", () => {
   let store: QueryStore;
 
   beforeEach(() => {
-    const Alpine = startAlpine(alpineStoreQueryPlugin());
+    const Alpine = startAlpine(query({ adapter: createAlpineStoreAdapter }));
     store = Alpine.store("query") as QueryStore;
   });
 

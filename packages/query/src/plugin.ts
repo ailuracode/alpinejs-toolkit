@@ -7,6 +7,10 @@ import { resolveQueryOptions, resolveRetryCount, resolveRetryDelay } from "./uti
 
 export type QueryAdapterFactory = (Alpine: AlpineType.Alpine) => QueryStateAdapter;
 
+export type QueryRegisterOptions = QueryPluginOptions & {
+  adapter: QueryStateAdapter | QueryAdapterFactory;
+};
+
 function resolveAdapter(
   adapter: QueryStateAdapter | QueryAdapterFactory,
   Alpine: AlpineType.Alpine
@@ -32,4 +36,20 @@ export function createQueryPlugin(
 
     Alpine.store("query", createQueryStore(cache));
   };
+}
+
+/**
+ * Alpine.js query plugin. Pass a state adapter, then registers `$store.query`.
+ *
+ * @example
+ * import query from "@ailuracode/alpine-query";
+ * import { createAlpineNanostoresAdapter } from "@ailuracode/alpine-query-adapter-nanostores";
+ *
+ * Alpine.plugin(query({ adapter: createAlpineNanostoresAdapter }));
+ */
+export default function query({
+  adapter,
+  ...options
+}: QueryRegisterOptions): AlpineType.PluginCallback {
+  return createQueryPlugin(adapter, options);
 }

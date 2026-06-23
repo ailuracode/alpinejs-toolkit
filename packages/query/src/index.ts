@@ -16,7 +16,13 @@ export type {
   QueryDevtoolsEntry,
   QueryDevtoolsSnapshot,
 } from "./devtools.js";
-export { createQueryPlugin, type QueryAdapterFactory } from "./plugin.js";
+export {
+  createQueryPlugin,
+  default,
+  default as query,
+  type QueryAdapterFactory,
+  type QueryRegisterOptions,
+} from "./plugin.js";
 export {
   attachMutationFlags,
   attachQueryFlags,
