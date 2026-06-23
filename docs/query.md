@@ -35,6 +35,45 @@ Alpine.start();
 
 Keep the query object nested (e.g. `todos.isLoading`) — do not spread `observe()` into `x-data`, or getters like `isSuccess` will not work.
 
+### Pagination
+
+Use the page number in the query key so each page is cached independently:
+
+```html
+<div
+  x-data="{
+    page: 1,
+    pageSize: 12,
+    query: null,
+    loadPage() {
+      this.query?.destroy?.();
+      const page = this.page;
+      this.query = $store.query.observe(
+        ['pokemon', page],
+        () =>
+          fetch(
+            `https://pokeapi.co/api/v2/pokemon?limit=${this.pageSize}&offset=${(page - 1) * this.pageSize}`
+          ).then((r) => r.json()),
+        { staleTime: 5 * 60_000 }
+      );
+    },
+  }"
+  x-init="loadPage()"
+>
+  <template x-if="query?.isSuccess">
+    <ul>
+      <template x-for="pokemon in query.data.results" :key="pokemon.name">
+        <li x-text="pokemon.name"></li>
+      </template>
+    </ul>
+  </template>
+  <button type="button" @click="page--; loadPage()" x-bind:disabled="page <= 1">Previous</button>
+  <button type="button" @click="page++; loadPage()" x-bind:disabled="!query?.data?.next">Next</button>
+</div>
+```
+
+Navigating back to a previous page serves cached data instantly while `staleTime` has not expired.
+
 See the [package README](../packages/query/README.md) for the full API.
 
 ## Concepts
