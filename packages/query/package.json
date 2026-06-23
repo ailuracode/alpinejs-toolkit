@@ -1,6 +1,6 @@
 {
   "name": "@ailuracode/alpine-query",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Alpine.js async data fetching with TanStack Query-style caching",
   "type": "module",
   "license": "MIT",
