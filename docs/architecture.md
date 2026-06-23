@@ -16,7 +16,10 @@ Use a **store** when you need:
 | `@ailuracode/alpine-screen` | `$store.device` | Breakpoints and viewport width |
 | `@ailuracode/alpine-scroll` | `$store.scroll` | Scroll metrics + body lock |
 | `@ailuracode/alpine-geo` | `$store.geo` | Geolocation state + tracking |
-| `@ailuracode/alpine-query` | `$store.query` | Async query cache (store-agnostic core; Nanostores adapter in Alpine plugin) |
+| `@ailuracode/alpine-query` | `$store.query` | Async query cache (store-agnostic core) |
+| `@ailuracode/alpine-query-adapter-nanostores` | Plugin | **Recommended** — Nanostores + `@nanostores/alpine` |
+| `@ailuracode/alpine-query-adapter-alpine` | Plugin | Native `Alpine.reactive` adapter |
+| `@ailuracode/alpine-query-adapter-zustand` | Plugin | Zustand vanilla adapter |
 
 ### Template usage
 

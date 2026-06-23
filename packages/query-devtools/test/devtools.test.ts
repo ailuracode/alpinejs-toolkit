@@ -1,4 +1,5 @@
-import queryPlugin, { type QueryStore } from "@ailuracode/alpine-query";
+import type { QueryStore } from "@ailuracode/alpine-query";
+import nanostoresQueryPlugin from "@ailuracode/alpine-query-adapter-nanostores";
 import queryDevtoolsPlugin from "@ailuracode/alpine-query-devtools";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { startAlpine } from "../../../test/helpers.js";
@@ -19,7 +20,7 @@ describe("@ailuracode/alpine-query-devtools", () => {
   it("mounts a panel and reflects query cache updates", async () => {
     vi.useFakeTimers();
 
-    const Alpine = startAlpine(queryPlugin());
+    const Alpine = startAlpine(nanostoresQueryPlugin());
     const store = Alpine.store("query") as QueryStore;
 
     const controller = mountQueryDevtools({ store, initialOpen: true });
@@ -41,7 +42,7 @@ describe("@ailuracode/alpine-query-devtools", () => {
   });
 
   it("positions the toggle in a selected corner and persists it", () => {
-    const Alpine = startAlpine(queryPlugin());
+    const Alpine = startAlpine(nanostoresQueryPlugin());
     const store = Alpine.store("query") as QueryStore;
 
     const controller = mountQueryDevtools({
@@ -66,7 +67,7 @@ describe("@ailuracode/alpine-query-devtools", () => {
   });
 
   it("supports panel interactions and filtering", async () => {
-    const Alpine = startAlpine(queryPlugin());
+    const Alpine = startAlpine(nanostoresQueryPlugin());
     const store = Alpine.store("query") as QueryStore;
     const controller = mountQueryDevtools({ store, initialOpen: true });
 
@@ -113,7 +114,7 @@ describe("@ailuracode/alpine-query-devtools", () => {
   });
 
   it("registers through the alpine plugin on alpine:initialized", () => {
-    const Alpine = startAlpine(queryPlugin(), queryDevtoolsPlugin());
+    const Alpine = startAlpine(nanostoresQueryPlugin(), queryDevtoolsPlugin());
     document.dispatchEvent(new Event("alpine:initialized"));
 
     expect(document.querySelector(".aq-devtools-toggle")).toBeTruthy();
@@ -156,7 +157,7 @@ describe("@ailuracode/alpine-query-devtools", () => {
   it("devtools actions refetch, invalidate, and remove queries", async () => {
     vi.useFakeTimers();
 
-    const Alpine = startAlpine(queryPlugin());
+    const Alpine = startAlpine(nanostoresQueryPlugin());
     const store = Alpine.store("query") as QueryStore;
     const queryFn = vi
       .fn()

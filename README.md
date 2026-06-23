@@ -20,7 +20,10 @@ Alpine.js plugin monorepo by **ailuracode**. Independent npm packages for common
 | [`@ailuracode/alpine-geo`](./packages/geo/README.md) | Store | Browser geolocation state and tracking |
 | [`@ailuracode/alpine-share`](./packages/share/README.md) | Magic | Web Share API wrapper |
 | [`@ailuracode/alpine-attention`](./packages/attention/README.md) | Magic | Screen Wake Lock and Idle Detection |
-| [`@ailuracode/alpine-query`](./packages/query/README.md) | Store | TanStack Query-style cache (store-agnostic; Nanostores for Alpine) |
+| [`@ailuracode/alpine-query`](./packages/query/README.md) | Store | TanStack Query-style cache (store-agnostic core) |
+| [`@ailuracode/alpine-query-adapter-nanostores`](./packages/query-adapter-nanostores/README.md) | Plugin | **Recommended** query adapter — Nanostores + `@nanostores/alpine` |
+| [`@ailuracode/alpine-query-adapter-alpine`](./packages/query-adapter-alpine/README.md) | Plugin | Query adapter — native `Alpine.reactive` |
+| [`@ailuracode/alpine-query-adapter-zustand`](./packages/query-adapter-zustand/README.md) | Plugin | Query adapter — Zustand vanilla |
 | [`@ailuracode/alpine-query-devtools`](./packages/query-devtools/README.md) | Plugin | Query cache inspector panel |
 
 ## Quick start

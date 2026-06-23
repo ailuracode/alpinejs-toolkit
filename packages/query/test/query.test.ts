@@ -1,6 +1,8 @@
+import alpineStoreQueryPlugin from "@ailuracode/alpine-query-adapter-alpine";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { startAlpine } from "../../../test/helpers.js";
-import queryPlugin, { type QueryStore } from "../src/index.js";
+import { createQueryClient } from "../src/index.js";
+import type { QueryStore } from "../src/types.js";
 
 type Todo = { id: number; title: string };
 
@@ -9,7 +11,7 @@ describe("@ailuracode/alpine-query", () => {
 
   beforeEach(() => {
     vi.useFakeTimers();
-    const Alpine = startAlpine(queryPlugin());
+    const Alpine = startAlpine(alpineStoreQueryPlugin());
     store = Alpine.store("query") as QueryStore;
   });
 
@@ -18,27 +20,20 @@ describe("@ailuracode/alpine-query", () => {
     vi.useRealTimers();
   });
 
-  it("registers $store.query", () => {
+  it("registers $store.query via adapter plugin", () => {
     expect(store).toBeDefined();
     expect(typeof store.observe).toBe("function");
     expect(typeof store.mutate).toBe("function");
   });
 
-  it("uses vanilla adapter by default", async () => {
-    const plugin = await import("../src/index.js");
-    expect(plugin.vanillaQueryAdapter).toBeDefined();
-    expect(plugin.nanostoresQueryAdapter).toBeDefined();
-    expect(plugin.createAlpineNanostoresAdapter).toBeTypeOf("function");
-  });
-
-  it("supports registerNanoStores: false", () => {
-    const Alpine = startAlpine(queryPlugin({ registerNanoStores: false }));
-    expect(Alpine.store("query")).toBeDefined();
+  it("createQueryClient uses vanilla adapter by default", () => {
+    const client = createQueryClient();
+    expect(client.observe).toBeTypeOf("function");
+    client.reset();
   });
 
   it("observe() fetches data and exposes TanStack-like state", async () => {
     const queryFn = vi.fn().mockResolvedValue([{ id: 1, title: "Learn Alpine" }]);
-
     const query = store.observe<Todo[]>(["todos"], queryFn);
 
     expect(query.isLoading).toBe(true);

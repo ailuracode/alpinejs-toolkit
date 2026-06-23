@@ -72,6 +72,9 @@ importers:
       '@ailuracode/alpine-query':
         specifier: workspace:*
         version: link:../packages/query
+      '@ailuracode/alpine-query-adapter-nanostores':
+        specifier: workspace:*
+        version: link:../packages/query-adapter-nanostores
       '@ailuracode/alpine-query-devtools':
         specifier: workspace:*
         version: link:../packages/query-devtools
@@ -201,6 +204,30 @@ importers:
 
   packages/query:
     dependencies:
+      '@types/alpinejs':
+        specifier: ^3.13.11
+        version: 3.13.11
+      alpinejs:
+        specifier: ^3.0.0
+        version: 3.15.12
+
+  packages/query-adapter-alpine:
+    dependencies:
+      '@ailuracode/alpine-query':
+        specifier: workspace:*
+        version: link:../query
+      '@types/alpinejs':
+        specifier: ^3.13.11
+        version: 3.13.11
+      alpinejs:
+        specifier: ^3.0.0
+        version: 3.15.12
+
+  packages/query-adapter-nanostores:
+    dependencies:
+      '@ailuracode/alpine-query':
+        specifier: workspace:*
+        version: link:../query
       '@nanostores/alpine':
         specifier: ^0.1.1
         version: 0.1.1(alpinejs@3.15.12)(nanostores@1.3.0)
@@ -213,6 +240,21 @@ importers:
       nanostores:
         specifier: ^1.3.0
         version: 1.3.0
+
+  packages/query-adapter-zustand:
+    dependencies:
+      '@ailuracode/alpine-query':
+        specifier: workspace:*
+        version: link:../query
+      '@types/alpinejs':
+        specifier: ^3.13.11
+        version: 3.13.11
+      alpinejs:
+        specifier: ^3.0.0
+        version: 3.15.12
+      zustand:
+        specifier: ^5.0.11
+        version: 5.0.14
 
   packages/query-devtools:
     dependencies:
@@ -2771,6 +2813,24 @@ packages:
   zod@4.4.3:
     resolution: {integrity: sha512-ytENFjIJFl2UwYglde2jchW2Hwm4GJFLDiSXWdTrJQBIN9Fcyp7n4DhxJEiWNAJMV1/BqWfW/kkg71UDcHJyTQ==}
 
+  zustand@5.0.14:
+    resolution: {integrity: sha512-/8tAspM5LMPr28b3fwLYrtdj77ECpfZviaP75CMTnwO8ISyaE4GDIG/9rDDYq/cH9D2Xw2A2RXglLInmVBQB/g==}
+    engines: {node: '>=12.20.0'}
+    peerDependencies:
+      '@types/react': '>=18.0.0'
+      immer: '>=9.0.6'
+      react: '>=18.0.0'
+      use-sync-external-store: '>=1.2.0'
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+      immer:
+        optional: true
+      react:
+        optional: true
+      use-sync-external-store:
+        optional: true
+
   zwitch@2.0.4:
     resolution: {integrity: sha512-bXE4cR/kVZhKZX/RjPEflHaKVhUVl85noU3v6b8apfQEc1x4A+zBxjZ4lN8LqGd6WZ3dl98pY4o717VFmoPp+A==}
 
@@ -5089,5 +5149,7 @@ snapshots:
   yocto-queue@1.2.2: {}
 
   zod@4.4.3: {}
+
+  zustand@5.0.14: {}
 
   zwitch@2.0.4: {}

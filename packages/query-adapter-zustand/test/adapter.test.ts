@@ -1,7 +1,8 @@
+import { createQueryClient } from "@ailuracode/alpine-query";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { createQueryClient, vanillaQueryAdapter } from "../src/index.js";
+import { zustandQueryAdapter } from "../src/adapter.js";
 
-describe("vanillaQueryAdapter", () => {
+describe("@ailuracode/alpine-query-adapter-zustand", () => {
   beforeEach(() => {
     vi.useFakeTimers();
   });
@@ -10,8 +11,8 @@ describe("vanillaQueryAdapter", () => {
     vi.useRealTimers();
   });
 
-  it("powers createQueryClient() without external store libraries", async () => {
-    const client = createQueryClient({ adapter: vanillaQueryAdapter });
+  it("zustandQueryAdapter powers createQueryClient()", async () => {
+    const client = createQueryClient({ adapter: zustandQueryAdapter });
     const queryFn = vi.fn().mockResolvedValue("ok");
     const query = client.observe(["adapter"], queryFn);
 

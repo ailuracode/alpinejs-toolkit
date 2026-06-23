@@ -1,65 +1,50 @@
 # @ailuracode/alpine-query
 
-Alpine.js async data layer inspired by [TanStack Query](https://tanstack.com/query). Cache remote data, refetch when stale, invalidate after mutations, and expose reactive query state in templates.
+Store-agnostic async data layer inspired by [TanStack Query](https://tanstack.com/query). Cache remote data, refetch when stale, invalidate after mutations.
 
-## Install
+The **cache engine** has no store dependency. Pick an adapter plugin for Alpine.js reactivity:
 
-For Alpine.js (recommended — includes Nanostores + `@nanostores/alpine`):
+| Package | Store runtime | Alpine integration |
+|---------|---------------|-------------------|
+| [`@ailuracode/alpine-query-adapter-nanostores`](../query-adapter-nanostores/README.md) | Nanostores | **Recommended** — `@nanostores/alpine` (`x-nano`, `$nano`) |
+| [`@ailuracode/alpine-query-adapter-alpine`](../query-adapter-alpine/README.md) | Native `Alpine.reactive` | Zero extra store deps |
+| [`@ailuracode/alpine-query-adapter-zustand`](../query-adapter-zustand/README.md) | Zustand vanilla | Manual bridge (no official zustand-alpine) |
+
+## Install (recommended)
 
 ```bash
-npm install @ailuracode/alpine-query alpinejs nanostores @nanostores/alpine
+npm install @ailuracode/alpine-query @ailuracode/alpine-query-adapter-nanostores alpinejs nanostores @nanostores/alpine
 ```
 
-The Alpine plugin uses the **Nanostores adapter** internally. The query engine itself is store-agnostic.
-
-## Setup
+## Setup (Alpine + Nanostores)
 
 ```js
 import Alpine from "alpinejs";
-import query from "@ailuracode/alpine-query";
+import nanostoresQuery from "@ailuracode/alpine-query-adapter-nanostores";
 
-Alpine.plugin(
-  query({
-    defaultOptions: {
-      queries: {
-        staleTime: 30_000,
-        gcTime: 5 * 60_000,
-      },
-    },
-  })
-);
-
+Alpine.plugin(nanostoresQuery());
 Alpine.start();
 ```
 
-The plugin registers [`@nanostores/alpine`](https://github.com/nanostores/alpine) by default (`x-nano`, `$nano`). Disable with `query({ registerNanoStores: false })` if you register it yourself.
-
 ## Framework-agnostic client
 
-`createQueryClient()` works without Alpine.js. The cache core has **no store dependency** — it accepts a pluggable `QueryStateAdapter`.
-
-By default, a zero-dependency **vanilla adapter** is used. For Nanostores (recommended outside Alpine too):
-
 ```js
-import { createQueryClient, nanostoresQueryAdapter } from "@ailuracode/alpine-query";
+import { createQueryClient, vanillaQueryAdapter } from "@ailuracode/alpine-query";
+import { nanostoresQueryAdapter } from "@ailuracode/alpine-query-adapter-nanostores";
 
-const query = createQueryClient({
-  adapter: nanostoresQueryAdapter,
-  defaultOptions: {
-    queries: { staleTime: 30_000 },
-  },
-});
+// Default: zero-dependency vanilla adapter
+const vanilla = createQueryClient();
 
-const todos = query.observe(["todos"], () => fetch("/api/todos").then((r) => r.json()));
-await todos.refetch();
-todos.destroy();
+// Recommended outside Alpine: Nanostores adapter
+const query = createQueryClient({ adapter: nanostoresQueryAdapter });
 ```
 
-Subpath imports are also available:
+## Custom Alpine plugin
 
 ```js
-import { nanostoresQueryAdapter } from "@ailuracode/alpine-query/adapters/nanostores";
-import { vanillaQueryAdapter } from "@ailuracode/alpine-query/adapters/vanilla";
+import { createQueryPlugin, vanillaQueryAdapter } from "@ailuracode/alpine-query";
+
+Alpine.plugin(createQueryPlugin(vanillaQueryAdapter));
 ```
 
 ## Queries
@@ -83,70 +68,23 @@ Use `observe()` inside `x-data` for component-scoped subscriptions (similar to `
 </div>
 ```
 
-Do **not** spread the result of `observe()` (`{ ...$store.query.observe() }`) — boolean getters such as `isLoading` and `isSuccess` are defined on the query object and are lost when spread into a new object.
+Do **not** spread the result of `observe()` — boolean getters such as `isLoading` and `isSuccess` are lost when spread.
 
-Call `destroy()` when the subscription is no longer needed (e.g. when switching pages) so unused cache entries can be garbage-collected.
-
-### Imperative access
-
-```js
-const todos = $store.query.fetch(["todos"], fetchTodos);
-await todos.refetch();
-$store.query.setData(["todos"], (current) => [...current, newTodo]);
-$store.query.invalidate(["todos"]);
-```
-
-## Mutations
-
-```html
-<div
-  x-data="{
-    createTodo: $store.query.mutate({
-      mutationFn: (title) =>
-        fetch('/api/todos', {
-          method: 'POST',
-          body: JSON.stringify({ title }),
-        }).then((r) => r.json()),
-      onSuccess: () => $store.query.invalidate(['todos']),
-    }),
-  }"
->
-  <button
-    type="button"
-    @click="createTodo.mutate('Ship feature')"
-    x-bind:disabled="createTodo.isPending"
-  >
-    Add todo
-  </button>
-</div>
-```
-
-## Query options
-
-| Option | Default | Description |
-|--------|---------|-------------|
-| `enabled` | `true` | Skip fetching when `false` |
-| `staleTime` | `0` | Time (ms) before data is considered stale |
-| `gcTime` | `300000` | Time (ms) to keep unused cache entries |
-| `refetchOnWindowFocus` | `true` | Refetch stale queries on focus |
-| `refetchInterval` | `false` | Polling interval in ms |
-| `retry` | `3` | Retry count (`false` disables) |
-| `retryDelay` | exponential | Delay between retries |
-| `initialData` | — | Seed cache before first fetch |
-| `placeholderData` | — | Temporary data while loading |
+Call `destroy()` when the subscription is no longer needed so unused cache entries can be garbage-collected.
 
 ## API
 
-### `createQueryClient(options?)`
+### Core exports
 
-Store-agnostic entry point. Returns the same method surface as `$store.query` without registering an Alpine store.
+| Export | Description |
+|--------|-------------|
+| `createQueryClient()` | Store-agnostic client (`adapter` defaults to vanilla) |
+| `createQueryPlugin(adapter)` | Register `$store.query` with any adapter |
+| `createAlpineBridgedAdapter(Alpine, base)` | Bridge any adapter into Alpine.reactive |
+| `QueryStateAdapter` | Pluggable adapter interface |
+| `vanillaQueryAdapter` | Built-in zero-dep adapter |
 
-| Option | Default | Description |
-|--------|---------|-------------|
-| `adapter` | `vanillaQueryAdapter` | Pluggable reactive state layer (`nanostoresQueryAdapter` recommended) |
-| `defaultOptions` | — | Same as the Alpine plugin |
-
-The Alpine plugin uses `createAlpineNanostoresAdapter(Alpine)` — Nanostores + `@nanostores/alpine` bridge.
+See adapter plugin READMEs for Alpine setup with Nanostores, Zustand, or native Alpine.reactive.
 
 ### `$store.query`
 
@@ -163,21 +101,6 @@ The Alpine plugin uses `createAlpineNanostoresAdapter(Alpine)` — Nanostores + 
 | `reset()` | Clear entire cache |
 | `mutate(options)` | Create a mutation helper |
 
-### Query state
-
-| Property | Type | Description |
-|----------|------|-------------|
-| `data` | `T \| undefined` | Latest successful result |
-| `error` | `Error \| null` | Last error |
-| `status` | `'pending' \| 'error' \| 'success'` | Query status |
-| `fetchStatus` | `'fetching' \| 'paused' \| 'idle'` | Fetch activity |
-| `isLoading` | `boolean` | First fetch in progress |
-| `isFetching` | `boolean` | Any fetch in progress |
-| `isError` | `boolean` | Query failed |
-| `isSuccess` | `boolean` | Query succeeded |
-| `isStale` | `boolean` | Data is older than `staleTime` |
-| `refetch()` | `Promise<void>` | Force a new fetch |
-
 ## TypeScript
 
 ```ts
@@ -186,21 +109,7 @@ The Alpine plugin uses `createAlpineNanostoresAdapter(Alpine)` — Nanostores + 
 
 ## Devtools
 
-Use [`@ailuracode/alpine-query-devtools`](../query-devtools/README.md) for a TanStack Query-style inspector panel during development.
-
-```js
-import queryDevtools from "@ailuracode/alpine-query-devtools";
-
-Alpine.plugin(queryDevtools({ position: "bottom" }));
-```
-
-The query store also exposes a headless API:
-
-```js
-const unsubscribe = $store.query.devtools.subscribe(() => {
-  console.log($store.query.devtools.getSnapshot());
-});
-```
+Use [`@ailuracode/alpine-query-devtools`](../query-devtools/README.md).
 
 ## License
 

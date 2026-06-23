@@ -5,14 +5,14 @@ Browser devtools panel for inspecting `@ailuracode/alpine-query` cache entries, 
 ## Install
 
 ```bash
-npm install @ailuracode/alpine-query-devtools @ailuracode/alpine-query alpinejs
+npm install @ailuracode/alpine-query-devtools @ailuracode/alpine-query @ailuracode/alpine-query-adapter-nanostores alpinejs nanostores @nanostores/alpine
 ```
 
 ```js
-import query from "@ailuracode/alpine-query";
+import nanostoresQuery from "@ailuracode/alpine-query-adapter-nanostores";
 import queryDevtools from "@ailuracode/alpine-query-devtools";
 
-Alpine.plugin(query());
+Alpine.plugin(nanostoresQuery());
 Alpine.plugin(queryDevtools());
 Alpine.start();
 ```
@@ -21,9 +21,9 @@ See the [package README](../packages/query-devtools/README.md) for options and i
 
 ## Compatibility
 
-Devtools consume the headless `$store.query.devtools` API (`subscribe`, `getSnapshot`) and the store methods `get`, `invalidate`, and `remove`. This works unchanged after the Nanostores migration:
+Devtools consume the headless `$store.query.devtools` API (`subscribe`, `getSnapshot`) and the store methods `get`, `invalidate`, and `remove`. They work with any query adapter plugin:
 
-- **Alpine plugin** — register `query()` then `queryDevtools()`; panel resolves `$store.query` on `alpine:initialized`.
+- **Alpine plugin** — register a query adapter plugin, then `queryDevtools()`; panel resolves `$store.query` on `alpine:initialized`.
 - **`createQueryClient()`** — pass the client to `mountQueryDevtools({ store: getQueryStore(client) })` without Alpine.
 
 ## What you can inspect

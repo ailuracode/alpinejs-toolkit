@@ -22,6 +22,11 @@
       "@ailuracode/alpine-notify": ["packages/notify/src/index.ts"],
       "@ailuracode/alpine-platform": ["packages/platform/src/index.ts"],
       "@ailuracode/alpine-query": ["packages/query/src/index.ts"],
+      "@ailuracode/alpine-query-adapter-alpine": ["packages/query-adapter-alpine/src/index.ts"],
+      "@ailuracode/alpine-query-adapter-nanostores": [
+        "packages/query-adapter-nanostores/src/index.ts"
+      ],
+      "@ailuracode/alpine-query-adapter-zustand": ["packages/query-adapter-zustand/src/index.ts"],
       "@ailuracode/alpine-query-devtools": ["packages/query-devtools/src/index.ts"],
       "@ailuracode/alpine-screen": ["packages/screen/src/index.ts"],
       "@ailuracode/alpine-scroll": ["packages/scroll/src/index.ts"],

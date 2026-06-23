@@ -1,12 +1,11 @@
-import { type MapStore, map } from "nanostores";
+import type { MutationState, QueryStateAdapter } from "@ailuracode/alpine-query";
 import {
   createMutationStateView,
   createQueryStateView,
   type MutationStateRecord,
   type QueryStateRecord,
-} from "../state/view.js";
-import type { MutationState } from "../types.js";
-import type { MutationStateHandle, QueryStateAdapter, QueryStateHandle } from "./types.js";
+} from "@ailuracode/alpine-query";
+import { type MapStore, map } from "nanostores";
 
 function patchMapStore<TRecord extends Record<string, unknown>>(
   store: MapStore<TRecord>,
@@ -28,27 +27,28 @@ function patchMapStore<TRecord extends Record<string, unknown>>(
   }
 }
 
-/** Recommended adapter — Nanostores `map()` stores with listen/subscribe support. */
+/** Nanostores `map()` adapter for `@ailuracode/alpine-query`. */
 export const nanostoresQueryAdapter: QueryStateAdapter = {
   createQueryState<TData>(
     initial: QueryStateRecord<TData>,
     staleTime: number,
     refetch: () => Promise<void>
-  ): QueryStateHandle<TData> {
+  ) {
     const store = map(initial);
     const state = createQueryStateView(() => store.get(), staleTime, refetch);
 
     return {
       state,
       get: () => store.get(),
-      patch: (patch) => patchMapStore(store, patch),
-      listen: (listener) => store.listen(listener),
+      patch: (patch: Partial<QueryStateRecord<TData>>) => patchMapStore(store, patch),
+      listen: (listener: (record: QueryStateRecord<TData>) => void) =>
+        store.listen((record) => listener({ ...record })),
     };
   },
 
   createMutationState<TData, TVariables>(
     handlers: Pick<MutationState<TData, TVariables>, "mutate" | "reset">
-  ): MutationStateHandle<TData, TVariables> {
+  ) {
     const store = map<MutationStateRecord<TData>>({
       data: undefined,
       error: null,
@@ -59,8 +59,9 @@ export const nanostoresQueryAdapter: QueryStateAdapter = {
     return {
       state,
       get: () => store.get(),
-      patch: (patch) => patchMapStore(store, patch),
-      listen: (listener) => store.listen(listener),
+      patch: (patch: Partial<MutationStateRecord<TData>>) => patchMapStore(store, patch),
+      listen: (listener: (record: MutationStateRecord<TData>) => void) =>
+        store.listen((record) => listener({ ...record })),
     };
   },
 };

@@ -5,19 +5,19 @@ TanStack Query-style devtools panel for [`@ailuracode/alpine-query`](../query/RE
 ## Install
 
 ```bash
-npm install @ailuracode/alpine-query-devtools @ailuracode/alpine-query alpinejs
+npm install @ailuracode/alpine-query-devtools @ailuracode/alpine-query @ailuracode/alpine-query-adapter-nanostores alpinejs nanostores @nanostores/alpine
 ```
 
 ## Setup
 
-Register **after** the query plugin:
+Register **after** a query adapter plugin:
 
 ```js
 import Alpine from "alpinejs";
-import query from "@ailuracode/alpine-query";
+import nanostoresQuery from "@ailuracode/alpine-query-adapter-nanostores";
 import queryDevtools from "@ailuracode/alpine-query-devtools";
 
-Alpine.plugin(query());
+Alpine.plugin(nanostoresQuery());
 Alpine.plugin(queryDevtools({ initialOpen: false, position: "bottom" }));
 Alpine.start();
 ```

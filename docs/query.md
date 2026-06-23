@@ -5,31 +5,40 @@ TanStack Query-style async data fetching for Alpine.js: caching, stale-while-rev
 ## Install
 
 ```bash
-npm install @ailuracode/alpine-query alpinejs
+npm install @ailuracode/alpine-query @ailuracode/alpine-query-adapter-nanostores alpinejs nanostores @nanostores/alpine
 ```
 
 ## Quick start
 
+Pick an adapter plugin for Alpine. **Nanostores** is recommended (`@nanostores/alpine` provides `x-nano` and `$nano`):
+
 ```js
 import Alpine from "alpinejs";
-import query from "@ailuracode/alpine-query";
+import nanostoresQuery from "@ailuracode/alpine-query-adapter-nanostores";
 
-Alpine.plugin(query());
+Alpine.plugin(nanostoresQuery());
 Alpine.start();
 ```
 
+Other adapter packages:
+
+| Package | Backend |
+|---------|---------|
+| `@ailuracode/alpine-query-adapter-nanostores` | Nanostores + `@nanostores/alpine` (**recommended**) |
+| `@ailuracode/alpine-query-adapter-alpine` | Native `Alpine.reactive` |
+| `@ailuracode/alpine-query-adapter-zustand` | Zustand vanilla (manual bridge; no official zustand-alpine) |
+
 ### Without Alpine
 
-`createQueryClient()` exposes the same API without registering `$store.query`. The cache core is **store-agnostic** — pass `adapter: nanostoresQueryAdapter` (recommended) or use the vanilla default.
+`createQueryClient()` exposes the same API without registering `$store.query`. The cache core is **store-agnostic** — pass any `QueryStateAdapter` or use the vanilla default.
 
 ```js
-import { createQueryClient, nanostoresQueryAdapter } from "@ailuracode/alpine-query";
+import { createQueryClient, vanillaQueryAdapter } from "@ailuracode/alpine-query";
+import { nanostoresQueryAdapter } from "@ailuracode/alpine-query-adapter-nanostores";
 
 const query = createQueryClient({ adapter: nanostoresQueryAdapter });
 const todos = query.observe(["todos"], fetchTodos);
 ```
-
-The Alpine plugin uses Nanostores + `@nanostores/alpine` automatically.
 
 ```html
 <div

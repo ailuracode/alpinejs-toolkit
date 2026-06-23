@@ -1,9 +1,8 @@
 import type AlpineType from "alpinejs";
-import type { MutationStateRecord, QueryStateRecord } from "../state/view.js";
-import { attachMutationFlags, attachQueryFlags } from "../state/view.js";
-import type { MutationState, QueryState } from "../types.js";
-import { nanostoresQueryAdapter } from "./nanostores.js";
-import type { MutationStateHandle, QueryStateAdapter, QueryStateHandle } from "./types.js";
+import type { MutationStateHandle, QueryStateAdapter, QueryStateHandle } from "./adapters/types.js";
+import type { MutationStateRecord, QueryStateRecord } from "./state/view.js";
+import { attachMutationFlags, attachQueryFlags } from "./state/view.js";
+import type { MutationState, QueryState } from "./types.js";
 
 type AlpineInstance = AlpineType.Alpine;
 
@@ -16,8 +15,7 @@ function syncRecordToReactive<TRecord extends Record<string, unknown>>(
   }
 }
 
-/** Mirrors the @nanostores/alpine `x-nano` directive bridge (`Alpine.reactive` + `store.listen`). */
-function bridgeQueryStateToAlpine<TData>(
+export function bridgeQueryHandleToAlpine<TData>(
   Alpine: AlpineInstance,
   handle: QueryStateHandle<TData>,
   staleTime: number
@@ -36,7 +34,7 @@ function bridgeQueryStateToAlpine<TData>(
   return { state: bridged, unbind };
 }
 
-function bridgeMutationStateToAlpine<TData, TVariables>(
+export function bridgeMutationHandleToAlpine<TData, TVariables>(
   Alpine: AlpineInstance,
   handle: MutationStateHandle<TData, TVariables>
 ): { state: MutationState<TData, TVariables>; unbind: () => void } {
@@ -55,12 +53,15 @@ function bridgeMutationStateToAlpine<TData, TVariables>(
   return { state: bridged, unbind };
 }
 
-/** Nanostores adapter bridged into Alpine.js reactivity. Used by the Alpine plugin. */
-export function createAlpineNanostoresAdapter(Alpine: AlpineInstance): QueryStateAdapter {
+/** Wraps any adapter with Alpine.reactive bindings for template usage. */
+export function createAlpineBridgedAdapter(
+  Alpine: AlpineInstance,
+  base: QueryStateAdapter
+): QueryStateAdapter {
   return {
     createQueryState(initial, staleTime, refetch) {
-      const handle = nanostoresQueryAdapter.createQueryState(initial, staleTime, refetch);
-      const bridge = bridgeQueryStateToAlpine(Alpine, handle, staleTime);
+      const handle = base.createQueryState(initial, staleTime, refetch);
+      const bridge = bridgeQueryHandleToAlpine(Alpine, handle, staleTime);
 
       return {
         ...handle,
@@ -70,8 +71,8 @@ export function createAlpineNanostoresAdapter(Alpine: AlpineInstance): QueryStat
     },
 
     createMutationState(handlers) {
-      const handle = nanostoresQueryAdapter.createMutationState(handlers);
-      const bridge = bridgeMutationStateToAlpine(Alpine, handle);
+      const handle = base.createMutationState(handlers);
+      const bridge = bridgeMutationHandleToAlpine(Alpine, handle);
 
       return {
         ...handle,
