@@ -1,5 +1,11 @@
 # @ailuracode/alpine-query
 
+## 0.3.0
+
+### Minor Changes
+
+- 75eb769: Add three independent query adapter plugins (Alpine.reactive, Nanostores, Zustand). The core package is now store-agnostic and no longer exports a default Alpine plugin.
+
 ## 0.2.0
 
 ### Minor Changes
