@@ -190,7 +190,7 @@ Use `observe()` inside `x-data` for component-scoped subscriptions (similar to `
 ```html
 <div
   x-data="{
-    todos: $store.query.observe(['todos'], () => fetch('/api/todos').then((r) => r.json())),
+    todos: $store.query.observe(['todos'], () => typedFetch('/api/todos')),
   }"
 >
   <p x-show="todos.isLoading">Loading…</p>
@@ -206,6 +206,15 @@ Use `observe()` inside `x-data` for component-scoped subscriptions (similar to `
 
 Do **not** spread the result of `observe()` — boolean getters such as `isLoading` and `isSuccess` are lost when spread.
 
+Import `typedFetch` and pass an explicit generic when you want stronger inference:
+
+```js
+import { typedFetch } from "@ailuracode/alpine-query";
+
+/** @type {() => Promise<{ id: number; title: string }[]>} */
+const fetchTodos = () => typedFetch("/api/todos");
+```
+
 Call `destroy()` when the subscription is no longer needed so unused cache entries can be garbage-collected.
 
 ## API
@@ -220,6 +229,8 @@ Call `destroy()` when the subscription is no longer needed so unused cache entri
 | `createAlpineBridgedAdapter(Alpine, base)` | Bridge any adapter into Alpine.reactive |
 | `QueryStateAdapter` | Pluggable adapter interface |
 | `vanillaQueryAdapter` | Built-in zero-dep adapter |
+| `typedFetch<T>(input, init?)` | Typed JSON `fetch` helper for `queryFn` callbacks |
+| `HttpError` | Thrown when `typedFetch` receives a non-OK response |
 
 See adapter plugin READMEs for Alpine setup with Nanostores, Zustand, or native Alpine.reactive.
 

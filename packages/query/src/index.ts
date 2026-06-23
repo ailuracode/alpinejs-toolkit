@@ -16,6 +16,8 @@ export type {
   QueryDevtoolsEntry,
   QueryDevtoolsSnapshot,
 } from "./devtools.js";
+export type { ResponseParser, TypedFetchInit } from "./fetch.js";
+export { HttpError, typedFetch } from "./fetch.js";
 export { mutationOptions, queryFn, queryKey, queryOptions } from "./options.js";
 export {
   createQueryPlugin,
@@ -50,5 +52,4 @@ export type {
   QueryState,
   QueryStore,
 } from "./types.js";
-
 export { hashKey, matchesQueryKey } from "./utils.js";

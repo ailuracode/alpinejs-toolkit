@@ -48,7 +48,7 @@ const todos = query.observe(["todos"], fetchTodos);
 ```html
 <div
   x-data="{
-    todos: $store.query.observe(['todos'], () => fetch('/api/todos').then((r) => r.json())),
+    todos: $store.query.observe(['todos'], () => typedFetch('/api/todos')),
   }"
 >
   <p x-show="todos.isLoading">Loading…</p>
@@ -78,9 +78,9 @@ Use the page number in the query key so each page is cached independently:
       this.query = $store.query.observe(
         ['pokemon', page],
         () =>
-          fetch(
+          typedFetch(
             `https://pokeapi.co/api/v2/pokemon?limit=${this.pageSize}&offset=${(page - 1) * this.pageSize}`
-          ).then((r) => r.json()),
+          ),
         { staleTime: 5 * 60_000 }
       );
     },
@@ -271,6 +271,20 @@ Arrays identify cached entries. Use stable, serializable values:
 ### Mutations
 
 `$store.query.mutate()` returns a reactive mutation object with `mutate()`, `reset()`, and status getters (`isPending`, `isSuccess`, …). Use `invalidate()` in `onSuccess` to refresh related queries.
+
+### Typed `fetch`
+
+Use `typedFetch<T>()` inside `queryFn` callbacks instead of calling native `fetch` and casting `response.json()`:
+
+```ts
+import { typedFetch } from "@ailuracode/alpine-query";
+
+type Todo = { id: number; title: string };
+
+const todos = query.observe(["todos"], () => typedFetch<Todo[]>("/api/todos"));
+```
+
+`typedFetch` throws `HttpError` (with the original `Response`) when the status is not OK. Pass `fetcher` or `parse` in the second argument to customize behavior in tests or non-JSON APIs.
 
 ## TypeScript
 

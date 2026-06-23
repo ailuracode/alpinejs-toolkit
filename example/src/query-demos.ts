@@ -1,5 +1,5 @@
 import type { QueryState, QueryStore } from "@ailuracode/alpine-query";
-import { createQueryClient } from "@ailuracode/alpine-query";
+import { createQueryClient, typedFetch } from "@ailuracode/alpine-query";
 import { createAlpineStoreAdapter } from "@ailuracode/alpine-query-adapter-alpine";
 import { createAlpineZustandAdapter } from "@ailuracode/alpine-query-adapter-zustand";
 import type { Alpine } from "alpinejs";
@@ -68,19 +68,13 @@ function createSkeletonRows(page: number, pageSize: number): PokemonRow[] {
 }
 
 async function fetchPokemonPage(page: number): Promise<PokemonListResponse> {
-	const response = await fetch(
+	return typedFetch<PokemonListResponse>(
 		`${POKEAPI}?limit=${PAGE_SIZE}&offset=${(page - 1) * PAGE_SIZE}`,
 		{
 			// Avoid the browser HTTP cache so DevTools throttling and refetches hit the network.
 			cache: "no-store",
 		},
 	);
-
-	if (!response.ok) {
-		throw new Error(`PokeAPI request failed (${response.status})`);
-	}
-
-	return response.json() as Promise<PokemonListResponse>;
 }
 
 function createPokeapiDemo(options: {

@@ -4,6 +4,7 @@ import {
   queryFn,
   queryKey,
   queryOptions,
+  typedFetch,
 } from "@ailuracode/alpine-query";
 import { afterEach, beforeEach, describe, expect, expectTypeOf, it, vi } from "vitest";
 import type { QueryFunction } from "../src/types.js";
@@ -41,7 +42,7 @@ describe("@ailuracode/alpine-query type inference", () => {
 
   it("infers data when delegating to a typed fetch helper", () => {
     function fetchTodos(): Promise<Todo[]> {
-      return Promise.resolve([{ id: 1, title: "Learn" }]);
+      return typedFetch<Todo[]>("/api/todos");
     }
 
     const query = client.observe(["todos"], () => fetchTodos());
