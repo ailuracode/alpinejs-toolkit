@@ -1,6 +1,6 @@
 {
   "name": "@ailuracode/alpine-attention",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Alpine.js Screen Wake Lock and Idle Detection magics",
   "type": "module",
   "license": "MIT",

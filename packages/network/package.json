@@ -1,6 +1,6 @@
 {
   "name": "@ailuracode/alpine-network",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Alpine.js network connectivity magic",
   "type": "module",
   "license": "MIT",

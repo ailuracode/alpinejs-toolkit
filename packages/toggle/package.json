@@ -1,6 +1,6 @@
 {
   "name": "@ailuracode/alpine-toggle",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Alpine.js toggle magic with binary and ternary state inference",
   "type": "module",
   "license": "MIT",
