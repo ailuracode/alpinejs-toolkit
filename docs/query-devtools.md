@@ -26,6 +26,7 @@ See the [package README](../packages/query-devtools/README.md) for options and i
 - Resolved query options (`staleTime`, `gcTime`, `retry`, …)
 - Mutation variables, results, and errors
 - Live updates via `$store.query.devtools.subscribe()`
+- Toggle button corner (`top-left`, `top-right`, `bottom-left`, `bottom-right`) with `localStorage` persistence
 
 ## Production
 

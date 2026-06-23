@@ -17,8 +17,7 @@ export const DEVTOOLS_STYLES = `
 
 .aq-devtools-toggle {
   position: fixed;
-  right: 1rem;
-  bottom: 1rem;
+  z-index: 2147483647;
   border: 1px solid var(--aq-border);
   background: var(--aq-panel);
   color: var(--aq-text);
@@ -28,6 +27,26 @@ export const DEVTOOLS_STYLES = `
   font-weight: 600;
   cursor: pointer;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+.aq-devtools-toggle--top-left {
+  top: 1rem;
+  left: 1rem;
+}
+
+.aq-devtools-toggle--top-right {
+  top: 1rem;
+  right: 1rem;
+}
+
+.aq-devtools-toggle--bottom-left {
+  bottom: 1rem;
+  left: 1rem;
+}
+
+.aq-devtools-toggle--bottom-right {
+  right: 1rem;
+  bottom: 1rem;
 }
 
 .aq-devtools-toggle:hover {
@@ -85,6 +104,15 @@ export const DEVTOOLS_STYLES = `
   border-radius: 0.5rem;
   padding: 0.45rem 0.65rem;
   font-size: 0.85rem;
+}
+
+.aq-devtools-select {
+  border: 1px solid var(--aq-border);
+  background: #0b1220;
+  color: var(--aq-text);
+  border-radius: 0.45rem;
+  padding: 0.35rem 0.55rem;
+  font-size: 0.8rem;
 }
 
 .aq-devtools-tabs {

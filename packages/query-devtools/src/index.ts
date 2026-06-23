@@ -30,8 +30,14 @@ export default function queryDevtoolsPlugin(
 }
 
 export { getQueryStore, mountQueryDevtools } from "./panel.js";
+export {
+  DEFAULT_TOGGLE_CORNER,
+  DEFAULT_TOGGLE_CORNER_STORAGE_KEY,
+  TOGGLE_CORNERS,
+} from "./toggle-corner.js";
 export type {
   QueryDevtoolsController,
   QueryDevtoolsMountOptions,
   QueryDevtoolsPluginOptions,
+  ToggleCorner,
 } from "./types.js";

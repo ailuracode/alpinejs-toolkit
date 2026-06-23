@@ -6,7 +6,16 @@ import type {
   QueryStore,
 } from "@ailuracode/alpine-query";
 import { DEVTOOLS_STYLES } from "./styles.js";
-import type { QueryDevtoolsController, QueryDevtoolsMountOptions } from "./types.js";
+import {
+  applyToggleCorner,
+  cornerLabel,
+  DEFAULT_TOGGLE_CORNER,
+  DEFAULT_TOGGLE_CORNER_STORAGE_KEY,
+  loadToggleCorner,
+  saveToggleCorner,
+  TOGGLE_CORNERS,
+} from "./toggle-corner.js";
+import type { QueryDevtoolsController, QueryDevtoolsMountOptions, ToggleCorner } from "./types.js";
 
 function formatKey(key: QueryKey): string {
   return JSON.stringify(key);
@@ -114,13 +123,23 @@ function createMutationListItem(
 }
 
 export function mountQueryDevtools(options: QueryDevtoolsMountOptions): QueryDevtoolsController {
-  const { store, position = "bottom", initialOpen = false } = options;
+  const {
+    store,
+    position = "bottom",
+    initialOpen = false,
+    toggleCorner = DEFAULT_TOGGLE_CORNER,
+    persistToggleCorner = true,
+    toggleCornerStorageKey = DEFAULT_TOGGLE_CORNER_STORAGE_KEY,
+  } = options;
   let isOpen = initialOpen;
   let activeTab: "queries" | "mutations" = "queries";
   let selectedQueryHash: string | null = null;
   let selectedMutationId: string | null = null;
   let search = options.filter ?? "";
   let scheduled = false;
+  let currentToggleCorner = persistToggleCorner
+    ? loadToggleCorner(toggleCornerStorageKey, toggleCorner)
+    : toggleCorner;
 
   if (!store.devtools) {
     throw new Error(
@@ -172,6 +191,35 @@ export function mountQueryDevtools(options: QueryDevtoolsMountOptions): QueryDev
   mutationsTab.className = "aq-devtools-tab";
   mutationsTab.textContent = "Mutations";
 
+  const cornerSelect = document.createElement("select");
+  cornerSelect.className = "aq-devtools-select";
+  cornerSelect.setAttribute("aria-label", "Toggle button corner");
+
+  for (const corner of TOGGLE_CORNERS) {
+    const option = document.createElement("option");
+    option.value = corner;
+    option.textContent = cornerLabel(corner);
+    cornerSelect.append(option);
+  }
+
+  cornerSelect.value = currentToggleCorner;
+
+  const setToggleCorner = (corner: ToggleCorner): void => {
+    currentToggleCorner = corner;
+    applyToggleCorner(toggle, corner);
+    cornerSelect.value = corner;
+
+    if (persistToggleCorner) {
+      saveToggleCorner(toggleCornerStorageKey, corner);
+    }
+  };
+
+  cornerSelect.addEventListener("change", () => {
+    setToggleCorner(cornerSelect.value as ToggleCorner);
+  });
+
+  setToggleCorner(currentToggleCorner);
+
   const closeButton = document.createElement("button");
   closeButton.type = "button";
   closeButton.className = "aq-devtools-btn";
@@ -187,7 +235,7 @@ export function mountQueryDevtools(options: QueryDevtoolsMountOptions): QueryDev
   detail.className = "aq-devtools-detail";
 
   tabs.append(queriesTab, mutationsTab);
-  header.append(title, searchInput, tabs, closeButton);
+  header.append(title, searchInput, cornerSelect, tabs, closeButton);
   body.append(list, detail);
   panel.append(header, body);
   root.append(toggle, panel);
@@ -417,6 +465,12 @@ export function mountQueryDevtools(options: QueryDevtoolsMountOptions): QueryDev
     toggle() {
       isOpen = !isOpen;
       scheduleRender();
+    },
+    setToggleCorner(corner: ToggleCorner) {
+      setToggleCorner(corner);
+    },
+    getToggleCorner() {
+      return currentToggleCorner;
     },
     destroy() {
       unsubscribe();
