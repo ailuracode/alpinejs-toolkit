@@ -1,16 +1,27 @@
+import type { QueryStateAdapter } from "./adapters/types.js";
+import { vanillaQueryAdapter } from "./adapters/vanilla.js";
 import { QueryCache } from "./cache.js";
-import type { QueryPluginOptions, QueryStore } from "./types.js";
+import type { QueryClientOptions, QueryStore } from "./types.js";
 import { resolveQueryOptions, resolveRetryCount, resolveRetryDelay } from "./utils.js";
 
-/** Framework-agnostic query client backed by Nanostores. */
-export function createQueryClient(options: QueryPluginOptions = {}): QueryStore {
+function resolveCacheConfig(options: QueryClientOptions) {
   const defaultQueryOptions = options.defaultOptions?.queries ?? {};
   const defaultMutationOptions = options.defaultOptions?.mutations ?? {};
 
-  const cache = new QueryCache({
+  return {
     defaultQueryOptions: resolveQueryOptions(defaultQueryOptions, {}),
     defaultMutationRetry: resolveRetryCount(defaultMutationOptions.retry, 0),
     defaultMutationRetryDelay: resolveRetryDelay(defaultMutationOptions.retryDelay, 1000),
+  };
+}
+
+/** Store-agnostic query client. Pass a `QueryStateAdapter` or use the vanilla default. */
+export function createQueryClient(options: QueryClientOptions = {}): QueryStore {
+  const adapter = options.adapter ?? vanillaQueryAdapter;
+
+  const cache = new QueryCache({
+    ...resolveCacheConfig(options),
+    adapter,
   });
 
   return createQueryStore(cache);
@@ -51,3 +62,5 @@ export function createQueryStore(cache: QueryCache): QueryStore {
     },
   };
 }
+
+export type { QueryStateAdapter };

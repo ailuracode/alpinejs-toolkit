@@ -4,9 +4,13 @@ Alpine.js async data layer inspired by [TanStack Query](https://tanstack.com/que
 
 ## Install
 
+For Alpine.js (recommended — includes Nanostores + `@nanostores/alpine`):
+
 ```bash
-npm install @ailuracode/alpine-query alpinejs
+npm install @ailuracode/alpine-query alpinejs nanostores @nanostores/alpine
 ```
+
+The Alpine plugin uses the **Nanostores adapter** internally. The query engine itself is store-agnostic.
 
 ## Setup
 
@@ -32,12 +36,15 @@ The plugin registers [`@nanostores/alpine`](https://github.com/nanostores/alpine
 
 ## Framework-agnostic client
 
-Use `createQueryClient()` when you need the query cache outside Alpine.js (tests, SSR setup, or other frameworks). State is backed by [Nanostores](https://github.com/nanostores/nanostores); the Alpine plugin bridges it to `$store.query` using the same `@nanostores/alpine` reactive pattern as `x-nano`.
+`createQueryClient()` works without Alpine.js. The cache core has **no store dependency** — it accepts a pluggable `QueryStateAdapter`.
+
+By default, a zero-dependency **vanilla adapter** is used. For Nanostores (recommended outside Alpine too):
 
 ```js
-import { createQueryClient } from "@ailuracode/alpine-query";
+import { createQueryClient, nanostoresQueryAdapter } from "@ailuracode/alpine-query";
 
 const query = createQueryClient({
+  adapter: nanostoresQueryAdapter,
   defaultOptions: {
     queries: { staleTime: 30_000 },
   },
@@ -46,6 +53,13 @@ const query = createQueryClient({
 const todos = query.observe(["todos"], () => fetch("/api/todos").then((r) => r.json()));
 await todos.refetch();
 todos.destroy();
+```
+
+Subpath imports are also available:
+
+```js
+import { nanostoresQueryAdapter } from "@ailuracode/alpine-query/adapters/nanostores";
+import { vanillaQueryAdapter } from "@ailuracode/alpine-query/adapters/vanilla";
 ```
 
 ## Queries
@@ -125,13 +139,14 @@ $store.query.invalidate(["todos"]);
 
 ### `createQueryClient(options?)`
 
-Framework-agnostic entry point. Returns the same method surface as `$store.query` without registering an Alpine store.
+Store-agnostic entry point. Returns the same method surface as `$store.query` without registering an Alpine store.
 
-| Method | Description |
-|--------|-------------|
-| Same as `$store.query` below | See table — `observe`, `fetch`, `get`, `prefetch`, `invalidate`, `remove`, `setData`, `cancel`, `reset`, `mutate` |
+| Option | Default | Description |
+|--------|---------|-------------|
+| `adapter` | `vanillaQueryAdapter` | Pluggable reactive state layer (`nanostoresQueryAdapter` recommended) |
+| `defaultOptions` | — | Same as the Alpine plugin |
 
-Internal cache state is backed by Nanostores. The Alpine plugin bridges that cache into reactive template bindings via `@nanostores/alpine`.
+The Alpine plugin uses `createAlpineNanostoresAdapter(Alpine)` — Nanostores + `@nanostores/alpine` bridge.
 
 ### `$store.query`
 

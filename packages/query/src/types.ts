@@ -1,3 +1,4 @@
+import type { QueryStateAdapter } from "./adapters/types.js";
 import type { QueryDevtoolsApi } from "./devtools.js";
 
 export type QueryKey = readonly unknown[];
@@ -83,6 +84,11 @@ export interface QueryPluginOptions {
   };
   /** Register `@nanostores/alpine` (`x-nano`, `$nano`). Default: `true`. */
   registerNanoStores?: boolean;
+}
+
+export interface QueryClientOptions extends QueryPluginOptions {
+  /** Reactive state adapter. Default: vanilla (zero deps). Use `nanostoresQueryAdapter` for Nanostores. */
+  adapter?: QueryStateAdapter;
 }
 
 export interface QueryStore {

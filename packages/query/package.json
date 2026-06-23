@@ -26,6 +26,14 @@
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
     },
+    "./adapters/nanostores": {
+      "types": "./dist/adapters/nanostores.d.ts",
+      "default": "./dist/adapters/nanostores.js"
+    },
+    "./adapters/vanilla": {
+      "types": "./dist/adapters/vanilla.d.ts",
+      "default": "./dist/adapters/vanilla.js"
+    },
     "./global": {
       "types": "./dist/global.d.ts"
     }
@@ -34,15 +42,22 @@
   "peerDependencies": {
     "@nanostores/alpine": "^0.1.0",
     "@types/alpinejs": "^3.13.11",
-    "alpinejs": "^3.0.0"
+    "alpinejs": "^3.0.0",
+    "nanostores": "^1.0.0"
   },
   "peerDependenciesMeta": {
+    "@nanostores/alpine": {
+      "optional": true
+    },
     "@types/alpinejs": {
+      "optional": true
+    },
+    "nanostores": {
       "optional": true
     }
   },
   "scripts": {
-    "build": "tsup src/index.ts --format esm --dts --clean --sourcemap --out-dir dist && cp src/global.d.ts dist/global.d.ts",
+    "build": "tsup src/index.ts src/adapters/nanostores.ts src/adapters/vanilla.ts --format esm --dts --clean --sourcemap --out-dir dist && cp src/global.d.ts dist/global.d.ts",
     "prepublishOnly": "pnpm run build",
     "test": "vitest run --config ../../vitest.config.js test"
   },

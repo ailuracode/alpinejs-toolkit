@@ -1,11 +1,10 @@
-import { type MapStore, map } from "nanostores";
 import type {
   FetchStatus,
   MutationState,
   MutationStatus,
   QueryState,
   QueryStatus,
-} from "./types.js";
+} from "../types.js";
 
 export type QueryStateRecord<TData = unknown> = {
   data: TData | undefined;
@@ -20,16 +19,6 @@ export type MutationStateRecord<TData = unknown> = {
   data: TData | undefined;
   error: Error | null;
   status: MutationStatus;
-};
-
-export type QueryStateStore<TData = unknown> = {
-  $state: MapStore<QueryStateRecord<TData>>;
-  state: QueryState<TData>;
-};
-
-export type MutationStateStore<TData = unknown, TVariables = void> = {
-  $state: MapStore<MutationStateRecord<TData>>;
-  state: MutationState<TData, TVariables>;
 };
 
 export function attachQueryFlags<TData>(state: QueryState<TData>, staleTime: number): void {
@@ -98,74 +87,51 @@ export function attachMutationFlags<TData, TVariables>(
   });
 }
 
-export function createQueryStateStore<TData>(
-  initial: QueryStateRecord<TData>,
+export function createQueryStateView<TData>(
+  getRecord: () => QueryStateRecord<TData>,
   staleTime: number,
   refetch: () => Promise<void>
-): QueryStateStore<TData> {
-  const $state = map(initial);
-
+): QueryState<TData> {
   const state = {
     get data() {
-      return $state.get().data;
+      return getRecord().data;
     },
     get error() {
-      return $state.get().error;
+      return getRecord().error;
     },
     get status() {
-      return $state.get().status;
+      return getRecord().status;
     },
     get fetchStatus() {
-      return $state.get().fetchStatus;
+      return getRecord().fetchStatus;
     },
     get dataUpdatedAt() {
-      return $state.get().dataUpdatedAt;
+      return getRecord().dataUpdatedAt;
     },
     get errorUpdatedAt() {
-      return $state.get().errorUpdatedAt;
+      return getRecord().errorUpdatedAt;
     },
     refetch,
   } as QueryState<TData>;
 
   attachQueryFlags(state, staleTime);
 
-  return { $state, state };
+  return state;
 }
 
-export function patchQueryState<TData>(
-  $state: MapStore<QueryStateRecord<TData>>,
-  patch: Partial<QueryStateRecord<TData>>
-): void {
-  const current = $state.get();
-
-  for (const [key, value] of Object.entries(patch) as [
-    keyof QueryStateRecord<TData>,
-    QueryStateRecord<TData>[keyof QueryStateRecord<TData>],
-  ][]) {
-    if (current[key] !== value) {
-      $state.setKey(key, value);
-    }
-  }
-}
-
-export function createMutationStateStore<TData, TVariables>(
+export function createMutationStateView<TData, TVariables>(
+  getRecord: () => MutationStateRecord<TData>,
   handlers: Pick<MutationState<TData, TVariables>, "mutate" | "reset">
-): MutationStateStore<TData, TVariables> {
-  const $state = map<MutationStateRecord<TData>>({
-    data: undefined,
-    error: null,
-    status: "idle",
-  });
-
+): MutationState<TData, TVariables> {
   const state = {
     get data() {
-      return $state.get().data;
+      return getRecord().data;
     },
     get error() {
-      return $state.get().error;
+      return getRecord().error;
     },
     get status() {
-      return $state.get().status;
+      return getRecord().status;
     },
     mutate: handlers.mutate,
     reset: handlers.reset,
@@ -173,21 +139,5 @@ export function createMutationStateStore<TData, TVariables>(
 
   attachMutationFlags(state);
 
-  return { $state, state };
-}
-
-export function patchMutationState<TData>(
-  $state: MapStore<MutationStateRecord<TData>>,
-  patch: Partial<MutationStateRecord<TData>>
-): void {
-  const current = $state.get();
-
-  for (const [key, value] of Object.entries(patch) as [
-    keyof MutationStateRecord<TData>,
-    MutationStateRecord<TData>[keyof MutationStateRecord<TData>],
-  ][]) {
-    if (current[key] !== value) {
-      $state.setKey(key, value);
-    }
-  }
+  return state;
 }

@@ -1,13 +1,6 @@
-import type AlpineType from "alpinejs";
-import { bridgeMutationStateToAlpine, bridgeQueryStateToAlpine } from "./alpine-bridge.js";
+import type { QueryStateAdapter } from "./adapters/types.js";
 import type { QueryEntry } from "./cache-internals.js";
 import { DevtoolsRegistry } from "./devtools-registry.js";
-import {
-  createMutationStateStore,
-  createQueryStateStore,
-  patchMutationState,
-  patchQueryState,
-} from "./nano-state.js";
 import type {
   MutationOptions,
   MutationState,
@@ -25,19 +18,19 @@ type QueryCacheConfig = {
 };
 
 type QueryCacheOptions = QueryCacheConfig & {
-  alpine?: AlpineType.Alpine;
+  adapter: QueryStateAdapter;
 };
 
 export class QueryCache {
   private readonly entries = new Map<string, QueryEntry>();
   private readonly config: QueryCacheConfig;
-  private readonly alpine?: AlpineType.Alpine;
+  private readonly adapter: QueryStateAdapter;
   private readonly devtools = new DevtoolsRegistry();
   private focusListenerAttached = false;
 
   constructor(options: QueryCacheOptions) {
     this.config = options;
-    this.alpine = options.alpine;
+    this.adapter = options.adapter;
   }
 
   getDevtools() {
@@ -145,7 +138,7 @@ export class QueryCache {
     const targets = this.resolveTargets(key);
 
     for (const entry of targets) {
-      this.disposeEntryBridge(entry);
+      this.disposeEntryHandle(entry);
       this.clearTimers(entry);
       this.entries.delete(entry.keyHash);
     }
@@ -161,7 +154,7 @@ export class QueryCache {
 
     const nextData =
       typeof data === "function"
-        ? (data as (current: TData | undefined) => TData)(entry.$state.get().data)
+        ? (data as (current: TData | undefined) => TData)(entry.handle.get().data)
         : data;
     this.applySuccess(entry, nextData);
   }
@@ -173,13 +166,13 @@ export class QueryCache {
     }
 
     entry.abortController?.abort();
-    patchQueryState(entry.$state, { fetchStatus: "idle" });
+    entry.handle.patch({ fetchStatus: "idle" });
     this.devtools.notify();
   }
 
   reset(): void {
     for (const entry of this.entries.values()) {
-      this.disposeEntryBridge(entry);
+      this.disposeEntryHandle(entry);
       this.clearTimers(entry);
     }
 
@@ -191,9 +184,9 @@ export class QueryCache {
   mutate<TData, TVariables, TContext>(
     options: MutationOptions<TData, TVariables, TContext>
   ): MutationState<TData, TVariables> {
-    const { $state, state } = createMutationStateStore<TData, TVariables>({
+    const handle = this.adapter.createMutationState<TData, TVariables>({
       mutate: async (variables: TVariables) => {
-        patchMutationState($state, { status: "pending", error: null });
+        handle.patch({ status: "pending", error: null });
         const mutationId = this.devtools.trackMutationStart(variables);
 
         let context: TContext | undefined;
@@ -201,14 +194,14 @@ export class QueryCache {
         try {
           context = await options.onMutate?.(variables);
           const data = await this.runMutationWithRetry(options.mutationFn, variables);
-          patchMutationState($state, { data, status: "success" });
+          handle.patch({ data, status: "success" });
           this.devtools.trackMutationSuccess(mutationId, data);
           options.onSuccess?.(data, variables, context);
           options.onSettled?.(data, null, variables, context);
           return data;
         } catch (error) {
           const mutationError = error instanceof Error ? error : new Error(String(error));
-          patchMutationState($state, { error: mutationError, status: "error" });
+          handle.patch({ error: mutationError, status: "error" });
           this.devtools.trackMutationError(mutationId, mutationError);
           options.onError?.(mutationError, variables, context);
           options.onSettled?.(undefined, mutationError, variables, context);
@@ -216,7 +209,7 @@ export class QueryCache {
         }
       },
       reset: () => {
-        patchMutationState($state, {
+        handle.patch({
           data: undefined,
           error: null,
           status: "idle",
@@ -224,12 +217,7 @@ export class QueryCache {
       },
     });
 
-    if (this.alpine) {
-      const bridge = bridgeMutationStateToAlpine(this.alpine, state, $state);
-      return bridge.state;
-    }
-
-    return state;
+    return handle.state;
   }
 
   private ensureEntry<TData>(
@@ -253,7 +241,7 @@ export class QueryCache {
     const hasInitialData = resolvedOptions.initialData !== undefined;
     let entryRef: QueryEntry<TData>;
 
-    const { $state, state } = createQueryStateStore<TData>(
+    const handle = this.adapter.createQueryState<TData>(
       {
         data: resolvedOptions.initialData ?? resolvedOptions.placeholderData,
         error: null,
@@ -273,8 +261,8 @@ export class QueryCache {
       keyHash,
       queryFn,
       options: resolvedOptions,
-      $state,
-      state,
+      handle,
+      state: handle.state,
       observers: 0,
       gcTimeout: null,
       intervalId: null,
@@ -282,17 +270,6 @@ export class QueryCache {
       abortController: null,
       isInvalidated: false,
     };
-
-    if (this.alpine) {
-      const bridge = bridgeQueryStateToAlpine(
-        this.alpine,
-        state,
-        $state,
-        resolvedOptions.staleTime
-      );
-      entryRef.state = bridge.state;
-      entryRef.alpineUnbind = bridge.unbind;
-    }
 
     this.entries.set(keyHash, entryRef as QueryEntry);
     this.devtools.notify();
@@ -329,7 +306,7 @@ export class QueryCache {
 
     entry.gcTimeout = setTimeout(() => {
       if (entry.observers === 0) {
-        this.disposeEntryBridge(entry);
+        this.disposeEntryHandle(entry);
         this.clearTimers(entry);
         this.entries.delete(entry.keyHash);
         this.devtools.notify();
@@ -399,21 +376,21 @@ export class QueryCache {
   }
 
   private isStale<TData>(entry: QueryEntry<TData>): boolean {
-    const { dataUpdatedAt } = entry.$state.get();
+    const { dataUpdatedAt } = entry.handle.get();
     if (dataUpdatedAt === 0) {
       return true;
     }
 
-    return Date.now() - dataUpdatedAt > entry.options.staleTime;
+    return Date.now() - entry.handle.get().dataUpdatedAt > entry.options.staleTime;
   }
 
   private fetchEntry<TData>(entry: QueryEntry<TData>, force = false): Promise<void> | undefined {
     if (!entry.options.enabled) {
-      patchQueryState(entry.$state, { fetchStatus: "paused" });
+      entry.handle.patch({ fetchStatus: "paused" });
       return;
     }
 
-    const current = entry.$state.get();
+    const current = entry.handle.get();
     if (!force && current.status === "success" && !entry.isInvalidated && !this.isStale(entry)) {
       return;
     }
@@ -422,7 +399,7 @@ export class QueryCache {
       return entry.fetchPromise;
     }
 
-    patchQueryState(entry.$state, { fetchStatus: "fetching" });
+    entry.handle.patch({ fetchStatus: "fetching" });
     entry.abortController?.abort();
     entry.abortController = new AbortController();
     this.devtools.notify();
@@ -434,8 +411,8 @@ export class QueryCache {
       .finally(() => {
         entry.fetchPromise = null;
         entry.isInvalidated = false;
-        if (entry.$state.get().fetchStatus === "fetching") {
-          patchQueryState(entry.$state, { fetchStatus: "idle" });
+        if (entry.handle.get().fetchStatus === "fetching") {
+          entry.handle.patch({ fetchStatus: "idle" });
         }
         this.devtools.notify();
       });
@@ -467,7 +444,7 @@ export class QueryCache {
   }
 
   private applySuccess<TData>(entry: QueryEntry<TData>, data: TData): void {
-    patchQueryState(entry.$state, {
+    entry.handle.patch({
       data,
       error: null,
       status: "success",
@@ -479,7 +456,7 @@ export class QueryCache {
   }
 
   private applyError<TData>(entry: QueryEntry<TData>, error: Error): void {
-    patchQueryState(entry.$state, {
+    entry.handle.patch({
       error,
       status: "error",
       errorUpdatedAt: Date.now(),
@@ -535,8 +512,7 @@ export class QueryCache {
     });
   }
 
-  private disposeEntryBridge<TData>(entry: QueryEntry<TData>): void {
-    entry.alpineUnbind?.();
-    entry.alpineUnbind = undefined;
+  private disposeEntryHandle<TData>(entry: QueryEntry<TData>): void {
+    entry.handle.dispose?.();
   }
 }

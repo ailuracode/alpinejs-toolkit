@@ -1,5 +1,4 @@
-import type { MapStore } from "nanostores";
-import type { QueryStateRecord } from "./nano-state.js";
+import type { QueryStateHandle } from "./adapters/types.js";
 import type { QueryKey, QueryState, ResolvedQueryOptions } from "./types.js";
 
 export type QueryEntry<TData = unknown> = {
@@ -7,9 +6,8 @@ export type QueryEntry<TData = unknown> = {
   keyHash: string;
   queryFn: () => Promise<TData>;
   options: ResolvedQueryOptions<TData>;
-  $state: MapStore<QueryStateRecord<TData>>;
+  handle: QueryStateHandle<TData>;
   state: QueryState<TData>;
-  alpineUnbind?: () => void;
   observers: number;
   gcTimeout: ReturnType<typeof setTimeout> | null;
   intervalId: ReturnType<typeof setInterval> | null;

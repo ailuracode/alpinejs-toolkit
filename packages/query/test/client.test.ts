@@ -18,7 +18,7 @@ describe("createQueryClient()", () => {
   });
 
   it("works without Alpine.js", async () => {
-    const queryFn = vi.fn().mockResolvedValue([{ id: 1, title: "Learn Nanostores" }]);
+    const queryFn = vi.fn().mockResolvedValue([{ id: 1, title: "Learn Alpine Query" }]);
     const query = client.observe<Todo[]>(["todos"], queryFn);
 
     expect(query.isLoading).toBe(true);
@@ -26,7 +26,7 @@ describe("createQueryClient()", () => {
     await vi.runAllTimersAsync();
 
     expect(query.isSuccess).toBe(true);
-    expect(query.data).toEqual([{ id: 1, title: "Learn Nanostores" }]);
+    expect(query.data).toEqual([{ id: 1, title: "Learn Alpine Query" }]);
     query.destroy();
   });
 

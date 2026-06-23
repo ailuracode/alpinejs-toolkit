@@ -24,11 +24,11 @@ describe("@ailuracode/alpine-query", () => {
     expect(typeof store.mutate).toBe("function");
   });
 
-  it("exports @nanostores/alpine integration", async () => {
+  it("uses vanilla adapter by default", async () => {
     const plugin = await import("../src/index.js");
-    expect(plugin.NanoStores).toBeTypeOf("function");
-    expect(plugin.directivePlugin).toBeTypeOf("function");
-    expect(plugin.magicPlugin).toBeTypeOf("function");
+    expect(plugin.vanillaQueryAdapter).toBeDefined();
+    expect(plugin.nanostoresQueryAdapter).toBeDefined();
+    expect(plugin.createAlpineNanostoresAdapter).toBeTypeOf("function");
   });
 
   it("supports registerNanoStores: false", () => {

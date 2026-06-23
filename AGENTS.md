@@ -24,7 +24,7 @@ Alpine.js plugin monorepo by **ailuracode**. Eighteen independent npm packages u
 | `@ailuracode/alpine-geo` | Store | `$store.geo` |
 | `@ailuracode/alpine-share` | Magic | `$share` |
 | `@ailuracode/alpine-attention` | Magic | `$wakelock`, `$idle` |
-| `@ailuracode/alpine-query` | Store | `$store.query` (Nanostores internally; also exports `createQueryClient()`) |
+| `@ailuracode/alpine-query` | Store | `$store.query` (store-agnostic core; Nanostores adapter for Alpine) |
 | `@ailuracode/alpine-query-devtools` | Plugin | Query cache devtools panel |
 
 ## Repository layout
@@ -98,17 +98,20 @@ export default function themePlugin(options = {}) {
 }
 ```
 
-### Query cache (Nanostores)
+### Query cache (store-agnostic core)
 
-`@ailuracode/alpine-query` uses [Nanostores](https://github.com/nanostores/nanostores) as its **internal** state layer — not `Alpine.reactive` as the source of truth.
+The query engine is **agnostic to any store library**. Reactivity is injected via `QueryStateAdapter`:
 
-- **`createQueryClient()`** — framework-agnostic query cache (tests, SSR setup, non-Alpine usage). Exported from `@ailuracode/alpine-query`.
-- **`query()` plugin** — registers `@nanostores/alpine` (`x-nano`, `$nano`) by default, bridges Nanostores into reactive `$store.query` objects using the same `Alpine.reactive` + `store.listen` pattern as `x-nano`.
-- **Per-query/mutation state** — Nanostores `map()` stores in `packages/query/src/nano-state.ts`; Alpine bridge in `alpine-bridge.ts` (follows `@nanostores/alpine` directive pattern).
-- **Public Alpine API unchanged** — templates still use `$store.query.observe()`, `$store.query.mutate()`, etc.
-- **Devtools unchanged** — `@ailuracode/alpine-query-devtools` uses `$store.query.devtools` and store methods; also accepts `createQueryClient()` via `getQueryStore(client)`.
+- **`QueryCache`** — store-agnostic cache engine (`packages/query/src/cache.ts`)
+- **`QueryStateAdapter`** — pluggable interface in `packages/query/src/adapters/types.ts`
+- **`vanillaQueryAdapter`** — zero-dependency default for `createQueryClient()` and tests
+- **`nanostoresQueryAdapter`** — recommended Nanostores adapter (`packages/query/src/adapters/nanostores.ts`)
+- **`createAlpineNanostoresAdapter(Alpine)`** — Alpine plugin path: Nanostores + `@nanostores/alpine` bridge
+- **`query()` plugin** — registers `@nanostores/alpine` by default and uses the Nanostores Alpine adapter
+- **Public Alpine API unchanged** — `$store.query.observe()`, `$store.query.mutate()`, etc.
+- **Devtools unchanged** — works with any adapter via the `QueryStore` surface
 
-Do not reintroduce `Alpine.reactive` as the cache source of truth inside `@ailuracode/alpine-query`.
+Do not couple `QueryCache` directly to Nanostores, Alpine.reactive, or other store runtimes — go through adapters.
 
 ## Testing
 
@@ -116,7 +119,7 @@ Do not reintroduce `Alpine.reactive` as the cache source of truth inside `@ailur
 - Include pattern: `packages/*/test/**/*.test.ts`
 - Store plugins: use `startAlpine()` from `test/helpers.ts`
 - Magic plugins: use `createMagicHarness()` from `test/mock-alpine.ts`
-- Query cache logic: prefer `createQueryClient()` from `@ailuracode/alpine-query` (no Alpine required); use `startAlpine(queryPlugin())` + `Alpine.store("query")` for Alpine integration tests
+- Query cache logic: use `createQueryClient()` with `vanillaQueryAdapter` (default) or `nanostoresQueryAdapter`; use `startAlpine(queryPlugin())` for Alpine integration tests
 - `matchMedia`: use `setMatchMedia()` from `test/setup.ts`
 
 Every change to plugin behavior must include or update tests. Run `pnpm test` and `pnpm run lint` before finishing.
