@@ -379,3 +379,36 @@ kbd {
 	border-color: var(--accent);
 	color: #fff;
 }
+
+.query-adapters {
+	display: grid;
+	gap: 1.25rem;
+	margin-top: 1rem;
+}
+
+@media (min-width: 720px) {
+	.query-adapters {
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+	}
+}
+
+.query-adapter {
+	padding: 1rem;
+	border: 1px solid var(--border);
+	border-radius: 0.75rem;
+	background: color-mix(in srgb, var(--surface) 88%, transparent);
+}
+
+.query-adapter__title {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.5rem;
+	margin: 0 0 0.75rem;
+	font-size: 1rem;
+}
+
+.query-adapter__title .badge {
+	font-size: 0.7rem;
+	font-weight: 600;
+}

@@ -72,9 +72,15 @@ importers:
       '@ailuracode/alpine-query':
         specifier: workspace:*
         version: link:../packages/query
+      '@ailuracode/alpine-query-adapter-alpine':
+        specifier: workspace:*
+        version: link:../packages/query-adapter-alpine
       '@ailuracode/alpine-query-adapter-nanostores':
         specifier: workspace:*
         version: link:../packages/query-adapter-nanostores
+      '@ailuracode/alpine-query-adapter-zustand':
+        specifier: workspace:*
+        version: link:../packages/query-adapter-zustand
       '@ailuracode/alpine-query-devtools':
         specifier: workspace:*
         version: link:../packages/query-devtools

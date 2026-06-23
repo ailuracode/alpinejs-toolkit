@@ -20,6 +20,7 @@ import scroll from "@ailuracode/alpine-scroll";
 import share from "@ailuracode/alpine-share";
 import theme from "@ailuracode/alpine-theme";
 import touch from "@ailuracode/alpine-touch";
+import { registerQueryDemos } from "./query-demos.js";
 
 export default (Alpine: Alpine) => {
 	Alpine.plugin(
@@ -46,5 +47,6 @@ export default (Alpine: Alpine) => {
 	Alpine.plugin(NanoStores);
 	Alpine.plugin(query({ adapter: createAlpineNanostoresAdapter }));
 	Alpine.plugin(queryDevtools({ position: "bottom" }));
+	registerQueryDemos(Alpine);
 	Alpine.plugin(notify);
 };
