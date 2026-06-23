@@ -1,5 +1,11 @@
 # @ailuracode/alpine-query-devtools
 
+## 0.2.1
+
+### Patch Changes
+
+- 78e57f6: Fix publish DTS builds when query packages are rebuilt in parallel during release.
+
 ## 0.2.0
 
 ### Minor Changes

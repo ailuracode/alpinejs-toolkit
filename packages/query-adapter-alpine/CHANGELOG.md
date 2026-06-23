@@ -1,5 +1,11 @@
 # @ailuracode/alpine-query-adapter-alpine
 
+## 3.0.1
+
+### Patch Changes
+
+- 78e57f6: Fix publish DTS builds when query packages are rebuilt in parallel during release.
+
 ## 3.0.0
 
 ### Patch Changes

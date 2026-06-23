@@ -1,6 +1,6 @@
 {
   "name": "@ailuracode/alpine-query-devtools",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "TanStack Query-style devtools panel for @ailuracode/alpine-query",
   "type": "module",
   "license": "MIT",
@@ -44,7 +44,7 @@
     }
   },
   "scripts": {
-    "build": "tsup src/index.ts --format esm --dts --clean --sourcemap --out-dir dist && cp src/global.d.ts dist/global.d.ts",
+    "build": "tsup src/index.ts --format esm --dts --clean --sourcemap --out-dir dist --tsconfig tsconfig.build.json && cp src/global.d.ts dist/global.d.ts",
     "prepublishOnly": "pnpm run build",
     "test": "vitest run --config ../../vitest.config.ts test"
   },

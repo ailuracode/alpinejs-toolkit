@@ -1,6 +1,6 @@
 {
   "name": "@ailuracode/alpine-query-adapter-zustand",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "Zustand adapter plugin for @ailuracode/alpine-query",
   "type": "module",
   "license": "MIT",
