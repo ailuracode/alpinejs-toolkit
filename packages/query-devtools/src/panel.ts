@@ -480,10 +480,15 @@ export function mountQueryDevtools(options: QueryDevtoolsMountOptions): QueryDev
 }
 
 export function getQueryStore(
-  Alpine: { store(name: string): unknown },
+  source: QueryStore | { store(name: string): unknown },
   storeName = "query"
 ): QueryStore {
-  const store = Alpine.store(storeName) as QueryStore | undefined;
+  if (isQueryStore(source)) {
+    assertQueryStoreWithDevtools(source);
+    return source;
+  }
+
+  const store = source.store(storeName) as QueryStore | undefined;
 
   if (!store?.devtools) {
     throw new Error(
@@ -492,6 +497,23 @@ export function getQueryStore(
   }
 
   return store;
+}
+
+function isQueryStore(value: unknown): value is QueryStore {
+  return (
+    typeof value === "object" &&
+    value !== null &&
+    "devtools" in value &&
+    typeof (value as QueryStore).observe === "function"
+  );
+}
+
+function assertQueryStoreWithDevtools(store: QueryStore): void {
+  if (!store.devtools) {
+    throw new Error(
+      "@ailuracode/alpine-query-devtools requires @ailuracode/alpine-query with devtools support"
+    );
+  }
 }
 
 export type { QueryDevtoolsSnapshot };

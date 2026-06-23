@@ -106,6 +106,7 @@ export default function themePlugin(options = {}) {
 - **`query()` plugin** — thin Alpine bridge: creates a `QueryCache`, syncs Nanostores into reactive objects, registers `$store.query`.
 - **Per-query/mutation state** — Nanostores `map()` stores in `packages/query/src/nano-state.ts`; Alpine bridge in `alpine-bridge.ts`.
 - **Public Alpine API unchanged** — templates still use `$store.query.observe()`, `$store.query.mutate()`, etc.
+- **Devtools unchanged** — `@ailuracode/alpine-query-devtools` uses `$store.query.devtools` and store methods; also accepts `createQueryClient()` via `getQueryStore(client)`.
 
 Do not reintroduce `Alpine.reactive` as the cache source of truth inside `@ailuracode/alpine-query`.
 

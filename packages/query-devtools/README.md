@@ -58,17 +58,24 @@ Set the initial corner with `toggleCorner`. When `persistToggleCorner` is `true`
 
 ## Imperative API
 
+Works with both `$store.query` (via Alpine) and `createQueryClient()`:
+
 ```js
+import { createQueryClient } from "@ailuracode/alpine-query";
 import { mountQueryDevtools, getQueryStore } from "@ailuracode/alpine-query-devtools";
 
-const controller = mountQueryDevtools({
+// Option A — Alpine store (after Alpine.plugin(query()))
+const fromAlpine = mountQueryDevtools({
   store: getQueryStore(Alpine),
   position: "right",
 });
 
-controller.open();
-controller.setToggleCorner("top-left");
-controller.destroy();
+// Option B — framework-agnostic client (no Alpine.store required)
+const query = createQueryClient();
+const fromClient = mountQueryDevtools({ store: getQueryStore(query) });
+
+fromAlpine.open();
+fromClient.destroy();
 ```
 
 ## Production

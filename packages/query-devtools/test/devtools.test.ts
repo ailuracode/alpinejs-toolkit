@@ -126,4 +126,74 @@ describe("@ailuracode/alpine-query-devtools", () => {
       "@ailuracode/alpine-query-devtools could not find"
     );
   });
+
+  it("getQueryStore() accepts a createQueryClient() instance", async () => {
+    vi.useFakeTimers();
+
+    const { createQueryClient } = await import("@ailuracode/alpine-query");
+    const store = getQueryStore(createQueryClient());
+
+    const controller = mountQueryDevtools({ store, initialOpen: true });
+    const query = store.observe(["standalone"], async () => "nanostores");
+    await vi.runAllTimersAsync();
+
+    expect(document.querySelector(".aq-devtools-toggle")?.textContent).toBe("Query (1)");
+    expect(document.body.textContent).toContain("nanostores");
+
+    store.invalidate(["standalone"]);
+    await vi.runAllTimersAsync();
+    expect(query.data).toBe("nanostores");
+
+    store.remove(["standalone"]);
+    expect(store.get(["standalone"])).toBeUndefined();
+
+    controller.destroy();
+    query.destroy();
+    store.reset();
+    vi.useRealTimers();
+  });
+
+  it("devtools actions refetch, invalidate, and remove queries", async () => {
+    vi.useFakeTimers();
+
+    const Alpine = startAlpine(queryPlugin());
+    const store = Alpine.store("query") as QueryStore;
+    const queryFn = vi
+      .fn()
+      .mockResolvedValueOnce("v1")
+      .mockResolvedValueOnce("v2")
+      .mockResolvedValueOnce("v3");
+
+    const query = store.observe(["actions"], queryFn, { staleTime: 60_000 });
+    await vi.runAllTimersAsync();
+    expect(query.data).toBe("v1");
+
+    const controller = mountQueryDevtools({ store, initialOpen: true });
+
+    const invalidateButton = [...document.querySelectorAll(".aq-devtools-btn")].find(
+      (button) => button.textContent === "Invalidate"
+    ) as HTMLButtonElement;
+    invalidateButton.click();
+    await vi.runAllTimersAsync();
+    expect(queryFn).toHaveBeenCalledTimes(2);
+    expect(query.data).toBe("v2");
+
+    const refetchButton = [...document.querySelectorAll(".aq-devtools-btn")].find(
+      (button) => button.textContent === "Refetch"
+    ) as HTMLButtonElement;
+    refetchButton.click();
+    await vi.runAllTimersAsync();
+    expect(queryFn).toHaveBeenCalledTimes(3);
+    expect(query.data).toBe("v3");
+
+    const removeButton = [...document.querySelectorAll(".aq-devtools-btn")].find(
+      (button) => button.textContent === "Remove"
+    ) as HTMLButtonElement;
+    removeButton.click();
+    expect(store.get(["actions"])).toBeUndefined();
+
+    controller.destroy();
+    query.destroy();
+    vi.useRealTimers();
+  });
 });

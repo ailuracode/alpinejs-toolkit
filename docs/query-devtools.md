@@ -19,6 +19,13 @@ Alpine.start();
 
 See the [package README](../packages/query-devtools/README.md) for options and imperative mounting.
 
+## Compatibility
+
+Devtools consume the headless `$store.query.devtools` API (`subscribe`, `getSnapshot`) and the store methods `get`, `invalidate`, and `remove`. This works unchanged after the Nanostores migration:
+
+- **Alpine plugin** — register `query()` then `queryDevtools()`; panel resolves `$store.query` on `alpine:initialized`.
+- **`createQueryClient()`** — pass the client to `mountQueryDevtools({ store: getQueryStore(client) })` without Alpine.
+
 ## What you can inspect
 
 - Query keys and serialized `data`
