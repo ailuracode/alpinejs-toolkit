@@ -19,15 +19,21 @@ Alpine.start();
 ```
 
 ```html
-<div x-data="$store.query.observe(['todos'], () => fetch('/api/todos').then((r) => r.json()))">
-  <p x-show="isLoading">Loading…</p>
-  <ul x-show="isSuccess">
-    <template x-for="todo in data" :key="todo.id">
+<div
+  x-data="{
+    todos: $store.query.observe(['todos'], () => fetch('/api/todos').then((r) => r.json())),
+  }"
+>
+  <p x-show="todos.isLoading">Loading…</p>
+  <ul x-show="todos.isSuccess">
+    <template x-for="todo in todos.data" :key="todo.id">
       <li x-text="todo.title"></li>
     </template>
   </ul>
 </div>
 ```
+
+Keep the query object nested (e.g. `todos.isLoading`) — do not spread `observe()` into `x-data`, or getters like `isSuccess` will not work.
 
 See the [package README](../packages/query/README.md) for the full API.
 

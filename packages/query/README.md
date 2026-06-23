@@ -34,18 +34,22 @@ Use `observe()` inside `x-data` for component-scoped subscriptions (similar to `
 
 ```html
 <div
-  x-data="$store.query.observe(['todos'], () => fetch('/api/todos').then((r) => r.json()))"
+  x-data="{
+    todos: $store.query.observe(['todos'], () => fetch('/api/todos').then((r) => r.json())),
+  }"
 >
-  <p x-show="isLoading">Loading…</p>
-  <p x-show="isError" x-text="error?.message"></p>
-  <ul x-show="isSuccess">
-    <template x-for="todo in data" :key="todo.id">
+  <p x-show="todos.isLoading">Loading…</p>
+  <p x-show="todos.isError" x-text="todos.error?.message"></p>
+  <ul x-show="todos.isSuccess">
+    <template x-for="todo in todos.data" :key="todo.id">
       <li x-text="todo.title"></li>
     </template>
   </ul>
-  <button type="button" @click="refetch()">Refresh</button>
+  <button type="button" @click="todos.refetch()">Refresh</button>
 </div>
 ```
+
+Do **not** spread the result of `observe()` (`{ ...$store.query.observe() }`) — boolean getters such as `isLoading` and `isSuccess` are defined on the query object and are lost when spread into a new object.
 
 `destroy()` is called automatically when the component is removed, so cached queries can be garbage-collected.
 
