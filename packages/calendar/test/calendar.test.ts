@@ -117,6 +117,123 @@ describe("@ailuracode/alpine-calendar", () => {
       expect(cal.isSelected(allowed)).toBe(true);
     });
 
+    it("disables individual dates", () => {
+      const blocked = new Date(2024, 0, 10);
+      const cal = createCalendar({
+        month: JAN_2024,
+        disabled: blocked,
+      });
+
+      expect(cal.isDisabled(blocked)).toBe(true);
+      expect(cal.isDisabled(new Date(2024, 0, 11))).toBe(false);
+
+      cal.select(blocked);
+      expect(cal.selected).toBeNull();
+    });
+
+    it("disables multiple loose dates", () => {
+      const cal = createCalendar({
+        month: JAN_2024,
+        disabled: [new Date(2024, 0, 3), new Date(2024, 0, 17)],
+      });
+
+      expect(cal.isDisabled(new Date(2024, 0, 3))).toBe(true);
+      expect(cal.isDisabled(new Date(2024, 0, 17))).toBe(true);
+      expect(cal.isDisabled(new Date(2024, 0, 4))).toBe(false);
+    });
+
+    it("disables inclusive date ranges", () => {
+      const cal = createCalendar({
+        month: JAN_2024,
+        disabled: { from: new Date(2024, 0, 8), to: new Date(2024, 0, 12) },
+      });
+
+      expect(cal.isDisabled(new Date(2024, 0, 7))).toBe(false);
+      expect(cal.isDisabled(new Date(2024, 0, 8))).toBe(true);
+      expect(cal.isDisabled(new Date(2024, 0, 10))).toBe(true);
+      expect(cal.isDisabled(new Date(2024, 0, 12))).toBe(true);
+      expect(cal.isDisabled(new Date(2024, 0, 13))).toBe(false);
+    });
+
+    it("disables exclusive intervals between two bounds", () => {
+      const cal = createCalendar({
+        month: JAN_2024,
+        disabled: { after: new Date(2024, 0, 7), before: new Date(2024, 0, 13) },
+      });
+
+      expect(cal.isDisabled(new Date(2024, 0, 7))).toBe(false);
+      expect(cal.isDisabled(new Date(2024, 0, 8))).toBe(true);
+      expect(cal.isDisabled(new Date(2024, 0, 12))).toBe(true);
+      expect(cal.isDisabled(new Date(2024, 0, 13))).toBe(false);
+    });
+
+    it("disables dates outside an only range", () => {
+      const cal = createCalendar({
+        month: JAN_2024,
+        disabled: { only: { from: new Date(2024, 0, 8), to: new Date(2024, 0, 12) } },
+      });
+
+      expect(cal.isDisabled(new Date(2024, 0, 7))).toBe(true);
+      expect(cal.isDisabled(new Date(2024, 0, 8))).toBe(false);
+      expect(cal.isDisabled(new Date(2024, 0, 12))).toBe(false);
+      expect(cal.isDisabled(new Date(2024, 0, 13))).toBe(true);
+    });
+
+    it("disables weekdays and custom matchers", () => {
+      const weekendCal = createCalendar({
+        month: JAN_2024,
+        disabled: { dayOfWeek: [0, 6] },
+      });
+
+      expect(weekendCal.isDisabled(new Date(2024, 0, 6))).toBe(true);
+      expect(weekendCal.isDisabled(new Date(2024, 0, 8))).toBe(false);
+
+      const customCal = createCalendar({
+        month: JAN_2024,
+        disabled: (date) => date.getDate() % 2 === 0,
+      });
+
+      expect(customCal.isDisabled(new Date(2024, 0, 10))).toBe(true);
+      expect(customCal.isDisabled(new Date(2024, 0, 11))).toBe(false);
+    });
+
+    it("combines multiple disabled matchers", () => {
+      const cal = createCalendar({
+        month: JAN_2024,
+        disabled: [
+          new Date(2024, 0, 2),
+          { from: new Date(2024, 0, 20), to: new Date(2024, 0, 22) },
+          { dayOfWeek: [0] },
+        ],
+      });
+
+      expect(cal.isDisabled(new Date(2024, 0, 2))).toBe(true);
+      expect(cal.isDisabled(new Date(2024, 0, 21))).toBe(true);
+      expect(cal.isDisabled(new Date(2024, 0, 7))).toBe(true);
+      expect(cal.isDisabled(new Date(2024, 0, 9))).toBe(false);
+    });
+
+    it("exposes matches() for arbitrary matchers", () => {
+      const cal = createCalendar({ month: JAN_2024 });
+
+      expect(cal.matches(new Date(2024, 0, 10), { before: new Date(2024, 0, 15) })).toBe(true);
+      expect(cal.matches(new Date(2024, 0, 20), { before: new Date(2024, 0, 15) })).toBe(false);
+    });
+
+    it("merges dateFns options with top-level shortcuts", () => {
+      const cal = createCalendar({
+        month: JAN_2024,
+        weekStartsOn: 1,
+        dateFns: {
+          firstWeekContainsDate: 4,
+        },
+      });
+
+      expect(cal.weekStartsOn).toBe(1);
+      expect(cal.dateFns.firstWeekContainsDate).toBe(4);
+      expect(cal.weekdayLabels[0]).toBe("Mo");
+    });
+
     it("formats dates with the configured locale", () => {
       const cal = createCalendar({ month: JAN_2024, locale: es });
 

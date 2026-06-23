@@ -246,7 +246,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 
 		<section class="card">
 			<h2>Calendar <code>$calendar</code></h2>
-			<div x-data="{ cal: $calendar({ weekStartsOn: 1, mode: 'single' }) }">
+			<div x-data="{ cal: $calendar({ weekStartsOn: 1, mode: 'single', disabled: { dayOfWeek: [0, 6] } }) }">
 				<div class="btn-group calendar-header">
 					<button type="button" @click="cal.prevMonth()">Previous</button>
 					<strong x-text="cal.formatMonth()"></strong>
@@ -281,6 +281,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 					Selected:
 					<strong x-text="cal.format(cal.selected, 'PPP')"></strong>
 				</p>
+				<p class="hint">Weekends are disabled via <code>disabled: &#123; dayOfWeek: [0, 6] &#125;</code>.</p>
 			</div>
 		</section>
 

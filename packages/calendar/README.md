@@ -59,7 +59,7 @@ Alpine.start();
 | | |
 |-|-|
 | **Magic** | `$calendar(options?)` |
-| **Returns** | Independent `CalendarInstance` with month navigation, selection, and grid data |
+| **Returns** | Independent `CalendarInstance` with month navigation, selection, grid data, and flexible `disabled` matchers |
 
 No UI is rendered — you build the markup and styles.
 

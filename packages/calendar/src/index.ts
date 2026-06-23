@@ -7,7 +7,6 @@ import {
   endOfMonth,
   endOfWeek,
   format,
-  isAfter,
   isBefore,
   isSameDay,
   isSameMonth,
@@ -18,7 +17,24 @@ import {
   startOfWeek,
   subMonths,
 } from "date-fns";
-import { enUS } from "date-fns/locale";
+import {
+  type CalendarDateFnsOptions,
+  type ResolvedDateFnsContext,
+  resolveDateFnsContext,
+} from "./context.js";
+import {
+  type CalendarDateAfterMatcher,
+  type CalendarDateBeforeMatcher,
+  type CalendarDateIntervalMatcher,
+  type CalendarDateOnlyMatcher,
+  type CalendarDateRangeMatcher,
+  type CalendarDayOfWeekMatcher,
+  type CalendarMatcher,
+  type CalendarMatcherFn,
+  isDateDisabledByRules,
+  matchesCalendarMatcher,
+  normalizeMatchers,
+} from "./matchers.js";
 
 export type CalendarMode = "single" | "range" | "multiple";
 
@@ -29,6 +45,21 @@ export type CalendarDateRange = {
 
 export type CalendarSelection = Date | Date[] | CalendarDateRange | null;
 
+export type {
+  CalendarDateAfterMatcher,
+  CalendarDateBeforeMatcher,
+  CalendarDateFnsOptions,
+  CalendarDateIntervalMatcher,
+  CalendarDateOnlyMatcher,
+  CalendarDateRangeMatcher,
+  CalendarDayOfWeekMatcher,
+  CalendarMatcher,
+  CalendarMatcherFn,
+  ResolvedDateFnsContext,
+};
+
+export { matchesCalendarMatcher, normalizeMatchers };
+
 export interface CalendarOptions {
   locale?: Locale;
   weekStartsOn?: Day;
@@ -37,6 +68,8 @@ export interface CalendarOptions {
   mode?: CalendarMode;
   month?: Date;
   selected?: CalendarSelection;
+  disabled?: CalendarMatcher | CalendarMatcher[];
+  dateFns?: CalendarDateFnsOptions;
 }
 
 export interface CalendarDay {
@@ -56,6 +89,7 @@ export interface CalendarInstance {
   selected: CalendarSelection;
   locale: Locale;
   weekStartsOn: Day;
+  dateFns: ResolvedDateFnsContext;
   readonly weeks: CalendarDay[][];
   readonly weekdayLabels: string[];
   prevMonth(): void;
@@ -64,6 +98,7 @@ export interface CalendarInstance {
   goToToday(): void;
   select(date: Date | null): void;
   clear(): void;
+  matches(date: Date, matcher: CalendarMatcher): boolean;
   isSelected(date: Date): boolean;
   isDisabled(date: Date): boolean;
   isToday(date: Date): boolean;
@@ -78,34 +113,41 @@ export interface CalendarInstance {
 
 export type CalendarMagic = (options?: CalendarOptions) => CalendarInstance;
 
-type ResolvedCalendarOptions = {
-  locale: Locale;
-  weekStartsOn: Day;
+type ResolvedCalendarConfig = {
+  context: ResolvedDateFnsContext;
   minDate?: Date;
   maxDate?: Date;
   mode: CalendarMode;
   month: Date;
   selected: CalendarSelection;
+  disabled: CalendarMatcher[];
 };
 
-function normalizeDate(date: Date): Date {
-  return startOfDay(date);
+function normalizeDate(date: Date, context: ResolvedDateFnsContext): Date {
+  return startOfDay(date, context);
 }
 
-function normalizeRange(range: CalendarDateRange): CalendarDateRange {
+function normalizeRange(
+  range: CalendarDateRange,
+  context: ResolvedDateFnsContext
+): CalendarDateRange {
   return {
-    from: range.from ? normalizeDate(range.from) : undefined,
-    to: range.to ? normalizeDate(range.to) : undefined,
+    from: range.from ? normalizeDate(range.from, context) : undefined,
+    to: range.to ? normalizeDate(range.to, context) : undefined,
   };
 }
 
-function normalizeSelection(selection: CalendarSelection, mode: CalendarMode): CalendarSelection {
+function normalizeSelection(
+  selection: CalendarSelection,
+  mode: CalendarMode,
+  context: ResolvedDateFnsContext
+): CalendarSelection {
   if (selection === null) {
     return null;
   }
 
   if (mode === "single") {
-    return selection instanceof Date ? normalizeDate(selection) : null;
+    return selection instanceof Date ? normalizeDate(selection, context) : null;
   }
 
   if (mode === "multiple") {
@@ -113,33 +155,35 @@ function normalizeSelection(selection: CalendarSelection, mode: CalendarMode): C
       return [];
     }
 
-    return selection.map(normalizeDate);
+    return selection.map((date) => normalizeDate(date, context));
   }
 
   if (typeof selection === "object" && !Array.isArray(selection) && !(selection instanceof Date)) {
-    return normalizeRange(selection);
+    return normalizeRange(selection, context);
   }
 
   return null;
 }
 
-function resolveOptions(options: CalendarOptions = {}): ResolvedCalendarOptions {
+function resolveConfig(options: CalendarOptions = {}): ResolvedCalendarConfig {
+  const context = resolveDateFnsContext(options);
+
   return {
-    locale: options.locale ?? enUS,
-    weekStartsOn: options.weekStartsOn ?? 0,
-    minDate: options.minDate ? normalizeDate(options.minDate) : undefined,
-    maxDate: options.maxDate ? normalizeDate(options.maxDate) : undefined,
+    context,
+    minDate: options.minDate ? normalizeDate(options.minDate, context) : undefined,
+    maxDate: options.maxDate ? normalizeDate(options.maxDate, context) : undefined,
     mode: options.mode ?? "single",
-    month: startOfMonth(options.month ?? new Date()),
-    selected: normalizeSelection(options.selected ?? null, options.mode ?? "single"),
+    month: startOfMonth(options.month ?? new Date(), context),
+    selected: normalizeSelection(options.selected ?? null, options.mode ?? "single", context),
+    disabled: normalizeMatchers(options.disabled),
   };
 }
 
-function getMonthDays(month: Date, weekStartsOn: Day): Date[] {
-  const start = startOfWeek(startOfMonth(month), { weekStartsOn });
-  const end = endOfWeek(endOfMonth(month), { weekStartsOn });
+function getMonthDays(month: Date, context: ResolvedDateFnsContext): Date[] {
+  const start = startOfWeek(startOfMonth(month, context), context);
+  const end = endOfWeek(endOfMonth(month, context), context);
 
-  return eachDayOfInterval({ start, end });
+  return eachDayOfInterval({ start, end }, context);
 }
 
 function chunkWeeks(days: Date[]): Date[][] {
@@ -152,11 +196,11 @@ function chunkWeeks(days: Date[]): Date[][] {
   return weeks;
 }
 
-function getWeekdayLabels(weekStartsOn: Day, locale: Locale): string[] {
-  const start = startOfWeek(new Date(), { weekStartsOn });
+function getWeekdayLabels(context: ResolvedDateFnsContext): string[] {
+  const start = startOfWeek(new Date(), context);
 
   return Array.from({ length: 7 }, (_, index) =>
-    format(addDays(start, index), "EEEEEE", { locale })
+    format(addDays(start, index, context), "EEEEEE", context)
   );
 }
 
@@ -166,7 +210,7 @@ function selectSingleDate(calendar: CalendarInstance, day: Date): void {
 
 function selectMultipleDate(calendar: CalendarInstance, day: Date): void {
   const current = Array.isArray(calendar.selected) ? [...calendar.selected] : [];
-  const existingIndex = current.findIndex((value) => isSameDay(value, day));
+  const existingIndex = current.findIndex((value) => isSameDay(value, day, calendar.dateFns));
 
   if (existingIndex >= 0) {
     current.splice(existingIndex, 1);
@@ -185,6 +229,10 @@ function selectRangeDate(calendar: CalendarInstance, day: Date): void {
     return;
   }
 
+  if (isSameDay(day, range.from, calendar.dateFns)) {
+    return;
+  }
+
   if (isBefore(day, range.from)) {
     calendar.selected = { from: day, to: range.from };
     return;
@@ -193,15 +241,27 @@ function selectRangeDate(calendar: CalendarInstance, day: Date): void {
   calendar.selected = { from: range.from, to: day };
 }
 
-function isSingleSelected(selected: CalendarSelection, day: Date): boolean {
-  return selected instanceof Date ? isSameDay(selected, day) : false;
+function isSingleSelected(
+  selected: CalendarSelection,
+  day: Date,
+  context: ResolvedDateFnsContext
+): boolean {
+  return selected instanceof Date ? isSameDay(selected, day, context) : false;
 }
 
-function isMultipleSelected(selected: CalendarSelection, day: Date): boolean {
-  return Array.isArray(selected) ? selected.some((value) => isSameDay(value, day)) : false;
+function isMultipleSelected(
+  selected: CalendarSelection,
+  day: Date,
+  context: ResolvedDateFnsContext
+): boolean {
+  return Array.isArray(selected) ? selected.some((value) => isSameDay(value, day, context)) : false;
 }
 
-function isRangeEndpointSelected(selected: CalendarSelection, day: Date): boolean {
+function isRangeEndpointSelected(
+  selected: CalendarSelection,
+  day: Date,
+  context: ResolvedDateFnsContext
+): boolean {
   const range = selected as CalendarDateRange | null;
 
   if (!range) {
@@ -209,42 +269,31 @@ function isRangeEndpointSelected(selected: CalendarSelection, day: Date): boolea
   }
 
   return (
-    (range.from ? isSameDay(range.from, day) : false) ||
-    (range.to ? isSameDay(range.to, day) : false)
+    (range.from ? isSameDay(range.from, day, context) : false) ||
+    (range.to ? isSameDay(range.to, day, context) : false)
   );
-}
-
-function isDateDisabled(day: Date, minDate: Date | undefined, maxDate: Date | undefined): boolean {
-  if (minDate && isBefore(day, minDate)) {
-    return true;
-  }
-
-  if (maxDate && isAfter(day, maxDate)) {
-    return true;
-  }
-
-  return false;
 }
 
 /** Creates an independent calendar logic instance backed by date-fns. */
 export function createCalendar(options: CalendarOptions = {}): CalendarInstance {
-  const config = resolveOptions(options);
+  const config = resolveConfig(options);
 
   const calendar: CalendarInstance = {
     month: config.month,
     mode: config.mode,
     selected: config.selected,
-    locale: config.locale,
-    weekStartsOn: config.weekStartsOn,
+    locale: config.context.locale,
+    weekStartsOn: config.context.weekStartsOn,
+    dateFns: config.context,
 
     get weeks() {
-      const days = getMonthDays(this.month, this.weekStartsOn);
+      const days = getMonthDays(this.month, this.dateFns);
 
       return chunkWeeks(days).map((week) =>
         week.map((date) => ({
           date,
-          isCurrentMonth: isSameMonth(date, this.month),
-          isToday: isTodayDate(date),
+          isCurrentMonth: isSameMonth(date, this.month, this.dateFns),
+          isToday: isTodayDate(date, this.dateFns),
           isSelected: this.isSelected(date),
           isDisabled: this.isDisabled(date),
           isRangeStart: this.isRangeStart(date),
@@ -255,19 +304,19 @@ export function createCalendar(options: CalendarOptions = {}): CalendarInstance 
     },
 
     get weekdayLabels() {
-      return getWeekdayLabels(this.weekStartsOn, this.locale);
+      return getWeekdayLabels(this.dateFns);
     },
 
     prevMonth() {
-      this.month = subMonths(this.month, 1);
+      this.month = subMonths(this.month, 1, this.dateFns);
     },
 
     nextMonth() {
-      this.month = addMonths(this.month, 1);
+      this.month = addMonths(this.month, 1, this.dateFns);
     },
 
     goToMonth(date: Date) {
-      this.month = startOfMonth(date);
+      this.month = startOfMonth(date, this.dateFns);
     },
 
     goToToday() {
@@ -280,7 +329,7 @@ export function createCalendar(options: CalendarOptions = {}): CalendarInstance 
         return;
       }
 
-      const day = normalizeDate(date);
+      const day = normalizeDate(date, this.dateFns);
 
       if (this.isDisabled(day)) {
         return;
@@ -303,30 +352,40 @@ export function createCalendar(options: CalendarOptions = {}): CalendarInstance 
       this.selected = this.mode === "multiple" ? [] : null;
     },
 
+    matches(date: Date, matcher: CalendarMatcher) {
+      return matchesCalendarMatcher(date, matcher, this.dateFns);
+    },
+
     isSelected(date: Date) {
-      const day = normalizeDate(date);
+      const day = normalizeDate(date, this.dateFns);
 
       if (this.mode === "single") {
-        return isSingleSelected(this.selected, day);
+        return isSingleSelected(this.selected, day, this.dateFns);
       }
 
       if (this.mode === "multiple") {
-        return isMultipleSelected(this.selected, day);
+        return isMultipleSelected(this.selected, day, this.dateFns);
       }
 
-      return isRangeEndpointSelected(this.selected, day);
+      return isRangeEndpointSelected(this.selected, day, this.dateFns);
     },
 
     isDisabled(date: Date) {
-      return isDateDisabled(normalizeDate(date), config.minDate, config.maxDate);
+      return isDateDisabledByRules(
+        date,
+        config.minDate,
+        config.maxDate,
+        config.disabled,
+        this.dateFns
+      );
     },
 
     isToday(date: Date) {
-      return isTodayDate(date);
+      return isTodayDate(date, this.dateFns);
     },
 
     isSameMonth(date: Date, month?: Date) {
-      return isSameMonth(date, month ?? calendar.month);
+      return isSameMonth(date, month ?? calendar.month, calendar.dateFns);
     },
 
     isInRange(date: Date) {
@@ -340,37 +399,37 @@ export function createCalendar(options: CalendarOptions = {}): CalendarInstance 
         return false;
       }
 
-      const day = normalizeDate(date);
+      const day = normalizeDate(date, this.dateFns);
 
       return (
-        isWithinInterval(day, { start: range.from, end: range.to }) &&
-        !isSameDay(day, range.from) &&
-        !isSameDay(day, range.to)
+        isWithinInterval(day, { start: range.from, end: range.to }, this.dateFns) &&
+        !isSameDay(day, range.from, this.dateFns) &&
+        !isSameDay(day, range.to, this.dateFns)
       );
     },
 
     isRangeStart(date: Date) {
       const range = this.selected as CalendarDateRange | null;
-      return range?.from ? isSameDay(date, range.from) : false;
+      return range?.from ? isSameDay(date, range.from, this.dateFns) : false;
     },
 
     isRangeEnd(date: Date) {
       const range = this.selected as CalendarDateRange | null;
-      return range?.to ? isSameDay(date, range.to) : false;
+      return range?.to ? isSameDay(date, range.to, this.dateFns) : false;
     },
 
     format(date: Date, pattern: string) {
-      return format(date, pattern, { locale: this.locale });
+      return format(date, pattern, this.dateFns);
     },
 
     formatMonth(month?: Date) {
       const value = month ?? calendar.month;
-      return format(value, "LLLL yyyy", { locale: calendar.locale });
+      return format(value, "LLLL yyyy", calendar.dateFns);
     },
 
     formatYear(month?: Date) {
       const value = month ?? calendar.month;
-      return format(value, "yyyy", { locale: calendar.locale });
+      return format(value, "yyyy", calendar.dateFns);
     },
   };
 

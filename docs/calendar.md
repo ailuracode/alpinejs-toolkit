@@ -47,6 +47,69 @@ Each call returns a new object with its own month, selection, and grid data.
 | `mode` | `"single"` \| `"range"` \| `"multiple"` | `"single"` | Selection behavior |
 | `month` | `Date` | current month | Initial visible month |
 | `selected` | `Date` \| `Date[]` \| `{ from?, to? }` \| `null` | `null` | Initial selection |
+| `disabled` | `CalendarMatcher` \| `CalendarMatcher[]` | — | Dates that cannot be selected |
+| `dateFns` | `CalendarDateFnsOptions` | — | Extra date-fns context (locale, `in`, week options, format tokens) |
+
+## Disabling dates
+
+Use `disabled` with one matcher or an array. If **any** matcher matches, the date is disabled.
+
+| Matcher | Description |
+|---------|-------------|
+| `true` | Disable all dates |
+| `Date` | Disable a single day |
+| `Date[]` | Disable specific days |
+| `{ from, to }` | Disable an **inclusive** range (endpoints included) |
+| `{ only: { from, to } }` | Disable everything **outside** the inclusive range |
+| `{ before: Date }` | Disable dates strictly before the date (exclusive) |
+| `{ after: Date }` | Disable dates strictly after the date (exclusive) |
+| `{ before, after }` | Disable dates strictly between the bounds (exclusive endpoints) |
+| `{ dayOfWeek: Day \| Day[] }` | Disable weekdays (`0` = Sunday) |
+| `(date) => boolean` | Custom predicate — return `true` to disable |
+| `CalendarMatcher[]` | Combine any of the above |
+
+```js
+$calendar({
+  minDate: new Date(2024, 0, 1),
+  maxDate: new Date(2024, 11, 31),
+  disabled: [
+    { dayOfWeek: [0, 6] },
+    { from: new Date(2024, 11, 24), to: new Date(2024, 11, 26) },
+    new Date(2024, 6, 4),
+    { only: { from: new Date(2024, 2, 1), to: new Date(2024, 2, 31) } },
+    (date) => date.getMonth() === 7,
+  ],
+});
+```
+
+`minDate` / `maxDate` still apply on top of `disabled`.
+
+## date-fns context
+
+Pass [date-fns options](https://date-fns.org/) through `dateFns`. Top-level `locale` and `weekStartsOn` are shortcuts that merge into this context.
+
+Supported fields include:
+
+- `locale`
+- `weekStartsOn`
+- `firstWeekContainsDate`
+- `useAdditionalWeekYearTokens`
+- `useAdditionalDayOfYearTokens`
+- `in` — context function for extensions such as [`TZDate`](https://github.com/date-fns/tz)
+
+```js
+import { tz } from "@date-fns/tz";
+
+$calendar({
+  locale: es,
+  weekStartsOn: 1,
+  dateFns: {
+    in: tz("Europe/Madrid"),
+  },
+});
+```
+
+The resolved context is exposed on each instance as `cal.dateFns` and is passed to every internal date-fns call.
 
 ## Instance API
 
@@ -59,6 +122,7 @@ Each call returns a new object with its own month, selection, and grid data.
 | `selected` | `Date` \| `Date[]` \| `{ from?, to? }` \| `null` | Current selection |
 | `locale` | `Locale` | Active locale |
 | `weekStartsOn` | `0`–`6` | Week start day |
+| `dateFns` | `CalendarDateFnsOptions` | Resolved date-fns context |
 | `weeks` | `CalendarDay[][]` | Month grid for rendering |
 | `weekdayLabels` | `string[]` | Localized weekday headers |
 
@@ -77,6 +141,7 @@ Each call returns a new object with its own month, selection, and grid data.
 |--------|-------------|
 | `select(date)` | Select or toggle a date (mode-dependent) |
 | `clear()` | Clear the current selection |
+| `matches(date, matcher)` | Check whether a date matches a matcher |
 
 ### Queries
 
