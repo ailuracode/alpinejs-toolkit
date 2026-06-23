@@ -2,10 +2,9 @@
 
 Alpine.js plugin monorepo by **ailuracode**. Independent npm packages for common UI utilities — theme, viewport, connectivity, clipboard, scroll, touch detection, geolocation, and web notifications.
 
-## Packages
-
 | Package | Type | Description |
 |---------|------|-------------|
+| [`@ailuracode/alpine`](./packages/core/README.md) | Core | Lazy plugin registry and initializer |
 | [`@ailuracode/alpine-theme`](./packages/theme/README.md) | Store | Light / dark / system theme preference |
 | [`@ailuracode/alpine-screen`](./packages/screen/README.md) | Store | Responsive device type and viewport width |
 | [`@ailuracode/alpine-network`](./packages/network/README.md) | Magic | Network online / offline state |
@@ -69,6 +68,7 @@ See [AGENTS.md](./AGENTS.md) for the full checklist.
 ## Documentation
 
 - [Getting started](./docs/getting-started.md)
+- [Core plugin system](./docs/core.md)
 - [Architecture: stores vs magics](./docs/architecture.md)
 - [Theme](./docs/theme.md)
 - [Screen](./docs/screen.md)

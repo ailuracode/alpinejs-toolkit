@@ -142,6 +142,15 @@ importers:
         specifier: ^3.0.0
         version: 3.15.12
 
+  packages/core:
+    dependencies:
+      '@types/alpinejs':
+        specifier: ^3.13.11
+        version: 3.13.11
+      alpinejs:
+        specifier: ^3.0.0
+        version: 3.15.12
+
   packages/export:
     dependencies:
       '@types/alpinejs':

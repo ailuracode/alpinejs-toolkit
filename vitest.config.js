@@ -4,6 +4,7 @@ import { defineConfig } from "vitest/config";
 
 const root = path.dirname(fileURLToPath(import.meta.url));
 const packageNames = [
+  "core",
   "attention",
   "battery",
   "calendar",
@@ -25,12 +26,17 @@ const packageNames = [
 
 export default defineConfig({
   resolve: {
-    alias: Object.fromEntries(
-      packageNames.map((name) => [
-        `@ailuracode/alpine-${name}`,
-        path.resolve(root, `packages/${name}/src/index.ts`),
-      ])
-    ),
+    alias: {
+      "@ailuracode/alpine": path.resolve(root, "packages/core/src/index.ts"),
+      ...Object.fromEntries(
+        packageNames
+          .filter((name) => name !== "core")
+          .map((name) => [
+            `@ailuracode/alpine-${name}`,
+            path.resolve(root, `packages/${name}/src/index.ts`),
+          ])
+      ),
+    },
   },
   test: {
     environment: "happy-dom",
