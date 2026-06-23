@@ -29,7 +29,7 @@ function createMockAlpine(): MockAlpine {
   };
 }
 
-describe("@ailuracode/alpine core", () => {
+describe("@ailuracode/alpine-core", () => {
   afterEach(() => {
     resetPluginRegistry();
   });

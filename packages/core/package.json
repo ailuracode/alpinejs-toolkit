@@ -1,5 +1,5 @@
 {
-  "name": "@ailuracode/alpine",
+  "name": "@ailuracode/alpine-core",
   "version": "0.1.0",
   "description": "Lazy plugin registry and initializer for Alpine.js",
   "type": "module",

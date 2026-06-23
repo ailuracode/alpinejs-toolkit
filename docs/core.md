@@ -1,6 +1,6 @@
 # Core plugin system
 
-`@ailuracode/alpine` is the lazy plugin registry for the monorepo. Individual packages remain independently installable; the core coordinates registration and on-demand initialization.
+`@ailuracode/alpine-core` is the lazy plugin registry for the monorepo. Individual packages remain independently installable; the core coordinates registration and on-demand initialization.
 
 ## Why a core?
 
@@ -21,7 +21,7 @@ import {
   defineStorePlugin,
   initPlugins,
   registerPlugin,
-} from "@ailuracode/alpine";
+} from "@ailuracode/alpine-core";
 import share from "@ailuracode/alpine-share";
 import theme from "@ailuracode/alpine-theme";
 
@@ -40,7 +40,7 @@ Alpine.start();
 For dynamic imports:
 
 ```js
-import { initPlugins, lazyPlugin, registerPlugin } from "@ailuracode/alpine";
+import { initPlugins, lazyPlugin, registerPlugin } from "@ailuracode/alpine-core";
 
 registerPlugin(
   "share",
@@ -88,7 +88,7 @@ Reference the core types in your app:
 
 ```ts
 /// <reference types="@types/alpinejs" />
-/// <reference types="@ailuracode/alpine" />
+/// <reference types="@ailuracode/alpine-core" />
 ```
 
 Continue referencing individual plugin `global.d.ts` files for `$store.*` and `$magic` augmentations.

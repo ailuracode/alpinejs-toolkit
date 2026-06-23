@@ -1,4 +1,4 @@
-# @ailuracode/alpine
+# @ailuracode/alpine-core
 
 Lazy plugin registry and initializer for [Alpine.js](https://alpinejs.dev/) v3.
 
@@ -7,7 +7,7 @@ Use this package to register plugins without running them at import time, then i
 ## Install
 
 ```bash
-npm install @ailuracode/alpine alpinejs
+npm install @ailuracode/alpine-core alpinejs
 ```
 
 ## Quick start
@@ -20,7 +20,7 @@ import {
   defineStorePlugin,
   initPlugins,
   registerPlugin,
-} from "@ailuracode/alpine";
+} from "@ailuracode/alpine-core";
 import share from "@ailuracode/alpine-share";
 import theme from "@ailuracode/alpine-theme";
 
@@ -46,7 +46,7 @@ Alpine.start();
 ## Lazy dynamic imports
 
 ```js
-import { initPlugins, lazyPlugin, registerPlugin } from "@ailuracode/alpine";
+import { initPlugins, lazyPlugin, registerPlugin } from "@ailuracode/alpine-core";
 
 registerPlugin(
   "share",
@@ -90,7 +90,7 @@ The core never touches `window` or `navigator` at import time. Plugin loaders ru
 
 ```ts
 /// <reference types="@types/alpinejs" />
-/// <reference types="@ailuracode/alpine" />
+/// <reference types="@ailuracode/alpine-core" />
 ```
 
 Also reference individual plugin `global.d.ts` files for magic and store typings.

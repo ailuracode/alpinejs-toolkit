@@ -26,17 +26,12 @@ const packageNames = [
 
 export default defineConfig({
   resolve: {
-    alias: {
-      "@ailuracode/alpine": path.resolve(root, "packages/core/src/index.ts"),
-      ...Object.fromEntries(
-        packageNames
-          .filter((name) => name !== "core")
-          .map((name) => [
-            `@ailuracode/alpine-${name}`,
-            path.resolve(root, `packages/${name}/src/index.ts`),
-          ])
-      ),
-    },
+    alias: Object.fromEntries(
+      packageNames.map((name) => [
+        `@ailuracode/alpine-${name}`,
+        path.resolve(root, `packages/${name}/src/index.ts`),
+      ])
+    ),
   },
   test: {
     environment: "happy-dom",

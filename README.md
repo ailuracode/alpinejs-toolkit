@@ -4,7 +4,7 @@ Alpine.js plugin monorepo by **ailuracode**. Independent npm packages for common
 
 | Package | Type | Description |
 |---------|------|-------------|
-| [`@ailuracode/alpine`](./packages/core/README.md) | Core | Lazy plugin registry and initializer |
+| [`@ailuracode/alpine-core`](./packages/core/README.md) | Core | Lazy plugin registry and initializer |
 | [`@ailuracode/alpine-theme`](./packages/theme/README.md) | Store | Light / dark / system theme preference |
 | [`@ailuracode/alpine-screen`](./packages/screen/README.md) | Store | Responsive device type and viewport width |
 | [`@ailuracode/alpine-network`](./packages/network/README.md) | Magic | Network online / offline state |

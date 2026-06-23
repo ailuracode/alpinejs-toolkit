@@ -8,7 +8,7 @@ Alpine.js plugin monorepo by **ailuracode**. Thirteen independent npm packages u
 
 | Package | Type | Store / Magic |
 |---------|------|---------------|
-| `@ailuracode/alpine` | Core | Plugin registry (`registerPlugin`, `initPlugins`) |
+| `@ailuracode/alpine-core` | Core | Plugin registry (`registerPlugin`, `initPlugins`) |
 | `@ailuracode/alpine-theme` | Store | `$store.theme` |
 | `@ailuracode/alpine-screen` | Store | `$store.device` |
 | `@ailuracode/alpine-scroll` | Store | `$store.scroll` |

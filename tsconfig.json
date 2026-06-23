@@ -12,7 +12,7 @@
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
     "baseUrl": ".",
     "paths": {
-      "@ailuracode/alpine": ["packages/core/src/index.ts"],
+      "@ailuracode/alpine-core": ["packages/core/src/index.ts"],
       "@ailuracode/alpine-attention": ["packages/attention/src/index.ts"],
       "@ailuracode/alpine-battery": ["packages/battery/src/index.ts"],
       "@ailuracode/alpine-calendar": ["packages/calendar/src/index.ts"],
