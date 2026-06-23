@@ -26,24 +26,40 @@ const { dataName, title, badgeClass = "" } = Astro.props;
 		<slot name="description" />
 	</p>
 
-	<p x-show="query?.isLoading" class="hint">Loading Pokémon…</p>
-	<p x-show="query?.isFetching && !query?.isLoading" class="hint" x-cloak>Refreshing page…</p>
-	<p x-show="query?.isError" class="hint hint--error" x-text="query?.error?.message"></p>
+	<p class="hint hint--error" x-show="query?.isError" x-text="query?.error?.message"></p>
 
-	<template x-if="query?.isSuccess">
-		<div>
-			<p class="hint">
-				Page <strong x-text="page"></strong>
-				· showing <strong x-text="query.data.results.length"></strong>
-				of <strong x-text="query.data.count"></strong> Pokémon
-			</p>
-			<div class="badges">
-				<template x-for="pokemon in query.data.results" :key="pokemon.name">
-					<span class="badge on" x-text="pokemon.name"></span>
-				</template>
-			</div>
+	<div class="query-table-panel">
+		<p class="query-table-meta hint">
+			Page <strong x-text="page"></strong>
+			· showing <strong x-text="rows.length || pageSize"></strong>
+			of <strong x-text="totalCount || '…'"></strong> Pokémon
+		</p>
+
+		<div
+			class="query-table-wrap"
+			x-bind:class="{ 'is-fetching': query?.isFetching && hasCachedPage }"
+		>
+			<table class="query-table">
+				<thead>
+					<tr>
+						<th scope="col">#</th>
+						<th scope="col">Name</th>
+					</tr>
+				</thead>
+				<tbody>
+					<template x-for="row in tableRows" :key="page + '-' + row.id">
+						<tr x-bind:class="{ 'is-loading': row.loading }">
+							<td x-text="row.id"></td>
+							<td>
+								<span x-show="!row.loading" x-text="row.name"></span>
+								<span class="query-table-skeleton" x-show="row.loading" aria-hidden="true"></span>
+							</td>
+						</tr>
+					</template>
+				</tbody>
+			</table>
 		</div>
-	</template>
+	</div>
 
 	<div class="btn-group">
 		<button type="button" @click="prevPage()" x-bind:disabled="page <= 1 || query?.isFetching">
@@ -64,7 +80,7 @@ const { dataName, title, badgeClass = "" } = Astro.props;
 			Next
 		</button>
 	</div>
-	<p class="hint" x-show="query?.isSuccess && !query?.isFetching" x-cloak>
+	<p class="hint" x-show="hasCachedPage && !query?.isFetching" x-cloak>
 		Go back to a previous page to see the cache serve instantly.
 	</p>
 </article>

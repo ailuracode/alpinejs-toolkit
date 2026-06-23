@@ -17,6 +17,12 @@ type PokemonListResponse = {
 
 type QueryObserver = QueryState<PokemonListResponse> & { destroy(): void };
 
+type PokemonRow = {
+	id: number;
+	name: string;
+	loading?: boolean;
+};
+
 async function fetchPokemonPage(page: number): Promise<PokemonListResponse> {
 	const response = await fetch(
 		`${POKEAPI}?limit=${PAGE_SIZE}&offset=${(page - 1) * PAGE_SIZE}`,
@@ -37,33 +43,78 @@ function createPokeapiDemo(options: {
 	return () => ({
 		page: 1,
 		pageSize: PAGE_SIZE,
-		query: null as QueryObserver | null,
+		queries: {} as Record<number, QueryObserver>,
 		adapterName: options.adapterName,
 		badge: options.badge,
-		loadPage() {
-			if (this.query?.destroy) {
-				this.query.destroy();
+		get query(): QueryObserver | null {
+			return this.queries[this.page] ?? null;
+		},
+		get rows(): PokemonRow[] {
+			const query = this.query;
+			if (!query?.data?.results?.length) {
+				return [];
 			}
 
-			this.query = options.observePage(this.page);
+			const offset = (this.page - 1) * this.pageSize;
+
+			return query.data.results.map((pokemon, index) => ({
+				id: offset + index + 1,
+				name: pokemon.name,
+			}));
+		},
+		get tableRows(): PokemonRow[] {
+			if (this.rows.length > 0) {
+				return this.rows;
+			}
+
+			if (this.query?.isLoading) {
+				const offset = (this.page - 1) * this.pageSize;
+				return Array.from({ length: this.pageSize }, (_, index) => ({
+					id: offset + index + 1,
+					name: "",
+					loading: true,
+				}));
+			}
+
+			return [];
+		},
+		get totalCount(): number {
+			return this.query?.data?.count ?? 0;
+		},
+		get hasCachedPage(): boolean {
+			return Boolean(this.query?.data?.results?.length);
+		},
+		ensurePage(page = this.page) {
+			if (this.queries[page]) {
+				return;
+			}
+
+			this.queries[page] = options.observePage(page);
+		},
+		loadPage() {
+			this.ensurePage(this.page);
 		},
 		prevPage() {
 			if (this.page > 1) {
 				this.page--;
-				this.loadPage();
+				this.ensurePage(this.page);
 			}
 		},
 		nextPage() {
 			if (this.query?.data?.next) {
 				this.page++;
-				this.loadPage();
+				this.ensurePage(this.page);
 			}
 		},
 		init() {
-			this.loadPage();
+			this.ensurePage(1);
 		},
 		destroy() {
-			this.query?.destroy();
+			for (const query of Object.values(this.queries)) {
+				query.destroy();
+			}
+
+			this.queries = {};
 		},
 	});
 }
