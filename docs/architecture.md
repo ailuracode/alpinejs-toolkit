@@ -16,7 +16,7 @@ Use a **store** when you need:
 | `@ailuracode/alpine-screen` | `$store.device` | Breakpoints and viewport width |
 | `@ailuracode/alpine-scroll` | `$store.scroll` | Scroll metrics + body lock |
 | `@ailuracode/alpine-geo` | `$store.geo` | Geolocation state + tracking |
-| `@ailuracode/alpine-query` | `$store.query` | Async query cache, invalidation, mutations |
+| `@ailuracode/alpine-query` | `$store.query` | Async query cache, invalidation, mutations (Nanostores internally; `createQueryClient()` for non-Alpine use) |
 
 ### Template usage
 

@@ -101,7 +101,7 @@ Arrays identify cached entries. Use stable, serializable values:
 
 ### `observe()` vs `fetch()`
 
-- **`observe()`** — for `x-data`. Subscribes to the cache entry and unsubscribes via Alpine's `destroy()` lifecycle.
+- **`observe()`** — for `x-data`. Subscribes to the cache entry; call `destroy()` when the subscription is no longer needed (e.g. pagination) so entries can be garbage-collected.
 - **`fetch()`** — imperative fetch without holding a subscription.
 
 ### Stale time and garbage collection

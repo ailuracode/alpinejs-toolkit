@@ -69,7 +69,7 @@ Use `observe()` inside `x-data` for component-scoped subscriptions (similar to `
 
 Do **not** spread the result of `observe()` (`{ ...$store.query.observe() }`) — boolean getters such as `isLoading` and `isSuccess` are defined on the query object and are lost when spread into a new object.
 
-`destroy()` is called automatically when the component is removed, so cached queries can be garbage-collected.
+Call `destroy()` when the subscription is no longer needed (e.g. when switching pages) so unused cache entries can be garbage-collected.
 
 ### Imperative access
 
@@ -120,6 +120,16 @@ $store.query.invalidate(["todos"]);
 | `placeholderData` | — | Temporary data while loading |
 
 ## API
+
+### `createQueryClient(options?)`
+
+Framework-agnostic entry point. Returns the same method surface as `$store.query` without registering an Alpine store.
+
+| Method | Description |
+|--------|-------------|
+| Same as `$store.query` below | See table — `observe`, `fetch`, `get`, `prefetch`, `invalidate`, `remove`, `setData`, `cancel`, `reset`, `mutate` |
+
+Internal cache state is backed by Nanostores. The Alpine plugin bridges that cache into reactive template bindings.
 
 ### `$store.query`
 
