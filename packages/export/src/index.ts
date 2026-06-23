@@ -1,22 +1,22 @@
 import type AlpineType from "alpinejs";
 
-export type DownloadOptions = {
+export type ExportOptions = {
   filename?: string;
   mimeType?: string;
 };
 
-export type DownloadSource = string | Blob | File;
+export type ExportSource = string | Blob | File;
 
-export type DownloadMagic = ((
-  source: DownloadSource,
-  options?: DownloadOptions | string
+export type ExportMagic = ((
+  source: ExportSource,
+  options?: ExportOptions | string
 ) => Promise<boolean>) & {
   isSupported(): boolean;
 };
 
 const URL_LIKE = /^(https?:|data:|blob:|\/|\.\/|\.\.\/)/i;
 
-function normalizeOptions(options?: DownloadOptions | string): DownloadOptions {
+function normalizeOptions(options?: ExportOptions | string): ExportOptions {
   if (typeof options === "string") {
     return { filename: options };
   }
@@ -24,7 +24,7 @@ function normalizeOptions(options?: DownloadOptions | string): DownloadOptions {
   return options ?? {};
 }
 
-function isDownloadEnvironment(): boolean {
+function isExportEnvironment(): boolean {
   return (
     typeof document !== "undefined" &&
     typeof document.createElement === "function" &&
@@ -33,12 +33,12 @@ function isDownloadEnvironment(): boolean {
   );
 }
 
-/** Returns whether programmatic downloads are available in this environment. */
-export function isDownloadSupported(): boolean {
-  return isDownloadEnvironment();
+/** Returns whether programmatic file exports are available in this environment. */
+export function isExportSupported(): boolean {
+  return isExportEnvironment();
 }
 
-function triggerAnchorDownload(href: string, filename?: string): void {
+function triggerAnchorExport(href: string, filename?: string): void {
   const anchor = document.createElement("a");
   anchor.href = href;
   anchor.rel = "noopener";
@@ -59,11 +59,11 @@ function revokeObjectUrlLater(url: string): void {
   }, 0);
 }
 
-function downloadBlob(blob: Blob, filename: string): boolean {
+function exportBlob(blob: Blob, filename: string): boolean {
   const url = URL.createObjectURL(blob);
 
   try {
-    triggerAnchorDownload(url, filename);
+    triggerAnchorExport(url, filename);
     return true;
   } catch {
     return false;
@@ -76,12 +76,12 @@ function isUrlLike(value: string): boolean {
   return URL_LIKE.test(value);
 }
 
-/** Downloads a URL, blob, file, or text payload. Resolves to `true` on success. Never throws. */
-export function downloadData(
-  source: DownloadSource,
-  options?: DownloadOptions | string
+/** Exports a URL, blob, file, or text payload as a download. Resolves to `true` on success. Never throws. */
+export function exportData(
+  source: ExportSource,
+  options?: ExportOptions | string
 ): Promise<boolean> {
-  if (!isDownloadSupported()) {
+  if (!isExportSupported()) {
     return Promise.resolve(false);
   }
 
@@ -89,14 +89,14 @@ export function downloadData(
 
   try {
     if (source instanceof Blob) {
-      const name = filename ?? (source instanceof File ? source.name : "download");
-      return Promise.resolve(downloadBlob(source, name));
+      const name = filename ?? (source instanceof File ? source.name : "export");
+      return Promise.resolve(exportBlob(source, name));
     }
 
     const value = String(source);
 
     if (isUrlLike(value)) {
-      triggerAnchorDownload(value, filename);
+      triggerAnchorExport(value, filename);
       return Promise.resolve(true);
     }
 
@@ -105,29 +105,29 @@ export function downloadData(
     }
 
     const blob = new Blob([value], { type: mimeType ?? "text/plain;charset=utf-8" });
-    return Promise.resolve(downloadBlob(blob, filename));
+    return Promise.resolve(exportBlob(blob, filename));
   } catch {
     return Promise.resolve(false);
   }
 }
 
-/** Builds callable `$download` magic with `isSupported` helper. */
-export function createDownloadMagic(): DownloadMagic {
-  const download = (source: DownloadSource, options?: DownloadOptions | string) =>
-    downloadData(source, options);
-  download.isSupported = isDownloadSupported;
-  return download;
+/** Builds callable `$export` magic with `isSupported` helper. */
+export function createExportMagic(): ExportMagic {
+  const exportFile = (source: ExportSource, options?: ExportOptions | string) =>
+    exportData(source, options);
+  exportFile.isSupported = isExportSupported;
+  return exportFile;
 }
 
-/** Alpine.js download plugin. Registers callable magic `$download`. */
-export default function downloadPlugin(Alpine: AlpineType.Alpine): void {
-  Alpine.magic("download", () => createDownloadMagic());
+/** Alpine.js export plugin. Registers callable magic `$export`. */
+export default function exportPlugin(Alpine: AlpineType.Alpine): void {
+  Alpine.magic("export", () => createExportMagic());
 }
 
 declare global {
   namespace Alpine {
     interface Magics<T> {
-      $download: DownloadMagic;
+      $export: ExportMagic;
     }
   }
 }

@@ -1,7 +1,7 @@
 {
-  "name": "@ailuracode/alpine-download",
+  "name": "@ailuracode/alpine-export",
   "version": "0.1.0",
-  "description": "Alpine.js file download magic",
+  "description": "Alpine.js file export magic",
   "type": "module",
   "license": "MIT",
   "author": "ailuracode",
@@ -11,12 +11,12 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ailuracode/alpine.git",
-    "directory": "packages/download"
+    "directory": "packages/export"
   },
   "bugs": {
     "url": "https://github.com/ailuracode/alpine/issues"
   },
-  "homepage": "https://github.com/ailuracode/alpine/tree/master/packages/download#readme",
+  "homepage": "https://github.com/ailuracode/alpine/tree/master/packages/export#readme",
   "files": [
     "dist",
     "README.md"
@@ -49,7 +49,8 @@
     "alpinejs",
     "alpine",
     "plugin",
-    "download",
-    "file"
+    "export",
+    "file",
+    "download"
   ]
 }

@@ -47,9 +47,9 @@ importers:
       '@ailuracode/alpine-clipboard':
         specifier: workspace:*
         version: link:../packages/clipboard
-      '@ailuracode/alpine-download':
+      '@ailuracode/alpine-export':
         specifier: workspace:*
-        version: link:../packages/download
+        version: link:../packages/export
       '@ailuracode/alpine-geo':
         specifier: workspace:*
         version: link:../packages/geo
@@ -108,7 +108,7 @@ importers:
         specifier: ^3.0.0
         version: 3.15.12
 
-  packages/download:
+  packages/export:
     dependencies:
       '@types/alpinejs':
         specifier: ^3.13.11

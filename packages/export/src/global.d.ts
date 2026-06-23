@@ -1,11 +1,11 @@
 /// <reference types="@types/alpinejs" />
 
-export type { DownloadMagic } from "./index.js";
+export type { ExportMagic } from "./index.js";
 
 declare global {
   namespace Alpine {
     interface Magics<T> {
-      $download: import("./index.js").DownloadMagic;
+      $export: import("./index.js").ExportMagic;
     }
   }
 }

@@ -5,7 +5,7 @@ const workspaces = [
   "@ailuracode/alpine-screen",
   "@ailuracode/alpine-network",
   "@ailuracode/alpine-clipboard",
-  "@ailuracode/alpine-download",
+  "@ailuracode/alpine-export",
   "@ailuracode/alpine-scroll",
   "@ailuracode/alpine-touch",
   "@ailuracode/alpine-platform",

@@ -150,31 +150,31 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 		</section>
 
 		<section class="card">
-			<h2>Download <code>$download</code></h2>
-			<p class="hint" x-show="!$download.isSupported()" x-cloak>
-				Programmatic downloads are not available in this environment.
+			<h2>Export <code>$export</code></h2>
+			<p class="hint" x-show="!$export.isSupported()" x-cloak>
+				Programmatic file exports are not available in this environment.
 			</p>
-			<template x-if="$download.isSupported()">
+			<template x-if="$export.isSupported()">
 				<div>
 					<div class="btn-group">
 						<button
 							type="button"
-							@click="downloadedText = await $download('Hello from Alpine!', 'hello.txt')"
+							@click="exportedText = await $export('Hello from Alpine!', 'hello.txt')"
 						>
-							Download text
+							Export text
 						</button>
 						<button
 							type="button"
-							@click="downloadedJson = await $download(
-								JSON.stringify({ plugin: 'download', savedAt: Date.now() }, null, 2),
+							@click="exportedJson = await $export(
+								JSON.stringify({ plugin: 'export', savedAt: Date.now() }, null, 2),
 								{ filename: 'export.json', mimeType: 'application/json' }
 							)"
 						>
-							Download JSON
+							Export JSON
 						</button>
 					</div>
-					<p class="hint" x-show="downloadedText === true" x-cloak x-transition>Text download started.</p>
-					<p class="hint" x-show="downloadedJson === true" x-cloak x-transition>JSON download started.</p>
+					<p class="hint" x-show="exportedText === true" x-cloak x-transition>Text export started.</p>
+					<p class="hint" x-show="exportedJson === true" x-cloak x-transition>JSON export started.</p>
 				</div>
 			</template>
 		</section>
