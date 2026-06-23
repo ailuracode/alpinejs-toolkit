@@ -1,5 +1,11 @@
 # @ailuracode/alpine-query
 
+## 0.1.2
+
+### Patch Changes
+
+- cdf3436: Migrate internal query cache state from Alpine.reactive to Nanostores. Export `createQueryClient()` for framework-agnostic usage; Alpine plugin bridges Nanostores into `$store.query`.
+
 ## 0.1.1
 
 ### Patch Changes
