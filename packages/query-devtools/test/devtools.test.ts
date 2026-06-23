@@ -71,8 +71,8 @@ describe("@ailuracode/alpine-query-devtools", () => {
     const controller = mountQueryDevtools({ store, initialOpen: true });
 
     await store
-      .mutate({
-        mutationFn: async () => "created",
+      .mutate<string, string>({
+        mutationFn: async (title) => `created:${title}`,
       })
       .mutate("todo");
 

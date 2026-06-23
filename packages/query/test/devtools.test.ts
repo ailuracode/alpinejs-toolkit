@@ -34,8 +34,8 @@ describe("@ailuracode/alpine-query devtools", () => {
   });
 
   it("tracks mutation history", async () => {
-    const mutation = store.mutate({
-      mutationFn: async (value: string) => `done:${value}`,
+    const mutation = store.mutate<string, string>({
+      mutationFn: async (value) => `done:${value}`,
     });
 
     await mutation.mutate("test");
@@ -47,7 +47,7 @@ describe("@ailuracode/alpine-query devtools", () => {
   });
 
   it("tracks failed mutations and clears history on reset", async () => {
-    const mutation = store.mutate({
+    const mutation = store.mutate<never, string>({
       mutationFn: () => {
         throw new Error("mutation failed");
       },
