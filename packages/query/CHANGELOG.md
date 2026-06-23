@@ -1,5 +1,11 @@
 # @ailuracode/alpine-query
 
+## 0.6.0
+
+### Minor Changes
+
+- e0c7f02: Add `typedFetch` helper for strongly typed JSON `fetch` calls in `queryFn` callbacks, with `HttpError` for non-OK responses.
+
 ## 0.5.0
 
 ### Minor Changes

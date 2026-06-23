@@ -1,5 +1,12 @@
 # @ailuracode/alpine-query-adapter-zustand
 
+## 4.0.0
+
+### Patch Changes
+
+- Updated dependencies [e0c7f02]
+  - @ailuracode/alpine-query@0.6.0
+
 ## 3.0.1
 
 ### Patch Changes

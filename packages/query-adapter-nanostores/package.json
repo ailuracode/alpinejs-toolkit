@@ -1,6 +1,6 @@
 {
   "name": "@ailuracode/alpine-query-adapter-nanostores",
-  "version": "3.0.1",
+  "version": "4.0.0",
   "description": "Nanostores adapter plugin for @ailuracode/alpine-query (recommended)",
   "type": "module",
   "license": "MIT",
