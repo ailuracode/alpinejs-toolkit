@@ -48,9 +48,6 @@ jobs:
       - name: Build packages
         run: pnpm run build
 
-      - name: Run tests
-        run: pnpm test
-
       - name: Run tests with coverage
         run: pnpm run test:coverage
 
@@ -92,23 +89,4 @@ jobs:
       - name: Audit critical vulnerabilities
         run: pnpm audit --audit-level critical
 
-  changeset:
-    if: github.event_name == 'pull_request'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        run: |
-          set -euo pipefail
-          git init
-          git remote add origin "https://github.com/${GITHUB_REPOSITORY}.git"
-          git fetch --no-tags origin "${GITHUB_SHA}"
-          git checkout FETCH_HEAD
-          git fetch --no-tags origin "${GITHUB_BASE_REF}"
-
-      - uses: ./.github/actions/setup
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Require changeset for package changes
-        run: pnpm run changeset:check origin/${{ github.base_ref }}
+  # changeset check removed — publishing is manual

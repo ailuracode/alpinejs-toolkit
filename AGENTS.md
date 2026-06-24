@@ -42,7 +42,7 @@ packages/<name>/README.md        # npm package readme
 docs/                            # full documentation
 test/                            # shared test setup (setup.ts, helpers.ts, mock-alpine.ts)
 .changeset/                      # versioning changesets
-.github/workflows/               # CI + release automation
+.github/workflows/               # CI checks
 ```
 
 ## Commands
@@ -137,23 +137,31 @@ pnpm run lint:fix   # auto-fix safe issues
 pnpm run format     # format all files
 ```
 
-## Versioning (Changesets)
+## Versioning & Publishing (manual)
 
 1. After a user-facing change, run `pnpm run changeset`.
 2. Select affected package(s) and semver bump (`patch`, `minor`, `major`).
 3. Write a short changelog summary (English).
-4. On merge to `master`, the **Release** workflow publishes to npm when no pending changesets remain (version bumps land on the PR branch before merge).
+
+When ready to release:
+
+```bash
+pnpm run version        # apply changesets → bump versions + CHANGELOGs
+pnpm run build          # compile all packages
+pnpm test               # verify everything
+npm login               # one-time: authenticate with npm
+pnpm run release        # publishes changed packages to npm
+```
 
 Packages are versioned **independently**. One changeset can touch multiple packages.
 
 **New packages:** set `"version": "0.0.0"` in `package.json`. A `minor` changeset then produces the first publishable version (`0.1.0`). Do **not** start at `0.1.0` with a `minor` changeset — Changesets will bump to `0.2.0` before the first npm release.
 
-## Publishing
+### Requirements
 
 - Registry: npm, scope `@ailuracode`, public access
 - Requires npm 2FA or granular token with publish permission
-- GitHub secret: `NPM_TOKEN` for automated publish
-- Manual: `npm login` then `pnpm run release`
+- Authenticate: `npm login` (manual, not CI)
 
 ## Documentation
 
