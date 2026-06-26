@@ -1,5 +1,11 @@
 # @ailuracode/alpine-screen
 
+## 1.0.1
+
+### Patch Changes
+
+- 2476868: Fix `$store.device` reactivity in templates by routing `resize` and `matchMedia` listener updates through `Alpine.store("device")` instead of mutating the internal store object directly.
+
 ## 1.0.0
 
 ### Major Changes

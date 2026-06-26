@@ -1,6 +1,6 @@
 {
   "name": "@ailuracode/alpine-screen",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Alpine.js responsive device and viewport store",
   "type": "module",
   "license": "MIT",

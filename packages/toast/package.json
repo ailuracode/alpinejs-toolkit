@@ -1,6 +1,6 @@
 {
   "name": "@ailuracode/alpine-toast",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Alpine.js in-app toast queue magic",
   "type": "module",
   "license": "MIT",
