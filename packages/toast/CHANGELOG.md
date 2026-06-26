@@ -1,5 +1,11 @@
 # @ailuracode/alpine-toast
 
+## 0.1.1
+
+### Patch Changes
+
+- Republish sync after initial 0.1.0 release resolved npm registry indexing so `changeset publish` can detect the published version.
+
 ## 0.1.0
 
 ### Minor Changes
