@@ -1,6 +1,6 @@
 {
   "name": "@ailuracode/alpine-query-devtools",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "TanStack Query-style devtools panel for @ailuracode/alpine-query",
   "type": "module",
   "license": "MIT",

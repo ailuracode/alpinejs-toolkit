@@ -1,7 +1,7 @@
 {
-  "name": "@ailuracode/alpine-sidebar",
-  "version": "0.1.0",
-  "description": "Alpine.js sidebar store for open/close state, scroll lock, overlay, and keyboard navigation",
+  "name": "@ailuracode/alpine-toast",
+  "version": "0.0.0",
+  "description": "Alpine.js in-app toast queue magic",
   "type": "module",
   "license": "MIT",
   "author": "ailuracode",
@@ -11,12 +11,12 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ailuracode/alpine.git",
-    "directory": "packages/sidebar"
+    "directory": "packages/toast"
   },
   "bugs": {
     "url": "https://github.com/ailuracode/alpine/issues"
   },
-  "homepage": "https://github.com/ailuracode/alpine/tree/master/packages/sidebar#readme",
+  "homepage": "https://github.com/ailuracode/alpine/tree/master/packages/toast#readme",
   "files": [
     "dist",
     "README.md"
@@ -49,8 +49,8 @@
     "alpinejs",
     "alpine",
     "plugin",
-    "sidebar",
-    "navigation",
-    "drawer"
+    "toast",
+    "sonner",
+    "notifications"
   ]
 }

@@ -102,6 +102,9 @@ importers:
       '@ailuracode/alpine-theme':
         specifier: workspace:*
         version: link:../packages/theme
+      '@ailuracode/alpine-toast':
+        specifier: workspace:*
+        version: link:../packages/toast
       '@ailuracode/alpine-toggle':
         specifier: workspace:*
         version: link:../packages/toggle
@@ -342,6 +345,15 @@ importers:
         version: 3.15.12
 
   packages/theme:
+    dependencies:
+      '@types/alpinejs':
+        specifier: ^3.13.11
+        version: 3.13.11
+      alpinejs:
+        specifier: ^3.0.0
+        version: 3.15.12
+
+  packages/toast:
     dependencies:
       '@types/alpinejs':
         specifier: ^3.13.11

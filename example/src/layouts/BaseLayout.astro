@@ -69,8 +69,6 @@ const {
 
 			<slot />
 
-			<div class="h-[120vh]" aria-hidden="true"></div>
-
 			<button
 				type="button"
 				class="btn btn-primary btn-circle fixed bottom-6 right-6 shadow-lg z-40"
@@ -81,6 +79,93 @@ const {
 			>
 				↑
 			</button>
+
+			<template x-for="position in $store.toast.stackPositions" :key="position">
+				<div
+					class="toast toast-demo-stack z-[60]"
+					x-data
+					x-show="$store.toast.itemsAt(position).some((toast) => !toast.removed)"
+					x-bind:class="{
+						'toast-bottom toast-end': position === 'bottom-right',
+						'toast-top toast-center': position === 'top-center',
+					}"
+				>
+					<template x-for="(toast, index) in $store.toast.itemsAt(position)" :key="toast.id">
+						<div
+							class="toast-demo-item alert shadow-lg py-2 px-3 min-h-0 w-full !flex !items-center !gap-2 origin-center"
+							role="alert"
+							x-bind:data-position="toast.position"
+							x-bind:data-toast-motion="position === 'top-center' ? 'top' : 'bottom'"
+							x-bind:class="{
+								'alert-success': toast.variant === 'success',
+								'alert-info': toast.variant === 'info' || toast.variant === 'loading',
+								'alert-warning': toast.variant === 'warning',
+								'alert-error': toast.variant === 'error',
+							}"
+							x-show="!toast.removed && $store.toast.isVisibleAt(position, index)"
+							x-transition:leave="transition duration-300 ease-in"
+							x-transition:leave-start="opacity-100 translate-y-0 scale-100"
+							x-transition:leave-end="position === 'top-center' ? 'opacity-0 -translate-y-full scale-[0.96]' : 'opacity-0 translate-y-full scale-[0.96]'"
+						>
+							<div
+								class="flex h-8 w-8 shrink-0 items-center justify-center"
+								x-show="toast.variant === 'loading'"
+								aria-hidden="true"
+							>
+								<span class="loading loading-spinner loading-sm"></span>
+							</div>
+							<div class="min-w-0 flex-1">
+								<span
+									x-show="toast.content?.kind === 'badge'"
+									class="badge badge-sm badge-outline"
+									x-text="toast.content?.label"
+								></span>
+								<span class="font-medium leading-snug" x-show="toast.title" x-text="toast.title"></span>
+								<p
+									class="text-sm opacity-80 leading-snug"
+									x-show="toast.description"
+									x-text="toast.description"
+								></p>
+							</div>
+							<div class="flex shrink-0 items-center justify-end gap-1 min-w-16">
+								<button
+									type="button"
+									class="btn btn-sm btn-ghost h-8 min-h-8 px-2 uppercase tracking-wide"
+									x-show="toast.content?.kind === 'undo-demo' && toast.action && toast.variant !== 'loading'"
+									x-text="toast.action.label"
+									@click="
+										$toast.update(toast.id, {
+											variant: 'loading',
+											title: 'Undoing…',
+											description: null,
+											action: null,
+											duration: 0,
+										});
+										setTimeout(() => {
+											$toast.update(toast.id, {
+												variant: 'success',
+												title: 'Change undone',
+												description: null,
+												action: null,
+												duration: 4000,
+											});
+										}, 1200);
+									"
+								></button>
+								<button
+									type="button"
+									class="btn btn-sm btn-ghost btn-square h-8 min-h-8 w-8"
+									x-show="toast.variant !== 'loading'"
+									@click="$toast.dismiss(toast.id)"
+									aria-label="Dismiss notification"
+								>
+									✕
+								</button>
+							</div>
+						</div>
+					</template>
+				</div>
+			</template>
 		</div>
 
 		<script>

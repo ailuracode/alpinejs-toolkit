@@ -17,6 +17,7 @@ Alpine.js plugin monorepo by **ailuracode**. Twenty-one independent npm packages
 | `@ailuracode/alpine-visibility` | Magic | `$visibility` |
 | `@ailuracode/alpine-battery` | Magic | `$battery` |
 | `@ailuracode/alpine-clipboard` | Magic | `$clipboard` |
+| `@ailuracode/alpine-toast` | Magic | `$toast` — headless queue (no markup/CSS) |
 | `@ailuracode/alpine-export` | Magic | `$export` |
 | `@ailuracode/alpine-calendar` | Magic | `$calendar` |
 | `@ailuracode/alpine-touch` | Magic | `$touch` |

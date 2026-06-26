@@ -19,12 +19,27 @@ import scroll from "@ailuracode/alpine-scroll";
 import share from "@ailuracode/alpine-share";
 import sidebar from "@ailuracode/alpine-sidebar";
 import theme from "@ailuracode/alpine-theme";
+import toast, { toastPositions, toastVariants } from "@ailuracode/alpine-toast";
 import toggle from "@ailuracode/alpine-toggle";
 import touch from "@ailuracode/alpine-touch";
 import visibility from "@ailuracode/alpine-visibility";
 import type { Alpine } from "alpinejs";
 import { jsonApiDemoOptions, registerJsonApiDemo } from "./json-api-demo.js";
 import { registerQueryDemos } from "./query-demos.js";
+
+export const toastDemoVariants = toastVariants([
+  "success",
+  "info",
+  "warning",
+  "error",
+  "loading",
+] as const);
+
+export const toastDemoPositions = toastPositions(["top-center", "bottom-right"] as const);
+
+export type ToastDemoContent =
+  | { kind: "badge"; label: string; seats?: number }
+  | { kind: "undo-demo" };
 
 export default (Alpine: Alpine) => {
   Alpine.plugin(
@@ -72,6 +87,20 @@ export default (Alpine: Alpine) => {
   Alpine.plugin(clipboard);
   Alpine.plugin(exportPlugin);
   Alpine.plugin(geo);
+  Alpine.plugin(
+    toast({
+      variants: toastDemoVariants,
+      positions: toastDemoPositions,
+      defaultPosition: "bottom-right",
+      promise: {
+        loadingVariant: "loading",
+        successVariant: "success",
+        errorVariant: "error",
+      },
+      maxToasts: 5,
+      maxVisible: 3,
+    })
+  );
   Alpine.plugin(toggle);
   Alpine.plugin(touch);
   Alpine.plugin(platform);

@@ -1,6 +1,6 @@
 {
   "name": "@ailuracode/alpine-theme",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Alpine.js theme store with light, dark and system modes",
   "type": "module",
   "license": "MIT",

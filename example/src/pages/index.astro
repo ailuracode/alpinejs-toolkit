@@ -299,6 +299,60 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 
 		<section class="card bg-base-100 shadow-sm border border-base-200">
 			<div class="card-body">
+				<h2 class="card-title text-base">Toast <code class="text-base-content/60 font-normal">$toast</code></h2>
+				<p class="text-sm text-base-content/70">
+					Headless queue — this demo renders stacks with DaisyUI
+					<code class="text-base-content/60">toast</code> +
+					<code class="text-base-content/60">alert</code> in
+					<code class="text-base-content/60">BaseLayout.astro</code> (not part of the plugin).
+				</p>
+				<div class="flex flex-wrap gap-2 mt-3">
+					<button type="button" class="btn btn-sm btn-outline" @click="$toast('Hello from Alpine!')">
+						Default
+					</button>
+					<button type="button" class="btn btn-sm btn-outline btn-success" @click="$toast.success('Saved')">
+						Success
+					</button>
+					<button
+						type="button"
+						class="btn btn-sm btn-outline btn-info"
+						@click="$toast.info({ content: { kind: 'badge', label: 'Pro plan', seats: 3 } })"
+					>
+						Custom content
+					</button>
+					<button type="button" class="btn btn-sm btn-outline btn-warning" @click="$toast.warning('Careful')">
+						Warning
+					</button>
+					<button type="button" class="btn btn-sm btn-outline btn-error" @click="$toast.error('Failed')">
+						Error
+					</button>
+					<button
+						type="button"
+						class="btn btn-sm btn-outline"
+						@click="$toast('Top center', { position: 'top-center' })"
+					>
+						Top center
+					</button>
+					<button
+						type="button"
+						class="btn btn-sm btn-outline"
+						@click="$toast.warning({ title: 'File deleted', duration: 0, action: { label: 'Undo' }, content: { kind: 'undo-demo' } })"
+					>
+						Undo demo
+					</button>
+					<button
+						type="button"
+						class="btn btn-sm btn-outline"
+						@click="() => $toast.promise(() => new Promise((resolve) => setTimeout(() => resolve('done'), 1200)), { loading: 'Saving...', success: 'Saved!', error: 'Failed' })"
+					>
+						Promise
+					</button>
+				</div>
+			</div>
+		</section>
+
+		<section class="card bg-base-100 shadow-sm border border-base-200">
+			<div class="card-body">
 				<h2 class="card-title text-base">Export <code class="text-base-content/60 font-normal">$export</code></h2>
 				<p class="text-sm text-base-content/70" x-show="!$export.isSupported" x-cloak>
 					Programmatic file exports are not available in this environment.

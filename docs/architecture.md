@@ -63,6 +63,7 @@ Use a **magic** when you need:
 | `@ailuracode/alpine-touch` | `$touch` | Pointer / touch capabilities |
 | `@ailuracode/alpine-platform` | `$platform` | Client OS and platform detection |
 | `@ailuracode/alpine-clipboard` | `$clipboard` | Async copy function |
+| `@ailuracode/alpine-toast` | `$toast` | In-app toast queue |
 | `@ailuracode/alpine-export` | `$export` | Programmatic file exports (downloads) |
 | `@ailuracode/alpine-json-api` | `$jsonapi` | Typed JSON:API client — `$jsonapi.findAll('articles')` |
 | `@ailuracode/alpine-calendar` | `$calendar` | Calendar date logic — `$calendar({ weekStartsOn: 1 })` |

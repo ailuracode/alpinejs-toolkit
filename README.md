@@ -11,6 +11,7 @@ Alpine.js plugin monorepo by **ailuracode**. Independent npm packages for common
 | [`@ailuracode/alpine-visibility`](./packages/visibility/README.md) | Magic | Tab visibility state |
 | [`@ailuracode/alpine-battery`](./packages/battery/README.md) | Magic | Device battery level and charging state |
 | [`@ailuracode/alpine-clipboard`](./packages/clipboard/README.md) | Magic | Copy text to clipboard |
+| [`@ailuracode/alpine-toast`](./packages/toast/README.md) | Magic | In-app toast queue |
 | [`@ailuracode/alpine-export`](./packages/export/README.md) | Magic | Programmatic file exports (downloads) |
 | [`@ailuracode/alpine-calendar`](./packages/calendar/README.md) | Magic | Calendar date logic powered by date-fns |
 | [`@ailuracode/alpine-scroll`](./packages/scroll/README.md) | Store | Scroll position tracking and body lock |
@@ -82,6 +83,7 @@ See [AGENTS.md](./AGENTS.md) for the full checklist.
 - [Visibility](./docs/visibility.md)
 - [Battery](./docs/battery.md)
 - [Clipboard](./docs/clipboard.md)
+- [Toast](./docs/toast.md)
 - [Export](./docs/export.md)
 - [Calendar](./docs/calendar.md)
 - [Scroll](./docs/scroll.md)

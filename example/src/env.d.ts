@@ -8,10 +8,20 @@ type ScrollStore = import("@ailuracode/alpine-scroll").ScrollStore;
 type SidebarStore = import("@ailuracode/alpine-sidebar").SidebarStore;
 type GeoStore = import("@ailuracode/alpine-geo").GeoStore;
 type QueryStore = import("@ailuracode/alpine-query").QueryStore;
+type ToastStore = import("@ailuracode/alpine-toast").ToastStore<
+  typeof import("./entrypoint").toastDemoVariants,
+  typeof import("./entrypoint").toastDemoPositions,
+  import("./entrypoint").ToastDemoContent
+>;
 type NetworkMagic = import("@ailuracode/alpine-network").NetworkMagic;
 type VisibilityMagic = import("@ailuracode/alpine-visibility").VisibilityMagic;
 type BatteryMagic = import("@ailuracode/alpine-battery").BatteryMagic;
 type ClipboardMagic = import("@ailuracode/alpine-clipboard").ClipboardMagic;
+type ToastMagic = import("@ailuracode/alpine-toast").ToastMagic<
+  typeof import("./entrypoint").toastDemoVariants,
+  typeof import("./entrypoint").toastDemoPositions,
+  import("./entrypoint").ToastDemoContent
+>;
 type ExportMagic = import("@ailuracode/alpine-export").ExportMagic;
 type CalendarMagic = import("@ailuracode/alpine-calendar").CalendarMagic;
 type TouchMagic = import("@ailuracode/alpine-touch").TouchMagic;
@@ -32,6 +42,7 @@ declare module "alpinejs" {
       sidebar: SidebarStore;
       geo: GeoStore;
       query: QueryStore;
+      toast: ToastStore;
     }
     interface Magics<T> {
       $theme: ThemeStore;
@@ -43,6 +54,7 @@ declare module "alpinejs" {
       $visibility: VisibilityMagic;
       $battery: BatteryMagic;
       $clipboard: ClipboardMagic;
+      $toast: ToastMagic;
       $export: ExportMagic;
       $calendar: CalendarMagic;
       $touch: TouchMagic;

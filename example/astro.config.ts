@@ -15,6 +15,7 @@ export default defineConfig({
         "@ailuracode/alpine-battery": pkg("battery"),
         "@ailuracode/alpine-calendar": pkg("calendar"),
         "@ailuracode/alpine-clipboard": pkg("clipboard"),
+        "@ailuracode/alpine-toast": pkg("toast"),
         "@ailuracode/alpine-export": pkg("export"),
         "@ailuracode/alpine-geo": pkg("geo"),
         "@ailuracode/alpine-network": pkg("network"),

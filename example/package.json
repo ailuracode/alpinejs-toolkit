@@ -21,6 +21,7 @@
     "@ailuracode/alpine-battery": "workspace:*",
     "@ailuracode/alpine-calendar": "workspace:*",
     "@ailuracode/alpine-clipboard": "workspace:*",
+    "@ailuracode/alpine-toast": "workspace:*",
     "@ailuracode/alpine-export": "workspace:*",
     "@ailuracode/alpine-geo": "workspace:*",
     "@ailuracode/alpine-json-api": "workspace:*",
