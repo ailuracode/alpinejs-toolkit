@@ -1,5 +1,5 @@
 {
-  "name": "@ailuracode/alpine-theme",
+  "name": "@ailuracode/alpinejs-theme",
   "version": "0.2.2",
   "description": "Alpine.js theme store with light, dark and system modes",
   "type": "module",

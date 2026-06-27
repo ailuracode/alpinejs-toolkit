@@ -1,23 +1,23 @@
 ---
 title: "Toggle"
-description: "Package: @ailuracode/alpine-toggle"
+description: "Package: @ailuracode/alpinejs-toggle"
 ---
 
-Package: `@ailuracode/alpine-toggle`
+Package: `@ailuracode/alpinejs-toggle`
 
 Callable magic `$toggle()` for **binary** and **ternary** state machines with inferred TypeScript unions.
 
 ## Install
 
 ```bash
-npm install @ailuracode/alpine-toggle alpinejs
+npm install @ailuracode/alpinejs-toggle alpinejs
 ```
 
 ## Setup
 
 ```js
 import Alpine from "alpinejs";
-import toggle from "@ailuracode/alpine-toggle";
+import toggle from "@ailuracode/alpinejs-toggle";
 
 Alpine.plugin(toggle);
 Alpine.start();
@@ -76,7 +76,7 @@ Alpine.start();
 ## TypeScript
 
 ```ts
-import { createToggle, type ToggleValue } from "@ailuracode/alpine-toggle";
+import { createToggle, type ToggleValue } from "@ailuracode/alpinejs-toggle";
 
 const binary = createToggle({ states: { truly: "on", falsely: "off" } });
 binary.ternary; // undefined

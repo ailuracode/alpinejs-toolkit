@@ -3,21 +3,21 @@ title: "Attention"
 description: "Wake Lock e Idle Detection con los magics $wakelock y $idle."
 ---
 
-Package: `@ailuracode/alpine-attention`
+Package: `@ailuracode/alpinejs-attention`
 
 Screen Wake Lock e Idle Detection reactivos mediante los magics `$wakelock` y `$idle`. Envuelve la [Screen Wake Lock API](https://developer.mozilla.org/en-US/docs/Web/API/Screen_Wake_Lock_API) y la [Idle Detection API](https://developer.mozilla.org/en-US/docs/Web/API/Idle_Detection_API) cuando están disponibles.
 
 ## Instalación
 
 ```bash
-npm install @ailuracode/alpine-attention alpinejs
+npm install @ailuracode/alpinejs-attention alpinejs
 ```
 
 ## Configuración
 
 ```js
 import Alpine from "alpinejs";
-import attention from "@ailuracode/alpine-attention";
+import attention from "@ailuracode/alpinejs-attention";
 
 Alpine.plugin(attention);
 Alpine.start();

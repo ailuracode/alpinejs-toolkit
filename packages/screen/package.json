@@ -1,5 +1,5 @@
 {
-  "name": "@ailuracode/alpine-screen",
+  "name": "@ailuracode/alpinejs-screen",
   "version": "1.0.1",
   "description": "Alpine.js responsive device and viewport store",
   "type": "module",

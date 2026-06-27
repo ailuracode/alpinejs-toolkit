@@ -1,5 +1,5 @@
 {
-  "name": "@ailuracode/alpine-clipboard",
+  "name": "@ailuracode/alpinejs-clipboard",
   "version": "0.2.1",
   "description": "Alpine.js clipboard copy magic",
   "type": "module",

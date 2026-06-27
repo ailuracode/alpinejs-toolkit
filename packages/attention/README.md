@@ -1,4 +1,4 @@
-# @ailuracode/alpine-attention
+# @ailuracode/alpinejs-attention
 
 Screen Wake Lock and Idle Detection magics for Alpine.js.
 
@@ -7,14 +7,14 @@ Screen Wake Lock and Idle Detection magics for Alpine.js.
 ## Install
 
 ```bash
-npm install @ailuracode/alpine-attention alpinejs
+npm install @ailuracode/alpinejs-attention alpinejs
 ```
 
 ## Quick example
 
 ```js
 import Alpine from "alpinejs";
-import attention from "@ailuracode/alpine-attention";
+import attention from "@ailuracode/alpinejs-attention";
 
 Alpine.plugin(attention);
 Alpine.start();

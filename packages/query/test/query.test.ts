@@ -1,12 +1,12 @@
-import query, { createQueryClient } from "@ailuracode/alpine-query";
-import { createAlpineStoreAdapter } from "@ailuracode/alpine-query-adapter-alpine";
+import query, { createQueryClient } from "@ailuracode/alpinejs-query";
+import { createAlpineStoreAdapter } from "@ailuracode/alpinejs-query-adapter-alpine";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { startAlpine } from "../../../test/helpers.js";
 import type { QueryStore } from "../src/types.js";
 
 type Todo = { id: number; title: string };
 
-describe("@ailuracode/alpine-query", () => {
+describe("@ailuracode/alpinejs-query", () => {
   let store: QueryStore;
 
   beforeEach(() => {

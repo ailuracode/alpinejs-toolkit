@@ -1,4 +1,4 @@
-import type { QueryStore } from "@ailuracode/alpine-query";
+import type { QueryStore } from "@ailuracode/alpinejs-query";
 import { type AdapterBadgeTheme, createAdapterBadge } from "./adapter-badge.js";
 import { formatDuration } from "./format-duration.js";
 import { formatKeyJson, formatQueryKeyLabel } from "./format-key.js";
@@ -1424,7 +1424,7 @@ export function getQueryStore(
 
   if (!store?.devtools) {
     throw new Error(
-      `@ailuracode/alpine-query-devtools could not find $store.${storeName}. Register @ailuracode/alpine-query first.`
+      `@ailuracode/alpinejs-query-devtools could not find $store.${storeName}. Register @ailuracode/alpinejs-query first.`
     );
   }
 
@@ -1443,7 +1443,7 @@ function isQueryStore(value: unknown): value is QueryStore {
 function assertQueryStoreWithDevtools(store: QueryStore): void {
   if (!store.devtools) {
     throw new Error(
-      "@ailuracode/alpine-query-devtools requires @ailuracode/alpine-query with devtools support"
+      "@ailuracode/alpinejs-query-devtools requires @ailuracode/alpinejs-query with devtools support"
     );
   }
 }

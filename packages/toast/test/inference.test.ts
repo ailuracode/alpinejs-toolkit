@@ -9,7 +9,7 @@ import {
   toastVariants,
 } from "../src/index.js";
 
-describe("@ailuracode/alpine-toast inference", () => {
+describe("@ailuracode/alpinejs-toast inference", () => {
   it("infers custom variant unions on payloads", () => {
     const variants = toastVariants(["queued", "failed"] as const);
     const options = toastOptions({ variants });

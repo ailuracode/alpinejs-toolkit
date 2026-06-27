@@ -3,21 +3,21 @@ title: "Scroll"
 description: "Posição, direção, progresso e bloqueio de scroll com $store.scroll."
 ---
 
-Package: `@ailuracode/alpine-scroll`
+Package: `@ailuracode/alpinejs-scroll`
 
 Rastreia posição, direção e progresso da rolagem. Fornece bloqueio de scroll do body com contagem de referências para modais e overlays.
 
 ## Instalação
 
 ```bash
-npm install @ailuracode/alpine-scroll alpinejs
+npm install @ailuracode/alpinejs-scroll alpinejs
 ```
 
 ## Configuração
 
 ```js
 import Alpine from "alpinejs";
-import scroll from "@ailuracode/alpine-scroll";
+import scroll from "@ailuracode/alpinejs-scroll";
 
 Alpine.plugin(scroll());
 Alpine.start();
@@ -48,7 +48,7 @@ import {
   computeScrollMetrics,
   readScrollSnapshot,
   scrollOptions,
-} from "@ailuracode/alpine-scroll";
+} from "@ailuracode/alpinejs-scroll";
 ```
 
 ## Store API

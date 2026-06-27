@@ -2,7 +2,7 @@ import {
   createJsonApiClient,
   defineJsonApiSchema,
   JsonApiHttpError,
-} from "@ailuracode/alpine-json-api";
+} from "@ailuracode/alpinejs-json-api";
 import { describe, expect, expectTypeOf, it, vi } from "vitest";
 import type { JsonApiClient, JsonApiCreatePayload } from "../src/types.js";
 
@@ -82,7 +82,7 @@ function jsonResponse(body: unknown, status = 200): Response {
   });
 }
 
-describe("@ailuracode/alpine-json-api", () => {
+describe("@ailuracode/alpinejs-json-api", () => {
   it("findAll() parses a typed collection document", async () => {
     const fetcher = createMockFetcher({
       "GET http://example.com/articles": jsonResponse(articlesCollection),
@@ -223,7 +223,7 @@ describe("@ailuracode/alpine-json-api", () => {
   });
 });
 
-describe("@ailuracode/alpine-json-api type inference", () => {
+describe("@ailuracode/alpinejs-json-api type inference", () => {
   it("infers resource attributes and relationship targets from schema", () => {
     type Schema = typeof schema;
     type Client = JsonApiClient<Schema>;

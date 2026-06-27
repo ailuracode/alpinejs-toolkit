@@ -46,7 +46,7 @@ function installShareApi(
   return share;
 }
 
-describe("@ailuracode/alpine-share", () => {
+describe("@ailuracode/alpinejs-share", () => {
   afterEach(() => {
     vi.unstubAllGlobals();
     vi.restoreAllMocks();

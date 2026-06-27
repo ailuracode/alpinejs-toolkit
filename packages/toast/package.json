@@ -1,5 +1,5 @@
 {
-  "name": "@ailuracode/alpine-toast",
+  "name": "@ailuracode/alpinejs-toast",
   "version": "0.1.1",
   "description": "Alpine.js in-app toast queue magic",
   "type": "module",

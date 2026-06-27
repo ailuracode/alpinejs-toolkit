@@ -1,4 +1,4 @@
-import { type QueryKey, type QueryOptions, queryOptions } from "@ailuracode/alpine-query";
+import { type QueryKey, type QueryOptions, queryOptions } from "@ailuracode/alpinejs-query";
 import type {
   JsonApiClient,
   JsonApiCollectionDocument,

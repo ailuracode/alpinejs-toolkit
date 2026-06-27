@@ -38,7 +38,7 @@ function createError(code: number, message: string): GeolocationPositionError {
   };
 }
 
-describe("@ailuracode/alpine-geo", () => {
+describe("@ailuracode/alpinejs-geo", () => {
   let store: GeoStore;
   let getCurrentPosition: ReturnType<typeof vi.fn>;
   let watchPosition: ReturnType<typeof vi.fn>;

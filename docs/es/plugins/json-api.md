@@ -8,7 +8,7 @@ Cliente JSON:API fuertemente tipado para Alpine.js.
 ## Instalación
 
 ```bash
-npm install @ailuracode/alpine-json-api @ailuracode/alpine-query alpinejs
+npm install @ailuracode/alpinejs-json-api @ailuracode/alpinejs-query alpinejs
 ```
 
 ## Tipos basados en esquema
@@ -16,7 +16,7 @@ npm install @ailuracode/alpine-json-api @ailuracode/alpine-query alpinejs
 `defineJsonApiSchema()` ingiere tu mapa de recursos y preserva las claves literales `type`, las formas de atributos y los destinos de relaciones:
 
 ```ts
-import { defineJsonApiSchema, createJsonApiClient } from "@ailuracode/alpine-json-api";
+import { defineJsonApiSchema, createJsonApiClient } from "@ailuracode/alpinejs-json-api";
 
 const schema = defineJsonApiSchema({
   articles: {
@@ -46,7 +46,7 @@ const client = createJsonApiClient(schema, { baseUrl: "https://api.example.com" 
 ## Alpine plugin
 
 ```js
-import jsonApi from "@ailuracode/alpine-json-api";
+import jsonApi from "@ailuracode/alpinejs-json-api";
 
 Alpine.plugin(jsonApi({ schema, baseUrl: "/api" }));
 ```
@@ -61,12 +61,12 @@ Registra el magic `$jsonapi` con el cliente configurado.
 - Parámetros de consulta `include`, `sort`, `page` y `filter`
 - Documentos de error JSON:API mediante `JsonApiHttpError`
 - Hidratación automática de `relationships.*.resolved` desde documentos compuestos `included`
-- Construido sobre `typedFetch` de `@ailuracode/alpine-query`
+- Construido sobre `typedFetch` de `@ailuracode/alpinejs-query`
 
 ## Integración con caché de consultas
 
 ```js
-import { jsonApiQueryOptions } from "@ailuracode/alpine-json-api";
+import { jsonApiQueryOptions } from "@ailuracode/alpinejs-json-api";
 
 const articles = jsonApiQueryOptions({
   client: $jsonapi,
@@ -92,4 +92,4 @@ Las relaciones resueltas están disponibles en `data[].relationships.author.reso
 ## Ver también
 
 - [Especificación JSON:API](https://jsonapi.org/format/)
-- [@ailuracode/alpine-query](../query.md)
+- [@ailuracode/alpinejs-query](../query.md)

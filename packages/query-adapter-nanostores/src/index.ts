@@ -2,7 +2,7 @@ import {
   createAlpineBridgedAdapter,
   type QueryPluginOptions,
   query,
-} from "@ailuracode/alpine-query";
+} from "@ailuracode/alpinejs-query";
 import { NanoStores } from "@nanostores/alpine";
 import type AlpineType from "alpinejs";
 import { nanostoresQueryAdapter } from "./adapter.js";
@@ -20,7 +20,7 @@ export function createAlpineNanostoresAdapter(Alpine: AlpineType.Alpine) {
 
 /**
  * Convenience plugin: registers `@nanostores/alpine` (optional) and `$store.query`.
- * Prefer `query({ adapter: createAlpineNanostoresAdapter })` from `@ailuracode/alpine-query`.
+ * Prefer `query({ adapter: createAlpineNanostoresAdapter })` from `@ailuracode/alpinejs-query`.
  */
 export default function nanostoresQueryPlugin(
   options: NanostoresQueryPluginOptions = {}

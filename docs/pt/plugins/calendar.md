@@ -3,21 +3,21 @@ title: "Calendar"
 description: "Grades mensais, navegação e seleção de datas com $calendar."
 ---
 
-Package: `@ailuracode/alpine-calendar`
+Package: `@ailuracode/alpinejs-calendar`
 
 Lógica de calendário leve para Alpine.js, com [date-fns](https://date-fns.org/). Registra o magic chamável `$calendar` que retorna uma instância de calendário independente. O plugin **não** renderiza UI — você controla o markup e os estilos.
 
 ## Instalação
 
 ```bash
-npm install @ailuracode/alpine-calendar alpinejs
+npm install @ailuracode/alpinejs-calendar alpinejs
 ```
 
 ## Configuração
 
 ```js
 import Alpine from "alpinejs";
-import calendar from "@ailuracode/alpine-calendar";
+import calendar from "@ailuracode/alpinejs-calendar";
 
 Alpine.plugin(calendar);
 Alpine.start();
@@ -26,7 +26,7 @@ Alpine.start();
 Consumidores TypeScript podem adicionar:
 
 ```ts
-/// <reference types="@ailuracode/alpine-calendar/global" />
+/// <reference types="@ailuracode/alpinejs-calendar/global" />
 ```
 
 ## Magic API
@@ -261,7 +261,7 @@ Alpine.data("bookingCalendar", () => ({
 Importe helpers diretamente quando não precisar do plugin Alpine:
 
 ```js
-import { createCalendar } from "@ailuracode/alpine-calendar";
+import { createCalendar } from "@ailuracode/alpinejs-calendar";
 
 const cal = createCalendar({ weekStartsOn: 1 });
 ```

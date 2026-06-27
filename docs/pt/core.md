@@ -1,13 +1,13 @@
 ---
 title: "Core"
-description: "@ailuracode/alpine-core é o registro lazy de plugins do monorepo. Os pacotes individuais continuam instaláveis de forma independente; o core coordena o regis…"
+description: "@ailuracode/alpinejs-core é o registro lazy de plugins do monorepo. Os pacotes individuais continuam instaláveis de forma independente; o core coordena o regis…"
 ---
 
-`@ailuracode/alpine-core` é o registro lazy de plugins do monorepo. Os pacotes individuais continuam instaláveis de forma independente; o core coordena o registro e a inicialização sob demanda.
+`@ailuracode/alpinejs-core` é o registro lazy de plugins do monorepo. Os pacotes individuais continuam instaláveis de forma independente; o core coordena o registro e a inicialização sob demanda.
 
 ## Por que um core?
 
-Cada pacote `@ailuracode/alpine-*` é um plugin standalone do Alpine.js. O core adiciona:
+Cada pacote `@ailuracode/alpinejs-*` é um plugin standalone do Alpine.js. O core adiciona:
 
 - **Inicialização diferida** — registra plugins sem executá-los na importação
 - **Carregamento seletivo** — inicializa apenas os plugins que você precisa
@@ -24,9 +24,9 @@ import {
   defineStorePlugin,
   initPlugins,
   registerPlugin,
-} from "@ailuracode/alpine-core";
-import share from "@ailuracode/alpine-share";
-import theme from "@ailuracode/alpine-theme";
+} from "@ailuracode/alpinejs-core";
+import share from "@ailuracode/alpinejs-share";
+import theme from "@ailuracode/alpinejs-theme";
 
 // Register (no side effects)
 registerPlugin("share", defineMagicPlugin(["share"], share));
@@ -43,14 +43,14 @@ Alpine.start();
 Para importações dinâmicas:
 
 ```js
-import { initPlugins, lazyPlugin, registerPlugin } from "@ailuracode/alpine-core";
+import { initPlugins, lazyPlugin, registerPlugin } from "@ailuracode/alpinejs-core";
 
 registerPlugin(
   "share",
   lazyPlugin({
     kind: "magic",
     magics: ["share"],
-    import: () => import("@ailuracode/alpine-share"),
+    import: () => import("@ailuracode/alpinejs-share"),
   })
 );
 
@@ -91,7 +91,7 @@ Referencie os tipos do core na sua app:
 
 ```ts
 /// <reference types="@types/alpinejs" />
-/// <reference types="@ailuracode/alpine-core" />
+/// <reference types="@ailuracode/alpinejs-core" />
 ```
 
 Continue referenciando os `global.d.ts` individuais de cada plugin para ampliações de `$store.*` e `$magic`.

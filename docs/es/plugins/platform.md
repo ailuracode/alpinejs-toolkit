@@ -3,21 +3,21 @@ title: "Platform"
 description: "Detección de SO, navegador y dispositivo con $platform."
 ---
 
-Package: `@ailuracode/alpine-platform`
+Package: `@ailuracode/alpinejs-platform`
 
 Detecta el sistema operativo y la plataforma del cliente mediante el magic `$platform`.
 
 ## Instalación
 
 ```bash
-npm install @ailuracode/alpine-platform alpinejs
+npm install @ailuracode/alpinejs-platform alpinejs
 ```
 
 ## Configuración
 
 ```js
 import Alpine from "alpinejs";
-import platform from "@ailuracode/alpine-platform";
+import platform from "@ailuracode/alpinejs-platform";
 
 Alpine.plugin(platform);
 Alpine.start();
@@ -62,10 +62,10 @@ import {
   isWindowsDevice,
   platformFlags,
   readPlatformState,
-} from "@ailuracode/alpine-platform";
+} from "@ailuracode/alpinejs-platform";
 ```
 
-`@ailuracode/alpine-notify` usa `isIosDevice()` e `isAndroidDevice()` internamente para la entrega de notificaciones móviles.
+`@ailuracode/alpinejs-notify` usa `isIosDevice()` e `isAndroidDevice()` internamente para la entrega de notificaciones móviles.
 
 ## Estrategia de detección
 
@@ -77,7 +77,7 @@ import {
 
 - Mostrar atajos de teclado específicos del SO
 - Ramificar instrucciones de instalación o permisos (p. ej. pantalla de inicio en iOS)
-- Complementar `@ailuracode/alpine-screen` (viewport) y `@ailuracode/alpine-touch` (puntero)
+- Complementar `@ailuracode/alpinejs-screen` (viewport) y `@ailuracode/alpinejs-touch` (puntero)
 
 ## Notas
 

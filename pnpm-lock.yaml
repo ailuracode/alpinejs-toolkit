@@ -42,79 +42,79 @@ importers:
 
   apps/demo:
     dependencies:
-      '@ailuracode/alpine-attention':
+      '@ailuracode/alpinejs-attention':
         specifier: workspace:*
         version: link:../../packages/attention
-      '@ailuracode/alpine-battery':
+      '@ailuracode/alpinejs-battery':
         specifier: workspace:*
         version: link:../../packages/battery
-      '@ailuracode/alpine-calendar':
+      '@ailuracode/alpinejs-calendar':
         specifier: workspace:*
         version: link:../../packages/calendar
-      '@ailuracode/alpine-clipboard':
+      '@ailuracode/alpinejs-clipboard':
         specifier: workspace:*
         version: link:../../packages/clipboard
-      '@ailuracode/alpine-core':
+      '@ailuracode/alpinejs-core':
         specifier: workspace:*
         version: link:../../packages/core
-      '@ailuracode/alpine-export':
+      '@ailuracode/alpinejs-export':
         specifier: workspace:*
         version: link:../../packages/export
-      '@ailuracode/alpine-geo':
+      '@ailuracode/alpinejs-geo':
         specifier: workspace:*
         version: link:../../packages/geo
-      '@ailuracode/alpine-json-api':
+      '@ailuracode/alpinejs-json-api':
         specifier: workspace:*
         version: link:../../packages/json-api
-      '@ailuracode/alpine-network':
+      '@ailuracode/alpinejs-network':
         specifier: workspace:*
         version: link:../../packages/network
-      '@ailuracode/alpine-notify':
+      '@ailuracode/alpinejs-notify':
         specifier: workspace:*
         version: link:../../packages/notify
-      '@ailuracode/alpine-platform':
+      '@ailuracode/alpinejs-platform':
         specifier: workspace:*
         version: link:../../packages/platform
-      '@ailuracode/alpine-query':
+      '@ailuracode/alpinejs-query':
         specifier: workspace:*
         version: link:../../packages/query
-      '@ailuracode/alpine-query-adapter-alpine':
+      '@ailuracode/alpinejs-query-adapter-alpine':
         specifier: workspace:*
         version: link:../../packages/query-adapter-alpine
-      '@ailuracode/alpine-query-adapter-nanostores':
+      '@ailuracode/alpinejs-query-adapter-nanostores':
         specifier: workspace:*
         version: link:../../packages/query-adapter-nanostores
-      '@ailuracode/alpine-query-adapter-zustand':
+      '@ailuracode/alpinejs-query-adapter-zustand':
         specifier: workspace:*
         version: link:../../packages/query-adapter-zustand
-      '@ailuracode/alpine-query-devtools':
+      '@ailuracode/alpinejs-query-devtools':
         specifier: workspace:*
         version: link:../../packages/query-devtools
-      '@ailuracode/alpine-screen':
+      '@ailuracode/alpinejs-screen':
         specifier: workspace:*
         version: link:../../packages/screen
-      '@ailuracode/alpine-scroll':
+      '@ailuracode/alpinejs-scroll':
         specifier: workspace:*
         version: link:../../packages/scroll
-      '@ailuracode/alpine-share':
+      '@ailuracode/alpinejs-share':
         specifier: workspace:*
         version: link:../../packages/share
-      '@ailuracode/alpine-sidebar':
+      '@ailuracode/alpinejs-sidebar':
         specifier: workspace:*
         version: link:../../packages/sidebar
-      '@ailuracode/alpine-theme':
+      '@ailuracode/alpinejs-theme':
         specifier: workspace:*
         version: link:../../packages/theme
-      '@ailuracode/alpine-toast':
+      '@ailuracode/alpinejs-toast':
         specifier: workspace:*
         version: link:../../packages/toast
-      '@ailuracode/alpine-toggle':
+      '@ailuracode/alpinejs-toggle':
         specifier: workspace:*
         version: link:../../packages/toggle
-      '@ailuracode/alpine-touch':
+      '@ailuracode/alpinejs-touch':
         specifier: workspace:*
         version: link:../../packages/touch
-      '@ailuracode/alpine-visibility':
+      '@ailuracode/alpinejs-visibility':
         specifier: workspace:*
         version: link:../../packages/visibility
       '@astrojs/react':
@@ -250,7 +250,7 @@ importers:
 
   packages/json-api:
     dependencies:
-      '@ailuracode/alpine-query':
+      '@ailuracode/alpinejs-query':
         specifier: workspace:*
         version: link:../query
       '@types/alpinejs':
@@ -271,7 +271,7 @@ importers:
 
   packages/notify:
     dependencies:
-      '@ailuracode/alpine-platform':
+      '@ailuracode/alpinejs-platform':
         specifier: workspace:*
         version: link:../platform
       '@types/alpinejs':
@@ -301,7 +301,7 @@ importers:
 
   packages/query-adapter-alpine:
     dependencies:
-      '@ailuracode/alpine-query':
+      '@ailuracode/alpinejs-query':
         specifier: workspace:*
         version: link:../query
       '@types/alpinejs':
@@ -313,7 +313,7 @@ importers:
 
   packages/query-adapter-nanostores:
     dependencies:
-      '@ailuracode/alpine-query':
+      '@ailuracode/alpinejs-query':
         specifier: workspace:*
         version: link:../query
       '@nanostores/alpine':
@@ -331,7 +331,7 @@ importers:
 
   packages/query-adapter-zustand:
     dependencies:
-      '@ailuracode/alpine-query':
+      '@ailuracode/alpinejs-query':
         specifier: workspace:*
         version: link:../query
       '@types/alpinejs':
@@ -346,7 +346,7 @@ importers:
 
   packages/query-devtools:
     dependencies:
-      '@ailuracode/alpine-query':
+      '@ailuracode/alpinejs-query':
         specifier: workspace:*
         version: link:../query
       '@types/alpinejs':

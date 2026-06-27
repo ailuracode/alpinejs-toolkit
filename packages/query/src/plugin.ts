@@ -42,8 +42,8 @@ export function createQueryPlugin(
  * Alpine.js query plugin. Pass a state adapter, then registers `$store.query`.
  *
  * @example
- * import query from "@ailuracode/alpine-query";
- * import { createAlpineNanostoresAdapter } from "@ailuracode/alpine-query-adapter-nanostores";
+ * import query from "@ailuracode/alpinejs-query";
+ * import { createAlpineNanostoresAdapter } from "@ailuracode/alpinejs-query-adapter-nanostores";
  *
  * Alpine.plugin(query({ adapter: createAlpineNanostoresAdapter }));
  */

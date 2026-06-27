@@ -1,4 +1,4 @@
-import { HttpError, typedFetch } from "@ailuracode/alpine-query";
+import { HttpError, typedFetch } from "@ailuracode/alpinejs-query";
 import { describe, expect, expectTypeOf, it, vi } from "vitest";
 
 type Todo = { id: number; title: string };

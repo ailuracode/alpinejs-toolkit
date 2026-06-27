@@ -1,18 +1,18 @@
-# @ailuracode/alpine-json-api
+# @ailuracode/alpinejs-json-api
 
 Strongly typed [JSON:API](https://jsonapi.org/) client for Alpine.js. Define your resource schema once and get inferred attributes, relationships, and query options across `findAll`, `findOne`, `create`, `update`, and `delete`.
 
 ## Install
 
 ```bash
-npm install @ailuracode/alpine-json-api @ailuracode/alpine-query alpinejs
+npm install @ailuracode/alpinejs-json-api @ailuracode/alpinejs-query alpinejs
 ```
 
 ## Quick start
 
 ```js
 import Alpine from "alpinejs";
-import jsonApi, { defineJsonApiSchema } from "@ailuracode/alpine-json-api";
+import jsonApi, { defineJsonApiSchema } from "@ailuracode/alpinejs-json-api";
 
 const schema = defineJsonApiSchema({
   articles: {
@@ -59,7 +59,7 @@ Alpine.start();
 </div>
 ```
 
-## With `@ailuracode/alpine-query`
+## With `@ailuracode/alpinejs-query`
 
 ```js
 $store.query.observe(["articles"], () => $jsonapi.findAll("articles"));
@@ -93,7 +93,7 @@ Query options support `include`, sparse `fields`, `sort`, `page`, and `filter` p
 ## TypeScript
 
 ```ts
-/// <reference types="@ailuracode/alpine-json-api/global" />
+/// <reference types="@ailuracode/alpinejs-json-api/global" />
 ```
 
 ## License

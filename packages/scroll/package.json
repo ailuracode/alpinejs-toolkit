@@ -1,5 +1,5 @@
 {
-  "name": "@ailuracode/alpine-scroll",
+  "name": "@ailuracode/alpinejs-scroll",
   "version": "0.3.1",
   "description": "Alpine.js scroll position and body lock store",
   "type": "module",

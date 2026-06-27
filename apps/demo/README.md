@@ -1,6 +1,6 @@
 # @ailuracode/alpinejs-toolkit — docs & playground
 
-[Starlight](https://starlight.astro.build/) documentation site plus an interactive Alpine.js playground for all `@ailuracode/alpine-*` packages. Part of the pnpm workspace (`apps/demo/`). **Private** — not published to npm.
+[Starlight](https://starlight.astro.build/) documentation site plus an interactive Alpine.js playground for all `@ailuracode/alpinejs-*` packages. Part of the pnpm workspace (`apps/demo/`). **Private** — not published to npm.
 
 ## Run locally
 
@@ -48,6 +48,6 @@ pnpm run preview
 The playground loads Alpine manually from `BaseLayout.astro` (not `@astrojs/alpinejs`).
 
 1. **Root `x-data`** on `<body>` — Alpine only walks the DOM from `x-data` roots.
-2. **Register → init → start** — `@ailuracode/alpine-core` in `src/demo/plugin-registry.ts`, bootstrapped from `BaseLayout.astro`.
+2. **Register → init → start** — `@ailuracode/alpinejs-core` in `src/demo/plugin-registry.ts`, bootstrapped from `BaseLayout.astro`.
 
 Plugins are registered with `registerPlugin()` / `lazyPlugin()`, initialized via `initPlugins()`, then demo handlers run in `setupDemoExtensions()`. Re-exports live in `src/entrypoint.ts`.

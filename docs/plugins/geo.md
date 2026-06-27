@@ -1,23 +1,23 @@
 ---
 title: "Geo"
-description: "Package: @ailuracode/alpine-geo"
+description: "Package: @ailuracode/alpinejs-geo"
 ---
 
-Package: `@ailuracode/alpine-geo`
+Package: `@ailuracode/alpinejs-geo`
 
 Reactive geolocation via the `$store.geo` store. Wraps the browser [Geolocation API](https://developer.mozilla.org/en-US/docs/Web/API/Geolocation_API) with one-shot requests and continuous position watching.
 
 ## Install
 
 ```bash
-npm install @ailuracode/alpine-geo alpinejs
+npm install @ailuracode/alpinejs-geo alpinejs
 ```
 
 ## Setup
 
 ```js
 import Alpine from "alpinejs";
-import geo from "@ailuracode/alpine-geo";
+import geo from "@ailuracode/alpinejs-geo";
 
 Alpine.plugin(geo);
 Alpine.start();

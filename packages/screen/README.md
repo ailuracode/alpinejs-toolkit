@@ -1,4 +1,4 @@
-# @ailuracode/alpine-screen
+# @ailuracode/alpinejs-screen
 
 Responsive device type and viewport width store for Alpine.js.
 
@@ -7,14 +7,14 @@ Responsive device type and viewport width store for Alpine.js.
 ## Install
 
 ```bash
-npm install @ailuracode/alpine-screen alpinejs
+npm install @ailuracode/alpinejs-screen alpinejs
 ```
 
 ## Quick example
 
 ```js
 import Alpine from "alpinejs";
-import screen from "@ailuracode/alpine-screen";
+import screen from "@ailuracode/alpinejs-screen";
 
 Alpine.plugin(screen());
 Alpine.start();

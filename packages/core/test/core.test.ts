@@ -36,7 +36,7 @@ function alpinePluginMock(
   return vi.fn(run);
 }
 
-describe("@ailuracode/alpine-core", () => {
+describe("@ailuracode/alpinejs-core", () => {
   afterEach(() => {
     resetPluginRegistry();
   });

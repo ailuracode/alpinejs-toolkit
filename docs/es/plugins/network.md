@@ -3,21 +3,21 @@ title: "Network"
 description: "Estado de conexión en línea/offline con el magic $network."
 ---
 
-Package: `@ailuracode/alpine-network`
+Package: `@ailuracode/alpinejs-network`
 
 Conectividad de red reactiva mediante el magic `$network`. Envuelve `navigator.onLine` y los eventos `online` / `offline` del navegador.
 
 ## Instalación
 
 ```bash
-npm install @ailuracode/alpine-network alpinejs
+npm install @ailuracode/alpinejs-network alpinejs
 ```
 
 ## Configuración
 
 ```js
 import Alpine from "alpinejs";
-import network from "@ailuracode/alpine-network";
+import network from "@ailuracode/alpinejs-network";
 
 Alpine.plugin(network);
 Alpine.start();

@@ -1,7 +1,7 @@
 import jsonApiPlugin, {
   createJsonApiClient,
   defineJsonApiSchema,
-} from "@ailuracode/alpine-json-api";
+} from "@ailuracode/alpinejs-json-api";
 import { describe, expect, it } from "vitest";
 import { createMagicHarness } from "../../../test/mock-alpine.js";
 
@@ -11,7 +11,7 @@ const schema = defineJsonApiSchema({
   },
 });
 
-describe("@ailuracode/alpine-json-api plugin", () => {
+describe("@ailuracode/alpinejs-json-api plugin", () => {
   it("registers $jsonapi magic with a typed client", () => {
     const client = createJsonApiClient(schema, { baseUrl: "http://example.com" });
     const { jsonapi } = createMagicHarness(

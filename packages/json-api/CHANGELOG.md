@@ -1,11 +1,11 @@
-# @ailuracode/alpine-json-api
+# @ailuracode/alpinejs-json-api
 
 ## 0.1.2
 
 ### Patch Changes
 
 - Updated dependencies
-  - @ailuracode/alpine-query@0.6.1
+  - @ailuracode/alpinejs-query@0.6.1
 
 ## 0.1.1
 
@@ -17,9 +17,9 @@
 
 ### Minor Changes
 
-- 50b6118: Add `@ailuracode/alpine-json-api` with a schema-driven typed JSON:API client and `$jsonapi` Alpine magic.
+- 50b6118: Add `@ailuracode/alpinejs-json-api` with a schema-driven typed JSON:API client and `$jsonapi` Alpine magic.
 
 ### Patch Changes
 
 - Updated dependencies [e0c7f02]
-  - @ailuracode/alpine-query@0.6.0
+  - @ailuracode/alpinejs-query@0.6.0

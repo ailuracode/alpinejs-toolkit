@@ -1,10 +1,10 @@
-import type { MutationState, QueryStateAdapter } from "@ailuracode/alpine-query";
+import type { MutationState, QueryStateAdapter } from "@ailuracode/alpinejs-query";
 import {
   createMutationStateView,
   createQueryStateView,
   type MutationStateRecord,
   type QueryStateRecord,
-} from "@ailuracode/alpine-query";
+} from "@ailuracode/alpinejs-query";
 import { type MapStore, map } from "nanostores";
 
 function patchMapStore<TRecord extends Record<string, unknown>>(
@@ -27,7 +27,7 @@ function patchMapStore<TRecord extends Record<string, unknown>>(
   }
 }
 
-/** Nanostores `map()` adapter for `@ailuracode/alpine-query`. */
+/** Nanostores `map()` adapter for `@ailuracode/alpinejs-query`. */
 export const nanostoresQueryAdapter: QueryStateAdapter = {
   name: "Nanostores",
 

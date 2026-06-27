@@ -1,5 +1,5 @@
 {
-  "name": "@ailuracode/alpine-sidebar",
+  "name": "@ailuracode/alpinejs-sidebar",
   "version": "0.1.1",
   "description": "Alpine.js sidebar store for open/close state, scroll lock, overlay, and keyboard navigation",
   "type": "module",

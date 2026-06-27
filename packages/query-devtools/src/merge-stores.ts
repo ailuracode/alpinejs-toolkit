@@ -4,7 +4,7 @@ import type {
   QueryDevtoolsEntry,
   QueryDevtoolsSnapshot,
   QueryStore,
-} from "@ailuracode/alpine-query";
+} from "@ailuracode/alpinejs-query";
 
 export type QueryDevtoolsEntryView = QueryDevtoolsEntry & {
   adapterName: string;
@@ -46,7 +46,7 @@ interface StoreContext {
 function assertDevtoolsStore(store: QueryStore): void {
   if (!store.devtools) {
     throw new Error(
-      "@ailuracode/alpine-query-devtools requires @ailuracode/alpine-query with devtools support"
+      "@ailuracode/alpinejs-query-devtools requires @ailuracode/alpinejs-query with devtools support"
     );
   }
 }
@@ -110,7 +110,7 @@ export function createMergedQueryDevtools(stores: QueryStore[]): MergedQueryDevt
 
   if (validStores.length === 0) {
     throw new Error(
-      "@ailuracode/alpine-query-devtools requires at least one query store with devtools support"
+      "@ailuracode/alpinejs-query-devtools requires at least one query store with devtools support"
     );
   }
 
@@ -193,7 +193,7 @@ export function resolveQueryDevtoolsStores(options: {
   const uniqueStores = [...new Set(stores)];
 
   if (uniqueStores.length === 0) {
-    throw new Error("@ailuracode/alpine-query-devtools requires at least one query store");
+    throw new Error("@ailuracode/alpinejs-query-devtools requires at least one query store");
   }
 
   return uniqueStores;

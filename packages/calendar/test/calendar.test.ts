@@ -12,7 +12,7 @@ import calendarPlugin, {
 const JAN_2024 = new Date(2024, 0, 15);
 const FEB_2024 = new Date(2024, 1, 10);
 
-describe("@ailuracode/alpine-calendar", () => {
+describe("@ailuracode/alpinejs-calendar", () => {
   describe("createCalendar()", () => {
     it("builds a month grid with leading and trailing outside days", () => {
       const cal = createCalendar({ month: JAN_2024, weekStartsOn: 0 });

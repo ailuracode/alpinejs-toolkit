@@ -1,5 +1,5 @@
 {
-  "name": "@ailuracode/alpine-toggle",
+  "name": "@ailuracode/alpinejs-toggle",
   "version": "0.1.0",
   "description": "Alpine.js toggle magic with binary and ternary state inference",
   "type": "module",

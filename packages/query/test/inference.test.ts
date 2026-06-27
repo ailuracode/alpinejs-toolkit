@@ -5,13 +5,13 @@ import {
   queryKey,
   queryOptions,
   typedFetch,
-} from "@ailuracode/alpine-query";
+} from "@ailuracode/alpinejs-query";
 import { afterEach, beforeEach, describe, expect, expectTypeOf, it, vi } from "vitest";
 import type { QueryFunction } from "../src/types.js";
 
 type Todo = { id: number; title: string };
 
-describe("@ailuracode/alpine-query type inference", () => {
+describe("@ailuracode/alpinejs-query type inference", () => {
   let client: ReturnType<typeof createQueryClient>;
 
   beforeEach(() => {

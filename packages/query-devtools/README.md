@@ -1,11 +1,11 @@
-# @ailuracode/alpine-query-devtools
+# @ailuracode/alpinejs-query-devtools
 
-TanStack Query-style devtools panel for [`@ailuracode/alpine-query`](../query/README.md). Inspect cached queries, live status flags, mutation history, and trigger cache actions while developing.
+TanStack Query-style devtools panel for [`@ailuracode/alpinejs-query`](../query/README.md). Inspect cached queries, live status flags, mutation history, and trigger cache actions while developing.
 
 ## Install
 
 ```bash
-npm install @ailuracode/alpine-query-devtools @ailuracode/alpine-query @ailuracode/alpine-query-adapter-nanostores alpinejs nanostores @nanostores/alpine
+npm install @ailuracode/alpinejs-query-devtools @ailuracode/alpinejs-query @ailuracode/alpinejs-query-adapter-nanostores alpinejs nanostores @nanostores/alpine
 ```
 
 ## Setup
@@ -14,12 +14,12 @@ Register **after** `query({ adapter })`:
 
 ```js
 import Alpine from "alpinejs";
-import query from "@ailuracode/alpine-query";
+import query from "@ailuracode/alpinejs-query";
 import {
   createAlpineNanostoresAdapter,
   NanoStores,
-} from "@ailuracode/alpine-query-adapter-nanostores";
-import queryDevtools from "@ailuracode/alpine-query-devtools";
+} from "@ailuracode/alpinejs-query-adapter-nanostores";
+import queryDevtools from "@ailuracode/alpinejs-query-devtools";
 
 Alpine.plugin(NanoStores);
 Alpine.plugin(query({ adapter: createAlpineNanostoresAdapter }));
@@ -69,8 +69,8 @@ Set the initial corner with `toggleCorner`. When `persistToggleCorner` is `true`
 Works with both `$store.query` (via Alpine) and `createQueryClient()`:
 
 ```js
-import { createQueryClient } from "@ailuracode/alpine-query";
-import { mountQueryDevtools, getQueryStore } from "@ailuracode/alpine-query-devtools";
+import { createQueryClient } from "@ailuracode/alpinejs-query";
+import { mountQueryDevtools, getQueryStore } from "@ailuracode/alpinejs-query-devtools";
 
 // Option A — Alpine store (after Alpine.plugin(query()))
 const fromAlpine = mountQueryDevtools({
@@ -92,7 +92,7 @@ Tree-shake devtools out of production bundles:
 
 ```js
 if (import.meta.env.DEV) {
-  const { default: queryDevtools } = await import("@ailuracode/alpine-query-devtools");
+  const { default: queryDevtools } = await import("@ailuracode/alpinejs-query-devtools");
   Alpine.plugin(queryDevtools());
 }
 ```

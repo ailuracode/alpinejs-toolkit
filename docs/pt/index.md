@@ -24,7 +24,7 @@ Toolkit modular para **Alpine.js** por ailuracode — agnóstico ao framework, p
 
 | Pilar | O que você obtém |
 |-------|------------------|
-| **Init lazy** | [`@ailuracode/alpine-core`](./core.md) registra plugins sem executá-los na importação; carrega sob demanda com `import()` dinâmico. |
+| **Init lazy** | [`@ailuracode/alpinejs-core`](./core.md) registra plugins sem executá-los na importação; carrega sob demanda com `import()` dinâmico. |
 | **Headless** | Apenas stores e magics — sem CSS, sem componentes UI, sem suposições de Tailwind. Você aplica estilos via callbacks. |
 | **DX moderna** | Globals TypeScript (`$store.theme`, `$toast`), pacotes npm tree-shakeáveis, loaders seguros para SSR. |
 

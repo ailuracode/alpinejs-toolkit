@@ -1,10 +1,10 @@
-import type { QueryStore } from "@ailuracode/alpine-query";
-import query from "@ailuracode/alpine-query";
+import type { QueryStore } from "@ailuracode/alpinejs-query";
+import query from "@ailuracode/alpinejs-query";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { startAlpine } from "../../../test/helpers.js";
 import { createAlpineStoreAdapter } from "../src/adapter.js";
 
-describe("@ailuracode/alpine-query-adapter-alpine", () => {
+describe("@ailuracode/alpinejs-query-adapter-alpine", () => {
   beforeEach(() => {
     vi.useFakeTimers();
   });

@@ -10,7 +10,7 @@ const packageAliases = Object.fromEntries(
   readdirSync(packagesDir, { withFileTypes: true })
     .filter((entry) => entry.isDirectory())
     .map((entry) => [
-      `@ailuracode/alpine-${entry.name}`,
+      `@ailuracode/alpinejs-${entry.name}`,
       path.resolve(packagesDir, entry.name, "src/index.ts"),
     ])
 );

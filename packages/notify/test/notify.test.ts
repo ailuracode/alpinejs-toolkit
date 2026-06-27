@@ -149,7 +149,7 @@ function removeEnvironmentMocks(): void {
   vi.unstubAllGlobals();
 }
 
-describe("@ailuracode/alpine-notify", () => {
+describe("@ailuracode/alpinejs-notify", () => {
   afterEach(() => {
     resetNotifyServiceWorkerRegistrationForTests();
     removeEnvironmentMocks();

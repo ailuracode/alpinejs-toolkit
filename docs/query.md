@@ -8,7 +8,7 @@ TanStack Query-style async data fetching for Alpine.js: caching, stale-while-rev
 ## Install
 
 ```bash
-npm install @ailuracode/alpine-query @ailuracode/alpine-query-adapter-nanostores alpinejs nanostores @nanostores/alpine
+npm install @ailuracode/alpinejs-query @ailuracode/alpinejs-query-adapter-nanostores alpinejs nanostores @nanostores/alpine
 ```
 
 ## Quick start
@@ -17,11 +17,11 @@ Pick an adapter, pass it to `query()`, then register the plugin. **Nanostores** 
 
 ```js
 import Alpine from "alpinejs";
-import query from "@ailuracode/alpine-query";
+import query from "@ailuracode/alpinejs-query";
 import {
   createAlpineNanostoresAdapter,
   NanoStores,
-} from "@ailuracode/alpine-query-adapter-nanostores";
+} from "@ailuracode/alpinejs-query-adapter-nanostores";
 
 Alpine.plugin(NanoStores);
 Alpine.plugin(query({ adapter: createAlpineNanostoresAdapter }));
@@ -32,17 +32,17 @@ Other adapter packages:
 
 | Package | Backend |
 |---------|---------|
-| `@ailuracode/alpine-query-adapter-nanostores` | Nanostores + `@nanostores/alpine` (**recommended**) |
-| `@ailuracode/alpine-query-adapter-alpine` | Native `Alpine.reactive` |
-| `@ailuracode/alpine-query-adapter-zustand` | Zustand vanilla (manual bridge; no official zustand-alpine) |
+| `@ailuracode/alpinejs-query-adapter-nanostores` | Nanostores + `@nanostores/alpine` (**recommended**) |
+| `@ailuracode/alpinejs-query-adapter-alpine` | Native `Alpine.reactive` |
+| `@ailuracode/alpinejs-query-adapter-zustand` | Zustand vanilla (manual bridge; no official zustand-alpine) |
 
 ### Without Alpine
 
 `createQueryClient()` exposes the same API without registering `$store.query`. The cache core is **store-agnostic** — pass any `QueryStateAdapter` or use the vanilla default.
 
 ```js
-import { createQueryClient, vanillaQueryAdapter } from "@ailuracode/alpine-query";
-import { nanostoresQueryAdapter } from "@ailuracode/alpine-query-adapter-nanostores";
+import { createQueryClient, vanillaQueryAdapter } from "@ailuracode/alpinejs-query";
+import { nanostoresQueryAdapter } from "@ailuracode/alpinejs-query-adapter-nanostores";
 
 const query = createQueryClient({ adapter: nanostoresQueryAdapter });
 const todos = query.observe(["todos"], fetchTodos);
@@ -136,7 +136,7 @@ import {
   createQueryStateView,
   vanillaQueryAdapter,
   type QueryStateAdapter,
-} from "@ailuracode/alpine-query";
+} from "@ailuracode/alpinejs-query";
 
 // Use as-is for tests or non-reactive environments
 const client = createQueryClient({ adapter: vanillaQueryAdapter });
@@ -155,7 +155,7 @@ import {
   type MutationStateRecord,
   type QueryStateAdapter,
   type QueryStateRecord,
-} from "@ailuracode/alpine-query";
+} from "@ailuracode/alpinejs-query";
 
 export const myStoreAdapter: QueryStateAdapter = {
   name: "My Store",
@@ -212,7 +212,7 @@ Wire the store's native `subscribe` / `listen` into `listen` instead of a manual
 Register `$store.query` with `query({ adapter })`:
 
 ```js
-import query from "@ailuracode/alpine-query";
+import query from "@ailuracode/alpinejs-query";
 import { myStoreAdapter } from "./my-store-adapter.js";
 
 Alpine.plugin(query({ adapter: myStoreAdapter }));
@@ -222,7 +222,7 @@ Alpine.start();
 If the adapter is **not** already bound to Alpine templates, wrap it with `createAlpineBridgedAdapter`:
 
 ```js
-import query, { createAlpineBridgedAdapter } from "@ailuracode/alpine-query";
+import query, { createAlpineBridgedAdapter } from "@ailuracode/alpinejs-query";
 
 Alpine.plugin(
   query({ adapter: (Alpine) => createAlpineBridgedAdapter(Alpine, myStoreAdapter) })
@@ -241,10 +241,10 @@ query({ adapter: (Alpine) => createAlpineBridgedAdapter(Alpine, myStoreAdapter) 
 
 ### Publishing a plugin package
 
-The official adapters are independent npm packages (`@ailuracode/alpine-query-adapter-*`). To ship your own:
+The official adapters are independent npm packages (`@ailuracode/alpinejs-query-adapter-*`). To ship your own:
 
-1. Depend on `@ailuracode/alpine-query` and your store library.
-2. Export the adapter; consumers call `query({ adapter })` from `@ailuracode/alpine-query`.
+1. Depend on `@ailuracode/alpinejs-query` and your store library.
+2. Export the adapter; consumers call `query({ adapter })` from `@ailuracode/alpinejs-query`.
 3. Add tests with `createQueryClient({ adapter })` and `startAlpine(query({ adapter }))`.
 
 Only **`patch` + `listen`** need to connect to your store; the cache engine handles fetching, retries, invalidation, and GC.
@@ -280,7 +280,7 @@ Arrays identify cached entries. Use stable, serializable values:
 Use `typedFetch<T>()` inside `queryFn` callbacks instead of calling native `fetch` and casting `response.json()`:
 
 ```ts
-import { typedFetch } from "@ailuracode/alpine-query";
+import { typedFetch } from "@ailuracode/alpinejs-query";
 
 type Todo = { id: number; title: string };
 
@@ -292,7 +292,7 @@ const todos = query.observe(["todos"], () => typedFetch<Todo[]>("/api/todos"));
 ## TypeScript
 
 ```ts
-/// <reference types="@ailuracode/alpine-query/global" />
+/// <reference types="@ailuracode/alpinejs-query/global" />
 ```
 
 ## See also

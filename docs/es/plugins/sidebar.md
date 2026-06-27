@@ -3,23 +3,23 @@ title: "Sidebar"
 description: "Estado de paneles laterales con $store.sidebar."
 ---
 
-Package: `@ailuracode/alpine-sidebar`
+Package: `@ailuracode/alpinejs-sidebar`
 
-Controla el estado abierto/cerrado de la barra lateral con overlay, navegación por teclado y breakpoints responsivos. Agnóstico al framework CSS — todos los cambios visuales se aplican mediante callbacks. Compón con `@ailuracode/alpine-scroll` para bloquear el scroll del body.
+Controla el estado abierto/cerrado de la barra lateral con overlay, navegación por teclado y breakpoints responsivos. Agnóstico al framework CSS — todos los cambios visuales se aplican mediante callbacks. Compón con `@ailuracode/alpinejs-scroll` para bloquear el scroll del body.
 
 Tres estados: **open** (visible), **closed** (oculta) y **collapsed** (rail compacto solo con iconos, opcional).
 
 ## Instalación
 
 ```bash
-npm install @ailuracode/alpine-sidebar alpinejs
+npm install @ailuracode/alpinejs-sidebar alpinejs
 ```
 
 ## Configuración
 
 ```js
 import Alpine from "alpinejs";
-import sidebar from "@ailuracode/alpine-sidebar";
+import sidebar from "@ailuracode/alpinejs-sidebar";
 
 Alpine.plugin(sidebar());
 Alpine.start();
@@ -44,11 +44,11 @@ Alpine.plugin(
 
 ### Con bloqueo de scroll
 
-Compón con `@ailuracode/alpine-scroll` mediante callbacks para bloquear el scroll del body cuando la barra lateral está abierta:
+Compón con `@ailuracode/alpinejs-scroll` mediante callbacks para bloquear el scroll del body cuando la barra lateral está abierta:
 
 ```js
-import scroll from "@ailuracode/alpine-scroll";
-import sidebar from "@ailuracode/alpine-sidebar";
+import scroll from "@ailuracode/alpinejs-scroll";
+import sidebar from "@ailuracode/alpinejs-sidebar";
 
 Alpine.plugin(scroll());
 Alpine.plugin(
@@ -68,7 +68,7 @@ Alpine.plugin(
 ## Helpers exportados
 
 ```js
-import { sidebarOptions } from "@ailuracode/alpine-sidebar";
+import { sidebarOptions } from "@ailuracode/alpinejs-sidebar";
 ```
 
 ## Store API

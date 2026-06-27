@@ -3,7 +3,7 @@ import { createMagicHarness } from "../../../test/mock-alpine.js";
 import { setMatchMedia } from "../../../test/setup.js";
 import touchPlugin, { type TouchMagic } from "../src/index.js";
 
-describe("@ailuracode/alpine-touch", () => {
+describe("@ailuracode/alpinejs-touch", () => {
   it("registers $touch with pointer capabilities", () => {
     setMatchMedia("(pointer: coarse)", true);
     setMatchMedia("(pointer: fine)", false);

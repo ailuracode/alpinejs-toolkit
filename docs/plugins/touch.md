@@ -1,23 +1,23 @@
 ---
 title: "Touch"
-description: "Package: @ailuracode/alpine-touch"
+description: "Package: @ailuracode/alpinejs-touch"
 ---
 
-Package: `@ailuracode/alpine-touch`
+Package: `@ailuracode/alpinejs-touch`
 
 Detects touch devices and pointer capabilities via `$touch` magic. Updates on `matchMedia` changes.
 
 ## Install
 
 ```bash
-npm install @ailuracode/alpine-touch alpinejs
+npm install @ailuracode/alpinejs-touch alpinejs
 ```
 
 ## Setup
 
 ```js
 import Alpine from "alpinejs";
-import touch from "@ailuracode/alpine-touch";
+import touch from "@ailuracode/alpinejs-touch";
 
 Alpine.plugin(touch);
 Alpine.start();
@@ -55,7 +55,7 @@ Alpine.start();
 
 - Show larger tap targets on touch devices
 - Disable hover-only UI when `!$touch.canHover`
-- Branch layout logic alongside `@ailuracode/alpine-screen` for viewport size
+- Branch layout logic alongside `@ailuracode/alpinejs-screen` for viewport size
 
 ## Notes
 

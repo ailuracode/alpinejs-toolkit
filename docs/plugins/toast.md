@@ -1,9 +1,9 @@
 ---
 title: "Toast"
-description: "Package: @ailuracode/alpine-toast"
+description: "Package: @ailuracode/alpinejs-toast"
 ---
 
-Package: `@ailuracode/alpine-toast`
+Package: `@ailuracode/alpinejs-toast`
 
 Headless in-app toast queue for Alpine.js. Registers the `$toast` magic and an internal reactive store for UI integrators.
 
@@ -20,14 +20,14 @@ Map `toast.variant` and `toast.position` to layout/CSS in your own renderer (e.g
 ## Install
 
 ```bash
-npm install @ailuracode/alpine-toast alpinejs
+npm install @ailuracode/alpinejs-toast alpinejs
 ```
 
 ## Setup
 
 ```js
 import Alpine from "alpinejs";
-import toast, { toastOptions, toastPositions, toastVariants } from "@ailuracode/alpine-toast";
+import toast, { toastOptions, toastPositions, toastVariants } from "@ailuracode/alpinejs-toast";
 
 Alpine.plugin(
   toastOptions({
@@ -117,7 +117,7 @@ For `$toast.promise`, optional `loadingContent`, `successContent`, and `errorCon
 ## Custom variants
 
 ```ts
-import toast, { toastOptions, toastVariants, type ToastMagic } from "@ailuracode/alpine-toast";
+import toast, { toastOptions, toastVariants, type ToastMagic } from "@ailuracode/alpinejs-toast";
 
 const variants = toastVariants(["queued", "published", "failed"] as const);
 
@@ -134,7 +134,7 @@ Without `variants`, only `$toast()`, `$toast.promise()`, `$toast.dismiss()`, and
 Each declared position gets its **own stack**. `maxToasts` and `maxVisible` apply **per position**, not globally.
 
 ```ts
-import toast, { toastPositions, type ToastPosition } from "@ailuracode/alpine-toast";
+import toast, { toastPositions, type ToastPosition } from "@ailuracode/alpinejs-toast";
 
 const positions = toastPositions(["top-center", "bottom-right"] as const);
 
@@ -306,4 +306,4 @@ Alpine.plugin(
 
 ## Related packages
 
-- [`@ailuracode/alpine-notify`](./notify.md) — OS-level Web Notifications (`$notify`)
+- [`@ailuracode/alpinejs-notify`](./notify.md) — OS-level Web Notifications (`$notify`)

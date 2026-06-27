@@ -1,23 +1,23 @@
 ---
 title: "Platform"
-description: "Package: @ailuracode/alpine-platform"
+description: "Package: @ailuracode/alpinejs-platform"
 ---
 
-Package: `@ailuracode/alpine-platform`
+Package: `@ailuracode/alpinejs-platform`
 
 Detects the client's operating system and platform via `$platform` magic.
 
 ## Install
 
 ```bash
-npm install @ailuracode/alpine-platform alpinejs
+npm install @ailuracode/alpinejs-platform alpinejs
 ```
 
 ## Setup
 
 ```js
 import Alpine from "alpinejs";
-import platform from "@ailuracode/alpine-platform";
+import platform from "@ailuracode/alpinejs-platform";
 
 Alpine.plugin(platform);
 Alpine.start();
@@ -62,10 +62,10 @@ import {
   isWindowsDevice,
   platformFlags,
   readPlatformState,
-} from "@ailuracode/alpine-platform";
+} from "@ailuracode/alpinejs-platform";
 ```
 
-`@ailuracode/alpine-notify` uses `isIosDevice()` and `isAndroidDevice()` internally for mobile notification delivery.
+`@ailuracode/alpinejs-notify` uses `isIosDevice()` and `isAndroidDevice()` internally for mobile notification delivery.
 
 ## Detection strategy
 
@@ -77,7 +77,7 @@ import {
 
 - Show OS-specific keyboard shortcut hints
 - Branch install or permission instructions (e.g. iOS Home Screen)
-- Complement `@ailuracode/alpine-screen` (viewport) and `@ailuracode/alpine-touch` (pointer)
+- Complement `@ailuracode/alpinejs-screen` (viewport) and `@ailuracode/alpinejs-touch` (pointer)
 
 ## Notes
 

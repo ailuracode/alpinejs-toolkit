@@ -1,4 +1,4 @@
-# @ailuracode/alpine-toast
+# @ailuracode/alpinejs-toast
 
 Headless in-app toast queue for Alpine.js via the `$toast` magic.
 
@@ -9,14 +9,14 @@ Headless in-app toast queue for Alpine.js via the `$toast` magic.
 ## Install
 
 ```bash
-npm install @ailuracode/alpine-toast alpinejs
+npm install @ailuracode/alpinejs-toast alpinejs
 ```
 
 ## Quick example
 
 ```js
 import Alpine from "alpinejs";
-import toast, { toastPositions, toastVariants } from "@ailuracode/alpine-toast";
+import toast, { toastPositions, toastVariants } from "@ailuracode/alpinejs-toast";
 
 Alpine.plugin(
   toast({

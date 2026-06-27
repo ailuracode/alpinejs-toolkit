@@ -1,5 +1,5 @@
 {
-  "name": "@ailuracode/alpine-platform",
+  "name": "@ailuracode/alpinejs-platform",
   "version": "1.1.1",
   "description": "Alpine.js client platform and operating system detection magic",
   "type": "module",

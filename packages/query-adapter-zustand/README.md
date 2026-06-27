@@ -1,21 +1,21 @@
-# @ailuracode/alpine-query-adapter-zustand
+# @ailuracode/alpinejs-query-adapter-zustand
 
-[Zustand](https://github.com/pmndrs/zustand) vanilla store adapter for [`@ailuracode/alpine-query`](../query/README.md).
+[Zustand](https://github.com/pmndrs/zustand) vanilla store adapter for [`@ailuracode/alpinejs-query`](../query/README.md).
 
 There is **no official zustand-alpine integration**. This package uses Zustand's vanilla `createStore` API and bridges subscriptions into `Alpine.reactive`.
 
 ## Install
 
 ```bash
-npm install @ailuracode/alpine-query @ailuracode/alpine-query-adapter-zustand alpinejs zustand
+npm install @ailuracode/alpinejs-query @ailuracode/alpinejs-query-adapter-zustand alpinejs zustand
 ```
 
 ## Setup
 
 ```js
 import Alpine from "alpinejs";
-import query from "@ailuracode/alpine-query";
-import { createAlpineZustandAdapter } from "@ailuracode/alpine-query-adapter-zustand";
+import query from "@ailuracode/alpinejs-query";
+import { createAlpineZustandAdapter } from "@ailuracode/alpinejs-query-adapter-zustand";
 
 Alpine.plugin(query({ adapter: createAlpineZustandAdapter }));
 Alpine.start();

@@ -1,7 +1,7 @@
 {
-  "name": "@ailuracode/alpine-query-adapter-zustand",
+  "name": "@ailuracode/alpinejs-query-adapter-zustand",
   "version": "4.0.1",
-  "description": "Zustand adapter plugin for @ailuracode/alpine-query",
+  "description": "Zustand adapter plugin for @ailuracode/alpinejs-query",
   "type": "module",
   "license": "MIT",
   "author": "ailuracode",
@@ -24,7 +24,7 @@
     }
   },
   "peerDependencies": {
-    "@ailuracode/alpine-query": "workspace:*",
+    "@ailuracode/alpinejs-query": "workspace:*",
     "@types/alpinejs": "^3.13.11",
     "alpinejs": "^3.0.0",
     "zustand": "^5.0.0"
@@ -35,7 +35,7 @@
     }
   },
   "dependencies": {
-    "@ailuracode/alpine-query": "workspace:*",
+    "@ailuracode/alpinejs-query": "workspace:*",
     "zustand": "^5.0.11"
   },
   "scripts": {

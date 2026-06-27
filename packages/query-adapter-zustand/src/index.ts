@@ -2,7 +2,7 @@ import {
   createAlpineBridgedAdapter,
   type QueryPluginOptions,
   query,
-} from "@ailuracode/alpine-query";
+} from "@ailuracode/alpinejs-query";
 import type AlpineType from "alpinejs";
 import { zustandQueryAdapter } from "./adapter.js";
 
@@ -14,7 +14,7 @@ export function createAlpineZustandAdapter(Alpine: AlpineType.Alpine) {
 
 /**
  * Convenience plugin using Zustand vanilla stores.
- * Prefer `query({ adapter: createAlpineZustandAdapter })` from `@ailuracode/alpine-query`.
+ * Prefer `query({ adapter: createAlpineZustandAdapter })` from `@ailuracode/alpinejs-query`.
  */
 export default function zustandQueryPlugin(
   options: QueryPluginOptions = {}

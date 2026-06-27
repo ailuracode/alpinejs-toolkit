@@ -1,23 +1,23 @@
 ---
 title: "Notify"
-description: "Package: @ailuracode/alpine-notify"
+description: "Package: @ailuracode/alpinejs-notify"
 ---
 
-Package: `@ailuracode/alpine-notify`
+Package: `@ailuracode/alpinejs-notify`
 
 Thin wrapper around the [Web Notifications API](https://developer.mozilla.org/en-US/docs/Web/API/Notifications_API) via the `$notify` magic. Handles unsupported browsers and permission states without throwing.
 
 ## Install
 
 ```bash
-npm install @ailuracode/alpine-notify alpinejs
+npm install @ailuracode/alpinejs-notify alpinejs
 ```
 
 ## Setup
 
 ```js
 import Alpine from "alpinejs";
-import notify from "@ailuracode/alpine-notify";
+import notify from "@ailuracode/alpinejs-notify";
 
 Alpine.plugin(notify);
 Alpine.start();
@@ -26,7 +26,7 @@ Alpine.start();
 Copy the bundled service worker to your site root (or another same-origin path):
 
 ```bash
-cp node_modules/@ailuracode/alpine-notify/dist/notify-sw.js public/notify-sw.js
+cp node_modules/@ailuracode/alpinejs-notify/dist/notify-sw.js public/notify-sw.js
 ```
 
 The plugin registers `/notify-sw.js` automatically. Use a custom path when needed:
@@ -154,13 +154,13 @@ Always check `isSupported`, `requiresHomeScreenInstall`, and `permission` before
 
 ```ts
 /// <reference types="@types/alpinejs" />
-/// <reference types="@ailuracode/alpine-notify" />
+/// <reference types="@ailuracode/alpinejs-notify" />
 ```
 
 Or import the plugin module:
 
 ```ts
-import notify from "@ailuracode/alpine-notify";
+import notify from "@ailuracode/alpinejs-notify";
 ```
 
 Individual helpers are also exported for non-Alpine use:
@@ -170,7 +170,7 @@ import {
   createNotifyMagic,
   isNotifySupported,
   sendNotification,
-} from "@ailuracode/alpine-notify";
+} from "@ailuracode/alpinejs-notify";
 ```
 
 ## Design notes

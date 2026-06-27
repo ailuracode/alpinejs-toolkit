@@ -14,12 +14,12 @@ Start with the core registry and the five essential modules:
 
 ```bash
 npm install alpinejs \
-  @ailuracode/alpine-core \
-  @ailuracode/alpine-theme \
-  @ailuracode/alpine-screen \
-  @ailuracode/alpine-scroll \
-  @ailuracode/alpine-sidebar \
-  @ailuracode/alpine-toast
+  @ailuracode/alpinejs-core \
+  @ailuracode/alpinejs-theme \
+  @ailuracode/alpinejs-screen \
+  @ailuracode/alpinejs-scroll \
+  @ailuracode/alpinejs-sidebar \
+  @ailuracode/alpinejs-toast
 ```
 
 Add more packages later — each one is an independent npm dependency.
@@ -35,7 +35,7 @@ import {
   defineStorePlugin,
   lazyPlugin,
   registerPlugin,
-} from "@ailuracode/alpine-core";
+} from "@ailuracode/alpinejs-core";
 
 function applyTheme({ resolved }) {
   document.documentElement.classList.toggle("dark", resolved === "dark");
@@ -44,7 +44,7 @@ function applyTheme({ resolved }) {
 registerPlugin(
   "theme",
   defineStorePlugin(["theme"], async () => {
-    const { default: theme } = await import("@ailuracode/alpine-theme");
+    const { default: theme } = await import("@ailuracode/alpinejs-theme");
     return theme({ onChange: applyTheme });
   })
 );
@@ -54,14 +54,14 @@ registerPlugin(
   lazyPlugin({
     kind: "magic",
     magics: ["toast"],
-    import: () => import("@ailuracode/alpine-toast"),
+    import: () => import("@ailuracode/alpinejs-toast"),
   })
 );
 
 registerPlugin("screen", lazyPlugin({
   kind: "store",
   stores: ["device"],
-  import: () => import("@ailuracode/alpine-screen"),
+  import: () => import("@ailuracode/alpinejs-screen"),
 }));
 
 Alpine.plugin(createAlpinePlugin(["theme", "toast", "screen"]));
@@ -70,18 +70,18 @@ Alpine.start();
 
 ## Lazy initialization
 
-[`@ailuracode/alpine-core`](./core.md) separates **registration** (no side effects) from **initialization** (runs Alpine plugin callbacks):
+[`@ailuracode/alpinejs-core`](./core.md) separates **registration** (no side effects) from **initialization** (runs Alpine plugin callbacks):
 
 ```js
 import Alpine from "alpinejs";
-import { initPlugins, lazyPlugin, registerPlugin } from "@ailuracode/alpine-core";
+import { initPlugins, lazyPlugin, registerPlugin } from "@ailuracode/alpinejs-core";
 
 registerPlugin(
   "scroll",
   lazyPlugin({
     kind: "store",
     stores: ["scroll"],
-    import: () => import("@ailuracode/alpine-scroll"),
+    import: () => import("@ailuracode/alpinejs-scroll"),
   })
 );
 
@@ -99,8 +99,8 @@ If you do not need lazy loading yet, register plugins directly — still **befor
 
 ```js
 import Alpine from "alpinejs";
-import theme from "@ailuracode/alpine-theme";
-import screen from "@ailuracode/alpine-screen";
+import theme from "@ailuracode/alpinejs-theme";
+import screen from "@ailuracode/alpinejs-screen";
 
 Alpine.plugin(theme({ onChange: applyTheme }));
 Alpine.plugin(screen);
@@ -157,7 +157,7 @@ See [`$toast.fromPayload`](./plugins/toast.md) for the full payload shape.
 ```html
 <script type="module">
   import Alpine from "https://esm.sh/alpinejs";
-  import theme from "https://esm.sh/@ailuracode/alpine-theme";
+  import theme from "https://esm.sh/@ailuracode/alpinejs-theme";
 
   Alpine.plugin(theme({ onChange: ({ resolved }) => {
     document.documentElement.classList.toggle("dark", resolved === "dark");
@@ -172,9 +172,9 @@ Each package ships `dist/index.d.ts` (imports) and `dist/global.d.ts` (Alpine au
 
 ```ts
 /// <reference types="@types/alpinejs" />
-/// <reference types="@ailuracode/alpine-core" />
-/// <reference types="@ailuracode/alpine-theme" />
-/// <reference types="@ailuracode/alpine-toast" />
+/// <reference types="@ailuracode/alpinejs-core" />
+/// <reference types="@ailuracode/alpinejs-theme" />
+/// <reference types="@ailuracode/alpinejs-toast" />
 ```
 
 Or import the plugin module — generated types augment globals automatically.

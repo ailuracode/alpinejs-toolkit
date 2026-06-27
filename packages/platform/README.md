@@ -1,18 +1,18 @@
-# @ailuracode/alpine-platform
+# @ailuracode/alpinejs-platform
 
 Alpine.js magic for detecting the client's operating system and platform.
 
 ## Install
 
 ```bash
-npm install @ailuracode/alpine-platform alpinejs
+npm install @ailuracode/alpinejs-platform alpinejs
 ```
 
 ## Setup
 
 ```js
 import Alpine from "alpinejs";
-import platform from "@ailuracode/alpine-platform";
+import platform from "@ailuracode/alpinejs-platform";
 
 Alpine.plugin(platform);
 Alpine.start();
@@ -57,7 +57,7 @@ import {
   isWindowsDevice,
   platformFlags,
   readPlatformState,
-} from "@ailuracode/alpine-platform";
+} from "@ailuracode/alpinejs-platform";
 ```
 
 Detection uses `navigator.userAgentData.platform` when available, then falls back to `navigator.userAgent` and `navigator.platform`. iPadOS desktop mode is detected via `MacIntel` + `maxTouchPoints > 1`.
@@ -66,7 +66,7 @@ Detection uses `navigator.userAgentData.platform` when available, then falls bac
 
 - Read-only magic — no store
 - CSS-framework agnostic
-- For viewport breakpoints use `@ailuracode/alpine-screen`; for touch hardware use `@ailuracode/alpine-touch`
+- For viewport breakpoints use `@ailuracode/alpinejs-screen`; for touch hardware use `@ailuracode/alpinejs-touch`
 
 ## License
 

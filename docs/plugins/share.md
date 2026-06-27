@@ -1,23 +1,23 @@
 ---
 title: "Share"
-description: "Package: @ailuracode/alpine-share"
+description: "Package: @ailuracode/alpinejs-share"
 ---
 
-Package: `@ailuracode/alpine-share`
+Package: `@ailuracode/alpinejs-share`
 
 Lightweight wrapper around the [Web Share API](https://developer.mozilla.org/en-US/docs/Web/API/Navigator/share). Registers callable magic `$share`.
 
 ## Install
 
 ```bash
-npm install @ailuracode/alpine-share alpinejs
+npm install @ailuracode/alpinejs-share alpinejs
 ```
 
 ## Setup
 
 ```js
 import Alpine from "alpinejs";
-import share from "@ailuracode/alpine-share";
+import share from "@ailuracode/alpinejs-share";
 
 Alpine.plugin(share);
 Alpine.start();
@@ -26,7 +26,7 @@ Alpine.start();
 TypeScript consumers can add:
 
 ```ts
-/// <reference types="@ailuracode/alpine-share/global" />
+/// <reference types="@ailuracode/alpinejs-share/global" />
 ```
 
 ## Magic API

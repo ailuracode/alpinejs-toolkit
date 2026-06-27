@@ -1,5 +1,5 @@
-import type { ToastItem, ToastPosition, ToastStore } from "@ailuracode/alpine-toast";
-import { isPersistentDuration } from "@ailuracode/alpine-toast";
+import type { ToastItem, ToastPosition, ToastStore } from "@ailuracode/alpinejs-toast";
+import { isPersistentDuration } from "@ailuracode/alpinejs-toast";
 import type { AlpineInstance } from "../types/alpine.js";
 import type { ToastDemoContent, toastDemoPositions, toastDemoVariants } from "./plugin-registry.js";
 

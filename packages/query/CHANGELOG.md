@@ -1,4 +1,4 @@
-# @ailuracode/alpine-query
+# @ailuracode/alpinejs-query
 
 ## 0.6.1
 
@@ -16,7 +16,7 @@
 
 ### Minor Changes
 
-- 28938e3: Query devtools panel overhaul: responsive mobile layout, resizable bottom panel, follow-latest and remember-open preferences, adapter badges, readable query keys, fetch duration, JSON tree editor, and toolbar back button beside reset. Query core adds fetch timing to devtools snapshots, `resetQueries`, and typed options. New `@ailuracode/alpine-toggle` magic plugin. Store plugins and example app updated; Vitest config migrated to TypeScript.
+- 28938e3: Query devtools panel overhaul: responsive mobile layout, resizable bottom panel, follow-latest and remember-open preferences, adapter badges, readable query keys, fetch duration, JSON tree editor, and toolbar back button beside reset. Query core adds fetch timing to devtools snapshots, `resetQueries`, and typed options. New `@ailuracode/alpinejs-toggle` magic plugin. Store plugins and example app updated; Vitest config migrated to TypeScript.
 
 ## 0.4.0
 
@@ -52,10 +52,10 @@
 
 ### Patch Changes
 
-- 190d37c: Add `@ailuracode/alpine-query-devtools` panel and expose `$store.query.devtools` snapshot/subscribe API on the query plugin.
+- 190d37c: Add `@ailuracode/alpinejs-query-devtools` panel and expose `$store.query.devtools` snapshot/subscribe API on the query plugin.
 
 ## 0.1.0
 
 ### Minor Changes
 
-- 8e32c64: Add `@ailuracode/alpine-query` — TanStack Query-style async data fetching with caching, invalidation, retries, polling, and mutations for Alpine.js.
+- 8e32c64: Add `@ailuracode/alpinejs-query` — TanStack Query-style async data fetching with caching, invalidation, retries, polling, and mutations for Alpine.js.

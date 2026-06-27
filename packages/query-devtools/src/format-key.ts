@@ -1,4 +1,4 @@
-import type { QueryKey } from "@ailuracode/alpine-query";
+import type { QueryKey } from "@ailuracode/alpinejs-query";
 
 const KEY_SEPARATOR = " › ";
 

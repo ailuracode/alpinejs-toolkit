@@ -12,7 +12,7 @@ import scrollPlugin, {
   scrollOptions,
 } from "../src/index.js";
 
-describe("@ailuracode/alpine-scroll type inference", () => {
+describe("@ailuracode/alpinejs-scroll type inference", () => {
   it("exports literal scroll directions and behaviors", () => {
     expectTypeOf(SCROLL_DIRECTIONS).toEqualTypeOf<readonly ["up", "down", "none"]>();
     expectTypeOf(SCROLL_BEHAVIORS).toEqualTypeOf<readonly ["auto", "instant", "smooth"]>();
@@ -55,7 +55,7 @@ describe("@ailuracode/alpine-scroll type inference", () => {
   });
 });
 
-describe("@ailuracode/alpine-scroll", () => {
+describe("@ailuracode/alpinejs-scroll", () => {
   let store: ScrollStore;
 
   beforeAll(() => {

@@ -6,7 +6,7 @@ import networkPlugin, {
   readNetworkState,
 } from "../src/index.js";
 
-describe("@ailuracode/alpine-network type inference", () => {
+describe("@ailuracode/alpinejs-network type inference", () => {
   it("types NetworkMagic getters", () => {
     expectTypeOf<NetworkMagic["isOnline"]>().toEqualTypeOf<boolean>();
     expectTypeOf<NetworkMagic["isOffline"]>().toEqualTypeOf<boolean>();
@@ -42,7 +42,7 @@ describe("@ailuracode/alpine-network type inference", () => {
   });
 });
 
-describe("@ailuracode/alpine-network", () => {
+describe("@ailuracode/alpinejs-network", () => {
   it("registers $network with isOnline state", () => {
     Object.defineProperty(navigator, "onLine", {
       configurable: true,

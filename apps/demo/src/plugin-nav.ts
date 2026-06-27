@@ -27,7 +27,7 @@ export const PLUGIN_NAV_GROUPS: PluginNavGroup[] = [
       {
         id: "theme",
         title: "Theme",
-        package: "@ailuracode/alpine-theme",
+        package: "@ailuracode/alpinejs-theme",
         api: "$store.theme",
         kind: "store",
         tier: "essential",
@@ -37,7 +37,7 @@ export const PLUGIN_NAV_GROUPS: PluginNavGroup[] = [
       {
         id: "screen",
         title: "Screen",
-        package: "@ailuracode/alpine-screen",
+        package: "@ailuracode/alpinejs-screen",
         api: "$store.device",
         kind: "store",
         tier: "essential",
@@ -47,7 +47,7 @@ export const PLUGIN_NAV_GROUPS: PluginNavGroup[] = [
       {
         id: "scroll",
         title: "Scroll",
-        package: "@ailuracode/alpine-scroll",
+        package: "@ailuracode/alpinejs-scroll",
         api: "$store.scroll",
         kind: "store",
         tier: "essential",
@@ -57,7 +57,7 @@ export const PLUGIN_NAV_GROUPS: PluginNavGroup[] = [
       {
         id: "sidebar",
         title: "Sidebar",
-        package: "@ailuracode/alpine-sidebar",
+        package: "@ailuracode/alpinejs-sidebar",
         api: "$store.sidebar",
         kind: "store",
         tier: "essential",
@@ -67,7 +67,7 @@ export const PLUGIN_NAV_GROUPS: PluginNavGroup[] = [
       {
         id: "toast",
         title: "Toast",
-        package: "@ailuracode/alpine-toast",
+        package: "@ailuracode/alpinejs-toast",
         api: "$toast",
         kind: "magic",
         tier: "essential",
@@ -83,7 +83,7 @@ export const PLUGIN_NAV_GROUPS: PluginNavGroup[] = [
       {
         id: "network",
         title: "Network",
-        package: "@ailuracode/alpine-network",
+        package: "@ailuracode/alpinejs-network",
         api: "$network",
         kind: "magic",
         tier: "extended",
@@ -92,7 +92,7 @@ export const PLUGIN_NAV_GROUPS: PluginNavGroup[] = [
       {
         id: "visibility",
         title: "Visibility",
-        package: "@ailuracode/alpine-visibility",
+        package: "@ailuracode/alpinejs-visibility",
         api: "$visibility",
         kind: "magic",
         tier: "extended",
@@ -101,7 +101,7 @@ export const PLUGIN_NAV_GROUPS: PluginNavGroup[] = [
       {
         id: "battery",
         title: "Battery",
-        package: "@ailuracode/alpine-battery",
+        package: "@ailuracode/alpinejs-battery",
         api: "$battery",
         kind: "magic",
         tier: "advanced",
@@ -111,7 +111,7 @@ export const PLUGIN_NAV_GROUPS: PluginNavGroup[] = [
       {
         id: "platform",
         title: "Platform",
-        package: "@ailuracode/alpine-platform",
+        package: "@ailuracode/alpinejs-platform",
         api: "$platform",
         kind: "magic",
         tier: "extended",
@@ -121,7 +121,7 @@ export const PLUGIN_NAV_GROUPS: PluginNavGroup[] = [
       {
         id: "touch",
         title: "Touch",
-        package: "@ailuracode/alpine-touch",
+        package: "@ailuracode/alpinejs-touch",
         api: "$touch",
         kind: "magic",
         tier: "extended",
@@ -136,7 +136,7 @@ export const PLUGIN_NAV_GROUPS: PluginNavGroup[] = [
       {
         id: "toggle",
         title: "Toggle",
-        package: "@ailuracode/alpine-toggle",
+        package: "@ailuracode/alpinejs-toggle",
         api: "$toggle",
         kind: "magic",
         tier: "extended",
@@ -146,7 +146,7 @@ export const PLUGIN_NAV_GROUPS: PluginNavGroup[] = [
       {
         id: "clipboard",
         title: "Clipboard",
-        package: "@ailuracode/alpine-clipboard",
+        package: "@ailuracode/alpinejs-clipboard",
         api: "$clipboard",
         kind: "magic",
         tier: "extended",
@@ -155,7 +155,7 @@ export const PLUGIN_NAV_GROUPS: PluginNavGroup[] = [
       {
         id: "export",
         title: "Export",
-        package: "@ailuracode/alpine-export",
+        package: "@ailuracode/alpinejs-export",
         api: "$export",
         kind: "magic",
         tier: "advanced",
@@ -164,7 +164,7 @@ export const PLUGIN_NAV_GROUPS: PluginNavGroup[] = [
       {
         id: "share",
         title: "Share",
-        package: "@ailuracode/alpine-share",
+        package: "@ailuracode/alpinejs-share",
         api: "$share",
         kind: "magic",
         tier: "advanced",
@@ -174,7 +174,7 @@ export const PLUGIN_NAV_GROUPS: PluginNavGroup[] = [
       {
         id: "attention",
         title: "Attention",
-        package: "@ailuracode/alpine-attention",
+        package: "@ailuracode/alpinejs-attention",
         api: "$wakelock · $idle",
         kind: "magic",
         tier: "advanced",
@@ -184,7 +184,7 @@ export const PLUGIN_NAV_GROUPS: PluginNavGroup[] = [
       {
         id: "notify",
         title: "Notify",
-        package: "@ailuracode/alpine-notify",
+        package: "@ailuracode/alpinejs-notify",
         api: "$notify",
         kind: "magic",
         tier: "advanced",
@@ -200,7 +200,7 @@ export const PLUGIN_NAV_GROUPS: PluginNavGroup[] = [
       {
         id: "geo",
         title: "Geo",
-        package: "@ailuracode/alpine-geo",
+        package: "@ailuracode/alpinejs-geo",
         api: "$store.geo",
         kind: "store",
         tier: "advanced",
@@ -210,7 +210,7 @@ export const PLUGIN_NAV_GROUPS: PluginNavGroup[] = [
       {
         id: "calendar",
         title: "Calendar",
-        package: "@ailuracode/alpine-calendar",
+        package: "@ailuracode/alpinejs-calendar",
         api: "$calendar",
         kind: "magic",
         tier: "advanced",
@@ -220,7 +220,7 @@ export const PLUGIN_NAV_GROUPS: PluginNavGroup[] = [
       {
         id: "query",
         title: "Query",
-        package: "@ailuracode/alpine-query",
+        package: "@ailuracode/alpinejs-query",
         api: "$store.query",
         kind: "core",
         tier: "advanced",
@@ -230,7 +230,7 @@ export const PLUGIN_NAV_GROUPS: PluginNavGroup[] = [
       {
         id: "json-api",
         title: "JSON:API",
-        package: "@ailuracode/alpine-json-api",
+        package: "@ailuracode/alpinejs-json-api",
         api: "$jsonapi",
         kind: "magic",
         tier: "advanced",

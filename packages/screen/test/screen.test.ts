@@ -12,7 +12,7 @@ import screenPlugin, {
   screenIntervals,
 } from "../src/index.js";
 
-describe("@ailuracode/alpine-screen type inference", () => {
+describe("@ailuracode/alpinejs-screen type inference", () => {
   it("exports literal default intervals", () => {
     expectTypeOf(DEFAULT_SCREEN_INTERVALS[0].name).toEqualTypeOf<"mobile">();
     expectTypeOf(DEFAULT_SCREEN_INTERVALS[1].name).toEqualTypeOf<"desktop">();
@@ -57,7 +57,7 @@ describe("@ailuracode/alpine-screen type inference", () => {
   });
 });
 
-describe("@ailuracode/alpine-screen with default intervals", () => {
+describe("@ailuracode/alpinejs-screen with default intervals", () => {
   let store: ScreenStore;
 
   beforeAll(() => {
@@ -136,7 +136,7 @@ describe("@ailuracode/alpine-screen with default intervals", () => {
   });
 });
 
-describe("@ailuracode/alpine-screen type transitions", () => {
+describe("@ailuracode/alpinejs-screen type transitions", () => {
   it("reacts to matchMedia changes via refresh", () => {
     setMatchMedia("(max-width: 767px)", true);
 
@@ -168,7 +168,7 @@ describe("@ailuracode/alpine-screen type transitions", () => {
   });
 });
 
-describe("@ailuracode/alpine-screen with custom intervals", () => {
+describe("@ailuracode/alpinejs-screen with custom intervals", () => {
   it("accepts custom interval names", () => {
     setMatchMedia("(max-width: 480px)", false);
     setMatchMedia("(max-width: 768px)", true);
@@ -243,7 +243,7 @@ describe("@ailuracode/alpine-screen with custom intervals", () => {
   });
 });
 
-describe("@ailuracode/alpine-screen DOM reactivity", () => {
+describe("@ailuracode/alpinejs-screen DOM reactivity", () => {
   afterEach(() => {
     vi.useRealTimers();
   });

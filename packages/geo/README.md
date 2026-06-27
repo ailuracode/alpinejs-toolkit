@@ -1,4 +1,4 @@
-# @ailuracode/alpine-geo
+# @ailuracode/alpinejs-geo
 
 Geolocation store for Alpine.js.
 
@@ -7,14 +7,14 @@ Geolocation store for Alpine.js.
 ## Install
 
 ```bash
-npm install @ailuracode/alpine-geo alpinejs
+npm install @ailuracode/alpinejs-geo alpinejs
 ```
 
 ## Quick example
 
 ```js
 import Alpine from "alpinejs";
-import geo from "@ailuracode/alpine-geo";
+import geo from "@ailuracode/alpinejs-geo";
 
 Alpine.plugin(geo);
 Alpine.start();

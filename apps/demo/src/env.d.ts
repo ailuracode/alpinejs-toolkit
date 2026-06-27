@@ -2,36 +2,36 @@
 /// <reference types="@types/alpinejs" />
 
 // ── Type imports for Alpine augmentation ──────────────────────────────
-type ThemeStore = import("@ailuracode/alpine-theme").ThemeStore;
-type ScreenStore = import("@ailuracode/alpine-screen").ScreenStore;
-type ScrollStore = import("@ailuracode/alpine-scroll").ScrollStore;
-type SidebarStore = import("@ailuracode/alpine-sidebar").SidebarStore;
-type GeoStore = import("@ailuracode/alpine-geo").GeoStore;
-type QueryStore = import("@ailuracode/alpine-query").QueryStore;
-type ToastStore = import("@ailuracode/alpine-toast").ToastStore<
+type ThemeStore = import("@ailuracode/alpinejs-theme").ThemeStore;
+type ScreenStore = import("@ailuracode/alpinejs-screen").ScreenStore;
+type ScrollStore = import("@ailuracode/alpinejs-scroll").ScrollStore;
+type SidebarStore = import("@ailuracode/alpinejs-sidebar").SidebarStore;
+type GeoStore = import("@ailuracode/alpinejs-geo").GeoStore;
+type QueryStore = import("@ailuracode/alpinejs-query").QueryStore;
+type ToastStore = import("@ailuracode/alpinejs-toast").ToastStore<
   typeof import("./entrypoint").toastDemoVariants,
   typeof import("./entrypoint").toastDemoPositions,
   import("./entrypoint").ToastDemoContent
 >;
-type NetworkMagic = import("@ailuracode/alpine-network").NetworkMagic;
-type VisibilityMagic = import("@ailuracode/alpine-visibility").VisibilityMagic;
-type BatteryMagic = import("@ailuracode/alpine-battery").BatteryMagic;
-type ClipboardMagic = import("@ailuracode/alpine-clipboard").ClipboardMagic;
-type ToastMagic = import("@ailuracode/alpine-toast").ToastMagic<
+type NetworkMagic = import("@ailuracode/alpinejs-network").NetworkMagic;
+type VisibilityMagic = import("@ailuracode/alpinejs-visibility").VisibilityMagic;
+type BatteryMagic = import("@ailuracode/alpinejs-battery").BatteryMagic;
+type ClipboardMagic = import("@ailuracode/alpinejs-clipboard").ClipboardMagic;
+type ToastMagic = import("@ailuracode/alpinejs-toast").ToastMagic<
   typeof import("./entrypoint").toastDemoVariants,
   typeof import("./entrypoint").toastDemoPositions,
   import("./entrypoint").ToastDemoContent
 >;
-type ExportMagic = import("@ailuracode/alpine-export").ExportMagic;
-type CalendarMagic = import("@ailuracode/alpine-calendar").CalendarMagic;
-type TouchMagic = import("@ailuracode/alpine-touch").TouchMagic;
-type ToggleMagic = import("@ailuracode/alpine-toggle").ToggleMagic;
-type PlatformMagic = import("@ailuracode/alpine-platform").PlatformMagic;
-type NotifyMagic = import("@ailuracode/alpine-notify").NotifyMagic;
-type ShareMagic = import("@ailuracode/alpine-share").ShareMagic;
-type WakeLockMagic = import("@ailuracode/alpine-attention").WakeLockMagic;
-type IdleMagic = import("@ailuracode/alpine-attention").IdleMagic;
-type JsonApiMagic = import("@ailuracode/alpine-json-api").JsonApiClient;
+type ExportMagic = import("@ailuracode/alpinejs-export").ExportMagic;
+type CalendarMagic = import("@ailuracode/alpinejs-calendar").CalendarMagic;
+type TouchMagic = import("@ailuracode/alpinejs-touch").TouchMagic;
+type ToggleMagic = import("@ailuracode/alpinejs-toggle").ToggleMagic;
+type PlatformMagic = import("@ailuracode/alpinejs-platform").PlatformMagic;
+type NotifyMagic = import("@ailuracode/alpinejs-notify").NotifyMagic;
+type ShareMagic = import("@ailuracode/alpinejs-share").ShareMagic;
+type WakeLockMagic = import("@ailuracode/alpinejs-attention").WakeLockMagic;
+type IdleMagic = import("@ailuracode/alpinejs-attention").IdleMagic;
+type JsonApiMagic = import("@ailuracode/alpinejs-json-api").JsonApiClient;
 
 declare module "alpinejs" {
   namespace Alpine {

@@ -3,21 +3,21 @@ title: "Geo"
 description: "Geolocalización y permisos con el store $store.geo."
 ---
 
-Package: `@ailuracode/alpine-geo`
+Package: `@ailuracode/alpinejs-geo`
 
 Geolocalización reactiva mediante el store `$store.geo`. Envuelve la [Geolocation API](https://developer.mozilla.org/en-US/docs/Web/API/Geolocation_API) del navegador con solicitudes puntuales y seguimiento continuo de posición.
 
 ## Instalación
 
 ```bash
-npm install @ailuracode/alpine-geo alpinejs
+npm install @ailuracode/alpinejs-geo alpinejs
 ```
 
 ## Configuración
 
 ```js
 import Alpine from "alpinejs";
-import geo from "@ailuracode/alpine-geo";
+import geo from "@ailuracode/alpinejs-geo";
 
 Alpine.plugin(geo);
 Alpine.start();

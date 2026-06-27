@@ -2,7 +2,7 @@ import type {
   QueryDevtoolsEntry,
   QueryDevtoolsSnapshot,
   QueryStore,
-} from "@ailuracode/alpine-query";
+} from "@ailuracode/alpinejs-query";
 
 export type ToggleCorner = "top-left" | "top-right" | "bottom-left" | "bottom-right";
 

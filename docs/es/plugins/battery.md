@@ -3,21 +3,21 @@ title: "Battery"
 description: "Estado de la batería del dispositivo con el magic $battery."
 ---
 
-Package: `@ailuracode/alpine-battery`
+Package: `@ailuracode/alpinejs-battery`
 
 Estado de batería reactivo mediante el magic `$battery`. Envuelve la [Battery Status API](https://developer.mozilla.org/en-US/docs/Web/API/Battery_Status_API) cuando `navigator.getBattery()` está disponible.
 
 ## Instalación
 
 ```bash
-npm install @ailuracode/alpine-battery alpinejs
+npm install @ailuracode/alpinejs-battery alpinejs
 ```
 
 ## Configuración
 
 ```js
 import Alpine from "alpinejs";
-import battery from "@ailuracode/alpine-battery";
+import battery from "@ailuracode/alpinejs-battery";
 
 Alpine.plugin(battery);
 Alpine.start();

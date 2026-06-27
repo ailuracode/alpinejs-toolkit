@@ -3,21 +3,21 @@ title: "Screen"
 description: "Breakpoints e dimensões do viewport com $store.device."
 ---
 
-Package: `@ailuracode/alpine-screen`
+Package: `@ailuracode/alpinejs-screen`
 
 Detecção responsiva de dispositivo e largura do viewport em tempo real. Usa `matchMedia` para detecção de tipo de dispositivo e atualizações de largura com debounce em `resize`.
 
 ## Instalação
 
 ```bash
-npm install @ailuracode/alpine-screen alpinejs
+npm install @ailuracode/alpinejs-screen alpinejs
 ```
 
 ## Configuração
 
 ```js
 import Alpine from "alpinejs";
-import screen from "@ailuracode/alpine-screen";
+import screen from "@ailuracode/alpinejs-screen";
 
 Alpine.plugin(screen());
 Alpine.start();
@@ -36,7 +36,7 @@ Você pode definir nomes de intervalo e breakpoints arbitrários. Os intervalos 
 
 ```js
 import Alpine from "alpinejs";
-import screen from "@ailuracode/alpine-screen";
+import screen from "@ailuracode/alpinejs-screen";
 
 Alpine.plugin(screen({
   intervals: [
@@ -99,7 +99,7 @@ import {
   screenIntervals,
   readScreenSnapshot,
   resolveScreenType,
-} from "@ailuracode/alpine-screen";
+} from "@ailuracode/alpinejs-screen";
 ```
 
 | Helper | Descrição |

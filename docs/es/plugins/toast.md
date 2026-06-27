@@ -3,7 +3,7 @@ title: "Toast"
 description: "Cola de toasts in-app headless con el magic $toast (sin markup ni CSS incluidos)."
 ---
 
-Package: `@ailuracode/alpine-toast`
+Package: `@ailuracode/alpinejs-toast`
 
 Cola de toasts in-app headless para Alpine.js (sin markup ni CSS incluidos). Registra el magic `$toast` y un store reactivo interno para integradores de UI.
 
@@ -20,14 +20,14 @@ Mapea `toast.variant` y `toast.position` a layout/CSS en tu propio renderer (p. 
 ## Instalación
 
 ```bash
-npm install @ailuracode/alpine-toast alpinejs
+npm install @ailuracode/alpinejs-toast alpinejs
 ```
 
 ## Configuración
 
 ```js
 import Alpine from "alpinejs";
-import toast, { toastOptions, toastPositions, toastVariants } from "@ailuracode/alpine-toast";
+import toast, { toastOptions, toastPositions, toastVariants } from "@ailuracode/alpinejs-toast";
 
 Alpine.plugin(
   toastOptions({
@@ -117,7 +117,7 @@ Para `$toast.promise`, los opcionales `loadingContent`, `successContent` y `erro
 ## Variants personalizados
 
 ```ts
-import toast, { toastOptions, toastVariants, type ToastMagic } from "@ailuracode/alpine-toast";
+import toast, { toastOptions, toastVariants, type ToastMagic } from "@ailuracode/alpinejs-toast";
 
 const variants = toastVariants(["queued", "published", "failed"] as const);
 
@@ -134,7 +134,7 @@ Sin `variants`, solo están disponibles `$toast()`, `$toast.promise()`, `$toast.
 Cada posición declarada tiene **su propia pila**. `maxToasts` y `maxVisible` se aplican **por posición**, no globalmente.
 
 ```ts
-import toast, { toastPositions, type ToastPosition } from "@ailuracode/alpine-toast";
+import toast, { toastPositions, type ToastPosition } from "@ailuracode/alpinejs-toast";
 
 const positions = toastPositions(["top-center", "bottom-right"] as const);
 
@@ -306,4 +306,4 @@ Alpine.plugin(
 
 ## Paquetes relacionados
 
-- [`@ailuracode/alpine-notify`](./notify.md) — Web Notifications a nivel de SO (`$notify`)
+- [`@ailuracode/alpinejs-notify`](./notify.md) — Web Notifications a nivel de SO (`$notify`)

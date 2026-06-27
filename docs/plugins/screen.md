@@ -1,23 +1,23 @@
 ---
 title: "Screen"
-description: "Package: @ailuracode/alpine-screen"
+description: "Package: @ailuracode/alpinejs-screen"
 ---
 
-Package: `@ailuracode/alpine-screen`
+Package: `@ailuracode/alpinejs-screen`
 
 Responsive device detection and live viewport width. Uses `matchMedia` for device type detection and debounced `resize` updates for width.
 
 ## Install
 
 ```bash
-npm install @ailuracode/alpine-screen alpinejs
+npm install @ailuracode/alpinejs-screen alpinejs
 ```
 
 ## Setup
 
 ```js
 import Alpine from "alpinejs";
-import screen from "@ailuracode/alpine-screen";
+import screen from "@ailuracode/alpinejs-screen";
 
 Alpine.plugin(screen());
 Alpine.start();
@@ -36,7 +36,7 @@ You can define arbitrary interval names and breakpoints. Intervals are checked *
 
 ```js
 import Alpine from "alpinejs";
-import screen from "@ailuracode/alpine-screen";
+import screen from "@ailuracode/alpinejs-screen";
 
 Alpine.plugin(screen({
   intervals: [
@@ -99,7 +99,7 @@ import {
   screenIntervals,
   readScreenSnapshot,
   resolveScreenType,
-} from "@ailuracode/alpine-screen";
+} from "@ailuracode/alpinejs-screen";
 ```
 
 | Helper | Description |

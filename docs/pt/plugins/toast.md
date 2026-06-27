@@ -3,7 +3,7 @@ title: "Toast"
 description: "Fila de toasts in-app headless com o magic $toast (sem markup nem CSS incluídos)."
 ---
 
-Package: `@ailuracode/alpine-toast`
+Package: `@ailuracode/alpinejs-toast`
 
 Fila de toasts in-app headless para Alpine.js (sem markup nem CSS incluídos). Registra o magic `$toast` e uma store reativa interna para integradores de UI.
 
@@ -20,14 +20,14 @@ Mapeie `toast.variant` e `toast.position` para layout/CSS no seu próprio render
 ## Instalação
 
 ```bash
-npm install @ailuracode/alpine-toast alpinejs
+npm install @ailuracode/alpinejs-toast alpinejs
 ```
 
 ## Configuração
 
 ```js
 import Alpine from "alpinejs";
-import toast, { toastOptions, toastPositions, toastVariants } from "@ailuracode/alpine-toast";
+import toast, { toastOptions, toastPositions, toastVariants } from "@ailuracode/alpinejs-toast";
 
 Alpine.plugin(
   toastOptions({
@@ -117,7 +117,7 @@ Para `$toast.promise`, `loadingContent`, `successContent` e `errorContent` opcio
 ## Variants personalizados
 
 ```ts
-import toast, { toastOptions, toastVariants, type ToastMagic } from "@ailuracode/alpine-toast";
+import toast, { toastOptions, toastVariants, type ToastMagic } from "@ailuracode/alpinejs-toast";
 
 const variants = toastVariants(["queued", "published", "failed"] as const);
 
@@ -134,7 +134,7 @@ Sem `variants`, apenas `$toast()`, `$toast.promise()`, `$toast.dismiss()` e `$to
 Cada position declarada recebe sua **própria pilha**. `maxToasts` e `maxVisible` se aplicam **por position**, não globalmente.
 
 ```ts
-import toast, { toastPositions, type ToastPosition } from "@ailuracode/alpine-toast";
+import toast, { toastPositions, type ToastPosition } from "@ailuracode/alpinejs-toast";
 
 const positions = toastPositions(["top-center", "bottom-right"] as const);
 
@@ -306,4 +306,4 @@ Alpine.plugin(
 
 ## Pacotes relacionados
 
-- [`@ailuracode/alpine-notify`](./notify.md) — Web Notifications em nível de SO (`$notify`)
+- [`@ailuracode/alpinejs-notify`](./notify.md) — Web Notifications em nível de SO (`$notify`)

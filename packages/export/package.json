@@ -1,5 +1,5 @@
 {
-  "name": "@ailuracode/alpine-export",
+  "name": "@ailuracode/alpinejs-export",
   "version": "0.1.1",
   "description": "Alpine.js file export magic",
   "type": "module",

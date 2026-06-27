@@ -30,7 +30,7 @@ function installLegacyCopy(execCommand = vi.fn().mockReturnValue(true)) {
   return { execCommand, select };
 }
 
-describe("@ailuracode/alpine-clipboard", () => {
+describe("@ailuracode/alpinejs-clipboard", () => {
   it("copies text via navigator.clipboard by default", async () => {
     const writeText = installClipboardApi();
 

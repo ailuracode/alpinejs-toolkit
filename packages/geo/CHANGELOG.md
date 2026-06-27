@@ -1,19 +1,19 @@
-# @ailuracode/alpine-geo
+# @ailuracode/alpinejs-geo
 
 ## 0.1.2
 
 ### Patch Changes
 
-- Redesign `@ailuracode/alpine-screen` with configurable `ScreenInterval` breakpoints, `requestAnimationFrame` width updates, and typed `getDevice()` helper. Add new `@ailuracode/alpine-sidebar` store plugin. Export store types from geo, scroll, and theme. Add `zIndex` option to query devtools panel.
+- Redesign `@ailuracode/alpinejs-screen` with configurable `ScreenInterval` breakpoints, `requestAnimationFrame` width updates, and typed `getDevice()` helper. Add new `@ailuracode/alpinejs-sidebar` store plugin. Export store types from geo, scroll, and theme. Add `zIndex` option to query devtools panel.
 
 ## 0.1.1
 
 ### Patch Changes
 
-- 28938e3: Query devtools panel overhaul: responsive mobile layout, resizable bottom panel, follow-latest and remember-open preferences, adapter badges, readable query keys, fetch duration, JSON tree editor, and toolbar back button beside reset. Query core adds fetch timing to devtools snapshots, `resetQueries`, and typed options. New `@ailuracode/alpine-toggle` magic plugin. Store plugins and example app updated; Vitest config migrated to TypeScript.
+- 28938e3: Query devtools panel overhaul: responsive mobile layout, resizable bottom panel, follow-latest and remember-open preferences, adapter badges, readable query keys, fetch duration, JSON tree editor, and toolbar back button beside reset. Query core adds fetch timing to devtools snapshots, `resetQueries`, and typed options. New `@ailuracode/alpinejs-toggle` magic plugin. Store plugins and example app updated; Vitest config migrated to TypeScript.
 
 ## 0.1.0
 
 ### Minor Changes
 
-- bd7407b: Add `@ailuracode/alpine-geo` — reactive geolocation store with `request()`, `watch()`, `unwatch()`, and `reset()` actions.
+- bd7407b: Add `@ailuracode/alpinejs-geo` — reactive geolocation store with `request()`, `watch()`, `unwatch()`, and `reset()` actions.

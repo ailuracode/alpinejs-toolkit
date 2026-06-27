@@ -1,10 +1,10 @@
-import type { MutationState, QueryState, QueryStateAdapter } from "@ailuracode/alpine-query";
+import type { MutationState, QueryState, QueryStateAdapter } from "@ailuracode/alpinejs-query";
 import {
   attachMutationFlags,
   attachQueryFlags,
   type MutationStateRecord,
   type QueryStateRecord,
-} from "@ailuracode/alpine-query";
+} from "@ailuracode/alpinejs-query";
 import type AlpineType from "alpinejs";
 
 type AlpineInstance = AlpineType.Alpine;

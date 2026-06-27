@@ -1,5 +1,5 @@
 {
-  "name": "@ailuracode/alpine-attention",
+  "name": "@ailuracode/alpinejs-attention",
   "version": "0.1.1",
   "description": "Alpine.js Screen Wake Lock and Idle Detection magics",
   "type": "module",

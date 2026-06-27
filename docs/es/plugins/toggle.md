@@ -3,21 +3,21 @@ title: "Toggle"
 description: "Alternar valores booleanos con el magic $toggle."
 ---
 
-Package: `@ailuracode/alpine-toggle`
+Package: `@ailuracode/alpinejs-toggle`
 
 Magic invocable `$toggle()` para máquinas de estado **binarias** y **ternarias** con unions TypeScript inferidas.
 
 ## Instalación
 
 ```bash
-npm install @ailuracode/alpine-toggle alpinejs
+npm install @ailuracode/alpinejs-toggle alpinejs
 ```
 
 ## Configuración
 
 ```js
 import Alpine from "alpinejs";
-import toggle from "@ailuracode/alpine-toggle";
+import toggle from "@ailuracode/alpinejs-toggle";
 
 Alpine.plugin(toggle);
 Alpine.start();
@@ -76,7 +76,7 @@ Alpine.start();
 ## TypeScript
 
 ```ts
-import { createToggle, type ToggleValue } from "@ailuracode/alpine-toggle";
+import { createToggle, type ToggleValue } from "@ailuracode/alpinejs-toggle";
 
 const binary = createToggle({ states: { truly: "on", falsely: "off" } });
 binary.ternary; // undefined

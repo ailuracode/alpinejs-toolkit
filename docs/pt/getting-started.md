@@ -14,12 +14,12 @@ Comece com o registro core e os cinco módulos essenciais:
 
 ```bash
 npm install alpinejs \
-  @ailuracode/alpine-core \
-  @ailuracode/alpine-theme \
-  @ailuracode/alpine-screen \
-  @ailuracode/alpine-scroll \
-  @ailuracode/alpine-sidebar \
-  @ailuracode/alpine-toast
+  @ailuracode/alpinejs-core \
+  @ailuracode/alpinejs-theme \
+  @ailuracode/alpinejs-screen \
+  @ailuracode/alpinejs-scroll \
+  @ailuracode/alpinejs-sidebar \
+  @ailuracode/alpinejs-toast
 ```
 
 Adicione mais pacotes depois — cada um é uma dependência npm independente.
@@ -35,7 +35,7 @@ import {
   defineStorePlugin,
   lazyPlugin,
   registerPlugin,
-} from "@ailuracode/alpine-core";
+} from "@ailuracode/alpinejs-core";
 
 function applyTheme({ resolved }) {
   document.documentElement.classList.toggle("dark", resolved === "dark");
@@ -44,7 +44,7 @@ function applyTheme({ resolved }) {
 registerPlugin(
   "theme",
   defineStorePlugin(["theme"], async () => {
-    const { default: theme } = await import("@ailuracode/alpine-theme");
+    const { default: theme } = await import("@ailuracode/alpinejs-theme");
     return theme({ onChange: applyTheme });
   })
 );
@@ -54,7 +54,7 @@ registerPlugin(
   lazyPlugin({
     kind: "magic",
     magics: ["toast"],
-    import: () => import("@ailuracode/alpine-toast"),
+    import: () => import("@ailuracode/alpinejs-toast"),
   })
 );
 
@@ -70,8 +70,8 @@ Se ainda não precisa de lazy loading, registre plugins diretamente — sempre *
 
 ```js
 import Alpine from "alpinejs";
-import theme from "@ailuracode/alpine-theme";
-import screen from "@ailuracode/alpine-screen";
+import theme from "@ailuracode/alpinejs-theme";
+import screen from "@ailuracode/alpinejs-screen";
 
 Alpine.plugin(theme({ onChange: applyTheme }));
 Alpine.plugin(screen);

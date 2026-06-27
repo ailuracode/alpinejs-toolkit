@@ -1,25 +1,25 @@
 ---
 title: "Sidebar"
-description: "Package: @ailuracode/alpine-sidebar"
+description: "Package: @ailuracode/alpinejs-sidebar"
 ---
 
-Package: `@ailuracode/alpine-sidebar`
+Package: `@ailuracode/alpinejs-sidebar`
 
-Controls sidebar open/close state with overlay, keyboard navigation, and responsive breakpoints. CSS-framework agnostic — all visual changes are applied via callbacks. Compose with `@ailuracode/alpine-scroll` for body scroll locking.
+Controls sidebar open/close state with overlay, keyboard navigation, and responsive breakpoints. CSS-framework agnostic — all visual changes are applied via callbacks. Compose with `@ailuracode/alpinejs-scroll` for body scroll locking.
 
 Three states: **open** (visible), **closed** (hidden), and **collapsed** (compact icon-only rail, optional).
 
 ## Install
 
 ```bash
-npm install @ailuracode/alpine-sidebar alpinejs
+npm install @ailuracode/alpinejs-sidebar alpinejs
 ```
 
 ## Setup
 
 ```js
 import Alpine from "alpinejs";
-import sidebar from "@ailuracode/alpine-sidebar";
+import sidebar from "@ailuracode/alpinejs-sidebar";
 
 Alpine.plugin(sidebar());
 Alpine.start();
@@ -44,11 +44,11 @@ Alpine.plugin(
 
 ### With scroll lock
 
-Compose with `@ailuracode/alpine-scroll` via callbacks to lock body scroll when the sidebar is open:
+Compose with `@ailuracode/alpinejs-scroll` via callbacks to lock body scroll when the sidebar is open:
 
 ```js
-import scroll from "@ailuracode/alpine-scroll";
-import sidebar from "@ailuracode/alpine-sidebar";
+import scroll from "@ailuracode/alpinejs-scroll";
+import sidebar from "@ailuracode/alpinejs-sidebar";
 
 Alpine.plugin(scroll());
 Alpine.plugin(
@@ -68,7 +68,7 @@ Alpine.plugin(
 ## Exported helpers
 
 ```js
-import { sidebarOptions } from "@ailuracode/alpine-sidebar";
+import { sidebarOptions } from "@ailuracode/alpinejs-sidebar";
 ```
 
 ## Store API

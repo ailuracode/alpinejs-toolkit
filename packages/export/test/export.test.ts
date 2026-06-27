@@ -28,7 +28,7 @@ function installExportDom(): {
   return { click, anchors };
 }
 
-describe("@ailuracode/alpine-export", () => {
+describe("@ailuracode/alpinejs-export", () => {
   afterEach(() => {
     vi.restoreAllMocks();
     vi.unstubAllGlobals();

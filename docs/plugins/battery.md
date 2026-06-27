@@ -1,23 +1,23 @@
 ---
 title: "Battery"
-description: "Package: @ailuracode/alpine-battery"
+description: "Package: @ailuracode/alpinejs-battery"
 ---
 
-Package: `@ailuracode/alpine-battery`
+Package: `@ailuracode/alpinejs-battery`
 
 Reactive battery status via the `$battery` magic. Wraps the [Battery Status API](https://developer.mozilla.org/en-US/docs/Web/API/Battery_Status_API) when `navigator.getBattery()` is available.
 
 ## Install
 
 ```bash
-npm install @ailuracode/alpine-battery alpinejs
+npm install @ailuracode/alpinejs-battery alpinejs
 ```
 
 ## Setup
 
 ```js
 import Alpine from "alpinejs";
-import battery from "@ailuracode/alpine-battery";
+import battery from "@ailuracode/alpinejs-battery";
 
 Alpine.plugin(battery);
 Alpine.start();

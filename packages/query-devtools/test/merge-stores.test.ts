@@ -1,7 +1,7 @@
-import { createQueryClient } from "@ailuracode/alpine-query";
-import { createAlpineStoreAdapter } from "@ailuracode/alpine-query-adapter-alpine";
-import { nanostoresQueryAdapter } from "@ailuracode/alpine-query-adapter-nanostores";
-import { createAlpineZustandAdapter } from "@ailuracode/alpine-query-adapter-zustand";
+import { createQueryClient } from "@ailuracode/alpinejs-query";
+import { createAlpineStoreAdapter } from "@ailuracode/alpinejs-query-adapter-alpine";
+import { nanostoresQueryAdapter } from "@ailuracode/alpinejs-query-adapter-nanostores";
+import { createAlpineZustandAdapter } from "@ailuracode/alpinejs-query-adapter-zustand";
 import { describe, expect, it, vi } from "vitest";
 import { startAlpine } from "../../../test/helpers.js";
 import { createMergedQueryDevtools } from "../src/merge-stores.js";

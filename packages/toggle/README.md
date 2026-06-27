@@ -1,18 +1,18 @@
-# @ailuracode/alpine-toggle
+# @ailuracode/alpinejs-toggle
 
 Alpine.js magic for **binary** and **ternary** toggles with full TypeScript inference.
 
 ## Install
 
 ```bash
-npm install @ailuracode/alpine-toggle alpinejs
+npm install @ailuracode/alpinejs-toggle alpinejs
 ```
 
 ## Setup
 
 ```js
 import Alpine from "alpinejs";
-import toggle from "@ailuracode/alpine-toggle";
+import toggle from "@ailuracode/alpinejs-toggle";
 
 Alpine.plugin(toggle);
 Alpine.start();
@@ -95,13 +95,13 @@ power.ternary; // undefined
 ## Types
 
 ```ts
-import { createToggle, type ToggleValue } from "@ailuracode/alpine-toggle";
+import { createToggle, type ToggleValue } from "@ailuracode/alpinejs-toggle";
 
 type OnOff = ToggleValue<"on", "off">;
 type Answer = ToggleValue<"yes", "no", "unknown">;
 ```
 
-Add `/// <reference path="node_modules/@ailuracode/alpine-toggle/dist/global.d.ts" />` for `$toggle` in templates.
+Add `/// <reference path="node_modules/@ailuracode/alpinejs-toggle/dist/global.d.ts" />` for `$toggle` in templates.
 
 ## License
 

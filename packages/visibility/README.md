@@ -1,4 +1,4 @@
-# @ailuracode/alpine-visibility
+# @ailuracode/alpinejs-visibility
 
 Tab visibility magic for Alpine.js.
 
@@ -7,14 +7,14 @@ Tab visibility magic for Alpine.js.
 ## Install
 
 ```bash
-npm install @ailuracode/alpine-visibility alpinejs
+npm install @ailuracode/alpinejs-visibility alpinejs
 ```
 
 ## Quick example
 
 ```js
 import Alpine from "alpinejs";
-import visibility from "@ailuracode/alpine-visibility";
+import visibility from "@ailuracode/alpinejs-visibility";
 
 Alpine.plugin(visibility);
 Alpine.start();
@@ -32,7 +32,7 @@ import {
   VISIBILITY_STATES,
   createVisibilityState,
   readVisibilityState,
-} from "@ailuracode/alpine-visibility";
+} from "@ailuracode/alpinejs-visibility";
 ```
 
 ## API summary

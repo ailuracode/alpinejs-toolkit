@@ -9,11 +9,11 @@ const extendedGroups = PLUGIN_NAV_GROUPS.filter((group) => group.id !== "essenti
 const extendedCount = extendedGroups.reduce((count, group) => count + group.items.length, 0);
 ---
 
-<DemoSection id="overview" title="Alpine toolkit" api="@ailuracode/alpine-core">
+<DemoSection id="overview" title="Alpine toolkit" api="@ailuracode/alpinejs-core">
 	<div class="flex flex-col gap-6">
 		<p class="text-sm leading-relaxed text-muted-foreground text-pretty">
 			Modular plugins for <strong>Alpine.js</strong> — lazy init via
-			<code class="rounded bg-muted px-1 py-0.5 font-mono text-xs text-foreground">@ailuracode/alpine-core</code>,
+			<code class="rounded bg-muted px-1 py-0.5 font-mono text-xs text-foreground">@ailuracode/alpinejs-core</code>,
 			headless stores and magics, TypeScript globals. Start with <strong>{essentialItems.length} essentials</strong>,
 			then add from {extendedCount} extended and advanced modules.
 		</p>

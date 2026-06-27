@@ -3,21 +3,21 @@ title: "Visibility"
 description: "Visibilidade de separador e Page Visibility com $visibility."
 ---
 
-Package: `@ailuracode/alpine-visibility`
+Package: `@ailuracode/alpinejs-visibility`
 
 Visibilidade reativa da aba via magic `$visibility`. Encapsula a [Page Visibility API](https://developer.mozilla.org/en-US/docs/Web/API/Page_Visibility_API) (`document.visibilityState`, `visibilitychange`).
 
 ## Instalação
 
 ```bash
-npm install @ailuracode/alpine-visibility alpinejs
+npm install @ailuracode/alpinejs-visibility alpinejs
 ```
 
 ## Configuração
 
 ```js
 import Alpine from "alpinejs";
-import visibility from "@ailuracode/alpine-visibility";
+import visibility from "@ailuracode/alpinejs-visibility";
 
 Alpine.plugin(visibility);
 Alpine.start();
@@ -39,7 +39,7 @@ import {
   VISIBILITY_STATES,
   createVisibilityState,
   readVisibilityState,
-} from "@ailuracode/alpine-visibility";
+} from "@ailuracode/alpinejs-visibility";
 ```
 
 ## Exemplos HTML

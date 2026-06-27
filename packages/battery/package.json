@@ -1,5 +1,5 @@
 {
-  "name": "@ailuracode/alpine-battery",
+  "name": "@ailuracode/alpinejs-battery",
   "version": "0.1.1",
   "description": "Alpine.js battery status magic",
   "type": "module",

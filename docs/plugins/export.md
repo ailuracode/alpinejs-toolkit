@@ -1,9 +1,9 @@
 ---
 title: "Export"
-description: "Package: @ailuracode/alpine-export"
+description: "Package: @ailuracode/alpinejs-export"
 ---
 
-Package: `@ailuracode/alpine-export`
+Package: `@ailuracode/alpinejs-export`
 
 Trigger browser file downloads from Alpine templates via the `$export` magic. Supports URLs, blobs, files, and plain text. Never throws — resolves to `true` on success and `false` on failure.
 
@@ -12,14 +12,14 @@ Trigger browser file downloads from Alpine templates via the `$export` magic. Su
 ## Install
 
 ```bash
-npm install @ailuracode/alpine-export alpinejs
+npm install @ailuracode/alpinejs-export alpinejs
 ```
 
 ## Setup
 
 ```js
 import Alpine from "alpinejs";
-import exportPlugin from "@ailuracode/alpine-export";
+import exportPlugin from "@ailuracode/alpinejs-export";
 
 Alpine.plugin(exportPlugin);
 Alpine.start();
@@ -28,7 +28,7 @@ Alpine.start();
 TypeScript consumers can add:
 
 ```ts
-/// <reference types="@ailuracode/alpine-export/global" />
+/// <reference types="@ailuracode/alpinejs-export/global" />
 ```
 
 ## Magic API

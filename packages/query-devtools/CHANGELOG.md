@@ -1,24 +1,24 @@
-# @ailuracode/alpine-query-devtools
+# @ailuracode/alpinejs-query-devtools
 
 ## 0.2.4
 
 ### Patch Changes
 
-- Redesign `@ailuracode/alpine-screen` with configurable `ScreenInterval` breakpoints, `requestAnimationFrame` width updates, and typed `getDevice()` helper. Add new `@ailuracode/alpine-sidebar` store plugin. Export store types from geo, scroll, and theme. Add `zIndex` option to query devtools panel.
+- Redesign `@ailuracode/alpinejs-screen` with configurable `ScreenInterval` breakpoints, `requestAnimationFrame` width updates, and typed `getDevice()` helper. Add new `@ailuracode/alpinejs-sidebar` store plugin. Export store types from geo, scroll, and theme. Add `zIndex` option to query devtools panel.
 
 ## 0.2.3
 
 ### Patch Changes
 
 - Updated dependencies
-  - @ailuracode/alpine-query@0.6.1
+  - @ailuracode/alpinejs-query@0.6.1
 
 ## 0.2.2
 
 ### Patch Changes
 
 - Updated dependencies [e0c7f02]
-  - @ailuracode/alpine-query@0.6.0
+  - @ailuracode/alpinejs-query@0.6.0
 
 ## 0.2.1
 
@@ -30,12 +30,12 @@
 
 ### Minor Changes
 
-- 28938e3: Query devtools panel overhaul: responsive mobile layout, resizable bottom panel, follow-latest and remember-open preferences, adapter badges, readable query keys, fetch duration, JSON tree editor, and toolbar back button beside reset. Query core adds fetch timing to devtools snapshots, `resetQueries`, and typed options. New `@ailuracode/alpine-toggle` magic plugin. Store plugins and example app updated; Vitest config migrated to TypeScript.
+- 28938e3: Query devtools panel overhaul: responsive mobile layout, resizable bottom panel, follow-latest and remember-open preferences, adapter badges, readable query keys, fetch duration, JSON tree editor, and toolbar back button beside reset. Query core adds fetch timing to devtools snapshots, `resetQueries`, and typed options. New `@ailuracode/alpinejs-toggle` magic plugin. Store plugins and example app updated; Vitest config migrated to TypeScript.
 
 ### Patch Changes
 
 - Updated dependencies [28938e3]
-  - @ailuracode/alpine-query@0.5.0
+  - @ailuracode/alpinejs-query@0.5.0
 
 ## 0.1.9
 
@@ -66,7 +66,7 @@
 ### Patch Changes
 
 - Updated dependencies [e164010]
-  - @ailuracode/alpine-query@0.4.0
+  - @ailuracode/alpinejs-query@0.4.0
 
 ## 0.1.4
 
@@ -74,36 +74,36 @@
 
 - 26bf083: Add required `name` on `QueryStateAdapter` and show it in query devtools (`Alpine Query · Nanostores`).
 - Updated dependencies [26bf083]
-  - @ailuracode/alpine-query@0.3.1
+  - @ailuracode/alpinejs-query@0.3.1
 
 ## 0.1.3
 
 ### Patch Changes
 
 - Updated dependencies [75eb769]
-  - @ailuracode/alpine-query@0.3.0
+  - @ailuracode/alpinejs-query@0.3.0
 
 ## 0.1.2
 
 ### Patch Changes
 
 - Updated dependencies [c7d717d]
-  - @ailuracode/alpine-query@0.2.0
+  - @ailuracode/alpinejs-query@0.2.0
 
 ## 0.1.1
 
 ### Patch Changes
 
 - Updated dependencies [cdf3436]
-  - @ailuracode/alpine-query@0.1.2
+  - @ailuracode/alpinejs-query@0.1.2
 
 ## 0.1.0
 
 ### Minor Changes
 
-- 190d37c: Add `@ailuracode/alpine-query-devtools` panel and expose `$store.query.devtools` snapshot/subscribe API on the query plugin.
+- 190d37c: Add `@ailuracode/alpinejs-query-devtools` panel and expose `$store.query.devtools` snapshot/subscribe API on the query plugin.
 
 ### Patch Changes
 
 - Updated dependencies [190d37c]
-  - @ailuracode/alpine-query@0.1.1
+  - @ailuracode/alpinejs-query@0.1.1

@@ -23,7 +23,7 @@ function removeNavigatorMock(): void {
   vi.unstubAllGlobals();
 }
 
-describe("@ailuracode/alpine-platform type inference", () => {
+describe("@ailuracode/alpinejs-platform type inference", () => {
   it("exports literal platform names", () => {
     expectTypeOf(PLATFORM_NAMES).toEqualTypeOf<
       readonly ["macos", "windows", "linux", "ios", "android", "chromeos", "unknown"]
@@ -77,7 +77,7 @@ describe("@ailuracode/alpine-platform type inference", () => {
   });
 });
 
-describe("@ailuracode/alpine-platform", () => {
+describe("@ailuracode/alpinejs-platform", () => {
   afterEach(() => {
     removeNavigatorMock();
   });

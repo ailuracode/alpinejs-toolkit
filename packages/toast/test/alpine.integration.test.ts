@@ -11,7 +11,7 @@ const integrationPlugin = () =>
     },
   });
 
-describe("@ailuracode/alpine-toast alpine integration", () => {
+describe("@ailuracode/alpinejs-toast alpine integration", () => {
   beforeEach(() => {
     vi.useFakeTimers();
   });

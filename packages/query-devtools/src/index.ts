@@ -4,7 +4,7 @@ import type { QueryDevtoolsController, QueryDevtoolsPluginOptions } from "./type
 
 let activeController: QueryDevtoolsController | null = null;
 
-/** Alpine.js devtools panel for @ailuracode/alpine-query. */
+/** Alpine.js devtools panel for @ailuracode/alpinejs-query. */
 export default function queryDevtoolsPlugin(
   options: QueryDevtoolsPluginOptions = {}
 ): AlpineType.PluginCallback {

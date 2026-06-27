@@ -1,4 +1,4 @@
-# @ailuracode/alpine-share
+# @ailuracode/alpinejs-share
 
 Web Share API magic for Alpine.js.
 
@@ -7,14 +7,14 @@ Web Share API magic for Alpine.js.
 ## Install
 
 ```bash
-npm install @ailuracode/alpine-share alpinejs
+npm install @ailuracode/alpinejs-share alpinejs
 ```
 
 ## Quick example
 
 ```js
 import Alpine from "alpinejs";
-import share from "@ailuracode/alpine-share";
+import share from "@ailuracode/alpinejs-share";
 
 Alpine.plugin(share);
 Alpine.start();

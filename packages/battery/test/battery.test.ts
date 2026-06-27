@@ -65,7 +65,7 @@ function mockGetBattery(implementation: () => Promise<BatteryManagerLike>): () =
   };
 }
 
-describe("@ailuracode/alpine-battery", () => {
+describe("@ailuracode/alpinejs-battery", () => {
   it("registers $battery with unavailable defaults when getBattery is missing", () => {
     const nav = navigator as Navigator & { getBattery?: () => Promise<BatteryManagerLike> };
     const original = nav.getBattery;

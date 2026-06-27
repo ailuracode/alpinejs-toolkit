@@ -1,5 +1,5 @@
 {
-  "name": "@ailuracode/alpine-touch",
+  "name": "@ailuracode/alpinejs-touch",
   "version": "0.2.1",
   "description": "Alpine.js touch and pointer capability magic",
   "type": "module",

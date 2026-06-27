@@ -1,5 +1,5 @@
 {
-  "name": "@ailuracode/alpine-visibility",
+  "name": "@ailuracode/alpinejs-visibility",
   "version": "0.2.1",
   "description": "Alpine.js tab visibility magic",
   "type": "module",

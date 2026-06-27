@@ -1,5 +1,5 @@
 {
-  "name": "@ailuracode/alpine-query",
+  "name": "@ailuracode/alpinejs-query",
   "version": "0.6.1",
   "description": "Store-agnostic async data fetching for Alpine.js with TanStack Query-style caching",
   "type": "module",

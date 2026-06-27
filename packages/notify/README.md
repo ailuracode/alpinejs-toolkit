@@ -1,4 +1,4 @@
-# @ailuracode/alpine-notify
+# @ailuracode/alpinejs-notify
 
 Web Notifications API wrapper for Alpine.js via the `$notify` magic.
 
@@ -7,14 +7,14 @@ Web Notifications API wrapper for Alpine.js via the `$notify` magic.
 ## Install
 
 ```bash
-npm install @ailuracode/alpine-notify alpinejs
+npm install @ailuracode/alpinejs-notify alpinejs
 ```
 
 ## Quick example
 
 ```js
 import Alpine from "alpinejs";
-import notify from "@ailuracode/alpine-notify";
+import notify from "@ailuracode/alpinejs-notify";
 
 Alpine.plugin(notify);
 Alpine.start();
@@ -23,7 +23,7 @@ Alpine.start();
 Copy the service worker to your public folder:
 
 ```bash
-cp node_modules/@ailuracode/alpine-notify/dist/notify-sw.js public/notify-sw.js
+cp node_modules/@ailuracode/alpinejs-notify/dist/notify-sw.js public/notify-sw.js
 ```
 
 ```html

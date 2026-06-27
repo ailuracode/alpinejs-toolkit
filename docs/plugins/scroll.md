@@ -1,23 +1,23 @@
 ---
 title: "Scroll"
-description: "Package: @ailuracode/alpine-scroll"
+description: "Package: @ailuracode/alpinejs-scroll"
 ---
 
-Package: `@ailuracode/alpine-scroll`
+Package: `@ailuracode/alpinejs-scroll`
 
 Tracks scroll position, direction, and progress. Provides reference-counted body scroll lock for modals and overlays.
 
 ## Install
 
 ```bash
-npm install @ailuracode/alpine-scroll alpinejs
+npm install @ailuracode/alpinejs-scroll alpinejs
 ```
 
 ## Setup
 
 ```js
 import Alpine from "alpinejs";
-import scroll from "@ailuracode/alpine-scroll";
+import scroll from "@ailuracode/alpinejs-scroll";
 
 Alpine.plugin(scroll());
 Alpine.start();
@@ -48,7 +48,7 @@ import {
   computeScrollMetrics,
   readScrollSnapshot,
   scrollOptions,
-} from "@ailuracode/alpine-scroll";
+} from "@ailuracode/alpinejs-scroll";
 ```
 
 ## Store API

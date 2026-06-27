@@ -7,7 +7,7 @@ import {
   copyToClipboard,
 } from "../src/index.js";
 
-describe("@ailuracode/alpine-clipboard type inference", () => {
+describe("@ailuracode/alpinejs-clipboard type inference", () => {
   it("exports literal copy modes", () => {
     expectTypeOf(CLIPBOARD_COPY_MODES).toEqualTypeOf<readonly ["auto", "clipboard", "legacy"]>();
   });

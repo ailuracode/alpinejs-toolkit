@@ -1,4 +1,4 @@
-import { typedFetch } from "@ailuracode/alpine-query";
+import { typedFetch } from "@ailuracode/alpinejs-query";
 import { parseCollectionDocument, parseJsonApiResponse, parseSingleDocument } from "./parse.js";
 import {
   buildJsonApiQuery,

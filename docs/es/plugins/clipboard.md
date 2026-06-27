@@ -3,21 +3,21 @@ title: "Clipboard"
 description: "Copiar al portapapeles con el magic $clipboard."
 ---
 
-Package: `@ailuracode/alpine-clipboard`
+Package: `@ailuracode/alpinejs-clipboard`
 
 Copia texto al portapapeles del sistema mediante el magic `$clipboard`. Usa la Clipboard API con un fallback de `execCommand`.
 
 ## Instalación
 
 ```bash
-npm install @ailuracode/alpine-clipboard alpinejs
+npm install @ailuracode/alpinejs-clipboard alpinejs
 ```
 
 ## Configuración
 
 ```js
 import Alpine from "alpinejs";
-import clipboard from "@ailuracode/alpine-clipboard";
+import clipboard from "@ailuracode/alpinejs-clipboard";
 
 Alpine.plugin(clipboard);
 Alpine.start();

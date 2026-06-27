@@ -1,4 +1,4 @@
-import { initPlugins } from "@ailuracode/alpine-core";
+import { initPlugins } from "@ailuracode/alpinejs-core";
 import alpine from "alpinejs";
 import { registerDemoPlugins, setupDemoExtensions } from "./entrypoint";
 

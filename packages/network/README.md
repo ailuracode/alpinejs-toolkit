@@ -1,4 +1,4 @@
-# @ailuracode/alpine-network
+# @ailuracode/alpinejs-network
 
 Network connectivity magic for Alpine.js.
 
@@ -7,14 +7,14 @@ Network connectivity magic for Alpine.js.
 ## Install
 
 ```bash
-npm install @ailuracode/alpine-network alpinejs
+npm install @ailuracode/alpinejs-network alpinejs
 ```
 
 ## Quick example
 
 ```js
 import Alpine from "alpinejs";
-import network from "@ailuracode/alpine-network";
+import network from "@ailuracode/alpinejs-network";
 
 Alpine.plugin(network);
 Alpine.start();

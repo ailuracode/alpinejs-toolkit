@@ -1,5 +1,5 @@
 {
-  "name": "@ailuracode/alpine-geo",
+  "name": "@ailuracode/alpinejs-geo",
   "version": "0.1.2",
   "description": "Alpine.js geolocation store",
   "type": "module",

@@ -9,7 +9,7 @@ import {
   resolveRetryDelay,
 } from "../src/utils.js";
 
-describe("@ailuracode/alpine-query utils", () => {
+describe("@ailuracode/alpinejs-query utils", () => {
   it("hashKey() serializes bigint and Date values", () => {
     expect(hashKey(["time", new Date("2024-01-01T00:00:00.000Z")])).toContain("2024-01-01");
     expect(hashKey(["count", 1n])).toBe('["count","1"]');
@@ -42,7 +42,7 @@ describe("@ailuracode/alpine-query utils", () => {
   });
 });
 
-describe("@ailuracode/alpine-query devtools serialization", () => {
+describe("@ailuracode/alpinejs-query devtools serialization", () => {
   it("serializeDevtoolsValue() clones serializable data", () => {
     expect(serializeDevtoolsValue(undefined)).toBeUndefined();
     expect(serializeDevtoolsValue({ ok: true })).toEqual({ ok: true });

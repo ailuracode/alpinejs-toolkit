@@ -1,4 +1,4 @@
-# @ailuracode/alpine-export
+# @ailuracode/alpinejs-export
 
 Programmatic file exports (browser downloads) for Alpine.js.
 
@@ -7,14 +7,14 @@ Programmatic file exports (browser downloads) for Alpine.js.
 ## Install
 
 ```bash
-npm install @ailuracode/alpine-export alpinejs
+npm install @ailuracode/alpinejs-export alpinejs
 ```
 
 ## Quick example
 
 ```js
 import Alpine from "alpinejs";
-import exportPlugin from "@ailuracode/alpine-export";
+import exportPlugin from "@ailuracode/alpinejs-export";
 
 Alpine.plugin(exportPlugin);
 Alpine.start();

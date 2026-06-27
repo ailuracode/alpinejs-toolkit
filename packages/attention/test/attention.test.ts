@@ -153,7 +153,7 @@ function mockIdleDetector(implementation: IdleDetectorConstructor): () => void {
   };
 }
 
-describe("@ailuracode/alpine-attention", () => {
+describe("@ailuracode/alpinejs-attention", () => {
   describe("$wakelock", () => {
     it("registers $wakelock with unsupported defaults when wakeLock is missing", () => {
       const restore = mockWakeLock(() => Promise.resolve(createWakeLockSentinel()));

@@ -1,7 +1,7 @@
-import type { MutationState, QueryState, QueryStore } from "@ailuracode/alpine-query";
-import { createQueryClient, typedFetch } from "@ailuracode/alpine-query";
-import { createAlpineStoreAdapter } from "@ailuracode/alpine-query-adapter-alpine";
-import { createAlpineZustandAdapter } from "@ailuracode/alpine-query-adapter-zustand";
+import type { MutationState, QueryState, QueryStore } from "@ailuracode/alpinejs-query";
+import { createQueryClient, typedFetch } from "@ailuracode/alpinejs-query";
+import { createAlpineStoreAdapter } from "@ailuracode/alpinejs-query-adapter-alpine";
+import { createAlpineZustandAdapter } from "@ailuracode/alpinejs-query-adapter-zustand";
 import type { AlpineInstance } from "../types/alpine.js";
 
 const POKEAPI = "https://pokeapi.co/api/v2/pokemon";

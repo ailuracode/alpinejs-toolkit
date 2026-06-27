@@ -1,8 +1,8 @@
-import { createQueryClient } from "@ailuracode/alpine-query";
+import { createQueryClient } from "@ailuracode/alpinejs-query";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { zustandQueryAdapter } from "../src/adapter.js";
 
-describe("@ailuracode/alpine-query-adapter-zustand", () => {
+describe("@ailuracode/alpinejs-query-adapter-zustand", () => {
   beforeEach(() => {
     vi.useFakeTimers();
   });

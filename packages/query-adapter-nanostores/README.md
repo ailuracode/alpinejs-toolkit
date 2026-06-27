@@ -1,24 +1,24 @@
-# @ailuracode/alpine-query-adapter-nanostores
+# @ailuracode/alpinejs-query-adapter-nanostores
 
-**Recommended** [Nanostores](https://github.com/nanostores/nanostores) adapter for [`@ailuracode/alpine-query`](../query/README.md).
+**Recommended** [Nanostores](https://github.com/nanostores/nanostores) adapter for [`@ailuracode/alpinejs-query`](../query/README.md).
 
 Provides `nanostoresQueryAdapter` and `createAlpineNanostoresAdapter`. Register with `query({ adapter })` from the core package.
 
 ## Install
 
 ```bash
-npm install @ailuracode/alpine-query @ailuracode/alpine-query-adapter-nanostores alpinejs nanostores @nanostores/alpine
+npm install @ailuracode/alpinejs-query @ailuracode/alpinejs-query-adapter-nanostores alpinejs nanostores @nanostores/alpine
 ```
 
 ## Setup
 
 ```js
 import Alpine from "alpinejs";
-import query from "@ailuracode/alpine-query";
+import query from "@ailuracode/alpinejs-query";
 import {
   createAlpineNanostoresAdapter,
   NanoStores,
-} from "@ailuracode/alpine-query-adapter-nanostores";
+} from "@ailuracode/alpinejs-query-adapter-nanostores";
 
 Alpine.plugin(NanoStores);
 Alpine.plugin(query({ adapter: createAlpineNanostoresAdapter }));
@@ -30,7 +30,7 @@ Alpine.start();
 This package also exports a default plugin that registers `@nanostores/alpine` and `$store.query` in one step:
 
 ```js
-import nanostoresQuery from "@ailuracode/alpine-query-adapter-nanostores";
+import nanostoresQuery from "@ailuracode/alpinejs-query-adapter-nanostores";
 
 Alpine.plugin(nanostoresQuery());
 ```

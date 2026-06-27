@@ -1,5 +1,5 @@
 {
-  "name": "@ailuracode/alpine-json-api",
+  "name": "@ailuracode/alpinejs-json-api",
   "version": "0.1.2",
   "description": "Strongly typed JSON:API client for Alpine.js",
   "type": "module",
@@ -32,7 +32,7 @@
   },
   "types": "./dist/global.d.ts",
   "dependencies": {
-    "@ailuracode/alpine-query": "workspace:*"
+    "@ailuracode/alpinejs-query": "workspace:*"
   },
   "peerDependencies": {
     "@types/alpinejs": "^3.13.11",

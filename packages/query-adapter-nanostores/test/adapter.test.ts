@@ -1,8 +1,8 @@
-import { createQueryClient } from "@ailuracode/alpine-query";
+import { createQueryClient } from "@ailuracode/alpinejs-query";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { nanostoresQueryAdapter } from "../src/adapter.js";
 
-describe("@ailuracode/alpine-query-adapter-nanostores", () => {
+describe("@ailuracode/alpinejs-query-adapter-nanostores", () => {
   beforeEach(() => {
     vi.useFakeTimers();
   });

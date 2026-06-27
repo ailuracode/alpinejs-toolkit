@@ -1,5 +1,5 @@
 {
-  "name": "@ailuracode/alpine-notify",
+  "name": "@ailuracode/alpinejs-notify",
   "version": "0.3.2",
   "description": "Alpine.js Web Notifications API magic",
   "type": "module",
@@ -33,7 +33,7 @@
   },
   "types": "./dist/global.d.ts",
   "dependencies": {
-    "@ailuracode/alpine-platform": "workspace:*"
+    "@ailuracode/alpinejs-platform": "workspace:*"
   },
   "peerDependencies": {
     "alpinejs": "^3.0.0",

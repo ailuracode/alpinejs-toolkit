@@ -3,21 +3,21 @@ title: "Notify"
 description: "Notificações do browser e permissões push com $notify."
 ---
 
-Package: `@ailuracode/alpine-notify`
+Package: `@ailuracode/alpinejs-notify`
 
 Wrapper fino em torno da [Web Notifications API](https://developer.mozilla.org/en-US/docs/Web/API/Notifications_API) via magic `$notify`. Trata navegadores não suportados e estados de permissão sem lançar exceções.
 
 ## Instalação
 
 ```bash
-npm install @ailuracode/alpine-notify alpinejs
+npm install @ailuracode/alpinejs-notify alpinejs
 ```
 
 ## Configuração
 
 ```js
 import Alpine from "alpinejs";
-import notify from "@ailuracode/alpine-notify";
+import notify from "@ailuracode/alpinejs-notify";
 
 Alpine.plugin(notify);
 Alpine.start();
@@ -26,7 +26,7 @@ Alpine.start();
 Copie o service worker incluído para a raiz do seu site (ou outro caminho same-origin):
 
 ```bash
-cp node_modules/@ailuracode/alpine-notify/dist/notify-sw.js public/notify-sw.js
+cp node_modules/@ailuracode/alpinejs-notify/dist/notify-sw.js public/notify-sw.js
 ```
 
 O plugin registra `/notify-sw.js` automaticamente. Use um caminho personalizado quando necessário:
@@ -154,13 +154,13 @@ Sempre verifique `isSupported`, `requiresHomeScreenInstall` e `permission` antes
 
 ```ts
 /// <reference types="@types/alpinejs" />
-/// <reference types="@ailuracode/alpine-notify" />
+/// <reference types="@ailuracode/alpinejs-notify" />
 ```
 
 Ou importe o módulo do plugin:
 
 ```ts
-import notify from "@ailuracode/alpine-notify";
+import notify from "@ailuracode/alpinejs-notify";
 ```
 
 Helpers individuais também são exportados para uso fora do Alpine:
@@ -170,7 +170,7 @@ import {
   createNotifyMagic,
   isNotifySupported,
   sendNotification,
-} from "@ailuracode/alpine-notify";
+} from "@ailuracode/alpinejs-notify";
 ```
 
 ## Notas de design

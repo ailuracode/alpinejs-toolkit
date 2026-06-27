@@ -1,5 +1,5 @@
 {
-  "name": "@ailuracode/alpine-network",
+  "name": "@ailuracode/alpinejs-network",
   "version": "1.0.1",
   "description": "Alpine.js network connectivity magic",
   "type": "module",

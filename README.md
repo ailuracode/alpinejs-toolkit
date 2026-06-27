@@ -6,7 +6,7 @@ Built by **ailuracode**. Twenty-one independent npm packages; install only what 
 
 ## Why this exists
 
-Alpine gives you reactivity in HTML. This monorepo adds **headless, tree-shakeable modules** coordinated by a **lazy registry** (`@ailuracode/alpine-core`):
+Alpine gives you reactivity in HTML. This monorepo adds **headless, tree-shakeable modules** coordinated by a **lazy registry** (`@ailuracode/alpinejs-core`):
 
 - Register plugins without running them at import time
 - Load plugin code on demand with dynamic `import()`
@@ -16,7 +16,7 @@ Alpine gives you reactivity in HTML. This monorepo adds **headless, tree-shakeab
 ## Quick start
 
 ```bash
-npm install alpinejs @ailuracode/alpine-core @ailuracode/alpine-theme @ailuracode/alpine-toast
+npm install alpinejs @ailuracode/alpinejs-core @ailuracode/alpinejs-theme @ailuracode/alpinejs-toast
 ```
 
 ```js
@@ -26,7 +26,7 @@ import {
   defineStorePlugin,
   lazyPlugin,
   registerPlugin,
-} from "@ailuracode/alpine-core";
+} from "@ailuracode/alpinejs-core";
 
 function applyTheme({ resolved }) {
   document.documentElement.classList.toggle("dark", resolved === "dark");
@@ -35,7 +35,7 @@ function applyTheme({ resolved }) {
 registerPlugin(
   "theme",
   defineStorePlugin(["theme"], async () => {
-    const { default: theme } = await import("@ailuracode/alpine-theme");
+    const { default: theme } = await import("@ailuracode/alpinejs-theme");
     return theme({ onChange: applyTheme });
   })
 );
@@ -43,7 +43,7 @@ registerPlugin(
 registerPlugin("toast", lazyPlugin({
   kind: "magic",
   magics: ["toast"],
-  import: () => import("@ailuracode/alpine-toast"),
+  import: () => import("@ailuracode/alpinejs-toast"),
 }));
 
 Alpine.plugin(createAlpinePlugin(["theme", "toast"]));
@@ -58,7 +58,7 @@ See [Getting started](./docs/getting-started.md) for essentials, lazy init, and 
 
 | Package | Description |
 |---------|-------------|
-| [`@ailuracode/alpine-core`](./packages/core/README.md) | Lazy plugin registry, deferred init, dynamic imports |
+| [`@ailuracode/alpinejs-core`](./packages/core/README.md) | Lazy plugin registry, deferred init, dynamic imports |
 
 ### Essentials
 
@@ -66,45 +66,45 @@ Start here for most Alpine apps.
 
 | Package | API | Description |
 |---------|-----|-------------|
-| [`@ailuracode/alpine-theme`](./packages/theme/README.md) | `$store.theme` | Light / dark / system preference |
-| [`@ailuracode/alpine-screen`](./packages/screen/README.md) | `$store.device` | Responsive breakpoints |
-| [`@ailuracode/alpine-scroll`](./packages/scroll/README.md) | `$store.scroll` | Scroll tracking and body lock |
-| [`@ailuracode/alpine-sidebar`](./packages/sidebar/README.md) | `$store.sidebar` | Sidebar / drawer shell state |
-| [`@ailuracode/alpine-toast`](./packages/toast/README.md) | `$toast` | Headless toast queue; `fromPayload` for plain objects |
+| [`@ailuracode/alpinejs-theme`](./packages/theme/README.md) | `$store.theme` | Light / dark / system preference |
+| [`@ailuracode/alpinejs-screen`](./packages/screen/README.md) | `$store.device` | Responsive breakpoints |
+| [`@ailuracode/alpinejs-scroll`](./packages/scroll/README.md) | `$store.scroll` | Scroll tracking and body lock |
+| [`@ailuracode/alpinejs-sidebar`](./packages/sidebar/README.md) | `$store.sidebar` | Sidebar / drawer shell state |
+| [`@ailuracode/alpinejs-toast`](./packages/toast/README.md) | `$toast` | Headless toast queue; `fromPayload` for plain objects |
 
 ### Extended
 
 | Package | API | Description |
 |---------|-----|-------------|
-| [`@ailuracode/alpine-network`](./packages/network/README.md) | `$network` | Online / offline state |
-| [`@ailuracode/alpine-visibility`](./packages/visibility/README.md) | `$visibility` | Tab visibility |
-| [`@ailuracode/alpine-clipboard`](./packages/clipboard/README.md) | `$clipboard` | Copy to clipboard |
-| [`@ailuracode/alpine-platform`](./packages/platform/README.md) | `$platform` | OS and platform detection |
-| [`@ailuracode/alpine-touch`](./packages/touch/README.md) | `$touch` | Touch and pointer capabilities |
-| [`@ailuracode/alpine-toggle`](./packages/toggle/README.md) | `$toggle` | Binary and ternary toggle state |
+| [`@ailuracode/alpinejs-network`](./packages/network/README.md) | `$network` | Online / offline state |
+| [`@ailuracode/alpinejs-visibility`](./packages/visibility/README.md) | `$visibility` | Tab visibility |
+| [`@ailuracode/alpinejs-clipboard`](./packages/clipboard/README.md) | `$clipboard` | Copy to clipboard |
+| [`@ailuracode/alpinejs-platform`](./packages/platform/README.md) | `$platform` | OS and platform detection |
+| [`@ailuracode/alpinejs-touch`](./packages/touch/README.md) | `$touch` | Touch and pointer capabilities |
+| [`@ailuracode/alpinejs-toggle`](./packages/toggle/README.md) | `$toggle` | Binary and ternary toggle state |
 
 ### Advanced
 
 | Package | API | Description |
 |---------|-----|-------------|
-| [`@ailuracode/alpine-battery`](./packages/battery/README.md) | `$battery` | Battery level and charging |
-| [`@ailuracode/alpine-geo`](./packages/geo/README.md) | `$store.geo` | Geolocation |
-| [`@ailuracode/alpine-export`](./packages/export/README.md) | `$export` | Programmatic file downloads |
-| [`@ailuracode/alpine-share`](./packages/share/README.md) | `$share` | Web Share API |
-| [`@ailuracode/alpine-attention`](./packages/attention/README.md) | `$wakelock`, `$idle` | Wake Lock and Idle Detection |
-| [`@ailuracode/alpine-notify`](./packages/notify/README.md) | `$notify` | Web Notifications |
-| [`@ailuracode/alpine-calendar`](./packages/calendar/README.md) | `$calendar` | Calendar date logic (date-fns) |
-| [`@ailuracode/alpine-json-api`](./packages/json-api/README.md) | `$jsonapi` | Typed JSON:API client |
+| [`@ailuracode/alpinejs-battery`](./packages/battery/README.md) | `$battery` | Battery level and charging |
+| [`@ailuracode/alpinejs-geo`](./packages/geo/README.md) | `$store.geo` | Geolocation |
+| [`@ailuracode/alpinejs-export`](./packages/export/README.md) | `$export` | Programmatic file downloads |
+| [`@ailuracode/alpinejs-share`](./packages/share/README.md) | `$share` | Web Share API |
+| [`@ailuracode/alpinejs-attention`](./packages/attention/README.md) | `$wakelock`, `$idle` | Wake Lock and Idle Detection |
+| [`@ailuracode/alpinejs-notify`](./packages/notify/README.md) | `$notify` | Web Notifications |
+| [`@ailuracode/alpinejs-calendar`](./packages/calendar/README.md) | `$calendar` | Calendar date logic (date-fns) |
+| [`@ailuracode/alpinejs-json-api`](./packages/json-api/README.md) | `$jsonapi` | Typed JSON:API client |
 
 ### Query
 
 | Package | Description |
 |---------|-------------|
-| [`@ailuracode/alpine-query`](./packages/query/README.md) | Store-agnostic query cache |
-| [`@ailuracode/alpine-query-adapter-nanostores`](./packages/query-adapter-nanostores/README.md) | **Recommended** — Nanostores + `@nanostores/alpine` |
-| [`@ailuracode/alpine-query-adapter-alpine`](./packages/query-adapter-alpine/README.md) | Native `Alpine.reactive` adapter |
-| [`@ailuracode/alpine-query-adapter-zustand`](./packages/query-adapter-zustand/README.md) | Zustand vanilla adapter |
-| [`@ailuracode/alpine-query-devtools`](./packages/query-devtools/README.md) | Query cache inspector |
+| [`@ailuracode/alpinejs-query`](./packages/query/README.md) | Store-agnostic query cache |
+| [`@ailuracode/alpinejs-query-adapter-nanostores`](./packages/query-adapter-nanostores/README.md) | **Recommended** — Nanostores + `@nanostores/alpine` |
+| [`@ailuracode/alpinejs-query-adapter-alpine`](./packages/query-adapter-alpine/README.md) | Native `Alpine.reactive` adapter |
+| [`@ailuracode/alpinejs-query-adapter-zustand`](./packages/query-adapter-zustand/README.md) | Zustand vanilla adapter |
+| [`@ailuracode/alpinejs-query-devtools`](./packages/query-devtools/README.md) | Query cache inspector |
 
 ## Demo app
 

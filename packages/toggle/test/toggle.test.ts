@@ -3,7 +3,7 @@ import { describe, expect, expectTypeOf, it, vi } from "vitest";
 import { createMagicHarness } from "../../../test/mock-alpine.js";
 import togglePlugin, { createToggle, createToggleMagic, type ToggleMagic } from "../src/index.js";
 
-describe("@ailuracode/alpine-toggle", () => {
+describe("@ailuracode/alpinejs-toggle", () => {
   describe("createToggle() binary", () => {
     it("toggles between two opposite states", () => {
       const toggle = createToggle({

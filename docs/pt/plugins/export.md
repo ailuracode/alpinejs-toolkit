@@ -3,7 +3,7 @@ title: "Export"
 description: "Exportar dados para CSV, JSON e outros formatos com $export."
 ---
 
-Package: `@ailuracode/alpine-export`
+Package: `@ailuracode/alpinejs-export`
 
 Dispara downloads de arquivos no navegador a partir de templates Alpine via magic `$export`. Suporta URLs, blobs, arquivos e texto simples. Nunca lança exceções — resolve para `true` em sucesso e `false` em falha.
 
@@ -12,14 +12,14 @@ Dispara downloads de arquivos no navegador a partir de templates Alpine via magi
 ## Instalação
 
 ```bash
-npm install @ailuracode/alpine-export alpinejs
+npm install @ailuracode/alpinejs-export alpinejs
 ```
 
 ## Configuração
 
 ```js
 import Alpine from "alpinejs";
-import exportPlugin from "@ailuracode/alpine-export";
+import exportPlugin from "@ailuracode/alpinejs-export";
 
 Alpine.plugin(exportPlugin);
 Alpine.start();
@@ -28,7 +28,7 @@ Alpine.start();
 Consumidores TypeScript podem adicionar:
 
 ```ts
-/// <reference types="@ailuracode/alpine-export/global" />
+/// <reference types="@ailuracode/alpinejs-export/global" />
 ```
 
 ## Magic API

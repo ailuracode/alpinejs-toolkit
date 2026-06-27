@@ -1,4 +1,4 @@
-import type { ToggleInstance, ToggleMagic } from "@ailuracode/alpine-toggle";
+import type { ToggleInstance, ToggleMagic } from "@ailuracode/alpinejs-toggle";
 import type { AlpineInstance } from "../types/alpine.js";
 
 type BinaryPower = ToggleInstance<"on", "off", undefined, "on" | "off">;

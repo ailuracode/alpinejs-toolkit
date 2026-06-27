@@ -1,4 +1,4 @@
-# @ailuracode/alpine-theme
+# @ailuracode/alpinejs-theme
 
 Light, dark, and system theme store for Alpine.js. CSS-framework agnostic.
 
@@ -7,14 +7,14 @@ Light, dark, and system theme store for Alpine.js. CSS-framework agnostic.
 ## Install
 
 ```bash
-npm install @ailuracode/alpine-theme alpinejs
+npm install @ailuracode/alpinejs-theme alpinejs
 ```
 
 ## Quick example
 
 ```js
 import Alpine from "alpinejs";
-import theme from "@ailuracode/alpine-theme";
+import theme from "@ailuracode/alpinejs-theme";
 
 Alpine.plugin(theme({
   onChange({ mode, resolved }) {
