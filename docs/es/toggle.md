@@ -86,5 +86,5 @@ type Answer = ToggleValue<"yes", "no", "unknown">;
 
 ## Ver también
 
-- [Architecture: magics](./architecture.md)
+- [Primeros pasos](./getting-started.md)
 - [Calendar](./calendar.md) — patrón de magic invocable similar

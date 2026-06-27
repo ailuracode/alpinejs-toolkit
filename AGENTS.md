@@ -197,7 +197,7 @@ When adding a new package, update:
 9. `example/src/playground-demos.ts` — register demo component for dynamic route
 10. `example/src/pages/playground/[plugin].astro` — auto-generated subpage (no manual edit if demo is in registry)
 
-Also update the package table in this file, root `README.md`, and `docs/architecture.md`.
+Also update the package table in this file and root `README.md`.
 
 ## Do not
 
@@ -211,6 +211,5 @@ Also update the package table in this file, root `README.md`, and `docs/architec
 
 ## References
 
-- [Architecture](docs/architecture.md)
 - [Contributing](docs/contributing.md)
 - [Changesets](https://github.com/changesets/changesets)

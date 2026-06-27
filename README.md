@@ -79,7 +79,6 @@ See [AGENTS.md](./AGENTS.md) for the full checklist.
 
 - [Getting started](./docs/getting-started.md)
 - [Core plugin system](./docs/core.md)
-- [Architecture: stores vs magics](./docs/architecture.md)
 - [Theme](./docs/theme.md)
 - [Screen](./docs/screen.md)
 - [Network](./docs/network.md)

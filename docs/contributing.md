@@ -69,7 +69,7 @@ Tests use [Vitest](https://vitest.dev/) with [happy-dom](https://github.com/capr
 
 ### Stores vs magics
 
-See [Architecture](./architecture.md). Prefer stores for shared mutable state; magics for read-only environment data or utilities.
+Prefer stores for shared mutable state; magics for read-only environment data or utilities.
 
 ### Naming
 

@@ -15,6 +15,5 @@ Los plugins nunca incluyen CSS ni markup específico de un framework: conectas l
 ## Explorar
 
 - [Primeros pasos](./getting-started.md) — instalar, registrar plugins, usar en HTML
-- [Arquitectura](./architecture.md) — stores vs magics, convenciones de nombres
 - [Playground](/playground/) — demos interactivas en vivo para cada plugin
 - [Plugins](./theme.md) — referencia de API por paquete (barra lateral)

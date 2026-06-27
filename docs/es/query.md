@@ -294,5 +294,5 @@ const todos = query.observe(["todos"], () => typedFetch<Todo[]>("/api/todos"));
 
 ## Ver también
 
-- [Arquitectura](./architecture.md)
+- [Core](./core.md)
 - [Documentación de TanStack Query](https://tanstack.com/query/latest/docs/framework/react/overview)

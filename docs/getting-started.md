@@ -161,5 +161,4 @@ npm install -D @types/alpinejs @ailuracode/alpine-clipboard
 
 ## Next steps
 
-- [Architecture: stores vs magics](./architecture.md) — when to use each pattern
 - Individual package docs: [theme](./theme.md), [screen](./screen.md), [network](./network.md), [visibility](./visibility.md), [battery](./battery.md), [clipboard](./clipboard.md), [export](./export.md), [scroll](./scroll.md), [touch](./touch.md), [platform](./platform.md), [notify](./notify.md), [geo](./geo.md), [share](./share.md)

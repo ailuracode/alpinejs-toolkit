@@ -33,6 +33,5 @@ Plugins never ship CSS or framework-specific markup — you wire styles through 
 ## Explore
 
 - [Getting started](./getting-started.md) — install, register plugins, use in HTML
-- [Architecture](./architecture.md) — stores vs magics, naming conventions
 - [Playground](/playground/) — live interactive demos for every plugin
 - [Plugins](./theme.md) — per-package API reference (sidebar)

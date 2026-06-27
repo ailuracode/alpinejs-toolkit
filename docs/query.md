@@ -294,5 +294,5 @@ const todos = query.observe(["todos"], () => typedFetch<Todo[]>("/api/todos"));
 
 ## See also
 
-- [Architecture](./architecture.md)
+- [Core](./core.md)
 - [TanStack Query docs](https://tanstack.com/query/latest/docs/framework/react/overview)

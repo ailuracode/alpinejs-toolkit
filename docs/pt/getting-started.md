@@ -161,5 +161,4 @@ O `global.d.ts` não tem instruções `import`, então resolve sem incluir o pac
 
 ## Próximos passos
 
-- [Arquitetura: stores vs magics](./architecture.md) — quando usar cada padrão
 - Documentação por pacote: [theme](./theme.md), [screen](./screen.md), [network](./network.md), [visibility](./visibility.md), [battery](./battery.md), [clipboard](./clipboard.md), [export](./export.md), [scroll](./scroll.md), [touch](./touch.md), [platform](./platform.md), [notify](./notify.md), [geo](./geo.md), [share](./share.md)

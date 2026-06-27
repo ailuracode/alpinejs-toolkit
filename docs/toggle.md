@@ -86,5 +86,5 @@ type Answer = ToggleValue<"yes", "no", "unknown">;
 
 ## See also
 
-- [Architecture: magics](./architecture.md)
+- [Getting started](./getting-started.md)
 - [Calendar](./calendar.md) — similar callable magic pattern

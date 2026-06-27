@@ -69,7 +69,7 @@ Las pruebas usan [Vitest](https://vitest.dev/) con [happy-dom](https://github.co
 
 ### Stores vs magics
 
-Consulta [Arquitectura](./architecture.md). Prefiere stores para estado mutable compartido; magics para datos de entorno de solo lectura o utilidades.
+Prefiere stores para estado mutable compartido; magics para datos de entorno de solo lectura o utilidades.
 
 ### Nomenclatura
 

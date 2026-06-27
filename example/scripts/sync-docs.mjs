@@ -14,7 +14,6 @@ const pluginLabels = JSON.parse(
 const GUIDE_SLUGS = new Set([
   "index",
   "getting-started",
-  "architecture",
   "contributing",
   "core",
   "query",
