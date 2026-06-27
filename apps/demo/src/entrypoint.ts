@@ -24,12 +24,12 @@ import toggle from "@ailuracode/alpine-toggle";
 import touch from "@ailuracode/alpine-touch";
 import visibility from "@ailuracode/alpine-visibility";
 import type { Alpine } from "alpinejs";
-import { registerCalendarDemo } from "./calendar-demo.js";
-import { registerDemoShell, registerToastDemoHandlers } from "./demo-shell.js";
-import { jsonApiDemoOptions, registerJsonApiDemo } from "./json-api-demo.js";
-import { registerQueryAdvancedDemo, registerQueryDemos } from "./query-demos.js";
-import { registerToastSonner } from "./sonner-demo.js";
-import { registerToggleDemos } from "./toggle-demos.js";
+import { registerCalendarDemo } from "./demo/calendar-demo.js";
+import { registerDemoShell, registerToastDemoHandlers } from "./demo/demo-shell.js";
+import { jsonApiDemoOptions, registerJsonApiDemo } from "./demo/json-api-demo.js";
+import { registerQueryAdvancedDemo, registerQueryDemos } from "./demo/query-demos.js";
+import { registerToastSonner } from "./demo/sonner-demo.js";
+import { registerToggleDemos } from "./demo/toggle-demos.js";
 
 export const toastDemoVariants = toastVariants([
   "success",

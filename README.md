@@ -51,27 +51,27 @@ Alpine.start();
 
 Install only the packages you need. Each one is a separate dependency.
 
-## Example app
+## Demo app
 
-The [`example/`](./example/) directory is a **Starlight documentation site** plus an interactive **playground** for all plugins. It is part of the pnpm workspace and is **not** published to npm.
+The [`apps/demo/`](./apps/demo/) directory is a **Starlight documentation site** plus an interactive **playground** for all plugins. It is part of the pnpm workspace and is **not** published to npm.
 
 ```bash
 pnpm install
-pnpm run dev:example
+pnpm run dev:demo
 ```
 
-- `/` — documentation (synced from [`docs/`](./docs/))
+- `/` — documentation (from [`docs/`](./docs/))
 - `/playground/` — live Alpine.js demos
 
-When you add a new plugin package, update `docs/<name>.md` and wire the playground:
+When you add a new plugin package, update `docs/plugins/<name>.md` and wire the playground:
 
 | File | What to add |
 |------|-------------|
-| `docs/<name>.md` | API reference (source of truth) |
-| `example/package.json` | workspace dependency |
-| `example/astro.config.ts` | Vite alias |
-| `example/src/entrypoint.ts` | `Alpine.plugin(...)` registration |
-| `example/src/pages/playground/index.astro` | interactive demo section |
+| `docs/plugins/<name>.md` | API reference (source of truth) |
+| `apps/demo/package.json` | workspace dependency |
+| `apps/demo/astro.config.ts` | Vite alias |
+| `apps/demo/src/entrypoint.ts` | `Alpine.plugin(...)` registration |
+| `apps/demo/src/pages/playground/index.astro` | interactive demo section |
 
 See [AGENTS.md](./AGENTS.md) for the full checklist.
 

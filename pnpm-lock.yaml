@@ -40,80 +40,80 @@ importers:
         specifier: ^4.1.9
         version: 4.1.9(@types/node@26.0.0)(@vitest/coverage-v8@4.1.9)(happy-dom@20.10.6)(vite@8.0.16(@types/node@26.0.0)(esbuild@0.27.7)(jiti@2.7.0))
 
-  example:
+  apps/demo:
     dependencies:
       '@ailuracode/alpine-attention':
         specifier: workspace:*
-        version: link:../packages/attention
+        version: link:../../packages/attention
       '@ailuracode/alpine-battery':
         specifier: workspace:*
-        version: link:../packages/battery
+        version: link:../../packages/battery
       '@ailuracode/alpine-calendar':
         specifier: workspace:*
-        version: link:../packages/calendar
+        version: link:../../packages/calendar
       '@ailuracode/alpine-clipboard':
         specifier: workspace:*
-        version: link:../packages/clipboard
+        version: link:../../packages/clipboard
       '@ailuracode/alpine-export':
         specifier: workspace:*
-        version: link:../packages/export
+        version: link:../../packages/export
       '@ailuracode/alpine-geo':
         specifier: workspace:*
-        version: link:../packages/geo
+        version: link:../../packages/geo
       '@ailuracode/alpine-json-api':
         specifier: workspace:*
-        version: link:../packages/json-api
+        version: link:../../packages/json-api
       '@ailuracode/alpine-network':
         specifier: workspace:*
-        version: link:../packages/network
+        version: link:../../packages/network
       '@ailuracode/alpine-notify':
         specifier: workspace:*
-        version: link:../packages/notify
+        version: link:../../packages/notify
       '@ailuracode/alpine-platform':
         specifier: workspace:*
-        version: link:../packages/platform
+        version: link:../../packages/platform
       '@ailuracode/alpine-query':
         specifier: workspace:*
-        version: link:../packages/query
+        version: link:../../packages/query
       '@ailuracode/alpine-query-adapter-alpine':
         specifier: workspace:*
-        version: link:../packages/query-adapter-alpine
+        version: link:../../packages/query-adapter-alpine
       '@ailuracode/alpine-query-adapter-nanostores':
         specifier: workspace:*
-        version: link:../packages/query-adapter-nanostores
+        version: link:../../packages/query-adapter-nanostores
       '@ailuracode/alpine-query-adapter-zustand':
         specifier: workspace:*
-        version: link:../packages/query-adapter-zustand
+        version: link:../../packages/query-adapter-zustand
       '@ailuracode/alpine-query-devtools':
         specifier: workspace:*
-        version: link:../packages/query-devtools
+        version: link:../../packages/query-devtools
       '@ailuracode/alpine-screen':
         specifier: workspace:*
-        version: link:../packages/screen
+        version: link:../../packages/screen
       '@ailuracode/alpine-scroll':
         specifier: workspace:*
-        version: link:../packages/scroll
+        version: link:../../packages/scroll
       '@ailuracode/alpine-share':
         specifier: workspace:*
-        version: link:../packages/share
+        version: link:../../packages/share
       '@ailuracode/alpine-sidebar':
         specifier: workspace:*
-        version: link:../packages/sidebar
+        version: link:../../packages/sidebar
       '@ailuracode/alpine-theme':
         specifier: workspace:*
-        version: link:../packages/theme
+        version: link:../../packages/theme
       '@ailuracode/alpine-toast':
         specifier: workspace:*
-        version: link:../packages/toast
+        version: link:../../packages/toast
       '@ailuracode/alpine-toggle':
         specifier: workspace:*
-        version: link:../packages/toggle
+        version: link:../../packages/toggle
       '@ailuracode/alpine-touch':
         specifier: workspace:*
-        version: link:../packages/touch
+        version: link:../../packages/touch
       '@ailuracode/alpine-visibility':
         specifier: workspace:*
-        version: link:../packages/visibility
+        version: link:../../packages/visibility
       '@astrojs/react':
         specifier: ^6.0.0
         version: 6.0.0(@types/node@26.0.0)(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(esbuild@0.28.1)(jiti@2.7.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)

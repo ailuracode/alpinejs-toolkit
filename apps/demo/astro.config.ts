@@ -5,7 +5,7 @@ import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "astro/config";
 
 const root = fileURLToPath(new URL(".", import.meta.url));
-const pkg = (name: string) => `${root}../packages/${name}/src/index.ts`;
+const pkg = (name: string) => `${root}../../packages/${name}/src/index.ts`;
 
 const sidebar = [
   {

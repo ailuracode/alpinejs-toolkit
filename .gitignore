@@ -4,6 +4,6 @@ dist
 *.log
 coverage
 .pnpm-store
-example/node_modules
-example/dist
-example/.astro
+apps/demo/node_modules
+apps/demo/dist
+apps/demo/.astro

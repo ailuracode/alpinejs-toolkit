@@ -1,6 +1,6 @@
 # Alpine.js plugins — docs & playground
 
-[Starlight](https://starlight.astro.build/) documentation site plus an interactive Alpine.js playground for all `@ailuracode/alpine-*` packages. Part of the pnpm workspace (`example/`). **Private** — not published to npm.
+[Starlight](https://starlight.astro.build/) documentation site plus an interactive Alpine.js playground for all `@ailuracode/alpine-*` packages. Part of the pnpm workspace (`apps/demo/`). **Private** — not published to npm.
 
 ## Run locally
 
@@ -8,7 +8,7 @@ From the repo root:
 
 ```bash
 pnpm install
-pnpm run dev:example
+pnpm run dev:demo
 ```
 
 Or from this directory:
@@ -26,12 +26,13 @@ Open [http://localhost:4321](http://localhost:4321) for documentation. Interacti
 
 | Path | Purpose |
 |------|---------|
-| `../docs/` | **Source of truth** — Starlight Markdown (YAML frontmatter, no sync step) |
-| `../docs/plugins/` | Plugin API reference (English) |
-| `../docs/es/`, `../docs/pt/` | Translated guides + `plugins/` reference |
-| `src/content/docs/` | Symlink → `../../docs` (Starlight content collection) |
+| `../../docs/` | **Source of truth** — Starlight Markdown (YAML frontmatter, no sync step) |
+| `../../docs/plugins/` | Plugin API reference (English) |
+| `../../docs/es/`, `../../docs/pt/` | Translated guides + `plugins/` reference |
+| `src/content/docs/` | Symlink → `../../../../docs` (Starlight content collection) |
 | `src/pages/playground/` | Overview + `[plugin].astro` subpages |
-| `src/playground-demos.ts` | Demo component registry |
+| `src/demo/` | Alpine demo registrations + playground component registry |
+| `src/demo/playground-demos.ts` | Maps plugin id → Astro demo component |
 
 Edit `docs/` directly; `pnpm dev` and `pnpm build` read it through the symlink.
 

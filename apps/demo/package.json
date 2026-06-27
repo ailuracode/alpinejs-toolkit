@@ -1,5 +1,5 @@
 {
-  "name": "alpine-example",
+  "name": "alpine-demo",
   "private": true,
   "description": "Interactive Astro demo for @ailuracode Alpine.js plugins",
   "type": "module",

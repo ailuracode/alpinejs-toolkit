@@ -21,8 +21,8 @@
     "release": "pnpm run build && pnpm test && changeset publish",
     "publish:ci": "changeset publish",
     "publish:packages": "pnpm run release",
-    "dev:example": "pnpm --filter alpine-example dev",
-    "build:example": "pnpm --filter alpine-example build"
+    "dev:demo": "pnpm --filter alpine-demo dev",
+    "build:demo": "pnpm --filter alpine-demo build"
   },
   "devDependencies": {
     "@types/alpinejs": "^3.13.11",

@@ -175,27 +175,26 @@ When changing public API or behavior, update:
 
 All docs in **English**.
 
-## Example app
+## Demo app
 
-`example/` is the Astro **documentation site** (Starlight) and **playground** in the pnpm workspace. It is **private** and excluded from publish and changesets. Run it with `pnpm run dev:example` from the repo root.
+`apps/demo/` is the Astro **documentation site** (Starlight) and **playground** in the pnpm workspace. It is **private** and excluded from publish and changesets. Run it with `pnpm run dev:demo` from the repo root.
 
-- **Docs** — `docs/` at repo root is the Starlight source of truth (YAML frontmatter + Markdown, no sync step). Guides at the locale root (`getting-started.md`, `core.md`, `query.md`, …); plugin reference under `docs/plugins/` (and `docs/es/plugins/`, `docs/pt/plugins/`). Do not repeat the page `# title` in the body — Starlight renders `title` from frontmatter. `example/src/content/docs` is a symlink to `../../docs`.
+- **Docs** — `docs/` at repo root is the Starlight source of truth (YAML frontmatter + Markdown, no sync step). Guides at the locale root (`getting-started.md`, `core.md`, `query.md`, …); plugin reference under `docs/plugins/` (and `docs/es/plugins/`, `docs/pt/plugins/`). Do not repeat the page `# title` in the body — Starlight renders `title` from frontmatter. `apps/demo/src/content/docs` is a symlink to `../../../../docs`.
 - **Playground** — interactive demos at `/playground/` (`src/pages/playground/`).
 
-**Every new plugin must be wired into the example app.** The playground is the canonical integration reference; plugin reference pages come from `docs/<name>.md`.
+**Every new plugin must be wired into the demo app.** The playground is the canonical integration reference; plugin reference pages come from `docs/plugins/<name>.md`.
 
 When adding a new package, update:
 
 1. `docs/plugins/<name>.md` — API reference (Starlight page with YAML frontmatter)
-2. `example/package.json` — add `"@ailuracode/alpine-<name>": "workspace:*"` to `dependencies`
-3. `example/tsconfig.json` — add a `paths` entry pointing to `../packages/<name>/src/index.ts`
-4. `example/astro.config.ts` — add Vite alias for the package
-5. `example/src/env.d.ts` — add `/// <reference path="../../packages/<name>/src/global.d.ts" />`
-6. `example/src/entrypoint.ts` — import the plugin and call `Alpine.plugin(...)`
-7. `example/src/plugin-nav.ts` — add sidebar nav entry for the playground
-8. `example/src/components/demos/<Name>Demo.astro` — interactive demo section
-9. `example/src/playground-demos.ts` — register demo component for dynamic route
-10. `example/src/pages/playground/[plugin].astro` — auto-generated subpage (no manual edit if demo is in registry)
+2. `apps/demo/package.json` — add `"@ailuracode/alpine-<name>": "workspace:*"` to `dependencies`
+3. `apps/demo/tsconfig.json` — add a `paths` entry pointing to `../../packages/<name>/src/index.ts`
+4. `apps/demo/astro.config.ts` — add Vite alias for the package
+5. `apps/demo/src/entrypoint.ts` — import the plugin and call `Alpine.plugin(...)`
+6. `apps/demo/src/plugin-nav.ts` — add sidebar nav entry for the playground
+7. `apps/demo/src/components/demos/<Name>Demo.astro` — interactive demo section
+8. `apps/demo/src/demo/playground-demos.ts` — register demo component for dynamic route
+9. `apps/demo/src/pages/playground/[plugin].astro` — auto-generated subpage (no manual edit if demo is in registry)
 
 Also update the package table in this file and root `README.md`.
 
@@ -206,7 +205,7 @@ Also update the package table in this file and root `README.md`.
 - Introduce `@airluracode` typo (correct: `@ailuracode`)
 - Couple plugins to a specific CSS framework
 - Skip tests for plugin logic changes
-- Ship a new plugin without adding it to the Astro example app
+- Ship a new plugin without adding it to the Astro demo app
 - Manually edit version numbers for releases (use Changesets)
 
 ## References

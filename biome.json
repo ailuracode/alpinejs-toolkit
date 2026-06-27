@@ -16,8 +16,8 @@
       "!**/pnpm-lock.yaml",
       "!**/.changeset/*.json",
       "!**/node_modules",
-      "!example/dist",
-      "!example/.astro"
+      "!apps/demo/dist",
+      "!apps/demo/.astro"
     ]
   },
   "formatter": {
