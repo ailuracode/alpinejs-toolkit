@@ -123,7 +123,7 @@ function resolveSource(localeId, filename, englishFiles) {
   });
 }
 
-async function buildOutput(localeId, filename, sourcePath, body) {
+async function buildOutput(localeId, filename, body) {
   const slug = filename.replace(/\.md$/, "");
 
   if (slug === "index") {
@@ -169,7 +169,7 @@ async function syncLocale(locale, englishFiles) {
 
     const slug = filename.replace(/\.md$/, "");
     const source = await readFile(sourcePath, "utf8");
-    const output = await buildOutput(locale.id, filename, sourcePath, source);
+    const output = await buildOutput(locale.id, filename, source);
     const targetDir = GUIDE_SLUGS.has(slug) ? locale.contentDir : pluginsDir;
 
     await writeFile(join(targetDir, filename), output, "utf8");
