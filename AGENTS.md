@@ -1,10 +1,10 @@
 # AGENTS.md
 
-Guidance for AI agents and contributors working on **@ailuracode/alpine**.
+Guidance for AI agents and contributors working on **@ailuracode/alpinejs-toolkit**.
 
 ## Project
 
-Alpine.js plugin monorepo by **ailuracode**. Twenty-one independent npm packages under `packages/`, plus shared tests and docs. The root package `@ailuracode/alpine` is **private** and never published.
+Alpine.js plugin monorepo by **ailuracode**. Twenty-one independent npm packages under `packages/`, plus shared tests and docs. The root package `@ailuracode/alpinejs-toolkit` is **private** and never published.
 
 | Package | Type | Store / Magic |
 |---------|------|---------------|

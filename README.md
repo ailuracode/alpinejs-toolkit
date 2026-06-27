@@ -1,4 +1,4 @@
-# @ailuracode/alpine
+# @ailuracode/alpinejs-toolkit
 
 Modular **Alpine.js toolkit** — lazy plugin init, headless stores and magics, TypeScript-first DX. Framework-agnostic: works with Vite, Astro, static HTML, or any ESM bundler.
 

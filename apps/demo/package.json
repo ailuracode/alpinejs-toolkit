@@ -1,7 +1,7 @@
 {
-  "name": "alpine-demo",
+  "name": "alpinejs-toolkit-demo",
   "private": true,
-  "description": "Interactive Astro demo for @ailuracode Alpine.js plugins",
+  "description": "Interactive Astro demo for @ailuracode/alpinejs-toolkit",
   "type": "module",
   "version": "0.0.0",
   "author": "ailuracode",

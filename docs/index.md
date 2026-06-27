@@ -1,5 +1,5 @@
 ---
-title: "Alpine.js + @ailuracode"
+title: "Alpine.js Toolkit · @ailuracode"
 description: "Modular Alpine.js toolkit — lazy plugin init, headless stores and magics, modern TypeScript DX."
 template: splash
 hero:
@@ -20,7 +20,7 @@ Modular toolkit for **Alpine.js** by ailuracode — framework-agnostic, npm-publ
 
 ## What is this?
 
-**@ailuracode/alpine** is not a grab-bag of unrelated plugins — it is a **modular Alpine toolkit** built around three ideas:
+**@ailuracode/alpinejs-toolkit** is not a grab-bag of unrelated plugins — it is a **modular Alpine toolkit** built around three ideas:
 
 | Pillar | What you get |
 |--------|--------------|

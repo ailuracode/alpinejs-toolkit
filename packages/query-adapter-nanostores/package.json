@@ -10,7 +10,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ailuracode/alpine.git",
+    "url": "git+https://github.com/ailuracode/alpinejs-toolkit.git",
     "directory": "packages/query-adapter-nanostores"
   },
   "files": [

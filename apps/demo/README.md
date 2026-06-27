@@ -1,4 +1,4 @@
-# Alpine.js plugins — docs & playground
+# @ailuracode/alpinejs-toolkit — docs & playground
 
 [Starlight](https://starlight.astro.build/) documentation site plus an interactive Alpine.js playground for all `@ailuracode/alpine-*` packages. Part of the pnpm workspace (`apps/demo/`). **Private** — not published to npm.
 

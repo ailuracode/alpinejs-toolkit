@@ -70,9 +70,9 @@ export default defineConfig({
   integrations: [
     starlight({
       title: {
-        en: "Alpine.js + @ailuracode",
-        es: "Alpine.js + @ailuracode",
-        pt: "Alpine.js + @ailuracode",
+        en: "Alpine.js Toolkit · @ailuracode",
+        es: "Alpine.js Toolkit · @ailuracode",
+        pt: "Alpine.js Toolkit · @ailuracode",
       },
       description: "Modular Alpine.js toolkit — lazy init, headless plugins, modern TypeScript DX.",
       defaultLocale: "root",
@@ -96,11 +96,11 @@ export default defineConfig({
         {
           icon: "github",
           label: "GitHub",
-          href: "https://github.com/ailuracode/alpine",
+          href: "https://github.com/ailuracode/alpinejs-toolkit",
         },
       ],
       editLink: {
-        baseUrl: "https://github.com/ailuracode/alpine/edit/master/docs/",
+        baseUrl: "https://github.com/ailuracode/alpinejs-toolkit/edit/master/docs/",
       },
       head: [
         {

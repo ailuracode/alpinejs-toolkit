@@ -10,13 +10,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ailuracode/alpine.git",
+    "url": "git+https://github.com/ailuracode/alpinejs-toolkit.git",
     "directory": "packages/notify"
   },
   "bugs": {
-    "url": "https://github.com/ailuracode/alpine/issues"
+    "url": "https://github.com/ailuracode/alpinejs-toolkit/issues"
   },
-  "homepage": "https://github.com/ailuracode/alpine/tree/master/packages/notify#readme",
+  "homepage": "https://github.com/ailuracode/alpinejs-toolkit/tree/master/packages/notify#readme",
   "files": [
     "dist",
     "README.md"

@@ -1,5 +1,5 @@
 {
-  "name": "@ailuracode/alpine",
+  "name": "@ailuracode/alpinejs-toolkit",
   "private": true,
   "author": "ailuracode",
   "type": "module",
@@ -21,8 +21,8 @@
     "release": "pnpm run build && pnpm test && changeset publish",
     "publish:ci": "changeset publish",
     "publish:packages": "pnpm run release",
-    "dev:demo": "pnpm --filter alpine-demo dev",
-    "build:demo": "pnpm --filter alpine-demo build"
+    "dev:demo": "pnpm --filter alpinejs-toolkit-demo dev",
+    "build:demo": "pnpm --filter alpinejs-toolkit-demo build"
   },
   "devDependencies": {
     "@types/alpinejs": "^3.13.11",
