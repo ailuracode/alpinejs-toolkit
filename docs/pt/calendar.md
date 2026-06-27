@@ -28,7 +28,7 @@ Consumidores TypeScript podem adicionar:
 
 ## Magic API
 
-Factory chamável:
+Callable factory:
 
 | Uso | Retorno | Descrição |
 |-------|---------|-------------|

@@ -2,7 +2,7 @@
 
 Package: `@ailuracode/alpine-toast`
 
-Cola de toast en la app sin UI para Alpine.js. Registra el magic `$toast` y un store reactivo interno para integradores de UI.
+Cola de toasts in-app headless para Alpine.js (sin markup ni CSS incluidos). Registra el magic `$toast` y un store reactivo interno para integradores de UI.
 
 ## Agnóstico al framework CSS
 
@@ -62,15 +62,15 @@ await $toast.promise(() => save(), {
 
 | Método | Descripción |
 |--------|-------------|
-| `$toast(title, options?)` | Añade un toast `default`. Devuelve el id del toast. |
-| `$toast(payload)` | Añade con un objeto payload completo. |
+| `$toast(title, options?)` | Encola un toast `default`. Devuelve el id del toast. |
+| `$toast(payload)` | Encola con un objeto payload completo. |
 | `$toast.<variant>(title, options?)` | Un atajo por cada entrada en `variants`. |
-| `$toast.dismiss(id)` | Cierra un toast por id (devuelto por `$toast()`). |
+| `$toast.dismiss(id)` | Dispensa un toast por id (devuelto por `$toast()`). |
 | `$toast.update(id, patch)` | Actualiza el mismo toast in situ (variant, title, content, action, …). |
-| `$toast.dismissAt(position)` | Cierra todos los toasts de una pila de posición. |
-| `$toast.dismissAll()` | Cierra todos los toasts de todas las pilas. |
-| `$toast.pushUnique(key, payload?)` | Descarta toasts activos con la misma `key`, luego añade. |
-| `$toast.fromPayload(payload)` | Añade desde un payload plano (eventos, flash de Laravel, etc.). |
+| `$toast.dismissAt(position)` | Dispensa todos los toasts de una pila de posición. |
+| `$toast.dismissAll()` | Dispensa todos los toasts de todas las pilas. |
+| `$toast.pushUnique(key, payload?)` | Dispensa toasts activos con la misma `key`, luego encola. |
+| `$toast.fromPayload(payload)` | Encola desde un payload plano (eventos, flash de Laravel, etc.). |
 | `$toast.promise(factoryOrPromise, messages?)` | `loading` → `success` / `error` en el mismo toast. |
 
 ### Opciones del payload
@@ -169,17 +169,17 @@ El plugin almacena el id de posición en cada toast. Renderiza una pila por posi
 | Store API | Descripción |
 |-----------|-------------|
 | `stackPositions` | Todas las claves de pila (`defaultPosition` + `positions`) |
-| `itemsAt(position)` | Toasts en esa pila, más recientes primero (incluye elementos en salida `removed`) |
-| `timedItemsAt(position)` | Pila con auto-dismiss — mismo orden, incluye elementos en salida |
-| `persistentItemsAt(position)` | Pila persistente (`duration: false`) — incluye elementos en salida |
-| `activeTimedItemsAt(position)` | Pila con tiempo sin elementos `removed` — preferida para `x-for` simple |
+| `itemsAt(position)` | Toasts en esa pila, más recientes primero (incluye elementos con estado `removed`) |
+| `timedItemsAt(position)` | Pila temporizada con auto-dismiss — mismo orden, incluye elementos con estado `removed` |
+| `persistentItemsAt(position)` | Pila persistente (`duration: false`) — incluye elementos con estado `removed` |
+| `activeTimedItemsAt(position)` | Pila temporizada sin elementos `removed` — preferida para `x-for` simple |
 | `activePersistentItemsAt(position)` | Pila persistente sin elementos `removed` |
-| `isVisibleAt(position, index)` | Solo pila con tiempo — peek/limita visibilidad (`maxVisible`) |
+| `isVisibleAt(position, index)` | Solo pila temporizada — peek/limita visibilidad (`maxVisible`) |
 | `pushUnique(key, payload?)` | Igual que `$toast.pushUnique` |
 | `destroy()` | Limpia timers — llama al desmontar el plugin |
-| `dismiss(id)` | Cierra un toast (igual que `$toast.dismiss`) |
-| `dismissAt(position)` | Cierra una posición entera (con tiempo + persistente) |
-| `dismissAll()` | Cierra todas las pilas |
+| `dismiss(id)` | Dispensa un toast (igual que `$toast.dismiss`) |
+| `dismissAt(position)` | Dispensa una posición entera (temporizada + persistente) |
+| `dismissAll()` | Dispensa todas las pilas |
 
 ## Flujo promise
 
@@ -209,11 +209,11 @@ await $toast.promise(() => save(), {
 });
 ```
 
-Si falta un variant con nombre en `variants`, los estados promise recurren a `default`.
+Si falta un variant con nombre en `variants`, los estados promise hacen fallback a `default`.
 
 En caso de fallo, el toast se actualiza al estado de error y la promise devuelta **se rechaza** con el error original para que los llamadores sigan pudiendo usar `try/catch` o `.catch()`.
 
-El estado **loading** usa una duración larga con tiempo (`PROMISE_LOADING_DURATION`) para permanecer en la **pila con tiempo** (no perpetua). El timer se reemplaza cuando la promise se resuelve a success o error.
+El estado **loading** usa una duración larga con temporizador (`PROMISE_LOADING_DURATION`) para permanecer en la **pila temporizada** (no perpetua). El timer se reemplaza cuando la promise se resuelve a success o error.
 
 Los nombres de variant reservados (`dismiss`, `update`, `dismissAt`, `dismissAll`, `fromPayload`, `promise`) no pueden sobrescribir métodos core de `$toast`.
 
@@ -231,17 +231,17 @@ En plantillas Alpine, envuelve llamadas con varios argumentos en una función fl
 
 Cada **posición** tiene dos pilas independientes:
 
-1. **Con tiempo** — toasts con auto-dismiss (`duration > 0`). `maxVisible` se aplica aquí (UI peek/stack).
+1. **Temporizada** — toasts con auto-dismiss (`duration > 0`). `maxVisible` se aplica aquí (UI peek/stack).
 2. **Persistente** — `duration: false` (o `0` en payloads; normalizado a `false`). Siempre totalmente visible en tu UI.
 
-`maxToasts` se aplica **por pila por posición** (no globalmente). Ejemplo: `maxToasts: 5` permite hasta 5 toasts con tiempo + 5 persistentes en `bottom-right`.
+`maxToasts` se aplica **por pila por posición** (no globalmente). Ejemplo: `maxToasts: 5` permite hasta 5 toasts temporizados + 5 persistentes en `bottom-right`.
 
 | Opción | Predeterminado | Descripción |
 |--------|---------|-------------|
 | `maxToasts` | `5` | Máximo de toasts activos **por pila por posición**. `0` = ilimitado. |
-| `maxVisible` | `maxToasts` | Máximo de toasts con tiempo mostrados a la vez por posición (`isVisibleAt`). |
+| `maxVisible` | `maxToasts` | Máximo de toasts temporizados mostrados a la vez por posición (`isVisibleAt`). |
 
-Usa `activeTimedItemsAt` / `activePersistentItemsAt` cuando tu renderer no necesite elementos en salida (`removed`). Mantén `timedItemsAt` / `persistentItemsAt` cuando animes el dismiss (estilo Sonner).
+Usa `activeTimedItemsAt` / `activePersistentItemsAt` cuando tu renderer no necesite elementos con estado `removed`. Mantén `timedItemsAt` / `persistentItemsAt` cuando animes el dismiss (estilo Sonner).
 
 ## Eventos window
 

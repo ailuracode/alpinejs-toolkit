@@ -1,4 +1,3 @@
-import { spawn } from "node:child_process";
 import { mkdir, readdir, readFile, rm, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -198,24 +197,7 @@ async function syncLocale(locale, englishFiles) {
   return synced;
 }
 
-function runTerminologyFix() {
-  return new Promise((resolve, reject) => {
-    const script = join(repoDocs, "i18n", "fix-terminology.mjs");
-    const child = spawn(process.execPath, [script], { stdio: "inherit" });
-    child.on("error", reject);
-    child.on("exit", (code) => {
-      if (code === 0) {
-        resolve();
-      } else {
-        reject(new Error(`fix-terminology.mjs exited with code ${code}`));
-      }
-    });
-  });
-}
-
 async function main() {
-  await runTerminologyFix();
-
   const englishFiles = (await readdir(repoDocs)).filter((name) => name.endsWith(".md"));
   const counts = await Promise.all(LOCALES.map((locale) => syncLocale(locale, englishFiles)));
 

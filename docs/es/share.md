@@ -93,7 +93,7 @@ Usa `$share.isSupported` sin paréntesis en las plantillas.
 
 - Requiere un **contexto seguro** (HTTPS o `localhost`)
 - Soportado en la mayoría de navegadores móviles y algunos de escritorio
-- `navigator.canShare` es opcional; el plugin recurre a comprobaciones básicas de payload
+- `navigator.canShare` es opcional; el plugin hace fallback a comprobaciones básicas de payload
 - Compartir archivos depende de `navigator.canShare` y del soporte de la plataforma
 
 ## Seguridad

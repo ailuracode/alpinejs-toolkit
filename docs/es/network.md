@@ -24,8 +24,8 @@ Alpine.start();
 
 | Propiedad | Tipo | Descripción |
 |----------|------|-------------|
-| `isOnline` | `boolean` (getter) | `true` cuando el navegador reporta conexión |
-| `isOffline` | `boolean` (getter) | `true` cuando el navegador reporta sin conexión |
+| `isOnline` | `boolean` (getter) | `true` cuando el navegador indica conexión online |
+| `isOffline` | `boolean` (getter) | `true` cuando el navegador indica conexión offline |
 
 ## Ejemplos HTML
 

@@ -30,7 +30,7 @@ Alpine.plugin(network);
 Alpine.start();
 ```
 
-Alguns plugins aceitam opções (ex.: `theme`). Outros são funções simples:
+Alguns plugins aceitam opções (ex.: `theme`). Outros são plugins sem opções (funções de registro diretas):
 
 ```js
 Alpine.plugin(screen);

@@ -1,6 +1,6 @@
 # Query
 
-Busca async de dados no estilo TanStack Query para Alpine.js: cache, stale-while-revalidate, invalidação, retentativas, polling e mutações.
+Obtenção assíncrona de dados no estilo TanStack Query para Alpine.js: cache, stale-while-revalidate, invalidação, retentativas, polling e mutações.
 
 ## Instalação
 
@@ -10,7 +10,7 @@ npm install @ailuracode/alpine-query @ailuracode/alpine-query-adapter-nanostores
 
 ## Início rápido
 
-Pick an adapter, passe-o para `query()` e registre o plugin. **Nanostores** é recomendado (`@nanostores/alpine` fornece `x-nano` e `$nano`):
+Escolha um adaptador, passe-o para `query()` e registre o plugin. **Nanostores** é recomendado (`@nanostores/alpine` fornece `x-nano` e `$nano`):
 
 ```js
 import Alpine from "alpinejs";
@@ -25,7 +25,7 @@ Alpine.plugin(query({ adapter: createAlpineNanostoresAdapter }));
 Alpine.start();
 ```
 
-Other adapter packages:
+Outros pacotes adaptador:
 
 | Package | Backend |
 |---------|---------|
@@ -103,11 +103,11 @@ Voltar a uma página anterior serve dados cacheados instantaneamente enquanto `s
 
 Consulte o [README do pacote](../packages/query/README.md) para a API completa.
 
-## Custom adapter
+## Adaptador personalizado
 
 O motor de cache conversa com sua biblioteca de store por meio de um **`QueryStateAdapter`**. Implemente esta interface para conectar qualquer runtime reativo — Redux, Pinia, Solid signals, um barramento de eventos personalizado, etc.
 
-Every adapter must expor um string **`name`** (ex.: `"Nanostores"`, `"Zustand"`). As devtools de query o exibem no cabeçalho do painel (`Alpine Query · YourName`).
+Todo adaptador deve expor um string **`name`** (ex.: `"Nanostores"`, `"Zustand"`). As devtools de query o exibem no cabeçalho do painel (`Alpine Query · YourName`).
 
 ### Contrato
 
@@ -141,7 +141,7 @@ const client = createQueryClient({ adapter: vanillaQueryAdapter });
 
 Consulte [`packages/query/src/adapters/vanilla.ts`](../packages/query/src/adapters/vanilla.ts) para a implementação completa.
 
-### Store-backed adapter
+### Adaptador respaldado por store
 
 Quando sua biblioteca já possui estado reativo (Zustand, Nanostores, MobX, …), mantenha o **registro** no store e construa a **visão** com helpers do core:
 
@@ -204,7 +204,7 @@ Conecte o `subscribe` / `listen` nativo do store em `listen` em vez de um `Set` 
 - [`query-adapter-nanostores`](../packages/query-adapter-nanostores/src/adapter.ts) — Nanostores `map()`
 - [`query-adapter-zustand`](../packages/query-adapter-zustand/src/adapter.ts) — Zustand vanilla `createStore`
 
-### Alpine plugin from a custom adapter
+### Plugin Alpine a partir de um adaptador personalizado
 
 Registre `$store.query` com `query({ adapter })`:
 
@@ -228,7 +228,7 @@ Alpine.plugin(
 
 Para armazenamento nativo com `Alpine.reactive`, use [`createAlpineStoreAdapter`](../packages/query-adapter-alpine/src/adapter.ts) como referência — chama `attachQueryFlags` / `attachMutationFlags` diretamente no objeto reativo.
 
-### Adapter factory
+### Factory de adaptador
 
 `query({ adapter })` aceita uma factory `(Alpine) => QueryStateAdapter` quando o adaptador precisa da instância do Alpine no registro:
 
@@ -236,12 +236,12 @@ Para armazenamento nativo com `Alpine.reactive`, use [`createAlpineStoreAdapter`
 query({ adapter: (Alpine) => createAlpineBridgedAdapter(Alpine, myStoreAdapter) });
 ```
 
-### Publishing a plugin package
+### Publicar um pacote plugin
 
-The official adapters são pacotes npm independentes (`@ailuracode/alpine-query-adapter-*`). Para publicar o seu:
+Os adaptadores oficiais são pacotes npm independentes (`@ailuracode/alpine-query-adapter-*`). Para publicar o seu:
 
 1. Dependa de `@ailuracode/alpine-query` e da sua biblioteca de store.
-2. Export the adapter; consumidores chamam `query({ adapter })` de `@ailuracode/alpine-query`.
+2. Exporte o adaptador; consumidores chamam `query({ adapter })` de `@ailuracode/alpine-query`.
 3. Adicione testes com `createQueryClient({ adapter })` e `startAlpine(query({ adapter }))`.
 
 Apenas **`patch` + `listen`** precisam conectar ao seu store; o motor de cache cuida de fetch, retentativas, invalidação e GC.

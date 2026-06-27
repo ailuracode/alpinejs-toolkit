@@ -29,7 +29,7 @@ Alpine.plugin(theme({
 Alpine.start();
 ```
 
-`onChange` se ejecuta al arrancar (antes del pintado si se registra pronto) y cada vez que cambia el tema.
+`onChange` se ejecuta al inicializar (antes del primer renderizado si se registra pronto) y cada vez que cambia el tema.
 
 ## Store API
 
@@ -83,7 +83,7 @@ Cuando `mode` es `system`, el plugin escucha `prefers-color-scheme` y actualiza 
 
 ## Prevención de FOUC
 
-Registra el plugin y `onChange` lo antes posible en tu archivo de entrada. El plugin arranca al registrarse (antes de `Alpine.start()`) para que `onChange` pueda ejecutarse antes del primer pintado.
+Registra el plugin y `onChange` lo antes posible en tu archivo de entrada. El plugin se inicializa al registrarse (antes de `Alpine.start()`) para que `onChange` pueda ejecutarse antes del primer renderizado.
 
 Para estilos críticos, añade CSS inline en `<head>` vinculado a tu atributo elegido (p. ej. `[data-theme="dark"]`).
 

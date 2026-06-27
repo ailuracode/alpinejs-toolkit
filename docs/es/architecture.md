@@ -10,16 +10,16 @@ Usa un **store** cuando necesites:
 - **Acciones** que cambian el estado global o el DOM (`set`, `lock`, `cycle`)
 - **Coordinación** entre partes distantes de la UI (p. ej. modal + bloqueo de scroll)
 
-| Package | Store name | Purpose |
-|---------|------------|---------|
+| Package | Store name | Propósito |
+|---------|------------|-----------|
 | `@ailuracode/alpine-theme` | `$store.theme` | Preferencia de tema del usuario + persistencia |
 | `@ailuracode/alpine-screen` | `$store.device` | Breakpoints y ancho del viewport |
 | `@ailuracode/alpine-scroll` | `$store.scroll` | Métricas de scroll + bloqueo del body |
 | `@ailuracode/alpine-geo` | `$store.geo` | Estado de geolocalización + seguimiento |
 | `@ailuracode/alpine-query` | `$store.query` | Caché de consultas async (core agnóstico al store) |
 | `@ailuracode/alpine-query-adapter-nanostores` | Plugin | **Recomendado** — Nanostores + `@nanostores/alpine` |
-| `@ailuracode/alpine-query-adapter-alpine` | Plugin | Native `Alpine.reactive` adapter |
-| `@ailuracode/alpine-query-adapter-zustand` | Plugin | Vanilla Zustand adapter |
+| `@ailuracode/alpine-query-adapter-alpine` | Plugin | Adaptador nativo `Alpine.reactive` |
+| `@ailuracode/alpine-query-adapter-zustand` | Plugin | Adaptador vanilla de Zustand |
 
 ### Uso en plantillas
 
@@ -55,7 +55,7 @@ Usa un **magic** cuando necesites:
 - **Utilidades puntuales** sin estado global de UI (copiar al portapapeles)
 - Sin coordinación de escritura entre componentes
 
-| Package | Magic | Purpose |
+| Package | Magic | Propósito |
 |---------|-------|---------|
 | `@ailuracode/alpine-network` | `$network` | `navigator.onLine` |
 | `@ailuracode/alpine-visibility` | `$visibility` | Estado de visibilidad de la pestaña |

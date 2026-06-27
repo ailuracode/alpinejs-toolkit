@@ -2,7 +2,7 @@
 
 Package: `@ailuracode/alpine-toast`
 
-Fila de toast in-app headless para Alpine.js. Registra o magic `$toast` e uma store reativa interna para integradores de UI.
+Fila de toasts in-app headless para Alpine.js (sem markup nem CSS incluídos). Registra o magic `$toast` e uma store reativa interna para integradores de UI.
 
 ## Agnóstico a framework CSS
 
@@ -65,10 +65,10 @@ await $toast.promise(() => save(), {
 | `$toast(title, options?)` | Enfileira um toast `default`. Retorna o id do toast. |
 | `$toast(payload)` | Enfileira com um objeto payload completo. |
 | `$toast.<variant>(title, options?)` | Um atalho por entrada em `variants`. |
-| `$toast.dismiss(id)` | Fecha um toast por id (retornado de `$toast()`). |
+| `$toast.dismiss(id)` | Dispensa um toast por id (retornado de `$toast()`). |
 | `$toast.update(id, patch)` | Atualiza o mesmo toast in-place (variant, title, content, action, …). |
-| `$toast.dismissAt(position)` | Fecha todos os toasts em uma pilha de posição. |
-| `$toast.dismissAll()` | Fecha todos os toasts em todas as pilhas. |
+| `$toast.dismissAt(position)` | Dispensa todos os toasts em uma pilha de posição. |
+| `$toast.dismissAll()` | Dispensa todos os toasts em todas as pilhas. |
 | `$toast.pushUnique(key, payload?)` | Dispensa toasts ativos com a mesma `key`, depois enfileira. |
 | `$toast.fromPayload(payload)` | Enfileira a partir de um payload simples (eventos, flash Laravel, etc.). |
 | `$toast.promise(factoryOrPromise, messages?)` | `loading` → `success` / `error` no mesmo toast. |
@@ -169,17 +169,17 @@ O plugin armazena o id da position em cada toast. Renderize uma pilha por positi
 | Store API | Descrição |
 |-----------|-------------|
 | `stackPositions` | Todas as chaves de pilha (`defaultPosition` + `positions`) |
-| `itemsAt(position)` | Toasts nessa pilha, mais recentes primeiro (inclui itens em saída `removed`) |
-| `timedItemsAt(position)` | Pilha com auto-dismiss — mesma ordem, inclui itens em saída |
-| `persistentItemsAt(position)` | Pilha persistente (`duration: false`) — inclui itens em saída |
+| `itemsAt(position)` | Toasts nessa pilha, mais recentes primeiro (inclui itens com estado `removed`) |
+| `timedItemsAt(position)` | Pilha temporizada com auto-dismiss — mesma ordem, inclui itens com estado `removed` |
+| `persistentItemsAt(position)` | Pilha persistente (`duration: false`) — inclui itens com estado `removed` |
 | `activeTimedItemsAt(position)` | Pilha temporizada sem itens `removed` — preferida para `x-for` simples |
 | `activePersistentItemsAt(position)` | Pilha persistente sem itens `removed` |
 | `isVisibleAt(position, index)` | Apenas pilha temporizada — peek/limita visibilidade (`maxVisible`) |
 | `pushUnique(key, payload?)` | Igual a `$toast.pushUnique` |
 | `destroy()` | Limpa timers — chame ao desmontar o plugin |
-| `dismiss(id)` | Fecha um toast (igual a `$toast.dismiss`) |
-| `dismissAt(position)` | Fecha uma position inteira (temporizada + persistente) |
-| `dismissAll()` | Fecha todas as pilhas |
+| `dismiss(id)` | Dispensa um toast (igual a `$toast.dismiss`) |
+| `dismissAt(position)` | Dispensa uma posição inteira (temporizada + persistente) |
+| `dismissAll()` | Dispensa todas as pilhas |
 
 ## Fluxo promise
 
@@ -241,7 +241,7 @@ Cada **position** tem duas pilhas independentes:
 | `maxToasts` | `5` | Máximo de toasts ativos **por pilha por position**. `0` = ilimitado. |
 | `maxVisible` | `maxToasts` | Máximo de toasts temporizados exibidos de uma vez por position (`isVisibleAt`). |
 
-Use `activeTimedItemsAt` / `activePersistentItemsAt` quando seu renderer não precisa de itens em saída (`removed`). Mantenha `timedItemsAt` / `persistentItemsAt` quando animar dismiss (estilo Sonner).
+Use `activeTimedItemsAt` / `activePersistentItemsAt` quando seu renderer não precisa de itens com estado `removed`. Mantenha `timedItemsAt` / `persistentItemsAt` quando animar dismiss (estilo Sonner).
 
 ## Eventos window
 

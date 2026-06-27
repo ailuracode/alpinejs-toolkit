@@ -51,7 +51,10 @@
       "description": "Estado de paneles laterales con $store.sidebar."
     },
     "theme": { "title": "Theme", "description": "Modos claro, oscuro y sistema con $store.theme." },
-    "toast": { "title": "Toast", "description": "Cola de toasts headless con el magic $toast." },
+    "toast": {
+      "title": "Toast",
+      "description": "Cola de toasts in-app headless con el magic $toast (sin markup ni CSS incluidos)."
+    },
     "toggle": {
       "title": "Toggle",
       "description": "Alternar valores booleanos con el magic $toggle."
@@ -117,7 +120,10 @@
       "description": "Estado de painéis laterais com $store.sidebar."
     },
     "theme": { "title": "Theme", "description": "Modos claro, escuro e sistema com $store.theme." },
-    "toast": { "title": "Toast", "description": "Fila de toasts headless com o magic $toast." },
+    "toast": {
+      "title": "Toast",
+      "description": "Fila de toasts in-app headless com o magic $toast (sem markup nem CSS incluídos)."
+    },
     "toggle": {
       "title": "Toggle",
       "description": "Alternar valores booleanos com o magic $toggle."
