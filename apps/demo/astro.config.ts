@@ -54,6 +54,7 @@ const sidebar = [
 
 // https://astro.build/config
 export default defineConfig({
+  site: "https://alpine-demo-ten.vercel.app",
   integrations: [
     starlight({
       title: {
