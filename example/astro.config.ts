@@ -23,11 +23,6 @@ const sidebar = [
         link: "/getting-started/",
       },
       {
-        label: "Contributing",
-        translations: { es: "Contribuir", pt: "Contribuir" },
-        link: "/contributing/",
-      },
-      {
         label: "Core",
         translations: { es: "Core", pt: "Core" },
         link: "/core/",

@@ -97,7 +97,6 @@ See [AGENTS.md](./AGENTS.md) for the full checklist.
 - [Attention](./docs/attention.md)
 - [Query](./docs/query.md)
 - [Query devtools](./docs/query-devtools.md)
-- [Contributing](./docs/contributing.md)
 - [AGENTS.md](./AGENTS.md) — guide for AI agents and maintainers
 
 ## Development

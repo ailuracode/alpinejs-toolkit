@@ -11,14 +11,7 @@ const pluginLabels = JSON.parse(
 );
 
 /** Docs that stay at the content root (guides), not under plugins/. */
-const GUIDE_SLUGS = new Set([
-  "index",
-  "getting-started",
-  "contributing",
-  "core",
-  "query",
-  "query-devtools",
-]);
+const GUIDE_SLUGS = new Set(["index", "getting-started", "core", "query", "query-devtools"]);
 
 const LOCALES = [
   { id: "root", docsDir: repoDocs, contentDir: contentDocs },

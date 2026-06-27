@@ -1,4 +1,7 @@
-# Contributing
+---
+title: "Contributing"
+description: "packages/"
+---
 
 ## Repository structure
 

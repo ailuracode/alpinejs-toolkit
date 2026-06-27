@@ -211,5 +211,4 @@ Also update the package table in this file and root `README.md`.
 
 ## References
 
-- [Contributing](docs/contributing.md)
 - [Changesets](https://github.com/changesets/changesets)
