@@ -70,6 +70,7 @@ Start here for most Alpine apps.
 | [`@ailuracode/alpine-screen`](./packages/screen/README.md) | `$store.device` | Responsive breakpoints |
 | [`@ailuracode/alpine-scroll`](./packages/scroll/README.md) | `$store.scroll` | Scroll tracking and body lock |
 | [`@ailuracode/alpine-sidebar`](./packages/sidebar/README.md) | `$store.sidebar` | Sidebar / drawer shell state |
+| [`@ailuracode/alpine-lang`](./packages/lang/README.md) | `$store.lang` | Browser-language detection and reactive current-language store |
 | [`@ailuracode/alpine-toast`](./packages/toast/README.md) | `$toast` | Headless toast queue; `fromPayload` for plain objects |
 
 ### Extended
@@ -124,7 +125,7 @@ See [AGENTS.md](./AGENTS.md) for the full checklist when adding a plugin.
 
 - [Getting started](./docs/getting-started.md) — lazy init, essentials, HTML usage
 - [Core](./docs/core.md) — plugin registry
-- **Essentials** — [theme](./docs/plugins/theme.md), [screen](./docs/plugins/screen.md), [scroll](./docs/plugins/scroll.md), [sidebar](./docs/plugins/sidebar.md), [toast](./docs/plugins/toast.md)
+- **Essentials** — [theme](./docs/plugins/theme.md), [screen](./docs/plugins/screen.md), [scroll](./docs/plugins/scroll.md), [sidebar](./docs/plugins/sidebar.md), [lang](./docs/plugins/lang.md), [toast](./docs/plugins/toast.md)
 - [Query](./docs/query.md) · [Query devtools](./docs/query-devtools.md)
 - [AGENTS.md](./AGENTS.md) — guide for AI agents and maintainers
 

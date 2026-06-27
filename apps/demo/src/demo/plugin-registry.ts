@@ -218,6 +218,16 @@ export function registerDemoPlugins(): void {
   );
 
   registerPlugin(
+    "lang",
+    lazyPlugin({
+      kind: "both",
+      stores: ["lang"],
+      magics: ["lang"],
+      import: () => import("@ailuracode/alpine-lang"),
+    })
+  );
+
+  registerPlugin(
     "notify",
     lazyPlugin({
       kind: "magic",

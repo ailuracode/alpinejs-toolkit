@@ -208,6 +208,16 @@ export const PLUGIN_NAV_GROUPS: PluginNavGroup[] = [
           "Geolocation coordinates, accuracy, and permission state with watch/start/stop actions.",
       },
       {
+        id: "lang",
+        title: "Lang",
+        package: "@ailuracode/alpine-lang",
+        api: "$store.lang",
+        kind: "store",
+        tier: "essential",
+        description:
+          "Detect the browser language, query and change the current application language. Pairs with any i18n library — does not translate content.",
+      },
+      {
         id: "calendar",
         title: "Calendar",
         package: "@ailuracode/alpine-calendar",

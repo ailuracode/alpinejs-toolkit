@@ -126,6 +126,7 @@ export default defineConfig({
         "@ailuracode/alpine-export": pkg("export"),
         "@ailuracode/alpine-geo": pkg("geo"),
         "@ailuracode/alpine-json-api": pkg("json-api"),
+        "@ailuracode/alpine-lang": pkg("lang"),
         "@ailuracode/alpine-network": pkg("network"),
         "@ailuracode/alpine-notify": pkg("notify"),
         "@ailuracode/alpine-platform": pkg("platform"),

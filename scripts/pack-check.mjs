@@ -14,6 +14,7 @@ const workspaces = [
   "@ailuracode/alpine-geo",
   "@ailuracode/alpine-visibility",
   "@ailuracode/alpine-battery",
+  "@ailuracode/alpine-lang",
 ];
 
 for (const workspace of workspaces) {

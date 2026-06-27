@@ -25,6 +25,7 @@
     "@ailuracode/alpine-export": "workspace:*",
     "@ailuracode/alpine-geo": "workspace:*",
     "@ailuracode/alpine-json-api": "workspace:*",
+    "@ailuracode/alpine-lang": "workspace:*",
     "@ailuracode/alpine-network": "workspace:*",
     "@ailuracode/alpine-notify": "workspace:*",
     "@ailuracode/alpine-platform": "workspace:*",

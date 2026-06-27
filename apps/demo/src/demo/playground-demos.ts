@@ -6,6 +6,7 @@ import ClipboardDemo from "../components/demos/ClipboardDemo.astro";
 import ExportDemo from "../components/demos/ExportDemo.astro";
 import GeoDemo from "../components/demos/GeoDemo.astro";
 import JsonApiDemo from "../components/demos/JsonApiDemo.astro";
+import LangDemo from "../components/demos/LangDemo.astro";
 import NetworkDemo from "../components/demos/NetworkDemo.astro";
 import NotifyDemo from "../components/demos/NotifyDemo.astro";
 import PlatformDemo from "../components/demos/PlatformDemo.astro";
@@ -27,6 +28,7 @@ export const PLAYGROUND_DEMOS: Record<string, AstroComponentFactory> = {
   screen: ScreenDemo,
   scroll: ScrollDemo,
   geo: GeoDemo,
+  lang: LangDemo,
   network: NetworkDemo,
   visibility: VisibilityDemo,
   battery: BatteryDemo,

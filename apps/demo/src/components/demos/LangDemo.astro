@@ -1,0 +1,54 @@
+---
+import { segmentButtonActiveClass } from "../../lib/button-styles";
+import { getPluginNavItem } from "../../plugin-nav";
+import DemoButton from "../astro/DemoButton.astro";
+import DemoSection from "../DemoSection.astro";
+
+const plugin = getPluginNavItem("lang")!;
+
+const langBtnActive = segmentButtonActiveClass;
+---
+
+<DemoSection id={plugin.id} title={plugin.title} api={plugin.api} description={plugin.description}>
+	<ul class="list-disc list-inside space-y-1 text-sm">
+		<li>current: <strong x-text="$store.lang.current"></strong></li>
+		<li>base: <strong x-text="$store.lang.base"></strong></li>
+		<li>region: <strong x-text="$store.lang.region ?? 'null'"></strong></li>
+		<li>fallback: <strong x-text="$store.lang.fallback"></strong></li>
+		<li>isDetected: <strong x-text="$store.lang.isDetected"></strong></li>
+		<li>
+			languages:
+			<strong x-text="$store.lang.languages.join(', ') || '—'"></strong>
+		</li>
+	</ul>
+
+	<div class="flex flex-wrap gap-2 mt-3">
+		<DemoButton class={langBtnActive} x-bind:data-active="$store.lang.is('es') ? 'true' : null" @click="$store.lang.set('es')">Español</DemoButton>
+		<DemoButton class={langBtnActive} x-bind:data-active="$store.lang.is('en') ? 'true' : null" @click="$store.lang.set('en')">English</DemoButton>
+		<DemoButton class={langBtnActive} x-bind:data-active="$store.lang.is('fr') ? 'true' : null" @click="$store.lang.set('fr')">Français</DemoButton>
+		<DemoButton class={langBtnActive} x-bind:data-active="$store.lang.is('pt-br') ? 'true' : null" @click="$store.lang.set('pt-BR')">Português (BR)</DemoButton>
+		<DemoButton @click="$store.lang.reset()">reset()</DemoButton>
+	</div>
+
+	<div class="rounded-md border p-3 mt-3 space-y-1">
+		<p class="text-xs uppercase tracking-wide text-muted-foreground">Reactive translations</p>
+		<p x-show="$store.lang.is('es')" x-cloak>Hola mundo</p>
+		<p x-show="$store.lang.is('en')" x-cloak>Hello world</p>
+		<p x-show="$store.lang.is('fr')" x-cloak>Bonjour le monde</p>
+		<p x-show="$store.lang.is('pt')" x-cloak>Olá mundo</p>
+	</div>
+
+	<div class="rounded-md border p-3 mt-3 space-y-1 text-sm">
+		<p class="text-xs uppercase tracking-wide text-muted-foreground">is() / includes()</p>
+		<li>is('es') → <strong x-text="$store.lang.is('es')"></strong></li>
+		<li>is('es-EC') → <strong x-text="$store.lang.is('es-EC')"></strong></li>
+		<li>is('fr') → <strong x-text="$store.lang.is('fr')"></strong></li>
+		<li>includes('es') → <strong x-text="$store.lang.includes('es')"></strong></li>
+		<li>includes('en') → <strong x-text="$store.lang.includes('en')"></strong></li>
+		<li>includes('fr') → <strong x-text="$store.lang.includes('fr')"></strong></li>
+	</div>
+
+	<p class="text-xs text-muted-foreground mt-3">
+		Package: <code>{plugin.package}</code> — does not translate content; pair with your i18n library.
+	</p>
+</DemoSection>
