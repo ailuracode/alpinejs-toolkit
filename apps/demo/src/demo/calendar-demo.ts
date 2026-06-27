@@ -1,7 +1,7 @@
 import type { CalendarInstance, CalendarMagic, CalendarMode } from "@ailuracode/alpine-calendar";
-import type { AlpineInstance } from "../types/alpine.js";
 import { addMonths } from "date-fns";
 import { enUS, es } from "date-fns/locale";
+import type { AlpineInstance } from "../types/alpine.js";
 
 type CalendarDemoData = {
   cal: CalendarInstance | null;

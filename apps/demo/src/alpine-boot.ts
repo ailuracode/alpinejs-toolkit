@@ -1,5 +1,5 @@
-import alpine from "alpinejs";
 import { initPlugins } from "@ailuracode/alpine-core";
+import alpine from "alpinejs";
 import { registerDemoPlugins, setupDemoExtensions } from "./entrypoint";
 
 export async function startAlpineDemo(): Promise<void> {
