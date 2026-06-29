@@ -1,4 +1,6 @@
 import type AlpineType from "alpinejs";
+
+export type IdleUserState = "active" | "idle";
 export type IdleScreenState = "locked" | "unlocked";
 
 export interface WakeLockSentinelLike {
@@ -457,13 +459,4 @@ function registerIdleMagic(Alpine: AlpineType.Alpine): void {
 export default function attentionPlugin(Alpine: AlpineType.Alpine): void {
   registerWakeLockMagic(Alpine);
   registerIdleMagic(Alpine);
-}
-
-declare global {
-  namespace Alpine {
-    interface Magics<T> {
-      $wakelock: WakeLockMagic;
-      $idle: IdleMagic;
-    }
-  }
 }
