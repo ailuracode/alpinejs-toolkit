@@ -34,10 +34,18 @@ export interface HybridPluginDefinition {
   readonly plugin: PluginLoader;
 }
 
+/** Plugin that registers one or more Alpine directives (`x-child`, …). */
+export interface DirectivePluginDefinition {
+  readonly kind: "directive";
+  readonly directives: readonly string[];
+  readonly plugin: PluginLoader;
+}
+
 export type PluginDefinition =
   | MagicPluginDefinition
   | StorePluginDefinition
-  | HybridPluginDefinition;
+  | HybridPluginDefinition
+  | DirectivePluginDefinition;
 
 export interface RegisteredPlugin {
   readonly name: string;

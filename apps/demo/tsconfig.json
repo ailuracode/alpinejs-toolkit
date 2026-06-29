@@ -12,6 +12,7 @@
       "@ailuracode/alpine-query-kit": ["../../packages/query-kit/src/index.ts"],
       "@ailuracode/alpine-attention": ["../../packages/attention/src/index.ts"],
       "@ailuracode/alpine-calendar": ["../../packages/calendar/src/index.ts"],
+      "@ailuracode/alpine-child": ["../../packages/child/src/index.ts"],
       "@ailuracode/alpine-core": ["../../packages/core/src/index.ts"],
       "@ailuracode/alpine-toast": ["../../packages/toast/src/index.ts"],
       "@ailuracode/alpine-geo": ["../../packages/geo/src/index.ts"],

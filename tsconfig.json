@@ -13,6 +13,7 @@
       "@ailuracode/alpine-core": ["./packages/core/src/index.ts"],
       "@ailuracode/alpine-attention": ["./packages/attention/src/index.ts"],
       "@ailuracode/alpine-calendar": ["./packages/calendar/src/index.ts"],
+      "@ailuracode/alpine-child": ["./packages/child/src/index.ts"],
       "@ailuracode/alpine-env": ["./packages/env/src/index.ts"],
       "@ailuracode/alpine-transfer": ["./packages/transfer/src/index.ts"],
       "@ailuracode/alpine-toast": ["./packages/toast/src/index.ts"],

@@ -19,6 +19,7 @@ Alpine.js plugin monorepo by **ailuracode**. Nineteen independent npm packages u
 | `@ailuracode/alpine-toast` | Magic | `$toast` — headless queue (no markup/CSS) |
 | `@ailuracode/alpine-calendar` | Magic | `$calendar` |
 | `@ailuracode/alpine-toggle` | Magic | `$toggle` |
+| `@ailuracode/alpine-child` | Directive | `x-child` |
 | `@ailuracode/alpine-notify` | Magic | `$notify` |
 | `@ailuracode/alpine-geo` | Store | `$store.geo` |
 | `@ailuracode/alpine-attention` | Magic | `$wakelock`, `$idle` |

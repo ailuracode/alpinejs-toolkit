@@ -1,5 +1,6 @@
 import { resolvePluginLoader } from "./loader.js";
 import type {
+  DirectivePluginDefinition,
   HybridPluginDefinition,
   MagicPluginDefinition,
   PluginLoader,
@@ -26,6 +27,18 @@ export function defineStorePlugin(
   return {
     kind: "store",
     stores,
+    plugin,
+  };
+}
+
+/** Creates a directive plugin definition. */
+export function defineDirectivePlugin(
+  directives: readonly string[],
+  plugin: PluginLoader
+): DirectivePluginDefinition {
+  return {
+    kind: "directive",
+    directives,
     plugin,
   };
 }
@@ -64,12 +77,22 @@ export function lazyPlugin(
     import: () => Promise<LazyPluginModule>;
   }
 ): HybridPluginDefinition;
+export function lazyPlugin(
+  definition: Omit<DirectivePluginDefinition, "plugin"> & {
+    import: () => Promise<LazyPluginModule>;
+  }
+): DirectivePluginDefinition;
 export function lazyPlugin(definition: {
-  kind: "magic" | "store" | "both";
+  kind: "magic" | "store" | "both" | "directive";
   magics?: readonly string[];
   stores?: readonly string[];
+  directives?: readonly string[];
   import: () => Promise<LazyPluginModule>;
-}): MagicPluginDefinition | StorePluginDefinition | HybridPluginDefinition {
+}):
+  | MagicPluginDefinition
+  | StorePluginDefinition
+  | HybridPluginDefinition
+  | DirectivePluginDefinition {
   const { import: importModule, ...rest } = definition;
   const plugin = async () => {
     const module = await importModule();
@@ -87,5 +110,7 @@ export function lazyPlugin(definition: {
         stores: rest.stores,
         plugin,
       });
+    case "directive":
+      return defineDirectivePlugin(rest.directives ?? [], plugin);
   }
 }

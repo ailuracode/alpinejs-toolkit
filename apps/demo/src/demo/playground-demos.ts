@@ -1,6 +1,7 @@
 import type { AstroComponentFactory } from "astro/runtime/server/index.js";
 import AttentionDemo from "../components/demos/AttentionDemo.astro";
 import CalendarDemo from "../components/demos/CalendarDemo.astro";
+import ChildDemo from "../components/demos/ChildDemo.astro";
 import EnvDemo from "../components/demos/EnvDemo.astro";
 import GeoDemo from "../components/demos/GeoDemo.astro";
 import JsonApiDemo from "../components/demos/JsonApiDemo.astro";
@@ -25,6 +26,7 @@ export const PLAYGROUND_DEMOS: Record<string, AstroComponentFactory> = {
   geo: GeoDemo,
   lang: LangDemo,
   toggle: ToggleDemo,
+  child: ChildDemo,
   toast: ToastDemo,
   attention: AttentionDemo,
   notify: NotifyDemo,

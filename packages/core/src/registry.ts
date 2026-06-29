@@ -35,6 +35,12 @@ function assertValidDefinition(definition: PluginDefinition): void {
       }
       break;
     }
+    case "directive": {
+      if (definition.directives.length === 0) {
+        throw new Error(`Directive plugin must declare at least one directive name`);
+      }
+      break;
+    }
     default: {
       const unknownKind: never = definition;
       throw new Error(`Unknown plugin kind: ${String(unknownKind)}`);

@@ -12,7 +12,14 @@ interface Props {
 
 const { item } = Astro.props;
 
-const kindLabel = item.kind === "store" ? "Store" : item.kind === "magic" ? "Magic" : "Core";
+const kindLabel =
+  item.kind === "store"
+    ? "Store"
+    : item.kind === "magic"
+      ? "Magic"
+      : item.kind === "directive"
+        ? "Directive"
+        : "Core";
 ---
 
 <header class="mb-6 scroll-mt-20">

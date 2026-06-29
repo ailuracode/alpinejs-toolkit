@@ -4,6 +4,7 @@ import { markPluginInitialized, resolvePluginEntries } from "./registry.js";
 import type { PluginDefinition, RegisteredPlugin } from "./types.js";
 
 export {
+  defineDirectivePlugin,
   defineHybridPlugin,
   defineMagicPlugin,
   defineStorePlugin,
@@ -27,6 +28,7 @@ export type { TouchCapabilities } from "./touch-capabilities.js";
 export { readTouchCapabilities } from "./touch-capabilities.js";
 export type {
   AlpinePluginCallback,
+  DirectivePluginDefinition,
   HybridPluginDefinition,
   MagicPluginDefinition,
   PluginDefinition,

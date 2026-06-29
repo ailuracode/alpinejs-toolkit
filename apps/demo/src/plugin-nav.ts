@@ -1,4 +1,4 @@
-export type PluginKind = "store" | "magic" | "core";
+export type PluginKind = "store" | "magic" | "directive" | "core";
 
 export type PluginTier = "essential" | "extended" | "advanced";
 
@@ -134,6 +134,16 @@ export const PLUGIN_NAV_GROUPS: PluginNavGroup[] = [
         tier: "extended",
         description:
           "Binary and ternary toggle state factories for segmented controls and filters.",
+      },
+      {
+        id: "child",
+        title: "Child",
+        package: "@ailuracode/alpine-child",
+        api: "x-child",
+        kind: "directive",
+        tier: "extended",
+        description:
+          "asChild-style directive that merges wrapper attributes onto the first child and removes the wrapper.",
       },
     ],
   },

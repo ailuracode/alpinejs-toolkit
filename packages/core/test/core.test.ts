@@ -3,6 +3,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   type AlpinePluginCallback,
   createAlpinePlugin,
+  defineDirectivePlugin,
   defineHybridPlugin,
   defineMagicPlugin,
   defineStorePlugin,
@@ -88,6 +89,10 @@ describe("@ailuracode/alpine-core", () => {
           })
         );
       }).toThrow("Hybrid plugin must declare at least one magic or store name");
+
+      expect(() => {
+        registerPlugin("invalid", defineDirectivePlugin([], vi.fn()));
+      }).toThrow("Directive plugin must declare at least one directive name");
     });
   });
 

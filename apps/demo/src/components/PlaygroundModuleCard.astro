@@ -7,7 +7,14 @@ interface Props {
 }
 
 const { item } = Astro.props;
-const kindLabel = item.kind === "store" ? "Store" : item.kind === "magic" ? "Magic" : "Core";
+const kindLabel =
+  item.kind === "store"
+    ? "Store"
+    : item.kind === "magic"
+      ? "Magic"
+      : item.kind === "directive"
+        ? "Directive"
+        : "Core";
 ---
 
 <article
