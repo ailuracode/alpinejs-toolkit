@@ -1,90 +1,77 @@
 ---
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { getPluginsByTier, PLUGIN_NAV_GROUPS, playgroundPath } from "../plugin-nav";
-import Badge from "./astro/Badge.astro";
-import DemoSection from "./DemoSection.astro";
+import { getPluginsByTier, PLUGIN_NAV_GROUPS, PLUGIN_NAV_ITEMS } from "../plugin-nav";
+import PlaygroundModuleCard from "./PlaygroundModuleCard.astro";
 
 const essentialItems = getPluginsByTier("essential");
 const extendedGroups = PLUGIN_NAV_GROUPS.filter((group) => group.id !== "essentials");
-const extendedCount = extendedGroups.reduce((count, group) => count + group.items.length, 0);
+const moduleCount = PLUGIN_NAV_ITEMS.length;
 ---
 
-<DemoSection id="overview" title="Alpine toolkit" api="@ailuracode/alpine-core">
-	<div class="flex flex-col gap-6">
-		<p class="text-sm leading-relaxed text-muted-foreground text-pretty">
-			Modular plugins for <strong>Alpine.js</strong> — lazy init via
-			<code class="rounded bg-muted px-1 py-0.5 font-mono text-xs text-foreground">@ailuracode/alpine-core</code>,
-			headless stores and magics, TypeScript globals. Start with <strong>{essentialItems.length} essentials</strong>,
-			then add from {extendedCount} extended and advanced modules.
-		</p>
-
-		<Card size="sm" class="gap-4 border-primary/30 bg-primary/5">
-			<CardHeader className="gap-1.5 pb-0">
-				<CardTitle>Essentials</CardTitle>
-				<CardDescription>Recommended starting point for most apps</CardDescription>
-			</CardHeader>
-			<CardContent className="pt-3">
-				<ul class="space-y-1">
-				{
-					essentialItems.map((item) => (
-						<li>
-							<a
-								href={playgroundPath(item.id)}
-								class="group flex min-w-0 items-center justify-between gap-2 rounded-lg px-2 py-2 -mx-2 transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
-							>
-								<span class="truncate font-medium group-hover:text-primary">{item.title}</span>
-								<Badge variant="outline" class="shrink-0 font-mono text-[10px]">
-									{item.api}
-								</Badge>
-							</a>
-						</li>
-					))
-				}
-			</ul>
-			</CardContent>
-		</Card>
-
-		<div class="grid gap-4 sm:grid-cols-2">
-			{
-				extendedGroups.map((group) => (
-					<Card size="sm" class="gap-4">
-						<CardHeader className="gap-1.5 pb-0">
-							<CardTitle>{group.label}</CardTitle>
-							<CardDescription>
-								{group.items.length} {group.items.length === 1 ? "module" : "modules"}
-							</CardDescription>
-						</CardHeader>
-						<CardContent className="pt-3">
-							<ul class="space-y-1">
-							{group.items.map((item) => (
-								<li>
-									<a
-										href={playgroundPath(item.id)}
-										class="group flex min-w-0 items-center justify-between gap-2 rounded-lg px-2 py-2 -mx-2 transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
-									>
-										<span class="truncate font-medium group-hover:text-primary">{item.title}</span>
-										<Badge variant="outline" class="shrink-0 font-mono text-[10px]">
-											{item.api}
-										</Badge>
-									</a>
-								</li>
-							))}
-							</ul>
-						</CardContent>
-					</Card>
-				))
-			}
+<header class="mb-8 scroll-mt-20">
+	<p class="text-sm font-medium text-primary">Interactive demos</p>
+	<h1 class="mt-1 text-3xl font-semibold tracking-tight text-balance">Playground</h1>
+	<p class="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground text-pretty">
+		Explore <strong class="font-medium text-foreground">{moduleCount} Alpine.js plugins</strong> with live
+		examples. Each page loads one module — start with essentials, then try environment, data, and query
+		stacks.
+	</p>
+	<dl class="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
+		<div class="rounded-lg border border-border bg-muted/40 px-3 py-2">
+			<dt class="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">Modules</dt>
+			<dd class="mt-0.5 text-lg font-semibold tabular-nums">{moduleCount}</dd>
 		</div>
-
-		<div class="flex flex-wrap gap-2 pt-1">
-			<Badge variant="secondary">Lazy init</Badge>
-			<Badge variant="secondary">fromPayload</Badge>
-			<Badge variant="secondary">Headless</Badge>
-			<Badge variant="outline">TypeScript</Badge>
+		<div class="rounded-lg border border-border bg-muted/40 px-3 py-2">
+			<dt class="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">Essentials</dt>
+			<dd class="mt-0.5 text-lg font-semibold tabular-nums">{essentialItems.length}</dd>
 		</div>
+		<div class="rounded-lg border border-border bg-muted/40 px-3 py-2">
+			<dt class="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">Groups</dt>
+			<dd class="mt-0.5 text-lg font-semibold tabular-nums">{PLUGIN_NAV_GROUPS.length}</dd>
+		</div>
+		<div class="rounded-lg border border-border bg-muted/40 px-3 py-2">
+			<dt class="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">Stack</dt>
+			<dd class="mt-0.5 text-sm font-semibold leading-tight">Alpine · Astro</dd>
+		</div>
+	</dl>
+</header>
 
-		<p class="text-xs text-muted-foreground">
-		<a href="/getting-started/" class="font-medium text-primary underline-offset-4 hover:underline">Getting started</a>
+<section aria-labelledby="essentials-heading" class="mb-10">
+	<div class="mb-4 flex items-end justify-between gap-3">
+		<div>
+			<h2 id="essentials-heading" class="text-lg font-semibold text-balance">Essentials</h2>
+			<p class="text-sm text-muted-foreground">Recommended starting point for most apps</p>
+		</div>
+	</div>
+	<div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+		{essentialItems.map((item) => <PlaygroundModuleCard item={item} />)}
+	</div>
+</section>
+
+{
+	extendedGroups.map((group) => (
+		<section aria-labelledby={`group-${group.id}`} class="mb-10 last:mb-0">
+			<div class="mb-4">
+				<h2 id={`group-${group.id}`} class="text-lg font-semibold text-balance">
+					{group.label}
+				</h2>
+				<p class="text-sm text-muted-foreground">
+					{group.items.length} {group.items.length === 1 ? "module" : "modules"}
+				</p>
+			</div>
+			<div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+				{group.items.map((item) => (
+					<PlaygroundModuleCard item={item} />
+				))}
+			</div>
+		</section>
+	))
+}
+
+<footer class="mt-10 border-t border-border pt-6 text-xs text-muted-foreground">
+	<p>
+		<a href="/getting-started/" class="font-medium text-primary underline-offset-4 hover:underline">
+			Getting started
+		</a>
 		<span aria-hidden="true"> · </span>
 		<a href="/core/" class="font-medium text-primary underline-offset-4 hover:underline">Core registry</a>
 		<span aria-hidden="true"> · </span>
@@ -92,10 +79,10 @@ const extendedCount = extendedGroups.reduce((count, group) => count + group.item
 			href="https://github.com/ailuracode/alpinejs-toolkit"
 			target="_blank"
 			rel="noreferrer"
-			class="text-primary underline-offset-4 hover:underline"
+			class="font-medium text-primary underline-offset-4 hover:underline"
 		>
 			GitHub
+			<span class="sr-only"> (opens in new tab)</span>
 		</a>
-		</p>
-	</div>
-</DemoSection>
+	</p>
+</footer>

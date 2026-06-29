@@ -33,6 +33,13 @@ type IdleMagic = import("@ailuracode/alpine-attention").IdleMagic;
 type JsonApiMagic = import("@ailuracode/alpine-json-api").JsonApiClient;
 
 declare module "alpinejs" {
+  interface Alpine {
+    $persist<T>(value: T): {
+      as(key: string): T;
+      using(storage: Storage): { as(key: string): T };
+    };
+  }
+
   namespace Alpine {
     interface Stores {
       theme: ThemeStore;

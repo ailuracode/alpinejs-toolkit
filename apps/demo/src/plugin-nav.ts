@@ -218,6 +218,21 @@ export function getPluginNavItem(id: string): PluginNavItem | undefined {
   return PLUGIN_NAV_ITEMS.find((item) => item.id === id);
 }
 
+export function getAdjacentPlugins(id: string): {
+  prev?: PluginNavItem;
+  next?: PluginNavItem;
+} {
+  const index = PLUGIN_NAV_ITEMS.findIndex((item) => item.id === id);
+  if (index === -1) {
+    return {};
+  }
+
+  return {
+    prev: index > 0 ? PLUGIN_NAV_ITEMS[index - 1] : undefined,
+    next: index < PLUGIN_NAV_ITEMS.length - 1 ? PLUGIN_NAV_ITEMS[index + 1] : undefined,
+  };
+}
+
 export function playgroundPath(id: string): string {
   return `/playground/${id}/`;
 }

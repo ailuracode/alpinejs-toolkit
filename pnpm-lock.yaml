@@ -99,6 +99,9 @@ importers:
       '@ailuracode/alpine-transfer':
         specifier: workspace:*
         version: link:../../packages/transfer
+      '@alpinejs/persist':
+        specifier: ^3.15.12
+        version: 3.15.12
       '@astrojs/react':
         specifier: ^6.0.0
         version: 6.0.0(@types/node@26.0.0)(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(esbuild@0.28.1)(jiti@2.7.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
@@ -366,6 +369,9 @@ importers:
         version: 3.15.12
 
 packages:
+
+  '@alpinejs/persist@3.15.12':
+    resolution: {integrity: sha512-vzDRf/3r8B5ihHvLYUkkg+XbJz4nNst+5jR5BM4Uff3BhdRenJlXKFnd3kYbM2Z/KCU65zg5neqOVhbNpytZ9A==}
 
   '@astrojs/compiler-binding-darwin-arm64@0.2.2':
     resolution: {integrity: sha512-1WxpECx3izz5X4Ha3l6ex79HZlUHpKBTElGJsfOosnhVvXhccfcXAsBlrYPNmUOKJWiG7mcrje0ELSr1KPE69Q==}
@@ -4652,6 +4658,8 @@ packages:
     resolution: {integrity: sha512-bXE4cR/kVZhKZX/RjPEflHaKVhUVl85noU3v6b8apfQEc1x4A+zBxjZ4lN8LqGd6WZ3dl98pY4o717VFmoPp+A==}
 
 snapshots:
+
+  '@alpinejs/persist@3.15.12': {}
 
   '@astrojs/compiler-binding-darwin-arm64@0.2.2':
     optional: true

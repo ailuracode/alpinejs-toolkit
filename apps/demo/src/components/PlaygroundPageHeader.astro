@@ -3,6 +3,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { type PluginNavItem, pluginDocsPath } from "../plugin-nav";
 import Badge from "./astro/Badge.astro";
 import DemoButton from "./astro/DemoButton.astro";
+import DemoNavIcon from "./astro/DemoNavIcon.astro";
+import PlaygroundPluginPager from "./PlaygroundPluginPager.astro";
 
 interface Props {
   item: PluginNavItem;
@@ -17,31 +19,49 @@ const kindLabel = item.kind === "store" ? "Store" : item.kind === "magic" ? "Mag
 	<nav class="mb-3 text-sm text-muted-foreground" aria-label="Breadcrumb">
 		<ol class="flex flex-wrap items-center gap-1.5">
 			<li>
-				<a href="/playground/" class="hover:text-foreground transition-colors">Playground</a>
+				<a
+					href="/playground/"
+					class="rounded-sm transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
+				>
+					Playground
+				</a>
 			</li>
 			<li aria-hidden="true" class="text-border">/</li>
-			<li aria-current="page" class="text-foreground font-medium">{item.title}</li>
+			<li aria-current="page" class="font-medium text-foreground">{item.title}</li>
 		</ol>
 	</nav>
 
-	<Card size="sm">
+	<Card size="sm" class="overflow-hidden">
 		<CardContent class="pt-4">
-			<div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-				<div class="min-w-0 space-y-2">
-					<h1 class="text-2xl font-semibold tracking-tight text-balance">{item.title}</h1>
-					<p class="text-sm text-muted-foreground text-pretty">{item.description}</p>
-				</div>
-				<div class="flex flex-wrap gap-2 shrink-0">
-					<Badge variant="secondary">{kindLabel}</Badge>
-					<Badge variant="outline" class="font-mono text-[11px]">{item.api}</Badge>
+			<div class="flex flex-col gap-4 sm:flex-row sm:items-start">
+				<span
+					class="flex size-11 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary"
+					aria-hidden="true"
+				>
+					<DemoNavIcon id={item.id} class="size-5" />
+				</span>
+				<div class="min-w-0 flex-1 space-y-3">
+					<div class="space-y-2">
+						<h1 class="text-2xl font-semibold tracking-tight text-balance">{item.title}</h1>
+						<p class="text-sm text-muted-foreground text-pretty">{item.description}</p>
+					</div>
+					<div class="flex flex-wrap gap-2">
+						<Badge variant="secondary">{kindLabel}</Badge>
+						<Badge variant="outline" class="max-w-full truncate font-mono text-[11px]" translate="no">
+							{item.api}
+						</Badge>
+					</div>
+					<div class="flex flex-wrap items-center gap-3">
+						<DemoButton href={pluginDocsPath(item.id)} variant="default">
+							Read Documentation
+						</DemoButton>
+						<span class="truncate font-mono text-xs text-muted-foreground" translate="no">
+							{item.package}
+						</span>
+					</div>
 				</div>
 			</div>
-			<div class="mt-4 flex flex-wrap items-center gap-3">
-				<DemoButton href={pluginDocsPath(item.id)} variant="default">
-					Read Documentation
-				</DemoButton>
-				<span class="text-xs text-muted-foreground font-mono">{item.package}</span>
-			</div>
+			<PlaygroundPluginPager item={item} />
 		</CardContent>
 	</Card>
 </header>

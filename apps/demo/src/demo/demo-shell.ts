@@ -23,7 +23,7 @@ export function registerDemoShell(Alpine: AlpineInstance): void {
       exportedJson: null,
       exportedUrl: null,
       shared: null,
-      expanded: true,
+      expanded: Alpine.$persist(true).as("playground-sidebar-expanded"),
     })
   );
 }

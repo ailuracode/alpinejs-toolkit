@@ -13,6 +13,16 @@ const {
   title = "Alpine.js Toolkit · @ailuracode",
   description = "Interactive demo of @ailuracode/alpinejs-toolkit plugins for Alpine.js",
 } = Astro.props;
+
+const pathname = Astro.url.pathname;
+const isPlayground = pathname.startsWith("/playground");
+const navLinkClass = (active: boolean) =>
+  [
+    "rounded-lg px-2.5 py-1.5 text-sm transition-colors focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/50 touch-manipulation",
+    active
+      ? "bg-muted font-medium text-foreground"
+      : "text-muted-foreground hover:bg-muted hover:text-foreground",
+  ].join(" ");
 ---
 
 <!doctype html>
@@ -80,13 +90,15 @@ const {
 					<nav class="hidden items-center gap-1 sm:flex" aria-label="Site">
 						<a
 							href="/"
-							class="rounded-lg px-2.5 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
+							class={navLinkClass(!isPlayground)}
+							aria-current={!isPlayground ? "page" : undefined}
 						>
 							Docs
 						</a>
 						<a
 							href="/playground/"
-							class="rounded-lg px-2.5 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
+							class={navLinkClass(isPlayground)}
+							aria-current={isPlayground ? "page" : undefined}
 						>
 							Playground
 						</a>

@@ -1,0 +1,53 @@
+---
+import { getAdjacentPlugins, type PluginNavItem, playgroundPath } from "../plugin-nav";
+
+interface Props {
+  item: PluginNavItem;
+}
+
+const { item } = Astro.props;
+const { prev, next } = getAdjacentPlugins(item.id);
+
+const linkClass =
+  "inline-flex min-w-0 max-w-[48%] items-center gap-1.5 rounded-lg border border-border bg-card px-3 py-2 text-sm transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/50 touch-manipulation";
+---
+
+<nav
+	class="mt-6 flex items-stretch justify-between gap-3 border-t border-border pt-4"
+	aria-label="Plugin demos"
+>
+	{
+		prev ? (
+			<a href={playgroundPath(prev.id)} class={linkClass}>
+				<span aria-hidden="true" class="shrink-0 text-muted-foreground">
+					←
+				</span>
+				<span class="min-w-0 truncate">
+					<span class="block text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
+						Previous
+					</span>
+					<span class="block truncate font-medium">{prev.title}</span>
+				</span>
+			</a>
+		) : (
+			<span />
+		)
+	}
+	{
+		next ? (
+			<a href={playgroundPath(next.id)} class:list={[linkClass, "ml-auto text-right"]}>
+				<span class="min-w-0 truncate">
+					<span class="block text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
+						Next
+					</span>
+					<span class="block truncate font-medium">{next.title}</span>
+				</span>
+				<span aria-hidden="true" class="shrink-0 text-muted-foreground">
+					→
+				</span>
+			</a>
+		) : (
+			<span />
+		)
+	}
+</nav>

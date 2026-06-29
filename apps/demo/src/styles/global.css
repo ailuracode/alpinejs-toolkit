@@ -91,6 +91,10 @@
 		animation: none;
 		background: color-mix(in oklch, var(--foreground) 16%, transparent);
 	}
+
+	.battery-fill {
+		transition: none;
+	}
 }
 
 @theme inline {
@@ -137,6 +141,7 @@
 }
 
 :root {
+	color-scheme: light;
 	--background: oklch(1 0 0);
 	--foreground: oklch(0.145 0 0);
 	--card: oklch(1 0 0);
@@ -172,6 +177,7 @@
 }
 
 .dark {
+	color-scheme: dark;
 	--background: oklch(0.145 0 0);
 	--foreground: oklch(0.985 0 0);
 	--card: oklch(0.205 0 0);
