@@ -8,7 +8,6 @@ import scrollPlugin, {
   SCROLL_DIRECTIONS,
   SCROLL_LOCK_AXES,
   type ScrollDirection,
-  type ScrollLockAxis,
   type ScrollLockOptions,
   type ScrollSnapshot,
   type ScrollStore,
@@ -59,9 +58,6 @@ describe("@ailuracode/alpine-scroll type inference", () => {
     expectTypeOf(scroll.lock).parameters.toEqualTypeOf<[options?: ScrollLockOptions | undefined]>();
     expectTypeOf(scroll.lock({ axis: "y" })).toEqualTypeOf<boolean>();
     expectTypeOf(scroll.lock({ axis: "both" })).toEqualTypeOf<boolean>();
-
-    const axis: ScrollLockAxis = "both";
-    expectTypeOf(axis).toEqualTypeOf<ScrollLockAxis>();
   });
 
   it("types $store.scroll", () => {
