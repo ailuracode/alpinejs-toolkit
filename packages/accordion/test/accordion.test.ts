@@ -29,6 +29,18 @@ describe("@ailuracode/alpine-accordion", () => {
     expect(store.isOpen("faq", "item-2")).toBe(true);
   });
 
+  it("mutates open state in place in single mode", () => {
+    const openRef = store.groups.faq.open;
+
+    store.open("faq", "item-1");
+    expect(store.groups.faq.open).toBe(openRef);
+
+    store.open("faq", "item-2");
+    expect(store.groups.faq.open).toBe(openRef);
+    expect(store.isOpen("faq", "item-1")).toBe(false);
+    expect(store.isOpen("faq", "item-2")).toBe(true);
+  });
+
   it("allows multiple open items in multiple mode", () => {
     store.register("multi", { mode: "multiple" });
     store.registerItem("multi", "a");

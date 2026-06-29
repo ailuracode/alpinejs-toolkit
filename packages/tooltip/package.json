@@ -1,7 +1,7 @@
 {
   "name": "@ailuracode/alpine-tooltip",
   "version": "0.0.0",
-  "description": "Alpine.js headless tooltip and popover positioning store",
+  "description": "Alpine.js headless tooltip store — open/close, delays, Escape dismiss",
   "type": "module",
   "license": "MIT",
   "author": "ailuracode",
@@ -32,17 +32,16 @@
   },
   "types": "./dist/global.d.ts",
   "peerDependencies": {
-    "alpinejs": "^3.0.0",
     "@types/alpinejs": "^3.13.11",
-    "@floating-ui/dom": "^1.0.0"
+    "alpinejs": "^3.0.0"
   },
   "peerDependenciesMeta": {
     "@types/alpinejs": {
       "optional": true
-    },
-    "@floating-ui/dom": {
-      "optional": true
     }
+  },
+  "devDependencies": {
+    "@alpinejs/anchor": "^3.15.12"
   },
   "scripts": {
     "build": "tsup src/index.ts --format esm --dts --clean --sourcemap --out-dir dist && cp src/global.d.ts dist/global.d.ts",

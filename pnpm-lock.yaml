@@ -123,6 +123,15 @@ importers:
       '@ailuracode/alpine-transfer':
         specifier: workspace:*
         version: link:../../packages/transfer
+      '@alpinejs/anchor':
+        specifier: ^3.15.12
+        version: 3.15.12
+      '@alpinejs/collapse':
+        specifier: ^3.15.12
+        version: 3.15.12
+      '@alpinejs/morph':
+        specifier: ^3.15.12
+        version: 3.15.12
       '@alpinejs/persist':
         specifier: ^3.15.12
         version: 3.15.12
@@ -243,6 +252,10 @@ importers:
         version: 3.13.11
       alpinejs:
         specifier: ^3.0.0
+        version: 3.15.12
+    devDependencies:
+      '@alpinejs/morph':
+        specifier: ^3.15.12
         version: 3.15.12
 
   packages/command:
@@ -454,14 +467,15 @@ importers:
 
   packages/tooltip:
     dependencies:
-      '@floating-ui/dom':
-        specifier: ^1.0.0
-        version: 1.7.6
       '@types/alpinejs':
         specifier: ^3.13.11
         version: 3.13.11
       alpinejs:
         specifier: ^3.0.0
+        version: 3.15.12
+    devDependencies:
+      '@alpinejs/anchor':
+        specifier: ^3.15.12
         version: 3.15.12
 
   packages/transfer:
@@ -474,6 +488,15 @@ importers:
         version: 3.15.12
 
 packages:
+
+  '@alpinejs/anchor@3.15.12':
+    resolution: {integrity: sha512-8G9QGvWo9N+J16dEgbaXYIlxe8lWo25uNHhoAONZSDj1av+1VfIgU9FB4q+h6me0D/+7NqY+dw9OlIAAHQv4wg==}
+
+  '@alpinejs/collapse@3.15.12':
+    resolution: {integrity: sha512-BKNANLtNXuWYOSAnajSKLPjTsmHRNrv0ALFTbpmqt2/klHFooPhctSwkhFVPQb7rZ8BjEKHmNaBwnSbgtpk6xg==}
+
+  '@alpinejs/morph@3.15.12':
+    resolution: {integrity: sha512-x/QZUsbE3uMAVVzsEjSZf2xbjgzIqUZ+HW9GUtePheyIrOgHlqZETXBq1DpXg6H8kA0099SyAI9YWnKFDS31cg==}
 
   '@alpinejs/persist@3.15.12':
     resolution: {integrity: sha512-vzDRf/3r8B5ihHvLYUkkg+XbJz4nNst+5jR5BM4Uff3BhdRenJlXKFnd3kYbM2Z/KCU65zg5neqOVhbNpytZ9A==}
@@ -4747,6 +4770,14 @@ packages:
     resolution: {integrity: sha512-bXE4cR/kVZhKZX/RjPEflHaKVhUVl85noU3v6b8apfQEc1x4A+zBxjZ4lN8LqGd6WZ3dl98pY4o717VFmoPp+A==}
 
 snapshots:
+
+  '@alpinejs/anchor@3.15.12':
+    dependencies:
+      '@floating-ui/dom': 1.7.6
+
+  '@alpinejs/collapse@3.15.12': {}
+
+  '@alpinejs/morph@3.15.12': {}
 
   '@alpinejs/persist@3.15.12': {}
 

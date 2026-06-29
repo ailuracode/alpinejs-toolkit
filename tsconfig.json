@@ -44,6 +44,7 @@
     "packages/*/src/**/*.d.ts",
     "packages/*/test/**/*.ts",
     "test/**/*.ts",
+    "test/**/*.d.ts",
     "vitest.config.ts"
   ]
 }

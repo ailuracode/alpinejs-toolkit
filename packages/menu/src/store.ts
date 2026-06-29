@@ -55,6 +55,10 @@ export type MenuStore = {
   destroy(): void;
 };
 
+type MenuStoreConfig = {
+  onLockChange?: (locked: boolean) => void;
+};
+
 function enabledItems(instance: MenuInstance): MenuItemState[] {
   return instance.items.filter((item) => !item.disabled);
 }
@@ -107,22 +111,7 @@ function focusActiveItem(container: HTMLElement | null): void {
   active?.focus();
 }
 
-function syncMenuPosition(instance: MenuInstance): void {
-  if (!(instance.container && instance.trigger)) {
-    return;
-  }
-
-  const rect = instance.trigger.getBoundingClientRect();
-  Object.assign(instance.container.style, {
-    position: "fixed",
-    top: `${rect.bottom + 8}px`,
-    left: `${rect.left}px`,
-    minWidth: `${Math.max(rect.width, 192)}px`,
-  });
-}
-
-function syncMenuLayout(instance: MenuInstance): void {
-  syncMenuPosition(instance);
+function focusActiveMenu(instance: MenuInstance): void {
   focusActiveItem(instance.container);
 }
 
@@ -185,7 +174,28 @@ function handleMenuKeydown(
 }
 
 /** Creates the headless menu store. */
-export function createMenuStore(): MenuStore {
+export function createMenuStore(config: MenuStoreConfig = {}): MenuStore {
+  let lockCount = 0;
+
+  function setLock(locked: boolean): void {
+    if (locked) {
+      if (lockCount === 0) {
+        config.onLockChange?.(true);
+      }
+      lockCount++;
+      return;
+    }
+
+    if (lockCount === 0) {
+      return;
+    }
+
+    lockCount--;
+    if (lockCount === 0) {
+      config.onLockChange?.(false);
+    }
+  }
+
   function getOrCreate(store: MenuStore, id: string): MenuInstance {
     store.instances[id] ??= createInstance();
     return store.instances[id];
@@ -243,8 +253,11 @@ export function createMenuStore(): MenuStore {
       if (!instance.activeItemId) {
         instance.activeItemId = firstItem(instance);
       }
+
+      setLock(true);
+
       instance.onOpen?.();
-      queueMicrotask(() => syncMenuLayout(instance));
+      queueMicrotask(() => focusActiveMenu(instance));
     },
 
     close(id) {
@@ -254,6 +267,9 @@ export function createMenuStore(): MenuStore {
       }
 
       instance.open = false;
+
+      setLock(false);
+
       instance.onClose?.();
     },
 
@@ -291,17 +307,13 @@ export function createMenuStore(): MenuStore {
       instance.container = container;
 
       if (instance.open) {
-        queueMicrotask(() => syncMenuLayout(instance));
+        queueMicrotask(() => focusActiveMenu(instance));
       }
     },
 
     bindTrigger(menuId, trigger) {
       const instance = getOrCreate(this, menuId);
       instance.trigger = trigger;
-
-      if (instance.open) {
-        queueMicrotask(() => syncMenuLayout(instance));
-      }
     },
 
     handleOutsideClick(menuId, event) {
@@ -347,7 +359,7 @@ export function createMenuStore(): MenuStore {
           this.selectItem.bind(this),
           this.close.bind(this)
         );
-        queueMicrotask(() => syncMenuLayout(instance));
+        queueMicrotask(() => focusActiveMenu(instance));
       }
     },
 
@@ -372,7 +384,11 @@ export function createMenuStore(): MenuStore {
     },
 
     destroy() {
-      this.instances = {};
+      for (const id of Object.keys(this.instances)) {
+        this.unregister(id);
+      }
+      lockCount = 0;
+      config.onLockChange?.(false);
     },
   };
 

@@ -23,7 +23,10 @@ Alpine.plugin(scroll());
 Alpine.start();
 ```
 
-Scroll lock applies inline styles on `html` and `body` (overflow hidden, fixed body). No CSS classes or framework styles are required.
+Scroll lock applies inline styles on `html` and `body`. No CSS classes or framework styles are required.
+
+- **`lock()` / `lock({ axis: 'y' })`** (default) — blocks vertical page scroll via `overflow-y: hidden`. Horizontal scroll stays available; unlock preserves the current horizontal offset.
+- **`lock({ axis: 'both' })`** — full page freeze with a fixed `body` (modals on pages with horizontal overflow). Saves and restores both axes.
 
 ### Optional lock callback
 
@@ -82,9 +85,9 @@ Store name: `$store.scroll`
 
 | Method | Description |
 |--------|-------------|
-| `lock()` | Lock body scroll (reference counted) |
+| `lock(options?)` | Lock page scroll. `options.axis`: `'y'` (default) or `'both'` |
 | `unlock()` | Release one lock |
-| `toggleLock()` | Toggle lock state |
+| `toggleLock(options?)` | Toggle lock state |
 | `isDirection(direction)` | Check current direction (`ScrollDirection`) |
 | `toTop(behavior?)` | Scroll to top (`behavior` default: `'smooth'`) |
 | `toBottom(behavior?)` | Scroll to bottom |
@@ -122,6 +125,14 @@ Store name: `$store.scroll`
     </div>
   </div>
 </div>
+```
+
+### Horizontal page overflow
+
+When the page scrolls horizontally (wide tables, carousels), freeze both axes:
+
+```html
+<button @click="$store.scroll.lock({ axis: 'both' })">Open overlay</button>
 ```
 
 ## Reference counting

@@ -63,11 +63,12 @@ $store.accordion.register("faq", { mode: "single" });
         x-text="id"
       ></button>
       <div
+        class="overflow-hidden"
         x-show="$store.accordion.isOpen('faq', id)"
-        x-transition
+        x-collapse
         x-bind="$store.accordion.panelProps('faq', id)"
       >
-        <p>Answer for <span x-text="id"></span></p>
+        <p class="px-4 py-3">Answer for <span x-text="id"></span></p>
       </div>
     </div>
   </template>
@@ -120,24 +121,36 @@ Read open ids reactively:
 <span x-text="$store.accordion.openIds('faq').join(', ')"></span>
 ```
 
-## Panel visibility
+## Panel animation
 
-Use `x-show="$store.accordion.isOpen(...)"` for panel visibility. `panelProps()` does not set `hidden` — that attribute does not react reliably when bound via a store helper.
+`@ailuracode/alpine-accordion` is headless — it does not animate panels. Use the official [`@alpinejs/collapse`](https://alpinejs.dev/plugins/collapse) plugin: `x-collapse` must sit on the **same element** as `x-show`.
 
-Optional transition:
+```bash
+npm install @alpinejs/collapse
+```
+
+```js
+import collapse from "@alpinejs/collapse";
+
+Alpine.plugin(collapse);
+```
 
 ```html
 <div
   x-show="$store.accordion.isOpen('faq', id)"
-  x-transition:enter="transition ease-out duration-200"
-  x-transition:enter-start="opacity-0 -translate-y-1"
-  x-transition:enter-end="opacity-100 translate-y-0"
-  x-transition:leave="transition ease-in duration-150"
-  x-transition:leave-start="opacity-100 translate-y-0"
-  x-transition:leave-end="opacity-0 -translate-y-1"
+  x-collapse
   x-bind="$store.accordion.panelProps('faq', id)"
+  class="overflow-hidden"
 >
+  <div class="px-4 py-3">Panel content</div>
+</div>
 ```
+
+Put padding on an **inner** wrapper — vertical padding on the same node as `x-collapse` prevents height from reaching `0` and the close animation can appear stuck.
+
+Optional modifiers: `x-collapse.duration.300ms`, `x-collapse.min.50px`. See the [Collapse plugin docs](https://alpinejs.dev/plugins/collapse).
+
+`panelProps()` does not set `hidden` — visibility is driven by `x-show` on the client.
 
 ## SSR
 

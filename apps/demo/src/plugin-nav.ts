@@ -64,16 +64,6 @@ export const PLUGIN_NAV_GROUPS: PluginNavGroup[] = [
         description:
           "Open, close, and toggle visibility for app shells. Visual width (rail, mini, expanded) is owned by the consumer via local Alpine state. Compose with scroll lock on overlay open. This demo app uses the sidebar you are navigating right now.",
       },
-      {
-        id: "toast",
-        title: "Toast",
-        package: "@ailuracode/alpine-toast",
-        api: "$toast",
-        kind: "magic",
-        tier: "essential",
-        description:
-          "Headless toast queue with timed and persistent stacks. Use fromPayload for plain event or server payloads. This demo renders Sonner-style UI in SonnerToasts.astro.",
-      },
     ],
   },
   {
@@ -143,7 +133,7 @@ export const PLUGIN_NAV_GROUPS: PluginNavGroup[] = [
         kind: "directive",
         tier: "extended",
         description:
-          "asChild-style directive that merges wrapper attributes onto the first child and removes the wrapper.",
+          "asChild-style directive — merges wrapper attributes onto the first child via Alpine.morph(). Requires @alpinejs/morph.",
       },
     ],
   },
@@ -179,7 +169,17 @@ export const PLUGIN_NAV_GROUPS: PluginNavGroup[] = [
         kind: "store",
         tier: "headless",
         description:
-          "Tooltip and popover positioning with hover/focus delays. Optional Floating UI for advanced placement.",
+          "Tooltip open/close state with hover/focus delays. Pair with @alpinejs/anchor for placement.",
+      },
+      {
+        id: "toast",
+        title: "Toast",
+        package: "@ailuracode/alpine-toast",
+        api: "$toast",
+        kind: "magic",
+        tier: "headless",
+        description:
+          "Headless toast queue with timed and persistent stacks. Use fromPayload for plain event or server payloads. This demo renders Sonner-style UI in SonnerToasts.astro.",
       },
       {
         id: "tabs",
@@ -199,7 +199,7 @@ export const PLUGIN_NAV_GROUPS: PluginNavGroup[] = [
         kind: "store",
         tier: "headless",
         description:
-          "Single or multi-open accordion state with keyboard focus and ARIA expanded/controls helpers.",
+          "Single or multi-open accordion state with keyboard focus and ARIA helpers. Pair with @alpinejs/collapse for panel animation.",
       },
       {
         id: "command",

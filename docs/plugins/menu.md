@@ -23,6 +23,23 @@ Alpine.plugin(menu());
 Alpine.start();
 ```
 
+Compose scroll locking with `@ailuracode/alpine-scroll` (always active while a menu is open):
+
+```js
+menu({
+  onLockChange(locked) {
+    locked ? Alpine.store("scroll").lock() : Alpine.store("scroll").unlock();
+  },
+});
+```
+
+Position with `@alpinejs/anchor` (recommended for teleported menus):
+
+```js
+Alpine.plugin(anchor);
+// x-anchor.bottom-start.fixed on the menu panel
+```
+
 ## Store API
 
 | Method | Description |
@@ -32,7 +49,7 @@ Alpine.start();
 | `activeItem(id)` | Currently focused item id |
 | `registerItem(menuId, itemId, options?)` | Register a menu item |
 | `bindMenu(menuId, element)` | Attach the menu root for roving focus |
-| `bindTrigger(menuId, element)` | Attach the trigger for fixed positioning |
+| `bindTrigger(menuId, element)` | Attach the trigger for outside-click detection |
 | `handleOutsideClick(menuId, event)` | Close when clicking outside trigger + menu |
 | `handleKeydown(menuId, event)` | Keyboard navigation |
 | `itemProps(menuId, itemId)` | `role`, `tabindex`, `aria-disabled` |
@@ -56,7 +73,7 @@ Alpine.start();
   @keydown.window="$store.menu.isOpen('user-menu') && $store.menu.handleKeydown('user-menu', $event)"
   @click.window="$store.menu.handleOutsideClick('user-menu', $event)"
 >
-  <div x-init="$store.menu.bindTrigger('user-menu', $el)">
+  <div x-ref="menuTrigger" x-init="$store.menu.bindTrigger('user-menu', $el)">
     <button @click="$store.menu.toggle('user-menu')" aria-haspopup="menu">Account</button>
   </div>
 
@@ -65,7 +82,8 @@ Alpine.start();
       x-bind="$store.menu.menuProps('user-menu')"
       x-init="$store.menu.bindMenu('user-menu', $el)"
       x-show="$store.menu.isOpen('user-menu')"
-      class="fixed z-50 min-w-48"
+      x-anchor.bottom-start.offset.8.fixed="$refs.menuTrigger"
+      class="z-50 min-w-48"
     >
     <template x-for="id in ['profile','settings','logout']" :key="id">
       <li>
@@ -99,3 +117,4 @@ Register items during `x-init` on the client. Control visibility with `x-show` (
 - Wire `@keydown.window` while the menu is open; `@keydown` on the panel alone misses keys when focus stays on the trigger
 - Use `<template x-teleport="body">` with `bindTrigger()` + `bindMenu()` when the menu sits inside `overflow-hidden` ancestors
 - Call `bindMenu()` on the menu root so arrow keys move roving focus to the active item
+- Position with `@alpinejs/anchor` — the store does not set `top` / `left`

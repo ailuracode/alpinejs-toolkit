@@ -10,6 +10,18 @@ Headless accessible menu store for Alpine.js — dropdowns, context menus, keybo
 npm install @ailuracode/alpine-menu alpinejs
 ```
 
+## Setup
+
+```js
+Alpine.plugin(
+  menu({
+    onLockChange(locked) {
+      // compose with $store.scroll.lock() / unlock()
+    },
+  })
+);
+```
+
 ## Store API
 
 ```js

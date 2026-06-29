@@ -1,6 +1,6 @@
 # @ailuracode/alpine-tooltip
 
-Headless tooltip and popover positioning store for Alpine.js. Basic placement built-in; optional `@floating-ui/dom` peer dependency for advanced positioning.
+Headless tooltip store for Alpine.js — open/close state, hover/focus delays, Escape dismiss. Pair with `@alpinejs/anchor` for placement.
 
 **[Full documentation →](../../docs/plugins/tooltip.md)**
 
@@ -8,6 +8,7 @@ Headless tooltip and popover positioning store for Alpine.js. Basic placement bu
 
 ```bash
 npm install @ailuracode/alpine-tooltip alpinejs
+npm install @alpinejs/anchor
 ```
 
 ## Store API
@@ -15,5 +16,8 @@ npm install @ailuracode/alpine-tooltip alpinejs
 ```js
 $store.tooltip.open("help");
 $store.tooltip.close("help");
-$store.tooltip.getPosition("help");
+$store.tooltip.isOpen("help");
+$store.tooltip.register("help", { openDelay: 150 });
 ```
+
+Position with `x-anchor.*.fixed` on the floating element.

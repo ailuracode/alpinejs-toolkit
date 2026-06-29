@@ -16,6 +16,7 @@ const plugin = getPluginNavItem("scroll")!;
 	</ul>
 	<div class="flex flex-wrap gap-2 mt-3">
 		<DemoButton @click="$store.scroll.lock()">lock()</DemoButton>
+		<DemoButton @click="$store.scroll.lock({ axis: 'both' })">lock(both)</DemoButton>
 		<DemoButton @click="$store.scroll.unlock()">unlock()</DemoButton>
 		<DemoButton @click="$store.scroll.toggleLock()">toggleLock()</DemoButton>
 		<DemoButton x-show="$store.scroll.showToTop" x-cloak @click="$store.scroll.toTop()">toTop()</DemoButton>

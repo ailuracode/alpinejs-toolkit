@@ -132,7 +132,12 @@ export function createAccordionStore(): AccordionStore {
       }
 
       if (group.mode === "single") {
-        group.open = { [itemId]: true };
+        for (const id of Object.keys(group.open)) {
+          if (group.open[id]) {
+            group.open[id] = false;
+          }
+        }
+        group.open[itemId] = true;
       } else {
         group.open[itemId] = true;
       }

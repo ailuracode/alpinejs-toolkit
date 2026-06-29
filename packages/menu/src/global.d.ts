@@ -28,9 +28,14 @@ export interface MenuStore {
   destroy(): void;
 }
 
-export function createMenuStore(): MenuStore;
+export interface MenuPluginOptions {
+  onLockChange?: (locked: boolean) => void;
+}
 
-export default function menuPlugin(): import("alpinejs").PluginCallback;
+export function menuOptions<const T extends MenuPluginOptions>(options: T): T;
+export function createMenuStore(config?: { onLockChange?: (locked: boolean) => void }): MenuStore;
+
+export default function menuPlugin(options?: MenuPluginOptions): import("alpinejs").PluginCallback;
 
 declare global {
   namespace Alpine {

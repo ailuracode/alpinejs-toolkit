@@ -10,18 +10,22 @@ Package: `@ailuracode/alpine-child`
 ## Install
 
 ```bash
-npm install @ailuracode/alpine-child alpinejs
+npm install @ailuracode/alpine-child @alpinejs/morph alpinejs
 ```
 
 ## Setup
 
 ```js
 import Alpine from "alpinejs";
+import morph from "@alpinejs/morph";
 import child from "@ailuracode/alpine-child";
 
+Alpine.plugin(morph);
 Alpine.plugin(child);
 Alpine.start();
 ```
+
+Register [`@alpinejs/morph`](https://alpinejs.dev/plugins/morph) **before** `x-child` — unwrapping uses `Alpine.morph()` to replace the wrapper while preserving Alpine state.
 
 ## Basic usage
 
@@ -76,11 +80,10 @@ Use `x-child` when building **headless Alpine primitives** or **Blade components
 
 ## How it works
 
-1. During `Alpine.initTree()`, the plugin intercepts elements with `x-child`.
+1. During `Alpine.initTree()`, the plugin intercepts elements with `x-child` and skips the wrapper.
 2. It locates the **first element child** (skips text and comments).
-3. Attributes are merged onto the child following the active mode.
-4. The wrapper is replaced by the child in the DOM.
-5. Alpine initializes the child so transferred directives bind correctly.
+3. After the current init pass completes, attributes are merged onto the child following the active mode.
+4. [`Alpine.morph()`](https://alpinejs.dev/plugins/morph) replaces the wrapper with the merged child, then `Alpine.initTree()` runs on the promoted node.
 
 ## Modifiers
 
@@ -152,6 +155,7 @@ The submit button keeps `type="submit"` while inheriting layout classes and `@cl
 
 ## Limitations
 
+- **Requires `@alpinejs/morph`** — register the Morph plugin before `x-child`.
 - **Single child** — only the first element child is promoted; additional element siblings are removed with the detached wrapper.
 - **No wrapper child** — logs a console warning and leaves markup unchanged.
 - **Static-friendly** — designed for Blade/SSR markup that includes the wrapper in HTML.

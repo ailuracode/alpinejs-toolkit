@@ -1,3 +1,4 @@
+import morph from "@alpinejs/morph";
 import Alpine from "alpinejs";
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import childPlugin, {
@@ -12,6 +13,8 @@ async function mount(html: string): Promise<void> {
   document.body.innerHTML = html;
 
   if (!alpineStarted) {
+    window.Alpine = Alpine;
+    Alpine.plugin(morph);
     Alpine.plugin(childPlugin);
     Alpine.start();
     alpineStarted = true;

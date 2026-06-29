@@ -31,6 +31,13 @@ type ShareMagic = import("@ailuracode/alpine-transfer").ShareMagic;
 type WakeLockMagic = import("@ailuracode/alpine-attention").WakeLockMagic;
 type IdleMagic = import("@ailuracode/alpine-attention").IdleMagic;
 type JsonApiMagic = import("@ailuracode/alpine-json-api").JsonApiClient;
+type AccordionStore = import("@ailuracode/alpine-accordion").AccordionStore;
+type CarouselStore = import("@ailuracode/alpine-carousel").CarouselStore;
+type CommandStore = import("@ailuracode/alpine-command").CommandStore;
+type DialogStore = import("@ailuracode/alpine-dialog").DialogStore;
+type MenuStore = import("@ailuracode/alpine-menu").MenuStore;
+type TabsStore = import("@ailuracode/alpine-tabs").TabsStore;
+type TooltipStore = import("@ailuracode/alpine-tooltip").TooltipStore;
 
 declare module "alpinejs" {
   interface Alpine {
@@ -49,6 +56,13 @@ declare module "alpinejs" {
       geo: GeoStore;
       query: QueryStore;
       toast: ToastStore;
+      accordion: AccordionStore;
+      carousel: CarouselStore;
+      command: CommandStore;
+      dialog: DialogStore;
+      menu: MenuStore;
+      tabs: TabsStore;
+      tooltip: TooltipStore;
     }
     interface Magics<T> {
       $theme: ThemeStore;
@@ -70,6 +84,13 @@ declare module "alpinejs" {
       $wakelock: WakeLockMagic;
       $idle: IdleMagic;
       $jsonapi: JsonApiMagic;
+      $accordion: AccordionStore;
+      $carousel: CarouselStore;
+      $command: CommandStore;
+      $dialog: DialogStore;
+      $menu: MenuStore;
+      $tabs: TabsStore;
+      $tooltip: TooltipStore;
     }
   }
 }

@@ -5,6 +5,8 @@ import DemoSection from "../DemoSection.astro";
 const plugin = getPluginNavItem("tooltip")!;
 const buttonClasses =
   "inline-flex min-w-28 items-center justify-center rounded-md border border-input bg-background px-3 py-2 text-sm font-medium hover:bg-accent focus:outline-none focus-visible:ring-2 focus-visible:ring-ring";
+const tooltipClasses =
+  "pointer-events-none z-[60] whitespace-nowrap rounded-md border bg-popover px-3 py-1.5 text-xs text-popover-foreground shadow-md";
 ---
 
 <DemoSection id={plugin.id} title={plugin.title} api={plugin.api} description={plugin.description}>
@@ -21,32 +23,25 @@ const buttonClasses =
 				{ id: 'tip-left', placement: 'left', label: 'Left', text: 'Left placement' },
 				{ id: 'tip-right', placement: 'right', label: 'Right', text: 'Right placement' },
 			],
-			bindDemoTooltips() {
-				this.demos.forEach((demo) => {
-					$store.tooltip.register(demo.id, {
-						placement: demo.placement,
-						openDelay: 80,
-						closeDelay: 80,
-					});
-				});
-				$nextTick(() => {
-					this.demos.forEach((demo) => {
-						const anchor = $el.querySelector(`[data-tooltip-anchor='${demo.id}']`);
-						const floating = document.querySelector(`[data-tooltip-floating='${demo.id}']`);
-						$store.tooltip.bindElements(demo.id, anchor, floating);
-					});
-				});
+			activeDemo: null,
+			activeTrigger: null,
+			showDemo(demo, trigger) {
+				this.activeDemo = demo;
+				this.activeTrigger = trigger;
+				$store.tooltip.showOnHover(demo.id);
+			},
+			hideDemo(demo) {
+				$store.tooltip.hideOnHover(demo.id);
 			},
 		}"
-		x-init="bindDemoTooltips()"
+		x-init="demos.forEach(d => $store.tooltip.register(d.id, { openDelay: 0, closeDelay: 0 }))"
 	>
 		<div>
 			<h3 class="text-sm font-medium mb-2">Placement variants</h3>
 			<p class="text-xs text-muted-foreground mb-4">
-				Hover or focus each trigger. Active position:
-				<strong
-					x-text="demos.find(d => $store.tooltip.isOpen(d.id))?.placement ?? '—'"
-				></strong>
+				Hover or focus each trigger. One teleported panel with <code>@alpinejs/anchor</code> — only the
+				active placement mounts an anchor. Active:
+				<strong x-text="activeDemo?.placement ?? '—'"></strong>
 			</p>
 
 			<div class="grid grid-cols-2 gap-4 sm:grid-cols-4">
@@ -55,12 +50,11 @@ const buttonClasses =
 						<button
 							type="button"
 							class={buttonClasses}
-							x-bind:data-tooltip-anchor="demo.id"
-							x-bind:aria-describedby="demo.id + '-tooltip'"
-							@mouseenter="$store.tooltip.showOnHover(demo.id)"
-							@mouseleave="$store.tooltip.hideOnHover(demo.id)"
-							@focus="$store.tooltip.showOnFocus(demo.id)"
-							@blur="$store.tooltip.hideOnFocus(demo.id)"
+							x-bind:aria-describedby="activeDemo?.id === demo.id ? 'tip-grid-tooltip' : null"
+							@mouseenter="showDemo(demo, $el)"
+							@mouseleave="hideDemo(demo)"
+							@focus="showDemo(demo, $el)"
+							@blur="hideDemo(demo)"
 							@keydown.escape="$store.tooltip.handleKeydown(demo.id, $event)"
 							x-text="demo.label"
 						></button>
@@ -68,30 +62,151 @@ const buttonClasses =
 					</div>
 				</template>
 			</div>
+
+			<template x-if="activeDemo?.placement === 'top'">
+				<template x-teleport="body">
+					<div
+						id="tip-grid-tooltip"
+						x-show="activeDemo && $store.tooltip.isOpen(activeDemo.id)"
+						x-anchor.top.fixed.noflip.offset.8="activeTrigger"
+						role="tooltip"
+						class={tooltipClasses}
+						x-text="activeDemo?.text"
+					></div>
+				</template>
+			</template>
+			<template x-if="activeDemo?.placement === 'top-start'">
+				<template x-teleport="body">
+					<div
+						id="tip-grid-tooltip"
+						x-show="activeDemo && $store.tooltip.isOpen(activeDemo.id)"
+						x-anchor.top-start.fixed.noflip.offset.8="activeTrigger"
+						role="tooltip"
+						class={tooltipClasses}
+						x-text="activeDemo?.text"
+					></div>
+				</template>
+			</template>
+			<template x-if="activeDemo?.placement === 'top-end'">
+				<template x-teleport="body">
+					<div
+						id="tip-grid-tooltip"
+						x-show="activeDemo && $store.tooltip.isOpen(activeDemo.id)"
+						x-anchor.top-end.fixed.noflip.offset.8="activeTrigger"
+						role="tooltip"
+						class={tooltipClasses}
+						x-text="activeDemo?.text"
+					></div>
+				</template>
+			</template>
+			<template x-if="activeDemo?.placement === 'bottom'">
+				<template x-teleport="body">
+					<div
+						id="tip-grid-tooltip"
+						x-show="activeDemo && $store.tooltip.isOpen(activeDemo.id)"
+						x-anchor.bottom.fixed.noflip.offset.8="activeTrigger"
+						role="tooltip"
+						class={tooltipClasses}
+						x-text="activeDemo?.text"
+					></div>
+				</template>
+			</template>
+			<template x-if="activeDemo?.placement === 'bottom-start'">
+				<template x-teleport="body">
+					<div
+						id="tip-grid-tooltip"
+						x-show="activeDemo && $store.tooltip.isOpen(activeDemo.id)"
+						x-anchor.bottom-start.fixed.noflip.offset.8="activeTrigger"
+						role="tooltip"
+						class={tooltipClasses}
+						x-text="activeDemo?.text"
+					></div>
+				</template>
+			</template>
+			<template x-if="activeDemo?.placement === 'bottom-end'">
+				<template x-teleport="body">
+					<div
+						id="tip-grid-tooltip"
+						x-show="activeDemo && $store.tooltip.isOpen(activeDemo.id)"
+						x-anchor.bottom-end.fixed.noflip.offset.8="activeTrigger"
+						role="tooltip"
+						class={tooltipClasses}
+						x-text="activeDemo?.text"
+					></div>
+				</template>
+			</template>
+			<template x-if="activeDemo?.placement === 'left'">
+				<template x-teleport="body">
+					<div
+						id="tip-grid-tooltip"
+						x-show="activeDemo && $store.tooltip.isOpen(activeDemo.id)"
+						x-anchor.left.fixed.noflip.offset.8="activeTrigger"
+						role="tooltip"
+						class={tooltipClasses}
+						x-text="activeDemo?.text"
+					></div>
+				</template>
+			</template>
+			<template x-if="activeDemo?.placement === 'right'">
+				<template x-teleport="body">
+					<div
+						id="tip-grid-tooltip"
+						x-show="activeDemo && $store.tooltip.isOpen(activeDemo.id)"
+						x-anchor.right.fixed.noflip.offset.8="activeTrigger"
+						role="tooltip"
+						class={tooltipClasses}
+						x-text="activeDemo?.text"
+					></div>
+				</template>
+			</template>
 		</div>
 
-		<template x-teleport="body">
-			<template x-for="demo in demos" :key="demo.id">
+		<div
+			x-data="{ scrollTrigger: null }"
+			x-init="$store.tooltip.register('tip-scroll', { openDelay: 0, closeDelay: 0 })"
+		>
+			<h3 class="text-sm font-medium mb-2">Scroll test</h3>
+			<p class="text-xs text-muted-foreground mb-3">
+				Hover the trigger, then scroll inside the box — <code>x-anchor.fixed.noflip</code> with
+				<code>x-teleport</code> keeps the tooltip anchored while scrolling.
+			</p>
+			<div class="h-40 overflow-auto rounded-lg border p-6">
+				<div class="flex h-64 items-center justify-center">
+					<button
+						type="button"
+						class={buttonClasses}
+						aria-describedby="tip-scroll-tooltip"
+						@mouseenter="scrollTrigger = $el; $store.tooltip.showOnHover('tip-scroll')"
+						@mouseleave="$store.tooltip.hideOnHover('tip-scroll')"
+						@focus="scrollTrigger = $el; $store.tooltip.showOnFocus('tip-scroll')"
+						@blur="$store.tooltip.hideOnFocus('tip-scroll')"
+					>
+						Hover &amp; scroll
+					</button>
+				</div>
+			</div>
+
+			<template x-teleport="body">
 				<div
-					x-bind:id="demo.id + '-tooltip'"
-					x-bind:data-tooltip-floating="demo.id"
-					x-show="$store.tooltip.isOpen(demo.id)"
-					x-effect="$store.tooltip.isOpen(demo.id) && $store.tooltip.refreshPosition(demo.id)"
+					id="tip-scroll-tooltip"
+					x-show="$store.tooltip.isOpen('tip-scroll')"
+					x-anchor.top.fixed.noflip.offset.8="scrollTrigger"
 					role="tooltip"
-					x-bind:style="$store.tooltip.tooltipStyle(demo.id)"
-					class="pointer-events-none z-[60] whitespace-nowrap rounded-md border bg-popover px-3 py-1.5 text-xs text-popover-foreground shadow-md"
-					x-text="demo.text"
-				></div>
+					class={tooltipClasses}
+				>
+					Follows anchor on scroll
+				</div>
 			</template>
-		</template>
+		</div>
 
 		<div>
 			<h3 class="text-sm font-medium mb-2">Notes</h3>
 			<ul class="text-xs text-muted-foreground list-disc pl-5 space-y-1">
-				<li>Call <code>bindElements()</code> on each anchor + floating pair</li>
-				<li><code>tooltipStyle()</code> applies fixed coordinates from <code>getPosition()</code></li>
-				<li>Built-in placements: top, bottom, left, right, and *-start / *-end variants</li>
-				<li>Optional <code>@floating-ui/dom</code> for collision detection in production UIs</li>
+				<li>Pair with <code>@alpinejs/anchor</code> — store handles open/close, delays, and Escape</li>
+				<li>
+					Use <code>x-teleport</code> + <code>x-anchor.fixed.noflip</code> — one anchor per open tooltip
+					avoids redundant scroll listeners
+				</li>
 			</ul>
 		</div>
 	</div>

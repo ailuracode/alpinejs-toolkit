@@ -9,10 +9,21 @@ export {
   type MenuStore,
 } from "./store.js";
 
+export interface MenuPluginOptions {
+  onLockChange?: (locked: boolean) => void;
+}
+
+/** Builds typed menu plugin options. */
+export function menuOptions<const T extends MenuPluginOptions>(options: T): T {
+  return options;
+}
+
 /** Alpine.js menu plugin. Registers `$store.menu`. */
-export default function menuPlugin(): AlpineType.PluginCallback {
+export default function menuPlugin(options: MenuPluginOptions = {}): AlpineType.PluginCallback {
   return function registerMenu(Alpine) {
-    const store = createMenuStore();
+    const store = createMenuStore({
+      onLockChange: options.onLockChange,
+    });
     Alpine.store("menu", store);
     Alpine.magic("menu", () => Alpine.store("menu"));
   };

@@ -35,6 +35,7 @@ import {
   computeScrollDirection,
   computeScrollMetrics,
   readScrollSnapshot,
+  SCROLL_LOCK_AXES,
   scrollOptions,
 } from "@ailuracode/alpine-scroll";
 ```
@@ -46,7 +47,8 @@ import {
 | **Store** | `$store.scroll` |
 | **State** | `x`, `y`, `direction` (`ScrollDirection`), `progress`, `atTop`, `atBottom`, `locked` |
 | **Getters** | `isLocked`, `showToTop`, `isScrollingDown`, `isScrollingUp` |
-| **Methods** | `isDirection()`, `lock()`, `unlock()`, `toggleLock()`, `toTop()`, `toBottom()` |
+| **Methods** | `isDirection()`, `lock({ axis? })`, `unlock()`, `toggleLock({ axis? })`, `toTop()`, `toBottom()` |
+| **Lock axes** | `y` (default) — vertical only; `both` — vertical + horizontal |
 | **Options** | `scrollOptions({ onLockChange })` |
 
 ## License

@@ -28,7 +28,7 @@ const itemClasses =
 				Open: <strong x-text="$store.menu.isOpen('user-menu')"></strong> · Active:
 				<strong x-text="$store.menu.activeItem('user-menu') ?? '—'"></strong>
 			</p>
-			<div class="inline-block" x-init="$store.menu.bindTrigger('user-menu', $el)">
+			<div x-ref="userMenuTrigger" x-init="$store.menu.bindTrigger('user-menu', $el)">
 				<DemoButton
 					@click="$store.menu.toggle('user-menu')"
 					aria-haspopup="menu"
@@ -42,9 +42,10 @@ const itemClasses =
 				<ul
 					x-show="$store.menu.isOpen('user-menu')"
 					x-transition
+					x-anchor.bottom-start.offset.8.fixed="$refs.userMenuTrigger"
 					x-bind="$store.menu.menuProps('user-menu')"
 					x-init="$store.menu.bindMenu('user-menu', $el)"
-					class="fixed z-[60] min-w-48 rounded-md border bg-popover p-1 shadow-md"
+					class="z-[60] min-w-48 rounded-md border bg-popover p-1 shadow-md"
 				>
 					<template x-for="id in ids" :key="id">
 						<li>
@@ -67,9 +68,8 @@ const itemClasses =
 			<p class="text-xs text-muted-foreground">
 				<kbd class="px-1 rounded border">↑</kbd>/<kbd class="px-1 rounded border">↓</kbd> move focus,
 				<kbd class="px-1 rounded border">Enter</kbd> selects,
-				<kbd class="px-1 rounded border">Escape</kbd> closes. Call
-				<code>bindTrigger()</code>, <code>bindMenu()</code>, and wire
-				<code>@keydown.window</code> + <code>@click.window</code> for teleported panels.
+				<kbd class="px-1 rounded border">Escape</kbd> closes. Position with
+				<code>x-anchor.bottom-start.fixed</code> via <code>@alpinejs/anchor</code> — the store handles state, keyboard, and scroll lock only.
 			</p>
 		</div>
 	</div>

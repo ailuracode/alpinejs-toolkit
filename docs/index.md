@@ -38,7 +38,21 @@ Start with **Essentials** — the modules most apps need first. Add **Extended**
 | [Media](./plugins/media.md) | `$store.media` | Viewport breakpoints and media features |
 | [Scroll](./plugins/scroll.md) | `$store.scroll` | Scroll progress, body lock for overlays |
 | [Sidebar](./plugins/sidebar.md) | `$store.sidebar` | Drawer / nav shell state |
+
+## Headless UI
+
+State and behavior only — you provide markup and CSS.
+
+| Package | API | Use when |
+|---------|-----|----------|
+| [Dialog](./plugins/dialog.md) | `$store.dialog` | Modals, focus trap, dismiss |
+| [Menu](./plugins/menu.md) | `$store.menu` | Dropdowns and context menus |
+| [Tooltip](./plugins/tooltip.md) | `$store.tooltip` | Hover/focus tooltips |
 | [Toast](./plugins/toast.md) | `$toast` | In-app messages; [`fromPayload`](./plugins/toast.md) for plain objects |
+| [Tabs](./plugins/tabs.md) | `$store.tabs` | Tab panels with keyboard nav |
+| [Accordion](./plugins/accordion.md) | `$store.accordion` | Expand/collapse sections |
+| [Command](./plugins/command.md) | `$store.command` | Command palette / Spotlight |
+| [Carousel](./plugins/carousel.md) | `$store.carousel` | Slideshows and carousels |
 
 ## Extended & advanced
 

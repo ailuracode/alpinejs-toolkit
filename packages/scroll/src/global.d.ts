@@ -8,6 +8,14 @@ export declare const SCROLL_BEHAVIORS: readonly ["auto", "instant", "smooth"];
 
 export type ScrollBehaviorOption = (typeof SCROLL_BEHAVIORS)[number];
 
+export declare const SCROLL_LOCK_AXES: readonly ["y", "both"];
+
+export type ScrollLockAxis = (typeof SCROLL_LOCK_AXES)[number];
+
+export type ScrollLockOptions = {
+  axis?: ScrollLockAxis;
+};
+
 export type ScrollSnapshot = {
   readonly x: number;
   readonly y: number;
@@ -20,9 +28,9 @@ export type ScrollSnapshot = {
 export interface ScrollStore extends ScrollSnapshot {
   locked: boolean;
   refresh(): boolean;
-  lock(): boolean;
+  lock(options?: ScrollLockOptions): boolean;
   unlock(): boolean;
-  toggleLock(): boolean;
+  toggleLock(options?: ScrollLockOptions): boolean;
   isDirection(direction: ScrollDirection): boolean;
   readonly isLocked: boolean;
   readonly isAtTop: boolean;

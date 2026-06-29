@@ -6,7 +6,9 @@ import scrollPlugin, {
   readScrollSnapshot,
   SCROLL_BEHAVIORS,
   SCROLL_DIRECTIONS,
+  SCROLL_LOCK_AXES,
   type ScrollDirection,
+  type ScrollLockOptions,
   type ScrollSnapshot,
   type ScrollStore,
   scrollOptions,
@@ -43,6 +45,19 @@ describe("@ailuracode/alpine-scroll type inference", () => {
     });
 
     expectTypeOf(options.onLockChange).parameters.toEqualTypeOf<[locked: boolean]>();
+  });
+
+  it("exports literal scroll lock axes", () => {
+    expectTypeOf(SCROLL_LOCK_AXES).toEqualTypeOf<readonly ["y", "both"]>();
+  });
+
+  it("types lock() options", () => {
+    const Alpine = startAlpine(scrollPlugin());
+    const scroll = Alpine.store("scroll") as ScrollStore;
+
+    expectTypeOf(scroll.lock).parameters.toEqualTypeOf<[options?: ScrollLockOptions | undefined]>();
+    expectTypeOf(scroll.lock({ axis: "y" })).toEqualTypeOf<boolean>();
+    expectTypeOf(scroll.lock({ axis: "both" })).toEqualTypeOf<boolean>();
   });
 
   it("types $store.scroll", () => {
@@ -117,9 +132,9 @@ describe("@ailuracode/alpine-scroll", () => {
   it("locks and unlocks the body with reference counting", () => {
     store.lock();
     expect(store.isLocked).toBe(true);
-    expect(document.documentElement.style.overflow).toBe("hidden");
-    expect(document.body.style.position).toBe("fixed");
-    expect(document.body.style.overflow).toBe("hidden");
+    expect(document.documentElement.style.overflowY).toBe("hidden");
+    expect(document.body.style.overflowY).toBe("hidden");
+    expect(document.body.style.position).toBe("");
 
     store.lock();
     store.unlock();
@@ -127,8 +142,70 @@ describe("@ailuracode/alpine-scroll", () => {
 
     store.unlock();
     expect(store.isLocked).toBe(false);
-    expect(document.documentElement.style.overflow).toBe("");
+    expect(document.documentElement.style.overflowY).toBe("");
+    expect(document.body.style.overflowY).toBe("");
+  });
+
+  it("locks both axes with fixed body and restores horizontal scroll", () => {
+    Object.defineProperty(window, "scrollY", {
+      configurable: true,
+      value: 400,
+    });
+    Object.defineProperty(window, "scrollX", {
+      configurable: true,
+      value: 80,
+    });
+    store.refresh();
+
+    store.lock({ axis: "both" });
+    expect(document.documentElement.style.overflow).toBe("hidden");
+    expect(document.body.style.position).toBe("fixed");
+    expect(document.body.style.left).toBe("-80px");
+
+    const scrollTo = vi.mocked(window.scrollTo);
+    scrollTo.mockClear();
+    store.unlock();
+
+    expect(scrollTo).toHaveBeenCalledWith({ top: 400, left: 80, behavior: "instant" });
+  });
+
+  it("preserves horizontal scroll on unlock with default vertical lock", () => {
+    Object.defineProperty(window, "scrollY", {
+      configurable: true,
+      value: 200,
+    });
+    Object.defineProperty(window, "scrollX", {
+      configurable: true,
+      value: 0,
+    });
+    store.refresh();
+    store.lock();
+
+    Object.defineProperty(window, "scrollX", {
+      configurable: true,
+      value: 120,
+    });
+
+    const scrollTo = vi.mocked(window.scrollTo);
+    scrollTo.mockClear();
+    store.unlock();
+
+    expect(scrollTo).toHaveBeenCalledWith({ top: 200, left: 120, behavior: "instant" });
+  });
+
+  it("upgrades to both-axis lock when nested lock requests it", () => {
+    store.lock();
     expect(document.body.style.position).toBe("");
+
+    store.lock({ axis: "both" });
+    expect(document.body.style.position).toBe("fixed");
+
+    store.unlock();
+    expect(store.isLocked).toBe(true);
+    expect(document.body.style.position).toBe("");
+
+    store.unlock();
+    expect(store.isLocked).toBe(false);
   });
 
   it("calls onLockChange when lock state changes", () => {
@@ -153,6 +230,12 @@ describe("@ailuracode/alpine-scroll", () => {
   });
 
   it("tracks scroll direction and bottom edge", () => {
+    Object.defineProperty(window, "scrollY", {
+      configurable: true,
+      value: 100,
+    });
+    store.refresh();
+
     Object.defineProperty(window, "scrollY", {
       configurable: true,
       value: 200,
@@ -256,6 +339,10 @@ describe("@ailuracode/alpine-scroll", () => {
     Object.defineProperty(window, "scrollY", {
       configurable: true,
       value: 400,
+    });
+    Object.defineProperty(window, "scrollX", {
+      configurable: true,
+      value: 0,
     });
     store.refresh();
     store.lock();

@@ -57,8 +57,8 @@ const buttonClasses =
 			<h3 class="text-sm font-medium mb-2">Keyboard &amp; accessibility</h3>
 			<ul class="text-xs text-muted-foreground list-disc pl-5 space-y-1">
 				<li><kbd class="px-1 rounded border">Escape</kbd> closes when <code>closeOnEscape</code> is enabled</li>
+				<li>Scroll lock wired in the demo via <code>onLockChange</code> + <code>$store.scroll</code></li>
 				<li><code>dialogProps()</code> sets <code>role="dialog"</code>, <code>aria-modal</code>, labelled/describedby</li>
-				<li>Compose scroll lock via <code>dialog(&#123; onLockChange &#125;)</code> + <code>$store.scroll</code></li>
 			</ul>
 		</div>
 

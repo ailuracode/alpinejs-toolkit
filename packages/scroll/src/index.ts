@@ -8,6 +8,15 @@ export const SCROLL_BEHAVIORS = ["auto", "instant", "smooth"] as const;
 
 export type ScrollBehaviorOption = (typeof SCROLL_BEHAVIORS)[number];
 
+export const SCROLL_LOCK_AXES = ["y", "both"] as const;
+
+export type ScrollLockAxis = (typeof SCROLL_LOCK_AXES)[number];
+
+export type ScrollLockOptions = {
+  /** `y` (default) locks vertical page scroll; `both` also freezes horizontal scroll. */
+  axis?: ScrollLockAxis;
+};
+
 export type ScrollSnapshot = {
   readonly x: number;
   readonly y: number;
@@ -20,9 +29,9 @@ export type ScrollSnapshot = {
 export interface ScrollStore extends ScrollSnapshot {
   locked: boolean;
   refresh(): boolean;
-  lock(): boolean;
+  lock(options?: ScrollLockOptions): boolean;
   unlock(): boolean;
-  toggleLock(): boolean;
+  toggleLock(options?: ScrollLockOptions): boolean;
   isDirection(direction: ScrollDirection): boolean;
   readonly isLocked: boolean;
   readonly isAtTop: boolean;
@@ -49,14 +58,40 @@ export type ScrollMetricsInput = {
 
 type ScrollLockStyleSnapshot = {
   htmlOverflow: string;
+  htmlOverflowY: string;
+  htmlOverflowX: string;
   bodyPosition: string;
   bodyTop: string;
   bodyLeft: string;
   bodyRight: string;
   bodyWidth: string;
   bodyOverflow: string;
+  bodyOverflowY: string;
+  bodyOverflowX: string;
   bodyOverscrollBehavior: string;
+  bodyOverscrollBehaviorY: string;
 };
+
+function snapshotScrollLockStyles(): ScrollLockStyleSnapshot {
+  const html = document.documentElement;
+  const body = document.body;
+
+  return {
+    htmlOverflow: html.style.overflow,
+    htmlOverflowY: html.style.overflowY,
+    htmlOverflowX: html.style.overflowX,
+    bodyPosition: body.style.position,
+    bodyTop: body.style.top,
+    bodyLeft: body.style.left,
+    bodyRight: body.style.right,
+    bodyWidth: body.style.width,
+    bodyOverflow: body.style.overflow,
+    bodyOverflowY: body.style.overflowY,
+    bodyOverflowX: body.style.overflowX,
+    bodyOverscrollBehavior: body.style.overscrollBehavior,
+    bodyOverscrollBehaviorY: body.style.overscrollBehaviorY,
+  };
+}
 
 /** Builds typed scroll plugin options. */
 export function scrollOptions<const T extends ScrollPluginOptions>(options: T): T {
@@ -117,24 +152,27 @@ function readScrollState(previousY: number): ScrollSnapshot {
   return readScrollSnapshot(previousY);
 }
 
-function applyScrollLockStyles(scrollY: number): ScrollLockStyleSnapshot {
+function applyVerticalScrollLockStyles(): ScrollLockStyleSnapshot {
+  const snapshot = snapshotScrollLockStyles();
   const html = document.documentElement;
   const body = document.body;
-  const snapshot: ScrollLockStyleSnapshot = {
-    htmlOverflow: html.style.overflow,
-    bodyPosition: body.style.position,
-    bodyTop: body.style.top,
-    bodyLeft: body.style.left,
-    bodyRight: body.style.right,
-    bodyWidth: body.style.width,
-    bodyOverflow: body.style.overflow,
-    bodyOverscrollBehavior: body.style.overscrollBehavior,
-  };
+
+  html.style.overflowY = "hidden";
+  body.style.overflowY = "hidden";
+  body.style.overscrollBehaviorY = "none";
+
+  return snapshot;
+}
+
+function applyBothAxisScrollLockStyles(scrollY: number, scrollX: number): ScrollLockStyleSnapshot {
+  const snapshot = snapshotScrollLockStyles();
+  const html = document.documentElement;
+  const body = document.body;
 
   html.style.overflow = "hidden";
   body.style.position = "fixed";
   body.style.top = `-${scrollY}px`;
-  body.style.left = "0";
+  body.style.left = scrollX > 0 ? `-${scrollX}px` : "0";
   body.style.right = "0";
   body.style.width = "100%";
   body.style.overflow = "hidden";
@@ -148,37 +186,89 @@ function restoreScrollLockStyles(snapshot: ScrollLockStyleSnapshot): void {
   const body = document.body;
 
   html.style.overflow = snapshot.htmlOverflow;
+  html.style.overflowY = snapshot.htmlOverflowY;
+  html.style.overflowX = snapshot.htmlOverflowX;
   body.style.position = snapshot.bodyPosition;
   body.style.top = snapshot.bodyTop;
   body.style.left = snapshot.bodyLeft;
   body.style.right = snapshot.bodyRight;
   body.style.width = snapshot.bodyWidth;
   body.style.overflow = snapshot.bodyOverflow;
+  body.style.overflowY = snapshot.bodyOverflowY;
+  body.style.overflowX = snapshot.bodyOverflowX;
   body.style.overscrollBehavior = snapshot.bodyOverscrollBehavior;
+  body.style.overscrollBehaviorY = snapshot.bodyOverscrollBehaviorY;
+}
+
+function effectiveLockAxis(lockStack: ScrollLockAxis[]): ScrollLockAxis {
+  return lockStack.includes("both") ? "both" : "y";
 }
 
 /** Alpine.js scroll plugin. Registers `$store.scroll`. */
 export default function scrollPlugin(options: ScrollPluginOptions = {}): AlpineType.PluginCallback {
   return function registerScroll(Alpine) {
     let savedScrollY = 0;
-    let lockCount = 0;
+    let savedScrollX = 0;
+    const lockStack: ScrollLockAxis[] = [];
     let lockStyles: ScrollLockStyleSnapshot | null = null;
+    let appliedAxis: ScrollLockAxis | null = null;
 
-    function applyLock(): void {
+    function clearLockStyles(): void {
+      if (!lockStyles) {
+        return;
+      }
+
+      restoreScrollLockStyles(lockStyles);
+      lockStyles = null;
+    }
+
+    function applyLockStyles(axis: ScrollLockAxis): void {
+      lockStyles =
+        axis === "both"
+          ? applyBothAxisScrollLockStyles(savedScrollY, savedScrollX)
+          : applyVerticalScrollLockStyles();
+      appliedAxis = axis;
+    }
+
+    function captureScrollPosition(): void {
       savedScrollY = window.scrollY;
-      lockStyles = applyScrollLockStyles(savedScrollY);
+      savedScrollX = window.scrollX;
+    }
+
+    function restoreScrollPosition(axis: ScrollLockAxis): void {
+      const left = axis === "both" ? savedScrollX : window.scrollX;
+      window.scrollTo({ top: savedScrollY, left, behavior: "instant" });
+    }
+
+    function applyLock(axis: ScrollLockAxis): void {
+      captureScrollPosition();
+      applyLockStyles(axis);
       options.onLockChange?.(true);
     }
 
-    function removeLock(): void {
-      const y = savedScrollY;
+    function syncLockStyles(): void {
+      const nextAxis = effectiveLockAxis(lockStack);
 
-      if (lockStyles) {
-        restoreScrollLockStyles(lockStyles);
-        lockStyles = null;
+      if (nextAxis === appliedAxis) {
+        return;
       }
 
-      window.scrollTo({ top: y, left: 0, behavior: "instant" });
+      clearLockStyles();
+
+      if (appliedAxis === "both") {
+        restoreScrollPosition("both");
+      }
+
+      captureScrollPosition();
+      applyLockStyles(nextAxis);
+    }
+
+    function removeLock(): void {
+      const axis = appliedAxis ?? "y";
+
+      clearLockStyles();
+      restoreScrollPosition(axis);
+      appliedAxis = null;
       options.onLockChange?.(false);
     }
 
@@ -209,38 +299,45 @@ export default function scrollPlugin(options: ScrollPluginOptions = {}): AlpineT
         return true;
       },
 
-      lock() {
-        if (lockCount === 0) {
-          applyLock();
+      lock(options: ScrollLockOptions = {}) {
+        const axis = options.axis ?? "y";
+
+        if (lockStack.length === 0) {
+          applyLock(axis);
           this.locked = true;
+          lockStack.push(axis);
+          return this.locked;
         }
 
-        lockCount++;
+        lockStack.push(axis);
+        syncLockStyles();
         return this.locked;
       },
 
       unlock() {
-        if (lockCount === 0) {
+        if (lockStack.length === 0) {
           return this.locked;
         }
 
-        lockCount--;
+        lockStack.pop();
 
-        if (lockCount === 0) {
+        if (lockStack.length === 0) {
           removeLock();
           this.locked = false;
           this.refresh();
+        } else {
+          syncLockStyles();
         }
 
         return this.locked;
       },
 
-      toggleLock() {
+      toggleLock(options: ScrollLockOptions = {}) {
         if (this.locked) {
           return this.unlock();
         }
 
-        return this.lock();
+        return this.lock(options);
       },
 
       isDirection(direction: ScrollDirection) {

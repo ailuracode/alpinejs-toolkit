@@ -39,17 +39,14 @@ const triggerClasses =
 							<span x-text="$store.accordion.isOpen('single-default', id) ? '−' : '+'"></span>
 						</button>
 						<div
-							class="px-4 py-3 text-sm text-muted-foreground"
+							class="overflow-hidden"
 							x-show="$store.accordion.isOpen('single-default', id)"
-							x-transition:enter="transition ease-out duration-200 motion-reduce:transition-none"
-							x-transition:enter-start="opacity-0 -translate-y-1"
-							x-transition:enter-end="opacity-100 translate-y-0"
-							x-transition:leave="transition ease-in duration-150 motion-reduce:transition-none"
-							x-transition:leave-start="opacity-100 translate-y-0"
-							x-transition:leave-end="opacity-0 -translate-y-1"
+							x-collapse
 							x-bind="$store.accordion.panelProps('single-default', id)"
 						>
-							Only one panel stays open. <code>defaultOpen: 'shipping'</code> expands on init.
+							<div class="px-4 py-3 text-sm text-muted-foreground">
+								Only one panel stays open. <code>defaultOpen: 'shipping'</code> expands on init.
+							</div>
 						</div>
 					</div>
 				</template>
@@ -83,17 +80,14 @@ const triggerClasses =
 							<span x-text="$store.accordion.isOpen('single', id) ? '−' : '+'"></span>
 						</button>
 						<div
-							class="px-4 py-3 text-sm text-muted-foreground"
+							class="overflow-hidden"
 							x-show="$store.accordion.isOpen('single', id)"
-							x-transition:enter="transition ease-out duration-200 motion-reduce:transition-none"
-							x-transition:enter-start="opacity-0 -translate-y-1"
-							x-transition:enter-end="opacity-100 translate-y-0"
-							x-transition:leave="transition ease-in duration-150 motion-reduce:transition-none"
-							x-transition:leave-start="opacity-100 translate-y-0"
-							x-transition:leave-end="opacity-0 -translate-y-1"
+							x-collapse
 							x-bind="$store.accordion.panelProps('single', id)"
 						>
-							Opening another panel closes the previous one.
+							<div class="px-4 py-3 text-sm text-muted-foreground">
+								Opening another panel closes the previous one.
+							</div>
 						</div>
 					</div>
 				</template>
@@ -130,18 +124,15 @@ const triggerClasses =
 							<span x-text="$store.accordion.isOpen('multiple-default', id) ? '−' : '+'"></span>
 						</button>
 						<div
-							class="px-4 py-3 text-sm text-muted-foreground"
+							class="overflow-hidden"
 							x-show="$store.accordion.isOpen('multiple-default', id)"
-							x-transition:enter="transition ease-out duration-200 motion-reduce:transition-none"
-							x-transition:enter-start="opacity-0 -translate-y-1"
-							x-transition:enter-end="opacity-100 translate-y-0"
-							x-transition:leave="transition ease-in duration-150 motion-reduce:transition-none"
-							x-transition:leave-start="opacity-100 translate-y-0"
-							x-transition:leave-end="opacity-0 -translate-y-1"
+							x-collapse
 							x-bind="$store.accordion.panelProps('multiple-default', id)"
 						>
-							Several panels can stay open. Defaults:
-							<code>['notifications', 'integrations']</code>.
+							<div class="px-4 py-3 text-sm text-muted-foreground">
+								Several panels can stay open. Defaults:
+								<code>['notifications', 'integrations']</code>.
+							</div>
 						</div>
 					</div>
 				</template>
@@ -152,8 +143,9 @@ const triggerClasses =
 			<h3 class="text-sm font-medium mb-2">Accessibility</h3>
 			<p class="text-xs text-muted-foreground">
 				<code>triggerProps()</code> sets <code>aria-expanded</code> and roving <code>tabindex</code>.
-				Arrow keys move between triggers when the group is focused. Pair panels with
-				<code>x-show</code> and <code>x-transition</code>.
+				Arrow keys move between triggers when the group is focused. Animate panels with the official
+				<a href="https://alpinejs.dev/plugins/collapse" class="underline hover:text-foreground">@alpinejs/collapse</a>
+				plugin — <code>x-show</code> + <code>x-collapse</code> on the same element.
 			</p>
 		</div>
 	</div>

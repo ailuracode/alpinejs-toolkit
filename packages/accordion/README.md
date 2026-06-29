@@ -20,4 +20,4 @@ $store.accordion.isOpen("faq", "item-1");
 $store.accordion.openIds("faq");
 ```
 
-Modes: `single` (one panel open) or `multiple` (several panels). Use `defaultOpen` with a string or string array.
+Modes: `single` (one panel open) or `multiple` (several panels). Use `defaultOpen` with a string or string array. Animate panels with `@alpinejs/collapse` (`x-show` + `x-collapse` on an outer wrapper; put padding on an inner element).

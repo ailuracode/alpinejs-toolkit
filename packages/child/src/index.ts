@@ -19,7 +19,16 @@ export {
 const processedWrappers = new WeakSet<Element>();
 
 type AlpineElement = Element & {
+  _x_ignore?: boolean;
   _x_ignoreSelf?: boolean;
+};
+
+type MorphOptions = {
+  added?: (node: Node) => void;
+};
+
+type AlpineWithMorph = AlpineType.Alpine & {
+  morph?: (el: Element, newHtml: string | Element, options?: MorphOptions) => Element;
 };
 
 function warnChild(message: string): void {
@@ -31,7 +40,7 @@ function warnChild(message: string): void {
 export default function childPlugin(Alpine: AlpineType.Alpine): void {
   Alpine.addInitSelector(() => `[${Alpine.prefixed("child")}]`);
 
-  Alpine.interceptInit((el, skip) => {
+  Alpine.interceptInit((el: Element, skip: () => void) => {
     const config = parseChildDirective(el);
     if (!config) {
       return;
@@ -51,19 +60,48 @@ export default function childPlugin(Alpine: AlpineType.Alpine): void {
       warnChild("[x-child] Multiple element children; only the first is used.");
     }
 
-    transferAttributes(el, target, config.mode);
+    const morph = (Alpine as AlpineWithMorph).morph;
+    if (typeof morph !== "function") {
+      warnChild(
+        "[x-child] @alpinejs/morph is required — register Alpine.plugin(morph) before x-child."
+      );
+      return;
+    }
 
-    Alpine.mutateDom(() => {
-      el.replaceWith(target);
-    });
-
-    clearTransferredAttributes(el);
+    // Defer unwrap until after the current initTree pass so DOM mutations from
+    // morph do not corrupt scope for siblings initialized later (e.g. sidebar).
     processedWrappers.add(el);
     (el as AlpineElement)._x_ignoreSelf = true;
+    (target as AlpineElement)._x_ignore = true;
     skip();
 
     Alpine.nextTick(() => {
-      Alpine.initTree(target as HTMLElement);
+      if (!(el.isConnected || target.isConnected)) {
+        return;
+      }
+
+      transferAttributes(el, target, config.mode);
+
+      let promoted: Element | null = null;
+
+      Alpine.mutateDom(() => {
+        morph(el, target.outerHTML, {
+          added(node) {
+            if (node.nodeType === Node.ELEMENT_NODE) {
+              promoted = node as Element;
+            }
+          },
+        });
+      });
+
+      const result = promoted ?? (el.isConnected ? el : null);
+      if (result) {
+        processedWrappers.add(result);
+        (result as AlpineElement)._x_ignore = undefined;
+        Alpine.initTree(result as HTMLElement);
+      }
+
+      clearTransferredAttributes(el);
     });
   });
 

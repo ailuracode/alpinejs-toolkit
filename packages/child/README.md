@@ -5,18 +5,22 @@ Alpine.js directive for **asChild-style** composition: transfer attributes, clas
 ## Install
 
 ```bash
-npm install @ailuracode/alpine-child alpinejs
+npm install @ailuracode/alpine-child @alpinejs/morph alpinejs
 ```
 
 ## Setup
 
 ```js
 import Alpine from "alpinejs";
+import morph from "@alpinejs/morph";
 import child from "@ailuracode/alpine-child";
 
+Alpine.plugin(morph);
 Alpine.plugin(child);
 Alpine.start();
 ```
+
+Unwrapping uses [`Alpine.morph()`](https://alpinejs.dev/plugins/morph) — register Morph before `x-child`.
 
 ## Usage
 
@@ -105,6 +109,7 @@ The anchor receives merged classes and any Alpine attributes you put on `<x-butt
 
 ## Limitations
 
+- Requires **`@alpinejs/morph`** registered before this plugin.
 - Only the **first element child** is kept; text nodes and comments are skipped. Extra element siblings are discarded with the detached wrapper.
 - Works best when the wrapper exists in static HTML/Blade before `Alpine.start()`. Dynamically inserted trees are supported via `Alpine.initTree()`.
 - `x-for` / `x-if` on the wrapper are not supported — use `x-child` on stable wrapper markup instead.

@@ -1,13 +1,20 @@
+import AppWindow from "@lucide/astro/icons/app-window";
 import ArrowDownUp from "@lucide/astro/icons/arrow-down-up";
 import Bell from "@lucide/astro/icons/bell";
 import Braces from "@lucide/astro/icons/braces";
 import Calendar from "@lucide/astro/icons/calendar";
+import Command from "@lucide/astro/icons/command";
 import Database from "@lucide/astro/icons/database";
 import Focus from "@lucide/astro/icons/focus";
+import GalleryHorizontal from "@lucide/astro/icons/gallery-horizontal";
 import Globe from "@lucide/astro/icons/globe";
 import Languages from "@lucide/astro/icons/languages";
 import LayoutDashboard from "@lucide/astro/icons/layout-dashboard";
+import LayoutPanelTop from "@lucide/astro/icons/layout-panel-top";
+import ListCollapse from "@lucide/astro/icons/list-collapse";
 import MapPin from "@lucide/astro/icons/map-pin";
+import Menu from "@lucide/astro/icons/menu";
+import MessageCircle from "@lucide/astro/icons/message-circle";
 import MessageSquare from "@lucide/astro/icons/message-square";
 import Monitor from "@lucide/astro/icons/monitor";
 import Palette from "@lucide/astro/icons/palette";
@@ -38,6 +45,13 @@ const PLUGIN_NAV_ICONS: Record<string, PluginNavIcon> = {
   query: Database,
   "query-kit": Database,
   "json-api": Braces,
+  dialog: AppWindow,
+  menu: Menu,
+  tooltip: MessageCircle,
+  tabs: LayoutPanelTop,
+  accordion: ListCollapse,
+  command: Command,
+  carousel: GalleryHorizontal,
 };
 
 export function getPluginNavIcon(id: string): PluginNavIcon {

@@ -48,8 +48,6 @@ describe("@ailuracode/alpine-menu teleported menu", () => {
 
     const menu = document.getElementById("menu");
     expect(menu?.style.display).not.toBe("none");
-    expect(menu?.style.top).toBe("88px");
-    expect(menu?.style.left).toBe("24px");
 
     document.body.dispatchEvent(new MouseEvent("click", { bubbles: true }));
     await Alpine.nextTick();

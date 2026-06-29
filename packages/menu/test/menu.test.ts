@@ -90,31 +90,6 @@ describe("@ailuracode/alpine-menu", () => {
     expect(store.itemProps("user-menu", "profile").tabindex).toBe(-1);
   });
 
-  it("positions the menu panel from the trigger element", async () => {
-    const trigger = document.createElement("button");
-    trigger.getBoundingClientRect = () =>
-      ({
-        bottom: 100,
-        left: 40,
-        width: 120,
-      }) as DOMRect;
-    const container = document.createElement("ul");
-    document.body.append(trigger, container);
-
-    store.bindTrigger("user-menu", trigger);
-    store.bindMenu("user-menu", container);
-    store.open("user-menu");
-
-    await Promise.resolve();
-
-    expect(container.style.top).toBe("108px");
-    expect(container.style.left).toBe("40px");
-    expect(container.style.minWidth).toBe("192px");
-
-    trigger.remove();
-    container.remove();
-  });
-
   it("closes when clicking outside the trigger and menu", () => {
     const trigger = document.createElement("button");
     const container = document.createElement("ul");
@@ -140,5 +115,28 @@ describe("@ailuracode/alpine-menu", () => {
     menu.register("demo");
     menu.open("demo");
     expect(menu.isOpen("demo")).toBe(true);
+  });
+
+  it("notifies onLockChange while menus are open", () => {
+    const onLockChange = vi.fn();
+    store = createMenuStore({ onLockChange });
+    store.register("user-menu");
+    store.open("user-menu");
+
+    expect(onLockChange).toHaveBeenLastCalledWith(true);
+
+    store.close("user-menu");
+    expect(onLockChange).toHaveBeenLastCalledWith(false);
+  });
+
+  it("cleans up scroll lock on destroy", () => {
+    const onLockChange = vi.fn();
+    store = createMenuStore({ onLockChange });
+    store.register("user-menu");
+    store.open("user-menu");
+    store.destroy();
+
+    expect(store.isOpen("user-menu")).toBe(false);
+    expect(onLockChange).toHaveBeenLastCalledWith(false);
   });
 });
