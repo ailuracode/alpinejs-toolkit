@@ -1,0 +1,28 @@
+---
+import { getPluginNavItem } from "../../plugin-nav";
+import DemoButton from "../astro/DemoButton.astro";
+import DemoSection from "../DemoSection.astro";
+
+const plugin = getPluginNavItem("transfer")!;
+---
+
+<DemoSection id={plugin.id} title={plugin.title} api={plugin.api} description={plugin.description}>
+	<div class="flex flex-wrap gap-2">
+		<DemoButton @click="$clipboard('Copied from alpine-transfer')">Copy text</DemoButton>
+		<DemoButton
+			x-bind:disabled="!$share.isSupported"
+			@click="$share({ title: 'Alpine Transfer', text: 'Shared from the demo', url: window.location.href })"
+		>
+			Share page
+		</DemoButton>
+		<DemoButton @click="$export('Hello from alpine-transfer', { filename: 'demo.txt' })">
+			Export file
+		</DemoButton>
+	</div>
+	<p class="text-xs text-muted-foreground mt-3" x-show="!$share.isSupported" x-cloak>
+		Web Share API is not available in this browser.
+	</p>
+	<p class="text-xs text-muted-foreground mt-3">
+		Package: <code>{plugin.package}</code>
+	</p>
+</DemoSection>

@@ -1,0 +1,60 @@
+{
+  "name": "@ailuracode/alpine-media",
+  "version": "0.0.0",
+  "description": "Alpine.js reactive viewport breakpoints and browser media features store",
+  "type": "module",
+  "license": "MIT",
+  "author": "ailuracode",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ailuracode/alpinejs-toolkit.git",
+    "directory": "packages/media"
+  },
+  "bugs": {
+    "url": "https://github.com/ailuracode/alpinejs-toolkit/issues"
+  },
+  "homepage": "https://github.com/ailuracode/alpinejs-toolkit/tree/master/packages/media#readme",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./global": {
+      "types": "./dist/global.d.ts"
+    }
+  },
+  "types": "./dist/global.d.ts",
+  "peerDependencies": {
+    "alpinejs": "^3.0.0",
+    "@types/alpinejs": "^3.13.11"
+  },
+  "peerDependenciesMeta": {
+    "@types/alpinejs": {
+      "optional": true
+    }
+  },
+  "dependencies": {
+    "@ailuracode/alpine-core": "workspace:*"
+  },
+  "scripts": {
+    "build": "tsup src/index.ts --format esm --dts --clean --sourcemap --out-dir dist && cp src/global.d.ts dist/global.d.ts",
+    "prepublishOnly": "pnpm run build",
+    "test": "vitest run --config ../../vitest.config.ts test"
+  },
+  "keywords": [
+    "alpinejs",
+    "alpine",
+    "plugin",
+    "responsive",
+    "breakpoint",
+    "media-query",
+    "viewport"
+  ]
+}

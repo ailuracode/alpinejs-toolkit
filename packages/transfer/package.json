@@ -1,0 +1,57 @@
+{
+  "name": "@ailuracode/alpine-transfer",
+  "version": "0.0.0",
+  "description": "Outbound data transfer magics: clipboard, share, and export",
+  "type": "module",
+  "license": "MIT",
+  "author": "ailuracode",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ailuracode/alpinejs-toolkit.git",
+    "directory": "packages/transfer"
+  },
+  "bugs": {
+    "url": "https://github.com/ailuracode/alpinejs-toolkit/issues"
+  },
+  "homepage": "https://github.com/ailuracode/alpinejs-toolkit/tree/master/packages/transfer#readme",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./global": {
+      "types": "./dist/global.d.ts"
+    }
+  },
+  "types": "./dist/global.d.ts",
+  "peerDependencies": {
+    "alpinejs": "^3.0.0",
+    "@types/alpinejs": "^3.13.11"
+  },
+  "peerDependenciesMeta": {
+    "@types/alpinejs": {
+      "optional": true
+    }
+  },
+  "scripts": {
+    "build": "tsup src/index.ts --format esm --dts --clean --sourcemap --out-dir dist && cp src/global.d.ts dist/global.d.ts",
+    "prepublishOnly": "pnpm run build",
+    "test": "vitest run --config ../../vitest.config.ts test"
+  },
+  "keywords": [
+    "alpinejs",
+    "alpine",
+    "plugin",
+    "clipboard",
+    "share",
+    "export",
+    "transfer"
+  ]
+}

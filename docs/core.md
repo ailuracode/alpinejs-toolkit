@@ -25,11 +25,11 @@ import {
   initPlugins,
   registerPlugin,
 } from "@ailuracode/alpine-core";
-import share from "@ailuracode/alpine-share";
+import { sharePlugin } from "@ailuracode/alpine-transfer";
 import theme from "@ailuracode/alpine-theme";
 
 // Register (no side effects)
-registerPlugin("share", defineMagicPlugin(["share"], share));
+registerPlugin("share", defineMagicPlugin(["share"], sharePlugin));
 registerPlugin(
   "theme",
   defineStorePlugin(["theme"], theme({ onChange: applyTheme }))
@@ -50,7 +50,7 @@ registerPlugin(
   lazyPlugin({
     kind: "magic",
     magics: ["share"],
-    import: () => import("@ailuracode/alpine-share"),
+    import: () => import("@ailuracode/alpine-transfer"),
   })
 );
 

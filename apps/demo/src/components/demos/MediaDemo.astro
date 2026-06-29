@@ -1,0 +1,51 @@
+---
+import { getPluginNavItem } from "../../plugin-nav";
+import Badge from "../astro/Badge.astro";
+import DemoButton from "../astro/DemoButton.astro";
+import DemoSection from "../DemoSection.astro";
+
+const plugin = getPluginNavItem("media")!;
+---
+
+<DemoSection id={plugin.id} title={plugin.title} api={plugin.api} description={plugin.description}>
+	<div class="grid gap-4 sm:grid-cols-2">
+		<div>
+			<h4 class="text-sm font-medium mb-2">Viewport</h4>
+			<ul class="text-sm space-y-1">
+				<li>Width: <strong x-text="$store.media.width"></strong>px</li>
+				<li>Height: <strong x-text="$store.media.height"></strong>px</li>
+				<li>Breakpoint: <strong x-text="$store.media.breakpoint"></strong></li>
+			</ul>
+			<div class="flex flex-wrap gap-2 mt-2">
+				<Badge x-bind:class="{ 'bg-primary text-primary-foreground': $store.media.isMobile }">Mobile</Badge>
+				<Badge x-bind:class="{ 'bg-primary text-primary-foreground': $store.media.isTablet }">Tablet</Badge>
+				<Badge x-bind:class="{ 'bg-primary text-primary-foreground': $store.media.isDesktop }">Desktop</Badge>
+			</div>
+		</div>
+		<div>
+			<h4 class="text-sm font-medium mb-2">Media features</h4>
+			<ul class="text-sm space-y-1">
+				<li>prefersReducedMotion: <strong x-text="$store.media.prefersReducedMotion"></strong></li>
+				<li>prefersContrast: <strong x-text="$store.media.prefersContrast"></strong></li>
+				<li>prefersColorScheme: <strong x-text="$store.media.prefersColorScheme"></strong></li>
+				<li>hover: <strong x-text="$store.media.hover"></strong></li>
+				<li>pointer: <strong x-text="$store.media.pointer"></strong></li>
+				<li>orientation: <strong x-text="$store.media.orientation"></strong></li>
+			</ul>
+			<h4 class="text-sm font-medium mb-2 mt-4">Touch &amp; pointer</h4>
+			<ul class="text-sm space-y-1">
+				<li>isTouch: <strong x-text="$store.media.isTouch"></strong></li>
+				<li>maxTouchPoints: <strong x-text="$store.media.maxTouchPoints"></strong></li>
+				<li>isCoarse: <strong x-text="$store.media.isCoarse"></strong></li>
+				<li>canHover: <strong x-text="$store.media.canHover"></strong></li>
+			</ul>
+		</div>
+	</div>
+	<DemoButton class="mt-3" @click="$store.media.refresh()">refresh()</DemoButton>
+	<p class="text-xs text-muted-foreground mt-3">
+		Resize the window or change OS media preferences to see live updates.
+	</p>
+	<p class="text-xs text-muted-foreground mt-1">
+		Package: <code>{plugin.package}</code>
+	</p>
+</DemoSection>

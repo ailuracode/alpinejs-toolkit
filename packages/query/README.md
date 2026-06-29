@@ -6,14 +6,14 @@ The **cache engine** has no store dependency. Pick an adapter plugin for Alpine.
 
 | Package | Store runtime | Alpine integration |
 |---------|---------------|-------------------|
-| [`@ailuracode/alpine-query-adapter-nanostores`](../query-adapter-nanostores/README.md) | Nanostores | **Recommended** — `@nanostores/alpine` (`x-nano`, `$nano`) |
+| [`@ailuracode/alpine-query-kit`](../query-kit/README.md) | Nanostores | **Recommended** — `@nanostores/alpine` (`x-nano`, `$nano`) |
 | [`@ailuracode/alpine-query-adapter-alpine`](../query-adapter-alpine/README.md) | Native `Alpine.reactive` | Zero extra store deps |
 | [`@ailuracode/alpine-query-adapter-zustand`](../query-adapter-zustand/README.md) | Zustand vanilla | Manual bridge (no official zustand-alpine) |
 
 ## Install (recommended)
 
 ```bash
-npm install @ailuracode/alpine-query @ailuracode/alpine-query-adapter-nanostores alpinejs nanostores @nanostores/alpine
+npm install @ailuracode/alpine-query @ailuracode/alpine-query-kit alpinejs nanostores @nanostores/alpine
 ```
 
 ## Setup (Alpine + Nanostores)
@@ -24,7 +24,7 @@ import query from "@ailuracode/alpine-query";
 import {
   createAlpineNanostoresAdapter,
   NanoStores,
-} from "@ailuracode/alpine-query-adapter-nanostores";
+} from "@ailuracode/alpine-query-kit";
 
 Alpine.plugin(NanoStores);
 Alpine.plugin(query({ adapter: createAlpineNanostoresAdapter }));
@@ -37,7 +37,7 @@ Pass the adapter to `query()`, then it registers `$store.query`.
 
 ```js
 import { createQueryClient, vanillaQueryAdapter } from "@ailuracode/alpine-query";
-import { nanostoresQueryAdapter } from "@ailuracode/alpine-query-adapter-nanostores";
+import { nanostoresQueryAdapter } from "@ailuracode/alpine-query-kit";
 
 // Default: zero-dependency vanilla adapter
 const vanilla = createQueryClient();
@@ -138,7 +138,7 @@ export const myStoreAdapter: QueryStateAdapter = {
 };
 ```
 
-Replace the manual `Set` with your store's `subscribe` / `listen` API when available. See [`query-adapter-zustand`](../query-adapter-zustand/src/adapter.ts) and [`query-adapter-nanostores`](../query-adapter-nanostores/src/adapter.ts).
+Replace the manual `Set` with your store's `subscribe` / `listen` API when available. See [`query-adapter-zustand`](../query-adapter-zustand/src/adapter.ts) and [`query-kit`](../query-kit/src/nanostores/adapter.ts).
 
 ### Register as an Alpine plugin
 
@@ -170,7 +170,7 @@ const todos = query.observe(["todos"], fetchTodos);
 |---------|------|
 | Vanilla (minimal) | [`src/adapters/vanilla.ts`](./src/adapters/vanilla.ts) |
 | Alpine.reactive | [`query-adapter-alpine`](../query-adapter-alpine/src/adapter.ts) |
-| Nanostores | [`query-adapter-nanostores`](../query-adapter-nanostores/src/adapter.ts) |
+| Nanostores | [`query-kit`](../query-kit/src/nanostores/adapter.ts) |
 | Zustand | [`query-adapter-zustand`](../query-adapter-zustand/src/adapter.ts) |
 
 Full guide: [docs/query.md — Custom adapter](../docs/query.md#custom-adapter).
@@ -257,7 +257,7 @@ See adapter plugin READMEs for Alpine setup with Nanostores, Zustand, or native 
 
 ## Devtools
 
-Use [`@ailuracode/alpine-query-devtools`](../query-devtools/README.md).
+Use [`@ailuracode/alpine-query-kit`](../query-kit/README.md).
 
 ## License
 

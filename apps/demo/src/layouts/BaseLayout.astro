@@ -50,14 +50,14 @@ const {
 		<div class="flex min-h-screen flex-col">
 			<header
 				class="sticky top-0 z-30 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 transition-[margin] duration-300 motion-reduce:transition-none"
-				x-bind:class="$store.device.type === 'desktop' ? (expanded ? 'ml-64' : 'ml-16') : ''"
+				x-bind:class="$store.media.breakpoint === 'desktop' ? (expanded ? 'ml-64' : 'ml-16') : ''"
 			>
 				<div class="flex h-14 items-center gap-3 px-4">
 					<Button
 						variant="ghost"
 						size="icon"
 						aria-label="Toggle sidebar"
-						x-on:click="$store.device.type === 'desktop' ? expanded = !expanded : $store.sidebar.toggle()"
+						x-on:click="$store.media.breakpoint === 'desktop' ? expanded = !expanded : $store.sidebar.toggle()"
 					>
 						<svg
 							xmlns="http://www.w3.org/2000/svg"

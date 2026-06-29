@@ -5,8 +5,8 @@ import {
   lazyPlugin,
   registerPlugin,
 } from "@ailuracode/alpine-core";
-import queryDevtools from "@ailuracode/alpine-query-devtools";
-import screen from "@ailuracode/alpine-screen";
+import media from "@ailuracode/alpine-media";
+import queryDevtoolsPlugin from "@ailuracode/alpine-query-kit";
 import scroll from "@ailuracode/alpine-scroll";
 import sidebar from "@ailuracode/alpine-sidebar";
 import theme from "@ailuracode/alpine-theme";
@@ -33,7 +33,7 @@ export type ToastDemoContent =
   | { kind: "badge"; label: string; seats?: number }
   | { kind: "undo-demo" };
 
-const screenIntervals = [
+const mediaIntervals = [
   { name: "mobile", maxWidth: 767 },
   { name: "tablet", maxWidth: 900 },
   { name: "desktop", maxWidth: Number.POSITIVE_INFINITY },
@@ -57,7 +57,7 @@ export function registerDemoPlugins(): void {
   // Essentials — eager sync loaders (shell needs these immediately)
   registerPlugin("theme", defineStorePlugin(["theme"], theme({ onChange: applyTheme })));
 
-  registerPlugin("screen", defineStorePlugin(["device"], screen({ intervals: screenIntervals })));
+  registerPlugin("media", defineStorePlugin(["media"], media({ intervals: mediaIntervals })));
 
   registerPlugin("scroll", defineStorePlugin(["scroll"], scroll()));
 
@@ -106,52 +106,25 @@ export function registerDemoPlugins(): void {
     })
   );
 
+  registerPlugin(
+    "env",
+    lazyPlugin({
+      kind: "magic",
+      magics: ["network", "visibility", "battery", "platform"],
+      import: () => import("@ailuracode/alpine-env"),
+    })
+  );
+
+  registerPlugin(
+    "transfer",
+    lazyPlugin({
+      kind: "magic",
+      magics: ["clipboard", "share", "export"],
+      import: () => import("@ailuracode/alpine-transfer"),
+    })
+  );
+
   // Extended — lazy dynamic imports
-  registerPlugin(
-    "network",
-    lazyPlugin({
-      kind: "magic",
-      magics: ["network"],
-      import: () => import("@ailuracode/alpine-network"),
-    })
-  );
-
-  registerPlugin(
-    "visibility",
-    lazyPlugin({
-      kind: "magic",
-      magics: ["visibility"],
-      import: () => import("@ailuracode/alpine-visibility"),
-    })
-  );
-
-  registerPlugin(
-    "clipboard",
-    lazyPlugin({
-      kind: "magic",
-      magics: ["clipboard"],
-      import: () => import("@ailuracode/alpine-clipboard"),
-    })
-  );
-
-  registerPlugin(
-    "platform",
-    lazyPlugin({
-      kind: "magic",
-      magics: ["platform"],
-      import: () => import("@ailuracode/alpine-platform"),
-    })
-  );
-
-  registerPlugin(
-    "touch",
-    lazyPlugin({
-      kind: "magic",
-      magics: ["touch"],
-      import: () => import("@ailuracode/alpine-touch"),
-    })
-  );
-
   registerPlugin(
     "toggle",
     lazyPlugin({
@@ -162,24 +135,6 @@ export function registerDemoPlugins(): void {
   );
 
   // Advanced — lazy dynamic imports
-  registerPlugin(
-    "share",
-    lazyPlugin({
-      kind: "magic",
-      magics: ["share"],
-      import: () => import("@ailuracode/alpine-share"),
-    })
-  );
-
-  registerPlugin(
-    "battery",
-    lazyPlugin({
-      kind: "magic",
-      magics: ["battery"],
-      import: () => import("@ailuracode/alpine-battery"),
-    })
-  );
-
   registerPlugin(
     "calendar",
     lazyPlugin({
@@ -193,17 +148,8 @@ export function registerDemoPlugins(): void {
     "attention",
     lazyPlugin({
       kind: "both",
-      magics: ["wakelock", "idle"],
+      magics: ["wakelock", "idle", "visibility"],
       import: () => import("@ailuracode/alpine-attention"),
-    })
-  );
-
-  registerPlugin(
-    "export",
-    lazyPlugin({
-      kind: "magic",
-      magics: ["export"],
-      import: () => import("@ailuracode/alpine-export"),
     })
   );
 
@@ -242,7 +188,7 @@ export function registerDemoPlugins(): void {
       kind: "magic",
       magics: ["nano"],
       import: async () => {
-        const { NanoStores } = await import("@ailuracode/alpine-query-adapter-nanostores");
+        const { NanoStores } = await import("@ailuracode/alpine-query-kit");
         return { default: NanoStores };
       },
     })
@@ -253,10 +199,18 @@ export function registerDemoPlugins(): void {
     defineStorePlugin(["query"], async () => {
       const [{ default: query }, { createAlpineNanostoresAdapter }] = await Promise.all([
         import("@ailuracode/alpine-query"),
-        import("@ailuracode/alpine-query-adapter-nanostores"),
+        import("@ailuracode/alpine-query-kit"),
       ]);
 
       return query({ adapter: createAlpineNanostoresAdapter });
+    })
+  );
+
+  registerPlugin(
+    "query-kit",
+    defineStorePlugin(["query"], async () => {
+      const { default: queryKit } = await import("@ailuracode/alpine-query-kit");
+      return queryKit;
     })
   );
 
@@ -281,7 +235,7 @@ export function setupDemoExtensions(Alpine: AlpineInstance): void {
   registerToastSonner(Alpine);
 
   Alpine.plugin(
-    queryDevtools({
+    queryDevtoolsPlugin({
       position: "bottom",
       toggleCorner: "bottom-left",
       additionalStores: queryDemoStores,

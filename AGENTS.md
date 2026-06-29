@@ -4,36 +4,29 @@ Guidance for AI agents and contributors working on **@ailuracode/alpinejs-toolki
 
 ## Project
 
-Alpine.js plugin monorepo by **ailuracode**. Twenty-one independent npm packages under `packages/`, plus shared tests and docs. The root package `@ailuracode/alpinejs-toolkit` is **private** and never published.
+Alpine.js plugin monorepo by **ailuracode**. Nineteen independent npm packages under `packages/`, plus shared tests and docs. The root package `@ailuracode/alpinejs-toolkit` is **private** and never published.
 
 | Package | Type | Store / Magic |
 |---------|------|---------------|
 | `@ailuracode/alpine-core` | Core | Plugin registry (`registerPlugin`, `initPlugins`) |
 | `@ailuracode/alpine-theme` | Store | `$store.theme` |
-| `@ailuracode/alpine-screen` | Store | `$store.device` |
+| `@ailuracode/alpine-media` | Store | `$store.media` |
 | `@ailuracode/alpine-scroll` | Store | `$store.scroll` |
 | `@ailuracode/alpine-sidebar` | Store | `$store.sidebar` |
 | `@ailuracode/alpine-lang` | Store | `$store.lang` |
-| `@ailuracode/alpine-network` | Magic | `$network` |
-| `@ailuracode/alpine-visibility` | Magic | `$visibility` |
-| `@ailuracode/alpine-battery` | Magic | `$battery` |
-| `@ailuracode/alpine-clipboard` | Magic | `$clipboard` |
+| `@ailuracode/alpine-env` | Magic | `$network`, `$visibility`, `$battery`, `$platform` |
+| `@ailuracode/alpine-transfer` | Magic | `$clipboard`, `$share`, `$export` |
 | `@ailuracode/alpine-toast` | Magic | `$toast` — headless queue (no markup/CSS) |
-| `@ailuracode/alpine-export` | Magic | `$export` |
 | `@ailuracode/alpine-calendar` | Magic | `$calendar` |
-| `@ailuracode/alpine-touch` | Magic | `$touch` |
 | `@ailuracode/alpine-toggle` | Magic | `$toggle` |
-| `@ailuracode/alpine-platform` | Magic | `$platform` |
 | `@ailuracode/alpine-notify` | Magic | `$notify` |
 | `@ailuracode/alpine-geo` | Store | `$store.geo` |
-| `@ailuracode/alpine-share` | Magic | `$share` |
-| `@ailuracode/alpine-attention` | Magic | `$wakelock`, `$idle` |
+| `@ailuracode/alpine-attention` | Magic | `$wakelock`, `$idle`, `$visibility` |
+| `@ailuracode/alpine-query-kit` | Plugin | Query cache + Nanostores adapter + devtools (**recommended**) |
 | `@ailuracode/alpine-query` | Core | Store-agnostic query cache (`createQueryClient`, `query({ adapter })`) |
 | `@ailuracode/alpine-json-api` | Magic | `$jsonapi` — typed JSON:API client |
-| `@ailuracode/alpine-query-adapter-nanostores` | Plugin | **Recommended** — Nanostores + `@nanostores/alpine` |
 | `@ailuracode/alpine-query-adapter-alpine` | Plugin | Native `Alpine.reactive` adapter |
 | `@ailuracode/alpine-query-adapter-zustand` | Plugin | Zustand vanilla adapter |
-| `@ailuracode/alpine-query-devtools` | Plugin | Query cache devtools panel |
 
 ## Repository layout
 
@@ -73,8 +66,8 @@ Do **not** bump `version` in `package.json` manually for releases — use Change
 
 ### Stores vs magics
 
-- **Store** — shared mutable state, actions, cross-component coordination (`theme`, `screen`, `scroll`).
-- **Magic** — read-only environment data or one-off utilities (`network`, `touch`, `clipboard`).
+- **Store** — shared mutable state, actions, cross-component coordination (`theme`, `media`, `scroll`).
+- **Magic** — read-only environment data or one-off utilities (`network`, `clipboard`).
 
 ### Naming
 
@@ -111,7 +104,7 @@ export default function themePlugin(options = {}) {
 The query engine is **agnostic to any store library**. Reactivity is injected via `QueryStateAdapter`:
 
 - **`@ailuracode/alpine-query`** — cache core only (`QueryCache`, `createQueryClient`, `query({ adapter })`, `vanillaQueryAdapter`)
-- **`@ailuracode/alpine-query-adapter-nanostores`** — **recommended** for Alpine; uses Nanostores + [`@nanostores/alpine`](https://github.com/nanostores/alpine) (`x-nano`, `$nano`)
+- **`@ailuracode/alpine-query-kit`** — **recommended** for Alpine; Nanostores adapter + devtools + re-exports `@ailuracode/alpine-query`
 - **`@ailuracode/alpine-query-adapter-alpine`** — native `Alpine.reactive`, zero external store deps
 - **`@ailuracode/alpine-query-adapter-zustand`** — Zustand vanilla stores; no official zustand-alpine exists — manual `subscribe` → `Alpine.reactive` bridge
 - **`createAlpineBridgedAdapter(Alpine, base)`** — shared bridge in core for adapter plugins

@@ -24,7 +24,7 @@ const navLinkClass = (id: string) => {
 <!-- Sidebar overlay — mobile only (native button — not DemoButton; must cover full viewport) -->
 <button
 	type="button"
-	x-show="$store.device.type !== 'desktop' && $store.sidebar.visible"
+	x-show="$store.media.breakpoint !== 'desktop' && $store.sidebar.visible"
 	x-transition.opacity
 	class="fixed inset-0 z-30 border-0 bg-black/50 p-0 motion-reduce:transition-none"
 	x-on:click="$store.sidebar.hide()"
@@ -34,7 +34,7 @@ const navLinkClass = (id: string) => {
 
 <!-- Left sidebar — persistent on desktop (width managed by local `expanded` state), drawer on mobile -->
 <aside
-	x-show="$store.device.type === 'desktop' || $store.sidebar.visible"
+	x-show="$store.media.breakpoint === 'desktop' || $store.sidebar.visible"
 	x-transition:enter="transition ease-out duration-300 motion-reduce:transition-none"
 	x-transition:enter-start="-translate-x-full"
 	x-transition:enter-end="translate-x-0"
@@ -43,7 +43,7 @@ const navLinkClass = (id: string) => {
 	x-transition:leave-end="-translate-x-full"
 	class="fixed inset-y-0 left-0 z-40 flex flex-col overflow-hidden border-r border-sidebar-border bg-sidebar text-sidebar-foreground shadow-xl transition-[width] duration-300 ease-out motion-reduce:transition-none"
 	x-cloak
-	x-bind:class="$store.device.type === 'desktop' && !expanded ? 'w-16' : 'w-64'"
+	x-bind:class="$store.media.breakpoint === 'desktop' && !expanded ? 'w-16' : 'w-64'"
 	aria-label="Playground navigation"
 >
 	<!-- Logo -->
@@ -51,7 +51,7 @@ const navLinkClass = (id: string) => {
 		href="/playground/"
 		class="flex h-14 shrink-0 items-center border-b border-sidebar-border transition-colors hover:bg-sidebar-accent/40"
 		x-bind:class="!expanded ? 'justify-center px-2' : 'px-4'"
-		x-on:click="$store.device.type !== 'desktop' && $store.sidebar.hide()"
+		x-on:click="$store.media.breakpoint !== 'desktop' && $store.sidebar.hide()"
 	>
 		<div class="flex items-center gap-3 overflow-hidden">
 			<img src="/logo.png" alt="" width="32" height="32" class="size-8 shrink-0 rounded-lg" />
@@ -71,7 +71,7 @@ const navLinkClass = (id: string) => {
 			class={navLinkClass("overview")}
 			title="Overview"
 			aria-current={activePlugin === "overview" ? "page" : undefined}
-			x-on:click="$store.device.type !== 'desktop' && $store.sidebar.hide()"
+			x-on:click="$store.media.breakpoint !== 'desktop' && $store.sidebar.hide()"
 		>
 			<DemoNavIcon id="overview" />
 			<span
@@ -99,7 +99,7 @@ const navLinkClass = (id: string) => {
 							class={navLinkClass(item.id)}
 							title={item.title}
 							aria-current={activePlugin === item.id ? "page" : undefined}
-							x-on:click="$store.device.type !== 'desktop' && $store.sidebar.hide()"
+							x-on:click="$store.media.breakpoint !== 'desktop' && $store.sidebar.hide()"
 						>
 							<DemoNavIcon id={item.id} />
 							<span

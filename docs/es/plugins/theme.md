@@ -84,6 +84,44 @@ Alpine.start();
 
 Cuando `mode` es `system`, el plugin escucha `prefers-color-scheme` y actualiza `resolved` automáticamente. No se requiere configuración adicional.
 
+## `resolved` vs `prefersColorScheme`
+
+Ambos se relacionan con claro/oscuro, pero responden preguntas distintas:
+
+| | `$store.theme.resolved` | `$store.media.prefersColorScheme` |
+|---|---|---|
+| **Paquete** | `@ailuracode/alpine-theme` | `@ailuracode/alpine-media` |
+| **Origen** | Preferencia del usuario (`mode`) + SO cuando `mode === 'system'` | Solo SO, vía `matchMedia` |
+| **Mutable** | Sí — `set('dark')` cambia `resolved` | No — señal de entorno de solo lectura |
+| **Uso** | Aplicar estilos (`onChange`, clases, `color-scheme`) | Detectar preferencia del SO aunque el usuario la haya anulado |
+
+Pueden diferir. Un usuario puede forzar modo oscuro mientras el SO prefiere claro:
+
+```js
+$store.theme.mode               // 'dark'
+$store.theme.resolved           // 'dark'
+$store.media.prefersColorScheme // 'light' (el SO sigue prefiriendo claro)
+```
+
+**Regla práctica:**
+
+- **Estilar la app** → `$store.theme.resolved` (o `isResolvedDark` / `isResolvedLight`)
+- **Señal del SO** (analítica, copy condicional, hints de “seguir sistema”) → `$store.media.prefersColorScheme`
+
+Si solo usas `@ailuracode/alpine-theme`, `resolved` basta en la mayoría de apps. Añade `@ailuracode/alpine-media` cuando también necesites breakpoints u otras media features.
+
+```html
+<!-- Aplicar tema a la UI -->
+<div :class="{ 'dark': $store.theme.isResolvedDark }">...</div>
+
+<!-- Preferencia del SO solo cuando el usuario eligió "system" -->
+<p x-show="$store.theme.isSystem">
+  Preferencia del sistema: <span x-text="$store.media.prefersColorScheme"></span>
+</p>
+```
+
+Ver también [Media — tema vs esquema de color del SO](./media.md#theme-vs-media-color-scheme).
+
 ## Prevención de FOUC
 
 Registra el plugin y `onChange` lo antes posible en tu archivo de entrada. El plugin se inicializa al registrarse (antes de `Alpine.start()`) para que `onChange` pueda ejecutarse antes del primer renderizado.

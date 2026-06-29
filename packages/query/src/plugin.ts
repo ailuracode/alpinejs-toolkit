@@ -43,7 +43,7 @@ export function createQueryPlugin(
  *
  * @example
  * import query from "@ailuracode/alpine-query";
- * import { createAlpineNanostoresAdapter } from "@ailuracode/alpine-query-adapter-nanostores";
+ * import { createAlpineNanostoresAdapter } from "@ailuracode/alpine-query-kit";
  *
  * Alpine.plugin(query({ adapter: createAlpineNanostoresAdapter }));
  */

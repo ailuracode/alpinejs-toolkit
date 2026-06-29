@@ -41,6 +41,8 @@ Alpine.start();
 | **Methods** | `set(mode)`, `cycle()`, `refresh()`, `is(name)`, `isResolved(name)` |
 | **Options** | `storageKey`, `onChange({ mode, resolved })` |
 
+**Color scheme:** use `resolved` to style the app. For the OS-only signal, see [`prefersColorScheme` in alpine-media](../../docs/plugins/media.md#theme-vs-media-color-scheme) — the two can differ when the user overrides system preference.
+
 ## License
 
 MIT

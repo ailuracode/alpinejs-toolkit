@@ -21,12 +21,12 @@ import {
   initPlugins,
   registerPlugin,
 } from "@ailuracode/alpine-core";
-import share from "@ailuracode/alpine-share";
+import { sharePlugin } from "@ailuracode/alpine-transfer";
 import theme from "@ailuracode/alpine-theme";
 
 registerPlugin(
   "share",
-  defineMagicPlugin(["share"], share)
+  defineMagicPlugin(["share"], sharePlugin)
 );
 
 registerPlugin(
@@ -53,7 +53,7 @@ registerPlugin(
   lazyPlugin({
     kind: "magic",
     magics: ["share"],
-    import: () => import("@ailuracode/alpine-share"),
+    import: () => import("@ailuracode/alpine-transfer"),
   })
 );
 
@@ -75,6 +75,10 @@ Alpine.start();
 | `lazyPlugin(options)` | Helper for dynamic `import()` loaders |
 | `isPluginInitialized(name)` | Whether a plugin has been initialized |
 | `getRegisteredPlugins()` | List registered plugins |
+| `createMatchMediaWatcher(query, callback)` | Subscribe to `matchMedia` with legacy fallback |
+| `watchMatchMedia(queries, callback)` | Subscribe to multiple queries |
+| `safeMatchMedia(query)` | SSR-safe `window.matchMedia` |
+| `readTouchCapabilities()` | Shared touch/pointer/hover signals |
 
 ## Plugin kinds
 

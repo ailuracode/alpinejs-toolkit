@@ -1,0 +1,17 @@
+---
+import { getPluginNavItem } from "../../plugin-nav";
+import DemoSection from "../DemoSection.astro";
+
+const plugin = getPluginNavItem("query-kit")!;
+---
+
+<DemoSection id={plugin.id} title={plugin.title} api={plugin.api} description={plugin.description}>
+	<p class="text-sm">
+		<code>$store.query</code> is registered with the Nanostores adapter. Open the query devtools panel
+		(bottom-left toggle) to inspect cache entries — same stack as the standalone Query demo, installed via
+		one meta-package.
+	</p>
+	<p class="text-xs text-muted-foreground mt-3">
+		Package: <code>{plugin.package}</code> — includes query core, Nanostores adapter, and devtools.
+	</p>
+</DemoSection>

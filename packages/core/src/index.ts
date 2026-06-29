@@ -11,6 +11,11 @@ export {
 } from "./define.js";
 export { PluginLoaderError } from "./loader.js";
 export {
+  createMatchMediaWatcher,
+  safeMatchMedia,
+  watchMatchMedia,
+} from "./match-media.js";
+export {
   getRegisteredPlugin,
   getRegisteredPlugins,
   isPluginInitialized,
@@ -18,6 +23,8 @@ export {
   resetPluginRegistry,
   unregisterPlugin,
 } from "./registry.js";
+export type { TouchCapabilities } from "./touch-capabilities.js";
+export { readTouchCapabilities } from "./touch-capabilities.js";
 export type {
   AlpinePluginCallback,
   HybridPluginDefinition,

@@ -35,16 +35,16 @@ Start with **Essentials** — the modules most apps need first. Add **Extended**
 | Package | API | Use when |
 |---------|-----|----------|
 | [Theme](./plugins/theme.md) | `$store.theme` | Light / dark / system preference |
-| [Screen](./plugins/screen.md) | `$store.device` | Responsive breakpoints in templates |
+| [Media](./plugins/media.md) | `$store.media` | Viewport breakpoints and media features |
 | [Scroll](./plugins/scroll.md) | `$store.scroll` | Scroll progress, body lock for overlays |
 | [Sidebar](./plugins/sidebar.md) | `$store.sidebar` | Drawer / nav shell state |
 | [Toast](./plugins/toast.md) | `$toast` | In-app messages; [`fromPayload`](./plugins/toast.md) for plain objects |
 
 ## Extended & advanced
 
-- **Extended** — [network](./plugins/network.md), [visibility](./plugins/visibility.md), [clipboard](./plugins/clipboard.md), [platform](./plugins/platform.md), [touch](./plugins/touch.md), [toggle](./plugins/toggle.md)
-- **Advanced** — [geo](./plugins/geo.md), [battery](./plugins/battery.md), [export](./plugins/export.md), [share](./plugins/share.md), [attention](./plugins/attention.md), [notify](./plugins/notify.md), [calendar](./plugins/calendar.md), [JSON:API](./plugins/json-api.md)
-- **Query** — [store-agnostic cache](./query.md) with pluggable adapters and optional [devtools](./query-devtools.md)
+- **Extended** — [env](./plugins/env.md), [transfer](./plugins/transfer.md), [toggle](./plugins/toggle.md)
+- **Advanced** — [geo](./plugins/geo.md), [attention](./plugins/attention.md), [notify](./plugins/notify.md), [calendar](./plugins/calendar.md), [JSON:API](./plugins/json-api.md), [query kit](./plugins/query-kit.md)
+- **Query** — [store-agnostic cache](./query.md) with pluggable adapters and optional [devtools](./plugins/query-kit.md#devtools)
 
 ## Explore
 

@@ -12,29 +12,23 @@
     "paths": {
       "@ailuracode/alpine-core": ["./packages/core/src/index.ts"],
       "@ailuracode/alpine-attention": ["./packages/attention/src/index.ts"],
-      "@ailuracode/alpine-battery": ["./packages/battery/src/index.ts"],
       "@ailuracode/alpine-calendar": ["./packages/calendar/src/index.ts"],
-      "@ailuracode/alpine-clipboard": ["./packages/clipboard/src/index.ts"],
+      "@ailuracode/alpine-env": ["./packages/env/src/index.ts"],
+      "@ailuracode/alpine-transfer": ["./packages/transfer/src/index.ts"],
       "@ailuracode/alpine-toast": ["./packages/toast/src/index.ts"],
-      "@ailuracode/alpine-export": ["./packages/export/src/index.ts"],
       "@ailuracode/alpine-json-api": ["./packages/json-api/src/index.ts"],
-      "@ailuracode/alpine-network": ["./packages/network/src/index.ts"],
       "@ailuracode/alpine-notify": ["./packages/notify/src/index.ts"],
-      "@ailuracode/alpine-platform": ["./packages/platform/src/index.ts"],
       "@ailuracode/alpine-query": ["./packages/query/src/index.ts"],
       "@ailuracode/alpine-query-adapter-alpine": ["./packages/query-adapter-alpine/src/index.ts"],
-      "@ailuracode/alpine-query-adapter-nanostores": [
-        "./packages/query-adapter-nanostores/src/index.ts"
-      ],
       "@ailuracode/alpine-query-adapter-zustand": ["./packages/query-adapter-zustand/src/index.ts"],
-      "@ailuracode/alpine-query-devtools": ["./packages/query-devtools/src/index.ts"],
-      "@ailuracode/alpine-screen": ["./packages/screen/src/index.ts"],
+      "@ailuracode/alpine-query-kit": ["./packages/query-kit/src/index.ts"],
+      "@ailuracode/alpine-media": ["./packages/media/src/index.ts"],
       "@ailuracode/alpine-sidebar": ["./packages/sidebar/src/index.ts"],
       "@ailuracode/alpine-scroll": ["./packages/scroll/src/index.ts"],
       "@ailuracode/alpine-theme": ["./packages/theme/src/index.ts"],
       "@ailuracode/alpine-toggle": ["./packages/toggle/src/index.ts"],
-      "@ailuracode/alpine-touch": ["./packages/touch/src/index.ts"],
-      "@ailuracode/alpine-visibility": ["./packages/visibility/src/index.ts"]
+      "@ailuracode/alpine-geo": ["./packages/geo/src/index.ts"],
+      "@ailuracode/alpine-lang": ["./packages/lang/src/index.ts"]
     }
   },
   "include": [

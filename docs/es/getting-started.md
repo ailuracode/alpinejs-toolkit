@@ -16,7 +16,7 @@ Empieza con el registro core y los cinco módulos esenciales:
 npm install alpinejs \
   @ailuracode/alpine-core \
   @ailuracode/alpine-theme \
-  @ailuracode/alpine-screen \
+  @ailuracode/alpine-media \
   @ailuracode/alpine-scroll \
   @ailuracode/alpine-sidebar \
   @ailuracode/alpine-toast
@@ -71,10 +71,10 @@ Si aún no necesitas lazy loading, registra plugins directamente — siempre **a
 ```js
 import Alpine from "alpinejs";
 import theme from "@ailuracode/alpine-theme";
-import screen from "@ailuracode/alpine-screen";
+import media from "@ailuracode/alpine-media";
 
 Alpine.plugin(theme({ onChange: applyTheme }));
-Alpine.plugin(screen);
+Alpine.plugin(media);
 
 Alpine.start();
 ```
@@ -88,7 +88,7 @@ Alpine.start();
   Oscuro
 </button>
 
-<div x-show="$store.device.isMobile">Layout móvil</div>
+<div x-show="$store.media.isMobile">Layout móvil</div>
 ```
 
 ### Magics
@@ -101,13 +101,13 @@ Alpine.start();
 
 | Nivel | Paquetes | Cuándo añadir |
 |-------|----------|---------------|
-| **Esenciales** | theme, screen, scroll, sidebar, toast | La mayoría de apps Alpine |
-| **Extendidos** | network, visibility, clipboard, platform, touch, toggle | Conectividad, portapapeles, hints de dispositivo |
+| **Esenciales** | theme, media, scroll, sidebar, toast | La mayoría de apps Alpine |
+| **Extendidos** | network, attention, clipboard, platform, toggle | Conectividad, portapapeles, hints de dispositivo |
 | **Avanzados** | geo, battery, export, share, attention, notify, calendar, json-api | APIs de navegador especializadas |
 | **Query** | query + adapter + devtools | Caché de datos en cliente (ver [Query](./query.md)) |
 
 ## Siguientes pasos
 
 - [Core](./core.md) — registro lazy e imports dinámicos
-- Esenciales — [theme](./plugins/theme.md), [screen](./plugins/screen.md), [scroll](./plugins/scroll.md), [sidebar](./plugins/sidebar.md), [toast](./plugins/toast.md)
+- Esenciales — [theme](./plugins/theme.md), [media](./plugins/media.md), [scroll](./plugins/scroll.md), [sidebar](./plugins/sidebar.md), [toast](./plugins/toast.md)
 - [Playground](/playground/) — demos interactivas

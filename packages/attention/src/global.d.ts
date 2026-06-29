@@ -28,11 +28,18 @@ export interface IdleMagic {
   stop(): boolean;
 }
 
+export type {
+  VisibilityMagic,
+  VisibilitySnapshot,
+  VisibilityState,
+} from "@ailuracode/alpine-env";
+
 declare global {
   namespace Alpine {
     interface Magics<T> {
       $wakelock: WakeLockMagic;
       $idle: IdleMagic;
+      $visibility: import("@ailuracode/alpine-env").VisibilityMagic;
     }
   }
 }

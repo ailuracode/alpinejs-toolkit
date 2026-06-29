@@ -8,7 +8,7 @@ Obtención asíncrona de datos al estilo TanStack Query para Alpine.js: caché, 
 ## Instalación
 
 ```bash
-npm install @ailuracode/alpine-query @ailuracode/alpine-query-adapter-nanostores alpinejs nanostores @nanostores/alpine
+npm install @ailuracode/alpine-query @ailuracode/alpine-query-kit alpinejs nanostores @nanostores/alpine
 ```
 
 ## Inicio rápido
@@ -21,7 +21,7 @@ import query from "@ailuracode/alpine-query";
 import {
   createAlpineNanostoresAdapter,
   NanoStores,
-} from "@ailuracode/alpine-query-adapter-nanostores";
+} from "@ailuracode/alpine-query-kit";
 
 Alpine.plugin(NanoStores);
 Alpine.plugin(query({ adapter: createAlpineNanostoresAdapter }));
@@ -32,7 +32,7 @@ Otros paquetes adaptador:
 
 | Package | Backend |
 |---------|---------|
-| `@ailuracode/alpine-query-adapter-nanostores` | Nanostores + `@nanostores/alpine` (**recomendado**) |
+| `@ailuracode/alpine-query-kit` | Nanostores + `@nanostores/alpine` (**recomendado**) |
 | `@ailuracode/alpine-query-adapter-alpine` | `Alpine.reactive` nativo |
 | `@ailuracode/alpine-query-adapter-zustand` | Zustand vanilla (puente manual; sin zustand-alpine oficial) |
 
@@ -42,7 +42,7 @@ Otros paquetes adaptador:
 
 ```js
 import { createQueryClient, vanillaQueryAdapter } from "@ailuracode/alpine-query";
-import { nanostoresQueryAdapter } from "@ailuracode/alpine-query-adapter-nanostores";
+import { nanostoresQueryAdapter } from "@ailuracode/alpine-query-kit";
 
 const query = createQueryClient({ adapter: nanostoresQueryAdapter });
 const todos = query.observe(["todos"], fetchTodos);
@@ -204,7 +204,7 @@ export const myStoreAdapter: QueryStateAdapter = {
 
 Conecta el `subscribe` / `listen` nativo del store en `listen` en lugar de un `Set` manual cuando esté disponible. Adaptadores existentes:
 
-- [`query-adapter-nanostores`](../packages/query-adapter-nanostores/src/adapter.ts) — Nanostores `map()`
+- [`query-kit`](../packages/query-kit/src/nanostores/adapter.ts) — Nanostores `map()`
 - [`query-adapter-zustand`](../packages/query-adapter-zustand/src/adapter.ts) — Zustand vanilla `createStore`
 
 ### Plugin Alpine desde un adaptador personalizado

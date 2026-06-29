@@ -7,13 +7,12 @@ allowBuilds:
   sharp: true
 
 minimumReleaseAgeExclude:
-  - '@ailuracode/alpine-clipboard@0.2.0'
-  - '@ailuracode/alpine-network@1.0.0'
+  - '@ailuracode/alpine-env@0.1.0'
+  - '@ailuracode/alpine-transfer@0.1.0'
   - '@ailuracode/alpine-notify@0.2.0'
-  - '@ailuracode/alpine-screen@0.2.0'
+  - '@ailuracode/alpine-media@0.2.0'
   - '@ailuracode/alpine-scroll@0.2.0'
   - '@ailuracode/alpine-theme@0.2.0'
-  - '@ailuracode/alpine-touch@0.2.0'
   - '@astrojs/markdown-satteri@0.3.1'
   - astro@7.0.0
 

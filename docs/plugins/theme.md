@@ -84,6 +84,44 @@ Alpine.start();
 
 When `mode` is `system`, the plugin listens to `prefers-color-scheme` and updates `resolved` automatically. No extra setup required.
 
+## `resolved` vs `prefersColorScheme`
+
+Both relate to light/dark, but they answer different questions:
+
+| | `$store.theme.resolved` | `$store.media.prefersColorScheme` |
+|---|---|---|
+| **Package** | `@ailuracode/alpine-theme` | `@ailuracode/alpine-media` |
+| **Source** | User preference (`mode`) + OS when `mode === 'system'` | OS only, via `matchMedia` |
+| **Mutable** | Yes — `set('dark')` changes `resolved` | No — read-only environment signal |
+| **Use for** | Applying styles (`onChange`, classes, `color-scheme`) | Detecting OS preference regardless of user override |
+
+They can differ. A user can force dark mode while the OS prefers light:
+
+```js
+$store.theme.mode               // 'dark'
+$store.theme.resolved           // 'dark'
+$store.media.prefersColorScheme // 'light' (OS still prefers light)
+```
+
+**Rule of thumb:**
+
+- **Styling the app** → `$store.theme.resolved` (or `isResolvedDark` / `isResolvedLight`)
+- **OS environment signal** (analytics, conditional copy, “match system” UI hints) → `$store.media.prefersColorScheme`
+
+If you only use `@ailuracode/alpine-theme`, `resolved` is enough for most apps. Add `@ailuracode/alpine-media` when you also need viewport breakpoints or other media features.
+
+```html
+<!-- Apply theme to the UI -->
+<div :class="{ 'dark': $store.theme.isResolvedDark }">...</div>
+
+<!-- Show OS preference only when user chose "system" -->
+<p x-show="$store.theme.isSystem">
+  System preference: <span x-text="$store.media.prefersColorScheme"></span>
+</p>
+```
+
+See also [Media — theme vs media color scheme](./media.md#theme-vs-media-color-scheme).
+
 ## FOUC prevention
 
 Register the plugin and `onChange` as early as possible in your entry file. The plugin bootstraps on registration (before `Alpine.start()`) so `onChange` can run before first paint.

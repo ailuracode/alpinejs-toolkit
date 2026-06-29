@@ -1,4 +1,15 @@
+import { registerVisibilityMagic, type VisibilityMagic } from "@ailuracode/alpine-env";
 import type AlpineType from "alpinejs";
+
+export {
+  createVisibilityState,
+  readVisibilityState,
+  registerVisibilityMagic,
+  VISIBILITY_STATES,
+  type VisibilityMagic,
+  type VisibilitySnapshot,
+  type VisibilityState,
+} from "@ailuracode/alpine-env";
 
 export type IdleUserState = "active" | "idle";
 export type IdleScreenState = "locked" | "unlocked";
@@ -455,10 +466,11 @@ function registerIdleMagic(Alpine: AlpineType.Alpine): void {
   }
 }
 
-/** Alpine.js attention plugin. Registers `$wakelock` and `$idle` magics. */
+/** Alpine.js attention plugin. Registers `$wakelock`, `$idle`, and `$visibility` magics. */
 export default function attentionPlugin(Alpine: AlpineType.Alpine): void {
   registerWakeLockMagic(Alpine);
   registerIdleMagic(Alpine);
+  registerVisibilityMagic(Alpine);
 }
 
 declare global {
@@ -466,6 +478,7 @@ declare global {
     interface Magics<T> {
       $wakelock: WakeLockMagic;
       $idle: IdleMagic;
+      $visibility: VisibilityMagic;
     }
   }
 }

@@ -16,7 +16,7 @@ Start with the core registry and the five essential modules:
 npm install alpinejs \
   @ailuracode/alpine-core \
   @ailuracode/alpine-theme \
-  @ailuracode/alpine-screen \
+  @ailuracode/alpine-media \
   @ailuracode/alpine-scroll \
   @ailuracode/alpine-sidebar \
   @ailuracode/alpine-toast
@@ -58,13 +58,13 @@ registerPlugin(
   })
 );
 
-registerPlugin("screen", lazyPlugin({
+registerPlugin("media", lazyPlugin({
   kind: "store",
-  stores: ["device"],
-  import: () => import("@ailuracode/alpine-screen"),
+  stores: ["media"],
+  import: () => import("@ailuracode/alpine-media"),
 }));
 
-Alpine.plugin(createAlpinePlugin(["theme", "toast", "screen"]));
+Alpine.plugin(createAlpinePlugin(["theme", "toast", "media"]));
 Alpine.start();
 ```
 
@@ -100,10 +100,10 @@ If you do not need lazy loading yet, register plugins directly — still **befor
 ```js
 import Alpine from "alpinejs";
 import theme from "@ailuracode/alpine-theme";
-import screen from "@ailuracode/alpine-screen";
+import media from "@ailuracode/alpine-media";
 
 Alpine.plugin(theme({ onChange: applyTheme }));
-Alpine.plugin(screen);
+Alpine.plugin(media);
 
 Alpine.start();
 ```
@@ -119,7 +119,7 @@ Migrate to the core registry when you want code-splitting or a single init pipel
   Dark
 </button>
 
-<div x-show="$store.device.isMobile">Mobile layout</div>
+<div x-show="$store.media.isMobile">Mobile layout</div>
 
 <button x-show="$store.scroll.showToTop" @click="$store.scroll.toTop()">
   Back to top
@@ -147,8 +147,8 @@ See [`$toast.fromPayload`](./plugins/toast.md) for the full payload shape.
 
 | Tier | Packages | When to add |
 |------|----------|-------------|
-| **Essentials** | theme, screen, scroll, sidebar, toast | Most Alpine apps |
-| **Extended** | network, visibility, clipboard, platform, touch, toggle | Connectivity, clipboard, device hints |
+| **Essentials** | theme, media, scroll, sidebar, toast | Most Alpine apps |
+| **Extended** | network, attention, clipboard, platform, toggle | Connectivity, clipboard, device hints |
 | **Advanced** | geo, battery, export, share, attention, notify, calendar, json-api | Specialized browser APIs |
 | **Query** | query + adapter + devtools | Client-side data cache (see [Query](./query.md)) |
 
@@ -182,5 +182,5 @@ Or import the plugin module — generated types augment globals automatically.
 ## Next steps
 
 - [Core](./core.md) — lazy registry and dynamic imports
-- Essentials — [theme](./plugins/theme.md), [screen](./plugins/screen.md), [scroll](./plugins/scroll.md), [sidebar](./plugins/sidebar.md), [toast](./plugins/toast.md)
+- Essentials — [theme](./plugins/theme.md), [media](./plugins/media.md), [scroll](./plugins/scroll.md), [sidebar](./plugins/sidebar.md), [toast](./plugins/toast.md)
 - [Playground](/playground/) — interactive demos

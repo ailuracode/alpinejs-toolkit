@@ -45,21 +45,15 @@ importers:
       '@ailuracode/alpine-attention':
         specifier: workspace:*
         version: link:../../packages/attention
-      '@ailuracode/alpine-battery':
-        specifier: workspace:*
-        version: link:../../packages/battery
       '@ailuracode/alpine-calendar':
         specifier: workspace:*
         version: link:../../packages/calendar
-      '@ailuracode/alpine-clipboard':
-        specifier: workspace:*
-        version: link:../../packages/clipboard
       '@ailuracode/alpine-core':
         specifier: workspace:*
         version: link:../../packages/core
-      '@ailuracode/alpine-export':
+      '@ailuracode/alpine-env':
         specifier: workspace:*
-        version: link:../../packages/export
+        version: link:../../packages/env
       '@ailuracode/alpine-geo':
         specifier: workspace:*
         version: link:../../packages/geo
@@ -69,39 +63,27 @@ importers:
       '@ailuracode/alpine-lang':
         specifier: workspace:*
         version: link:../../packages/lang
-      '@ailuracode/alpine-network':
+      '@ailuracode/alpine-media':
         specifier: workspace:*
-        version: link:../../packages/network
+        version: link:../../packages/media
       '@ailuracode/alpine-notify':
         specifier: workspace:*
         version: link:../../packages/notify
-      '@ailuracode/alpine-platform':
-        specifier: workspace:*
-        version: link:../../packages/platform
       '@ailuracode/alpine-query':
         specifier: workspace:*
         version: link:../../packages/query
       '@ailuracode/alpine-query-adapter-alpine':
         specifier: workspace:*
         version: link:../../packages/query-adapter-alpine
-      '@ailuracode/alpine-query-adapter-nanostores':
-        specifier: workspace:*
-        version: link:../../packages/query-adapter-nanostores
       '@ailuracode/alpine-query-adapter-zustand':
         specifier: workspace:*
         version: link:../../packages/query-adapter-zustand
-      '@ailuracode/alpine-query-devtools':
+      '@ailuracode/alpine-query-kit':
         specifier: workspace:*
-        version: link:../../packages/query-devtools
-      '@ailuracode/alpine-screen':
-        specifier: workspace:*
-        version: link:../../packages/screen
+        version: link:../../packages/query-kit
       '@ailuracode/alpine-scroll':
         specifier: workspace:*
         version: link:../../packages/scroll
-      '@ailuracode/alpine-share':
-        specifier: workspace:*
-        version: link:../../packages/share
       '@ailuracode/alpine-sidebar':
         specifier: workspace:*
         version: link:../../packages/sidebar
@@ -114,12 +96,9 @@ importers:
       '@ailuracode/alpine-toggle':
         specifier: workspace:*
         version: link:../../packages/toggle
-      '@ailuracode/alpine-touch':
+      '@ailuracode/alpine-transfer':
         specifier: workspace:*
-        version: link:../../packages/touch
-      '@ailuracode/alpine-visibility':
-        specifier: workspace:*
-        version: link:../../packages/visibility
+        version: link:../../packages/transfer
       '@astrojs/react':
         specifier: ^6.0.0
         version: 6.0.0(@types/node@26.0.0)(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(esbuild@0.28.1)(jiti@2.7.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
@@ -187,15 +166,9 @@ importers:
 
   packages/attention:
     dependencies:
-      '@types/alpinejs':
-        specifier: ^3.13.11
-        version: 3.13.11
-      alpinejs:
-        specifier: ^3.0.0
-        version: 3.15.12
-
-  packages/battery:
-    dependencies:
+      '@ailuracode/alpine-env':
+        specifier: workspace:*
+        version: link:../env
       '@types/alpinejs':
         specifier: ^3.13.11
         version: 3.13.11
@@ -215,15 +188,6 @@ importers:
         specifier: ^4.1.0
         version: 4.4.0
 
-  packages/clipboard:
-    dependencies:
-      '@types/alpinejs':
-        specifier: ^3.13.11
-        version: 3.13.11
-      alpinejs:
-        specifier: ^3.0.0
-        version: 3.15.12
-
   packages/core:
     dependencies:
       '@types/alpinejs':
@@ -233,7 +197,7 @@ importers:
         specifier: ^3.0.0
         version: 3.15.12
 
-  packages/export:
+  packages/env:
     dependencies:
       '@types/alpinejs':
         specifier: ^3.13.11
@@ -272,8 +236,11 @@ importers:
         specifier: ^3.0.0
         version: 3.15.12
 
-  packages/network:
+  packages/media:
     dependencies:
+      '@ailuracode/alpine-core':
+        specifier: workspace:*
+        version: link:../core
       '@types/alpinejs':
         specifier: ^3.13.11
         version: 3.13.11
@@ -283,18 +250,9 @@ importers:
 
   packages/notify:
     dependencies:
-      '@ailuracode/alpine-platform':
+      '@ailuracode/alpine-env':
         specifier: workspace:*
-        version: link:../platform
-      '@types/alpinejs':
-        specifier: ^3.13.11
-        version: 3.13.11
-      alpinejs:
-        specifier: ^3.0.0
-        version: 3.15.12
-
-  packages/platform:
-    dependencies:
+        version: link:../env
       '@types/alpinejs':
         specifier: ^3.13.11
         version: 3.13.11
@@ -323,7 +281,22 @@ importers:
         specifier: ^3.0.0
         version: 3.15.12
 
-  packages/query-adapter-nanostores:
+  packages/query-adapter-zustand:
+    dependencies:
+      '@ailuracode/alpine-query':
+        specifier: workspace:*
+        version: link:../query
+      '@types/alpinejs':
+        specifier: ^3.13.11
+        version: 3.13.11
+      alpinejs:
+        specifier: ^3.0.0
+        version: 3.15.12
+      zustand:
+        specifier: ^5.0.11
+        version: 5.0.14(@types/react@19.2.17)(react@19.2.7)(use-sync-external-store@1.6.0(react@19.2.7))
+
+  packages/query-kit:
     dependencies:
       '@ailuracode/alpine-query':
         specifier: workspace:*
@@ -341,52 +314,7 @@ importers:
         specifier: ^1.3.0
         version: 1.3.0
 
-  packages/query-adapter-zustand:
-    dependencies:
-      '@ailuracode/alpine-query':
-        specifier: workspace:*
-        version: link:../query
-      '@types/alpinejs':
-        specifier: ^3.13.11
-        version: 3.13.11
-      alpinejs:
-        specifier: ^3.0.0
-        version: 3.15.12
-      zustand:
-        specifier: ^5.0.11
-        version: 5.0.14(@types/react@19.2.17)(react@19.2.7)(use-sync-external-store@1.6.0(react@19.2.7))
-
-  packages/query-devtools:
-    dependencies:
-      '@ailuracode/alpine-query':
-        specifier: workspace:*
-        version: link:../query
-      '@types/alpinejs':
-        specifier: ^3.13.11
-        version: 3.13.11
-      alpinejs:
-        specifier: ^3.0.0
-        version: 3.15.12
-
-  packages/screen:
-    dependencies:
-      '@types/alpinejs':
-        specifier: ^3.13.11
-        version: 3.13.11
-      alpinejs:
-        specifier: ^3.0.0
-        version: 3.15.12
-
   packages/scroll:
-    dependencies:
-      '@types/alpinejs':
-        specifier: ^3.13.11
-        version: 3.13.11
-      alpinejs:
-        specifier: ^3.0.0
-        version: 3.15.12
-
-  packages/share:
     dependencies:
       '@types/alpinejs':
         specifier: ^3.13.11
@@ -431,16 +359,7 @@ importers:
         specifier: ^3.0.0
         version: 3.15.12
 
-  packages/touch:
-    dependencies:
-      '@types/alpinejs':
-        specifier: ^3.13.11
-        version: 3.13.11
-      alpinejs:
-        specifier: ^3.0.0
-        version: 3.15.12
-
-  packages/visibility:
+  packages/transfer:
     dependencies:
       '@types/alpinejs':
         specifier: ^3.13.11

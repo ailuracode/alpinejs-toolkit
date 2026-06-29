@@ -2,7 +2,7 @@
 
 Modular **Alpine.js toolkit** — lazy plugin init, headless stores and magics, TypeScript-first DX. Framework-agnostic: works with Vite, Astro, static HTML, or any ESM bundler.
 
-Built by **ailuracode**. Twenty-one independent npm packages; install only what you need.
+Built by **ailuracode**. Nineteen independent npm packages; install only what you need.
 
 ## Why this exists
 
@@ -67,7 +67,7 @@ Start here for most Alpine apps.
 | Package | API | Description |
 |---------|-----|-------------|
 | [`@ailuracode/alpine-theme`](./packages/theme/README.md) | `$store.theme` | Light / dark / system preference |
-| [`@ailuracode/alpine-screen`](./packages/screen/README.md) | `$store.device` | Responsive breakpoints |
+| [`@ailuracode/alpine-media`](./packages/media/README.md) | `$store.media` | Viewport breakpoints and media features |
 | [`@ailuracode/alpine-scroll`](./packages/scroll/README.md) | `$store.scroll` | Scroll tracking and body lock |
 | [`@ailuracode/alpine-sidebar`](./packages/sidebar/README.md) | `$store.sidebar` | Sidebar / drawer shell state |
 | [`@ailuracode/alpine-lang`](./packages/lang/README.md) | `$store.lang` | Browser-language detection and reactive current-language store |
@@ -77,22 +77,16 @@ Start here for most Alpine apps.
 
 | Package | API | Description |
 |---------|-----|-------------|
-| [`@ailuracode/alpine-network`](./packages/network/README.md) | `$network` | Online / offline state |
-| [`@ailuracode/alpine-visibility`](./packages/visibility/README.md) | `$visibility` | Tab visibility |
-| [`@ailuracode/alpine-clipboard`](./packages/clipboard/README.md) | `$clipboard` | Copy to clipboard |
-| [`@ailuracode/alpine-platform`](./packages/platform/README.md) | `$platform` | OS and platform detection |
-| [`@ailuracode/alpine-touch`](./packages/touch/README.md) | `$touch` | Touch and pointer capabilities |
+| [`@ailuracode/alpine-env`](./packages/env/README.md) | `$network`, `$visibility`, `$battery`, `$platform` | Browser environment magics |
+| [`@ailuracode/alpine-transfer`](./packages/transfer/README.md) | `$clipboard`, `$share`, `$export` | Outbound data transfer |
 | [`@ailuracode/alpine-toggle`](./packages/toggle/README.md) | `$toggle` | Binary and ternary toggle state |
 
 ### Advanced
 
 | Package | API | Description |
 |---------|-----|-------------|
-| [`@ailuracode/alpine-battery`](./packages/battery/README.md) | `$battery` | Battery level and charging |
 | [`@ailuracode/alpine-geo`](./packages/geo/README.md) | `$store.geo` | Geolocation |
-| [`@ailuracode/alpine-export`](./packages/export/README.md) | `$export` | Programmatic file downloads |
-| [`@ailuracode/alpine-share`](./packages/share/README.md) | `$share` | Web Share API |
-| [`@ailuracode/alpine-attention`](./packages/attention/README.md) | `$wakelock`, `$idle` | Wake Lock and Idle Detection |
+| [`@ailuracode/alpine-attention`](./packages/attention/README.md) | `$wakelock`, `$idle`, `$visibility` | Wake Lock, Idle Detection, tab visibility |
 | [`@ailuracode/alpine-notify`](./packages/notify/README.md) | `$notify` | Web Notifications |
 | [`@ailuracode/alpine-calendar`](./packages/calendar/README.md) | `$calendar` | Calendar date logic (date-fns) |
 | [`@ailuracode/alpine-json-api`](./packages/json-api/README.md) | `$jsonapi` | Typed JSON:API client |
@@ -102,10 +96,9 @@ Start here for most Alpine apps.
 | Package | Description |
 |---------|-------------|
 | [`@ailuracode/alpine-query`](./packages/query/README.md) | Store-agnostic query cache |
-| [`@ailuracode/alpine-query-adapter-nanostores`](./packages/query-adapter-nanostores/README.md) | **Recommended** — Nanostores + `@nanostores/alpine` |
+| [`@ailuracode/alpine-query-kit`](./packages/query-kit/README.md) | **Recommended** — query + Nanostores adapter + devtools |
 | [`@ailuracode/alpine-query-adapter-alpine`](./packages/query-adapter-alpine/README.md) | Native `Alpine.reactive` adapter |
 | [`@ailuracode/alpine-query-adapter-zustand`](./packages/query-adapter-zustand/README.md) | Zustand vanilla adapter |
-| [`@ailuracode/alpine-query-devtools`](./packages/query-devtools/README.md) | Query cache inspector |
 
 ## Demo app
 
@@ -125,8 +118,8 @@ See [AGENTS.md](./AGENTS.md) for the full checklist when adding a plugin.
 
 - [Getting started](./docs/getting-started.md) — lazy init, essentials, HTML usage
 - [Core](./docs/core.md) — plugin registry
-- **Essentials** — [theme](./docs/plugins/theme.md), [screen](./docs/plugins/screen.md), [scroll](./docs/plugins/scroll.md), [sidebar](./docs/plugins/sidebar.md), [lang](./docs/plugins/lang.md), [toast](./docs/plugins/toast.md)
-- [Query](./docs/query.md) · [Query devtools](./docs/query-devtools.md)
+- **Essentials** — [theme](./docs/plugins/theme.md), [media](./docs/plugins/media.md), [scroll](./docs/plugins/scroll.md), [sidebar](./docs/plugins/sidebar.md), [lang](./docs/plugins/lang.md), [toast](./docs/plugins/toast.md)
+- [Query](./docs/query.md) · [Query devtools](./docs/plugins/query-kit.md#devtools)
 - [AGENTS.md](./AGENTS.md) — guide for AI agents and maintainers
 
 ## Development

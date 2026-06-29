@@ -1,7 +1,7 @@
 {
   "name": "@ailuracode/alpine-attention",
   "version": "0.1.1",
-  "description": "Alpine.js Screen Wake Lock and Idle Detection magics",
+  "description": "Alpine.js Screen Wake Lock, Idle Detection, and tab visibility magics",
   "type": "module",
   "license": "MIT",
   "author": "ailuracode",
@@ -40,8 +40,11 @@
       "optional": true
     }
   },
+  "dependencies": {
+    "@ailuracode/alpine-env": "workspace:*"
+  },
   "scripts": {
-    "build": "tsup src/index.ts --format esm --dts --clean --sourcemap --out-dir dist && cp src/global.d.ts dist/global.d.ts",
+    "build": "tsup src/index.ts --format esm --dts --clean --sourcemap --out-dir dist --external @ailuracode/alpine-env && cp src/global.d.ts dist/global.d.ts",
     "prepublishOnly": "pnpm run build",
     "test": "vitest run --config ../../vitest.config.ts test"
   },

@@ -7,6 +7,8 @@ interface MockMediaQueryList {
   matches: boolean;
   addEventListener(_event: string, listener: () => void): void;
   removeEventListener(_event: string, listener: () => void): void;
+  addListener(listener: () => void): void;
+  removeListener(listener: () => void): void;
   dispatch(matches: boolean): void;
 }
 
@@ -21,6 +23,13 @@ function createMediaQueryList(query: string, matches = false): MockMediaQueryLis
       mediaListeners.set(query, listeners);
     },
     removeEventListener(_event, listener) {
+      listeners.delete(listener);
+    },
+    addListener(listener) {
+      listeners.add(listener);
+      mediaListeners.set(query, listeners);
+    },
+    removeListener(listener) {
       listeners.delete(listener);
     },
     dispatch(matches) {
