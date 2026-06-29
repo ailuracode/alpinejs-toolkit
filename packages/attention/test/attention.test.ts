@@ -11,8 +11,6 @@ import attentionPlugin, {
   MIN_IDLE_THRESHOLD,
   normalizeIdleThreshold,
   readIdlePermissionStatus,
-  type VisibilityMagic,
-  type VisibilityState,
   type WakeLockMagic,
   type WakeLockSentinelLike,
 } from "../src/index.js";
@@ -408,44 +406,5 @@ describe("helpers", () => {
     await expect(readIdlePermissionStatus()).resolves.toBeNull();
 
     query.mockRestore();
-  });
-});
-
-function setDocumentVisibility(hidden: boolean, visibilityState: VisibilityState): void {
-  Object.defineProperty(document, "hidden", {
-    configurable: true,
-    value: hidden,
-  });
-  Object.defineProperty(document, "visibilityState", {
-    configurable: true,
-    value: visibilityState,
-  });
-}
-
-describe("@ailuracode/alpine-attention $visibility", () => {
-  it("registers $visibility alongside wake lock and idle magics", () => {
-    setDocumentVisibility(false, "visible");
-
-    const harness = createMagicHarness(attentionPlugin) as {
-      visibility: VisibilityMagic;
-      wakelock: WakeLockMagic;
-      idle: IdleMagic;
-    };
-
-    expect(harness.visibility.isVisible).toBe(true);
-    expect(harness.wakelock.isSupported).toBeTypeOf("boolean");
-    expect(harness.idle.isSupported).toBeTypeOf("boolean");
-  });
-
-  it("updates visibility on visibilitychange", () => {
-    setDocumentVisibility(false, "visible");
-
-    const { visibility } = createMagicHarness(attentionPlugin) as { visibility: VisibilityMagic };
-
-    setDocumentVisibility(true, "hidden");
-    document.dispatchEvent(new Event("visibilitychange"));
-
-    expect(visibility.isHidden).toBe(true);
-    expect(visibility.state).toBe("hidden");
   });
 });

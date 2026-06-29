@@ -166,9 +166,6 @@ importers:
 
   packages/attention:
     dependencies:
-      '@ailuracode/alpine-env':
-        specifier: workspace:*
-        version: link:../env
       '@types/alpinejs':
         specifier: ^3.13.11
         version: 3.13.11

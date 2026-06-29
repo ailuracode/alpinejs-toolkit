@@ -104,11 +104,10 @@ export const PLUGIN_NAV_GROUPS: PluginNavGroup[] = [
         id: "attention",
         title: "Attention",
         package: "@ailuracode/alpine-attention",
-        api: "$wakelock · $idle · $visibility",
+        api: "$wakelock · $idle",
         kind: "magic",
         tier: "advanced",
-        description:
-          "Wake Lock, Idle Detection, and tab visibility (`$visibility` via alpine-env).",
+        description: "Wake Lock and Idle Detection for presentations, media, and session-aware UI.",
       },
       {
         id: "notify",

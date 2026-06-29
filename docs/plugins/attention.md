@@ -5,7 +5,9 @@ description: "Package: @ailuracode/alpine-attention"
 
 Package: `@ailuracode/alpine-attention`
 
-Reactive Screen Wake Lock, Idle Detection, and tab visibility via `$wakelock`, `$idle`, and `$visibility`. Wraps the [Screen Wake Lock API](https://developer.mozilla.org/en-US/docs/Web/API/Screen_Wake_Lock_API), [Idle Detection API](https://developer.mozilla.org/en-US/docs/Web/API/Idle_Detection_API), and [Page Visibility API](https://developer.mozilla.org/en-US/docs/Web/API/Page_Visibility_API) when available.
+Reactive Screen Wake Lock and Idle Detection via `$wakelock` and `$idle`. Wraps the [Screen Wake Lock API](https://developer.mozilla.org/en-US/docs/Web/API/Screen_Wake_Lock_API) and [Idle Detection API](https://developer.mozilla.org/en-US/docs/Web/API/Idle_Detection_API) when available.
+
+For tab visibility, use [`@ailuracode/alpine-env`](./env.md) (`$visibility`).
 
 ## Install
 
@@ -82,21 +84,6 @@ The plugin re-acquires the wake lock when the tab becomes visible again if you p
   </p>
   <p x-show="$idle.isIdle" class="hint">User went idle — pause expensive work.</p>
 </section>
-```
-
-## `$visibility` magic
-
-Tab visibility via the Page Visibility API. Helpers live in `@ailuracode/alpine-core` (`readVisibilityState`, `registerVisibilityMagic`).
-
-| Property | Type | Description |
-|----------|------|-------------|
-| `isVisible` | `boolean` (getter) | `true` when the tab is visible |
-| `isHidden` | `boolean` (getter) | `true` when the tab is hidden |
-| `state` | `'visible' \| 'hidden' \| 'prerender'` | Current `document.visibilityState` |
-| `is(state)` | `(state) => boolean` | Check the current visibility state |
-
-```html
-<div x-show="!$visibility.isVisible">Tab is in the background</div>
 ```
 
 ## Notes

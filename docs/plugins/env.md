@@ -66,7 +66,7 @@ Reactive tab visibility from the Page Visibility API.
 <div x-show="$visibility.isHidden">Tab is in the background</div>
 ```
 
-`$visibility` is also registered by [`@ailuracode/alpine-attention`](./attention.md) when you only need wake lock / idle detection.
+`$visibility` is registered by [`@ailuracode/alpine-env`](./env.md). Pair with [`@ailuracode/alpine-attention`](./attention.md) when you also need wake lock or idle detection.
 
 ## `$battery`
 

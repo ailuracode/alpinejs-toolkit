@@ -1,8 +1,10 @@
 # @ailuracode/alpine-attention
 
-Screen Wake Lock, Idle Detection, and tab visibility magics for Alpine.js.
+Screen Wake Lock and Idle Detection magics for Alpine.js.
 
 **[Full documentation →](../../docs/plugins/attention.md)**
+
+For tab visibility (`$visibility`), use [`@ailuracode/alpine-env`](../env/README.md).
 
 ## Install
 
@@ -31,18 +33,15 @@ Alpine.start();
 <p x-show="$idle.isWatching">
   User: <span x-text="$idle.userState"></span>
 </p>
-
-<div x-show="!$visibility.isVisible">Tab is in the background</div>
 ```
 
 ## API summary
 
 | | |
 |-|-|
-| **Magics** | `$wakelock`, `$idle`, `$visibility` |
+| **Magics** | `$wakelock`, `$idle` |
 | **Wake lock** | `isSupported`, `isActive`, `isRequesting`, `request()`, `release()` |
 | **Idle** | `isSupported`, `isWatching`, `userState`, `screenState`, `requestPermission()`, `start()`, `stop()` |
-| **Visibility** | `isVisible`, `isHidden`, `state`, `is(state)` — re-exported from `@ailuracode/alpine-core` |
 
 ## License
 

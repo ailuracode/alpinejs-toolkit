@@ -86,7 +86,7 @@ Start here for most Alpine apps.
 | Package | API | Description |
 |---------|-----|-------------|
 | [`@ailuracode/alpine-geo`](./packages/geo/README.md) | `$store.geo` | Geolocation |
-| [`@ailuracode/alpine-attention`](./packages/attention/README.md) | `$wakelock`, `$idle`, `$visibility` | Wake Lock, Idle Detection, tab visibility |
+| [`@ailuracode/alpine-attention`](./packages/attention/README.md) | `$wakelock`, `$idle` | Wake Lock and Idle Detection |
 | [`@ailuracode/alpine-notify`](./packages/notify/README.md) | `$notify` | Web Notifications |
 | [`@ailuracode/alpine-calendar`](./packages/calendar/README.md) | `$calendar` | Calendar date logic (date-fns) |
 | [`@ailuracode/alpine-json-api`](./packages/json-api/README.md) | `$jsonapi` | Typed JSON:API client |

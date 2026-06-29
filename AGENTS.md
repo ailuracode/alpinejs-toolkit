@@ -21,7 +21,7 @@ Alpine.js plugin monorepo by **ailuracode**. Nineteen independent npm packages u
 | `@ailuracode/alpine-toggle` | Magic | `$toggle` |
 | `@ailuracode/alpine-notify` | Magic | `$notify` |
 | `@ailuracode/alpine-geo` | Store | `$store.geo` |
-| `@ailuracode/alpine-attention` | Magic | `$wakelock`, `$idle`, `$visibility` |
+| `@ailuracode/alpine-attention` | Magic | `$wakelock`, `$idle` |
 | `@ailuracode/alpine-query-kit` | Plugin | Query cache + Nanostores adapter + devtools (**recommended**) |
 | `@ailuracode/alpine-query` | Core | Store-agnostic query cache (`createQueryClient`, `query({ adapter })`) |
 | `@ailuracode/alpine-json-api` | Magic | `$jsonapi` — typed JSON:API client |

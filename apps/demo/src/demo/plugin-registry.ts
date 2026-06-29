@@ -147,8 +147,8 @@ export function registerDemoPlugins(): void {
   registerPlugin(
     "attention",
     lazyPlugin({
-      kind: "both",
-      magics: ["wakelock", "idle", "visibility"],
+      kind: "magic",
+      magics: ["wakelock", "idle"],
       import: () => import("@ailuracode/alpine-attention"),
     })
   );
