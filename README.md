@@ -86,7 +86,7 @@ Start here for most Alpine apps.
 | Package | API | Description |
 |---------|-----|-------------|
 | [`@ailuracode/alpine-dialog`](./packages/dialog/README.md) | `$store.dialog` | Accessible modal state and focus trap |
-| [`@ailuracode/alpine-menu`](./packages/menu/README.md) | `$store.menu` | Dropdown/context menu keyboard navigation |
+| [`@ailuracode/alpine-menu`](./packages/menu/README.md) | `$store.menu` | Exclusive dropdown/context menu keyboard navigation |
 | [`@ailuracode/alpine-tooltip`](./packages/tooltip/README.md) | `$store.tooltip` | Tooltip positioning and delays |
 | [`@ailuracode/alpine-toast`](./packages/toast/README.md) | `$toast` | Headless toast queue; `fromPayload` for plain objects |
 | [`@ailuracode/alpine-tabs`](./packages/tabs/README.md) | `$store.tabs` | Accessible tabs with URL sync |

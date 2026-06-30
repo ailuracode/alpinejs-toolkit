@@ -11,6 +11,7 @@ export type MenuInstance = {
   activeItemId: string | null;
   orientation: MenuOrientation;
   closeOnSelect: boolean;
+  group: string | null;
   items: MenuItemState[];
   container: HTMLElement | null;
   trigger: HTMLElement | null;
@@ -27,6 +28,8 @@ export type MenuItemOptions = {
 export type MenuInstanceOptions = {
   orientation?: MenuOrientation;
   closeOnSelect?: boolean;
+  /** When store `exclusive` is `false`, only one menu per group may be open at a time. */
+  group?: string;
   onOpen?: () => void;
   onClose?: () => void;
   onSelect?: (itemId: string) => void;
@@ -56,6 +59,8 @@ export type MenuStore = {
 };
 
 type MenuStoreConfig = {
+  /** When true (default), opening a menu closes all other open menus. */
+  exclusive?: boolean;
   onLockChange?: (locked: boolean) => void;
 };
 
@@ -93,6 +98,7 @@ function createInstance(options: MenuInstanceOptions = {}): MenuInstance {
     activeItemId: null,
     orientation: options.orientation ?? "vertical",
     closeOnSelect: options.closeOnSelect ?? true,
+    group: options.group ?? null,
     items: [],
     container: null,
     trigger: null,
@@ -175,6 +181,7 @@ function handleMenuKeydown(
 
 /** Creates the headless menu store. */
 export function createMenuStore(config: MenuStoreConfig = {}): MenuStore {
+  const exclusive = config.exclusive ?? true;
   let lockCount = 0;
 
   function setLock(locked: boolean): void {
@@ -199,6 +206,44 @@ export function createMenuStore(config: MenuStoreConfig = {}): MenuStore {
   function getOrCreate(store: MenuStore, id: string): MenuInstance {
     store.instances[id] ??= createInstance();
     return store.instances[id];
+  }
+
+  function closeMenu(id: string, suppressLock = false): void {
+    const instance = store.instances[id];
+    if (!instance?.open) {
+      return;
+    }
+
+    instance.open = false;
+
+    if (!suppressLock) {
+      setLock(false);
+    }
+
+    instance.onClose?.();
+  }
+
+  function closeOtherMenus(openingId: string): number {
+    const opening = store.instances[openingId];
+    const openingGroup = opening?.group ?? null;
+    let closedCount = 0;
+
+    for (const menuId of Object.keys(store.instances)) {
+      if (menuId === openingId || !store.isOpen(menuId)) {
+        continue;
+      }
+
+      const other = store.instances[menuId];
+      const shouldClose =
+        exclusive !== false || (openingGroup !== null && other.group === openingGroup);
+
+      if (shouldClose) {
+        closeMenu(menuId, true);
+        closedCount++;
+      }
+    }
+
+    return closedCount;
   }
 
   const store: MenuStore = {
@@ -249,28 +294,23 @@ export function createMenuStore(config: MenuStoreConfig = {}): MenuStore {
         return;
       }
 
+      const closedCount = closeOtherMenus(id);
+
       instance.open = true;
       if (!instance.activeItemId) {
         instance.activeItemId = firstItem(instance);
       }
 
-      setLock(true);
+      if (closedCount === 0) {
+        setLock(true);
+      }
 
       instance.onOpen?.();
       queueMicrotask(() => focusActiveMenu(instance));
     },
 
     close(id) {
-      const instance = this.instances[id];
-      if (!instance?.open) {
-        return;
-      }
-
-      instance.open = false;
-
-      setLock(false);
-
-      instance.onClose?.();
+      closeMenu(id);
     },
 
     toggle(id) {

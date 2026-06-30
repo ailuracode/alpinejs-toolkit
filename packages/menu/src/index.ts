@@ -10,6 +10,8 @@ export {
 } from "./store.js";
 
 export interface MenuPluginOptions {
+  /** When true (default), opening a menu closes all other open menus. */
+  exclusive?: boolean;
   onLockChange?: (locked: boolean) => void;
 }
 
@@ -22,6 +24,7 @@ export function menuOptions<const T extends MenuPluginOptions>(options: T): T {
 export default function menuPlugin(options: MenuPluginOptions = {}): AlpineType.PluginCallback {
   return function registerMenu(Alpine) {
     const store = createMenuStore({
+      exclusive: options.exclusive,
       onLockChange: options.onLockChange,
     });
     Alpine.store("menu", store);

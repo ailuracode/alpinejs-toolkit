@@ -6,36 +6,62 @@ import DemoSection from "../DemoSection.astro";
 const plugin = getPluginNavItem("menu")!;
 const itemClasses =
   "block w-full text-left rounded-md px-3 py-2 text-sm hover:bg-accent focus:outline-none focus-visible:ring-2 focus-visible:ring-ring";
+const menuData = `{ userIds: ['profile', 'settings', 'billing', 'logout'], actionIds: ['save', 'duplicate', 'delete'] }`;
+const menuInit = `
+	$store.menu.register('user-menu', {
+		orientation: 'vertical',
+		onSelect: (id) => $toast('Selected ' + id),
+	});
+	userIds.forEach((id) => $store.menu.registerItem('user-menu', id));
+	$store.menu.register('actions-menu', {
+		orientation: 'vertical',
+		onSelect: (id) => $toast('Action: ' + id),
+	});
+	actionIds.forEach((id) => $store.menu.registerItem('actions-menu', id));
+`;
+const menuKeydown =
+  "if ($store.menu.isOpen('user-menu')) $store.menu.handleKeydown('user-menu', $event); else if ($store.menu.isOpen('actions-menu')) $store.menu.handleKeydown('actions-menu', $event)";
+const menuOutsideClick =
+  "$store.menu.handleOutsideClick('user-menu', $event); $store.menu.handleOutsideClick('actions-menu', $event)";
+const activeMenuItem =
+  "$store.menu.isOpen('user-menu') ? $store.menu.activeItem('user-menu') : ($store.menu.isOpen('actions-menu') ? $store.menu.activeItem('actions-menu') : '—')";
 ---
 
 <DemoSection id={plugin.id} title={plugin.title} api={plugin.api} description={plugin.description}>
 	<div
 		class="grid gap-6"
-		x-data="{ ids: ['profile', 'settings', 'billing', 'logout'] }"
-		x-init="
-			$store.menu.register('user-menu', {
-				orientation: 'vertical',
-				onSelect: (id) => $toast(`Selected ${id}`),
-			});
-			ids.forEach(id => $store.menu.registerItem('user-menu', id));
-		"
-		@keydown.window="$store.menu.isOpen('user-menu') && $store.menu.handleKeydown('user-menu', $event)"
-		@click.window="$store.menu.handleOutsideClick('user-menu', $event)"
+		x-data={menuData}
+		x-init={menuInit}
+		x-on:keydown.window={menuKeydown}
+		x-on:click.window={menuOutsideClick}
 	>
 		<div>
-			<h3 class="text-sm font-medium mb-2">Dropdown menu</h3>
+			<h3 class="text-sm font-medium mb-2">Exclusive dropdowns</h3>
 			<p class="text-xs text-muted-foreground mb-3">
-				Open: <strong x-text="$store.menu.isOpen('user-menu')"></strong> · Active:
-				<strong x-text="$store.menu.activeItem('user-menu') ?? '—'"></strong>
+				By default, opening one menu closes any other. Account:
+				<strong x-text="$store.menu.isOpen('user-menu')"></strong> · Actions:
+				<strong x-text="$store.menu.isOpen('actions-menu')"></strong> · Active:
+				<strong x-text={activeMenuItem}></strong>
 			</p>
-			<div x-ref="userMenuTrigger" x-init="$store.menu.bindTrigger('user-menu', $el)">
-				<DemoButton
-					@click="$store.menu.toggle('user-menu')"
-					aria-haspopup="menu"
-					x-bind:aria-expanded="$store.menu.isOpen('user-menu')"
-				>
-					Account
-				</DemoButton>
+			<div class="flex flex-wrap gap-2">
+				<div x-ref="userMenuTrigger" x-init="$store.menu.bindTrigger('user-menu', $el)">
+					<DemoButton
+						@click="$store.menu.toggle('user-menu')"
+						aria-haspopup="menu"
+						x-bind:aria-expanded="$store.menu.isOpen('user-menu')"
+					>
+						Account
+					</DemoButton>
+				</div>
+				<div x-ref="actionsMenuTrigger" x-init="$store.menu.bindTrigger('actions-menu', $el)">
+					<DemoButton
+						@click="$store.menu.toggle('actions-menu')"
+						aria-haspopup="menu"
+						x-bind:aria-expanded="$store.menu.isOpen('actions-menu')"
+					>
+						Actions
+					</DemoButton>
+				</div>
 			</div>
 
 			<template x-teleport="body">
@@ -47,7 +73,7 @@ const itemClasses =
 					x-init="$store.menu.bindMenu('user-menu', $el)"
 					class="z-[60] min-w-48 rounded-md border bg-popover p-1 shadow-md"
 				>
-					<template x-for="id in ids" :key="id">
+					<template x-for="id in userIds" :key="id">
 						<li>
 							<button
 								type="button"
@@ -61,6 +87,39 @@ const itemClasses =
 					</template>
 				</ul>
 			</template>
+
+			<template x-teleport="body">
+				<ul
+					x-show="$store.menu.isOpen('actions-menu')"
+					x-transition
+					x-anchor.bottom-start.offset.8.fixed="$refs.actionsMenuTrigger"
+					x-bind="$store.menu.menuProps('actions-menu')"
+					x-init="$store.menu.bindMenu('actions-menu', $el)"
+					class="z-[60] min-w-48 rounded-md border bg-popover p-1 shadow-md"
+				>
+					<template x-for="id in actionIds" :key="id">
+						<li>
+							<button
+								type="button"
+								class={itemClasses}
+								x-bind="$store.menu.itemProps('actions-menu', id)"
+								:class="$store.menu.activeItem('actions-menu') === id ? 'bg-accent' : ''"
+								@click="$store.menu.selectItem('actions-menu', id)"
+								x-text="id"
+							></button>
+						</li>
+					</template>
+				</ul>
+			</template>
+		</div>
+
+		<div>
+			<h3 class="text-sm font-medium mb-2">Exclusive mode</h3>
+			<ul class="text-xs text-muted-foreground list-disc pl-5 space-y-1">
+				<li><code>exclusive: true</code> (default) — <code>open()</code> / <code>toggle()</code> close every other open menu</li>
+				<li>Scroll lock stays in sync when one menu replaces another</li>
+				<li>Pass <code>exclusive: false</code> for multiple open menus, or use per-menu <code>group</code> for menubar-style exclusivity</li>
+			</ul>
 		</div>
 
 		<div>

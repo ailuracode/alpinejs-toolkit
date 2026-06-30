@@ -159,7 +159,7 @@ export const PLUGIN_NAV_GROUPS: PluginNavGroup[] = [
         kind: "store",
         tier: "headless",
         description:
-          "Dropdown and context menu state with keyboard navigation, roving tabindex, and ARIA helpers.",
+          "Dropdown and context menu state with exclusive open behavior, keyboard navigation, roving tabindex, and ARIA helpers.",
       },
       {
         id: "tooltip",
