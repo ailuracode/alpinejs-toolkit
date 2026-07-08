@@ -17,11 +17,20 @@ import type { PluginDefinition, PluginKind } from "../types";
  * Throws a {@link ToolkitError} with `code: 'PLUGIN_INVALID_DEFINITION'` when
  * `definition` is malformed. Returns the same `definition` so callers can
  * chain: `return assertValidDefinition(d);`.
+ *
+ * Dev-only sanity check. The production build replaces
+ * `process.env.NODE_ENV` with the literal `"production"` (see
+ * `tsup.config.ts`), so the minifier dead-code-eliminates the entire
+ * body and trees the unused helper assertions out of the bundle. Catch
+ * malformation early in development; trust the call site in
+ * production.
  */
 export function assertValidDefinition(definition: PluginDefinition): PluginDefinition {
-  assertKindsValid(definition);
-  assertNamesShapeValid(definition);
-  assertNamesPerKindValid(definition);
+  if (process.env.NODE_ENV !== "production") {
+    assertKindsValid(definition);
+    assertNamesShapeValid(definition);
+    assertNamesPerKindValid(definition);
+  }
   return definition;
 }
 

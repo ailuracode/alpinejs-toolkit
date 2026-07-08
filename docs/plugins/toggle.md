@@ -43,7 +43,8 @@ Alpine.start();
 | `value`                 | Current state                                                               |
 | `states`                | `{ on, off, indeterminate }` view                                           |
 | `is(value)`             | Whether `value` is the current state                                         |
-| `set(value)`            | Silently sets the state — no-op when value is unchanged or invalid         |
+| `set(value)`            | Sets the state — no-op when value is unchanged or invalid                   |
+| `setSilently(value)`    | Sets the state without emitting `change` (use for hydration)                |
 | `toggle()`              | Flips between `on` and `off`; from `indeterminate` it moves to `on`         |
 | `next()`                | Advances through every state in declaration order                          |
 | `reset()`               | Restores `initial`                                                          |

@@ -23,31 +23,35 @@ npm install alpinejs @ailuracode/alpine-core @ailuracode/alpine-theme @ailuracod
 import Alpine from "alpinejs";
 import {
   createAlpinePlugin,
-  defineStorePlugin,
+  definePlugin,
   lazyPlugin,
   registerPlugin,
 } from "@ailuracode/alpine-core";
-
-function applyTheme({ resolved }) {
-  document.documentElement.classList.toggle("dark", resolved === "dark");
-}
+import { themePlugin } from "@ailuracode/alpine-theme";
 
 registerPlugin(
   "theme",
-  defineStorePlugin(["theme"], async () => {
-    const { default: theme } = await import("@ailuracode/alpine-theme");
-    return theme({ onChange: applyTheme });
+  definePlugin(["store"], {
+    names: ["theme"],
+    plugin: () => themePlugin(),
   })
 );
 
-registerPlugin("toast", lazyPlugin({
-  kind: "magic",
-  magics: ["toast"],
-  import: () => import("@ailuracode/alpine-toast"),
-}));
+registerPlugin(
+  "toast",
+  lazyPlugin(["magic"], {
+    names: ["toast"],
+    import: () => import("@ailuracode/alpine-toast"),
+  })
+);
 
 Alpine.plugin(createAlpinePlugin(["theme", "toast"]));
 Alpine.start();
+
+// Theme is CSS-framework agnostic — wire your own classes via subscribe:
+Alpine.store("theme").on("change", (detail) => {
+  document.documentElement.classList.toggle("dark", detail.resolved === "dark");
+});
 ```
 
 See [Getting started](./docs/getting-started.md) for essentials, lazy init, and HTML usage.

@@ -6,8 +6,9 @@ Framework-agnostic theme manager for Alpine.js, Blade, Livewire, and any TypeScr
 
 ```mermaid
 flowchart TD
-    entry["createTheme()<br/>(manager.ts)"]:::entry
+    entry["createTheme()<br/>(controller.ts)"]:::entry
 
+    toggle["ToggleController&lt;'light', 'dark', 'system'&gt;<br/>@ailuracode/alpine-toggle"]:::module
     storage["ThemeStorage<br/>(internal/storage/*)"]:::module
     dom["DomStrategy<br/>(internal/dom-strategy/*)"]:::module
     system["SystemObserver<br/>(internal/system-observer.ts)"]:::module
@@ -24,6 +25,7 @@ flowchart TD
     matchMedia["matchMedia change<br/>(prefers-color-scheme)"]:::impl
     storageEvent["storage event<br/>(window listener)"]:::impl
 
+    entry --> toggle
     entry --> storage
     entry --> dom
     entry --> system
@@ -48,6 +50,8 @@ flowchart TD
 
 The core is engine-free: no Alpine import, no DOM mutation outside the strategy, no `window`/`document` access at import time. The Alpine integration is a thin adapter that exposes the manager through `$store.theme` and `$theme`.
 
+The three-value `current` state machine (`light` / `dark` / `system`) is composed from a [`ToggleController`](https://github.com/ailuracode/alpinejs-toolkit/tree/main/packages/toggle) — the same toolkit primitive that powers the `$toggle` magic. Theme delegates validation and transitions to the inner toggle, and layers persistence, DOM application, system observation, and cross-tab synchronization on top. Hydration from storage uses `toggle.setSilently(...)` so the queued initialization microtask preserves the persisted value instead of resetting to the configured default.
+
 ## State model
 
 Three orthogonal values:
@@ -69,7 +73,7 @@ Examples:
 ## Install
 
 ```bash
-pnpm add @ailuracode/alpine-theme @ailuracode/alpine-core alpinejs
+pnpm add @ailuracode/alpine-theme @ailuracode/alpine-toggle @ailuracode/alpine-core alpinejs
 ```
 
 ## Standalone usage (no Alpine)

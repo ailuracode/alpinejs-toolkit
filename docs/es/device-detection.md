@@ -63,4 +63,4 @@ Use for OS-specific copy, shortcuts, or install flows — not for layout width.
 
 - [Theme](./plugins/theme.md) — user-controlled light/dark (`$store.theme.resolved`), not device detection
 - [`resolved` vs `prefersColorScheme`](./plugins/theme.md#resolved-vs-preferscolorscheme) — styling vs OS color signal
-- [`@ailuracode/alpine-core`](./core.md) — `createMatchMediaWatcher`, `readTouchCapabilities` for custom plugins
+- [`@ailuracode/alpine-core`](./core.md) — helpers SSR-safe del navegador (`isBrowser`, `safeWindow`, `safeMatchMedia`) para plugins custom

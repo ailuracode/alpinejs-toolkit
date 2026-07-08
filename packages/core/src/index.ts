@@ -13,7 +13,7 @@
  *    initialize them on demand, support both sync and dynamic `import()`
  *    loaders, and stay SSR-safe.
  * 2. **Headless controller primitives** — `BaseController`,
- *    `TypedEventEmitter`, `CleanupStack`, `InstanceRegistry`, and
+ *    `EventEmitter`, `CleanupStack`, `InstanceRegistry`, and
  *    `ToolkitError`, which every feature package in this monorepo is
  *    expected to use.
  *
@@ -24,11 +24,11 @@
  * the build, not the in-repo source.
  */
 
+// --- Controller primitives (used by every feature package) ---------------
+export { BaseController } from "./controller";
 export { CleanupStack } from "./core/cleanup";
 // --- Controller + event-emitter type helpers -----------------------------
 export type { LifecyclePhase } from "./core/controller";
-// --- Controller primitives (used by every feature package) ---------------
-export { BaseController } from "./core/controller";
 export type { DebugEvent, DebugLogger, DebugOption } from "./core/debug";
 export type { ToolkitErrorCode } from "./core/error";
 export { ToolkitError } from "./core/error";

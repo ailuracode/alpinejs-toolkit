@@ -10,7 +10,7 @@ Manages light, dark, and system theme preference with `localStorage` persistence
 ## Install
 
 ```bash
-npm install @ailuracode/alpine-theme alpinejs
+npm install @ailuracode/alpine-theme @ailuracode/alpine-toggle @ailuracode/alpine-core alpinejs
 ```
 
 ## Setup

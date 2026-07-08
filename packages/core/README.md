@@ -10,9 +10,9 @@ monorepo.
    initialize them on demand, support both sync and dynamic `import()`
    loaders, stay SSR-safe.
 2. **Headless controller primitives** — `BaseController`,
-   `TypedEventEmitter`, `CleanupStack`, `InstanceRegistry`, and
-   `ToolkitError`. Every feature package in this monorepo is built on top of
-   them.
+   `EventEmitter`, `CleanupStack`, `InstanceRegistry`, and
+   `ToolkitError`. Every feature package in this monorepo is built on
+   top of them.
 
 This package MUST NOT become a container for feature-specific helpers —
 [per `AGENTS.md`](../../AGENTS.md) every abstraction here is generic,
@@ -27,16 +27,12 @@ least two packages.
 | Dynamic `import()` can't be awaited before `Alpine.start()`       | `initPlugins()` resolves every loader (sync or async) before the consumer's bootstrap          |
 | Mixed sync/async code paths produce subtle init order bugs        | `initPluginsSync()` / `createAlpinePlugin()` enforce a single sync code path                   |
 | `window.matchMedia` throws on the server                          | `safeMatchMedia()`, `isBrowser()`, `safeWindow()`, `safeDocument()` guard DOM access           |
-| Every feature reinvents its own lifecycle, event bus, and cleanup | `BaseController` + `CleanupStack` + `TypedEventEmitter` + `InstanceRegistry` ship the contract |
+| Every feature reinvents its own lifecycle, event bus, and cleanup | `BaseController` + `CleanupStack` + `EventEmitter` + `InstanceRegistry` ship the contract     |
 
-> **What core is NOT.** Touch capability detection (`readTouchCapabilities`)
-> used to live here; it has been removed because it is feature-specific and
-> belongs in a future `@ailuracode/alpine-touch` plugin. The
-> `createMatchMediaWatcher` / `watchMatchMedia` subscription helpers have
-> also been moved to a future `@ailuracode/alpine-media` service package —
-> they manage listener lifecycles, which is a service concern, not a
-> core primitive. Core stays generic — only Alpine plugin plumbing and
-> SSR-safe wrappers around generic Web APIs.
+> **What core is NOT.** Core stays generic — only Alpine plugin plumbing
+> and SSR-safe wrappers around generic Web APIs. Feature-specific
+> helpers (touch detection, media-query subscription, etc.) belong in
+> dedicated packages.
 
 ## Install
 
@@ -49,14 +45,15 @@ pnpm add @ailuracode/alpine-core alpinejs
 ```ts
 import Alpine from 'alpinejs';
 import { createAlpinePlugin, definePlugin, registerPlugin } from '@ailuracode/alpine-core';
-import { sharePlugin } from '@ailuracode/alpine-transfer';
-import { createTheme } from '@ailuracode/alpine-theme';
+import { themePlugin } from '@ailuracode/alpine-theme';
 
-registerPlugin('share', definePlugin(['magic'], { names: ['share'], plugin: sharePlugin }));
-registerPlugin('theme', definePlugin(['store'], { names: ['theme'], plugin: createTheme() }));
+registerPlugin(
+  'theme',
+  definePlugin(['store'], { names: ['theme'], plugin: () => themePlugin() })
+);
 
 // Sync entry — every loader is pre-resolved.
-Alpine.plugin(createAlpinePlugin(['share', 'theme']));
+Alpine.plugin(createAlpinePlugin(['theme']));
 Alpine.start();
 ```
 
@@ -66,9 +63,10 @@ object mapping each kind to its names:
 ```ts
 definePlugin(['magic', 'store'], {
   names: { magic: ['wakelock'], store: ['attention'] },
-  plugin: (Alpine) => {
-    Alpine.magic('wakelock', () => ({ request: ... }));
-    Alpine.store('attention', { ... });
+  plugin: () => {
+    const Alpine = /* ... */;
+    Alpine.magic('wakelock', () => ({ request: /* ... */ }));
+    Alpine.store('attention', { /* ... */ });
   },
 });
 ```
@@ -76,32 +74,32 @@ definePlugin(['magic', 'store'], {
 ## Quick start — headless controller
 
 ```ts
-import { BaseController, type BaseControllerOptions } from '@ailuracode/alpine-core';
+import { BaseController } from '@ailuracode/alpine-core';
 
 interface CounterEvents extends Record<string, unknown> {
-    increment: { value: number };
+  increment: { value: number };
 }
 
 class CounterController extends BaseController<CounterEvents> {
-    #value = 0;
+  #value = 0;
 
-    constructor(options?: BaseControllerOptions) {
-        super(options);
-    }
+  constructor(id?: string) {
+    super(id);
+  }
 
-    override mount(): void {
-        super.mount();
-    }
+  override mount(): void {
+    super.mount();
+  }
 
-    increment(by = 1): void {
-        this.#value += by;
-        this.emit('increment', { value: this.#value });
-    }
+  increment(by = 1): void {
+    this.#value += by;
+    this.emit('increment', { value: this.#value });
+  }
 
-    override destroy(): void {
-        this.#value = 0;
-        super.destroy();
-    }
+  override destroy(): void {
+    this.#value = 0;
+    super.destroy();
+  }
 }
 ```
 
@@ -111,14 +109,14 @@ class CounterController extends BaseController<CounterEvents> {
 import { initPlugins, lazyPlugin, registerPlugin } from '@ailuracode/alpine-core';
 
 registerPlugin(
-    'share',
-    lazyPlugin(['magic'], {
-        names: ['share'],
-        // The imported module's `default` export MUST itself be a PluginLoader
-        // — either a direct `AlpinePluginCallback` or a 0-arg factory returning
-        // one (sync or async). `initPlugins()` resolves the loader later.
-        import: () => import('@ailuracode/alpine-transfer'),
-    }),
+  'share',
+  lazyPlugin(['magic'], {
+    names: ['share'],
+    // The imported module's `default` export MUST itself be a PluginLoader
+    // — either a direct `AlpinePluginCallback` or a 0-arg factory returning
+    // one (sync or async). `initPlugins()` resolves the loader later.
+    import: () => import('@ailuracode/alpine-transfer'),
+  }),
 );
 
 await initPlugins(Alpine, 'share');
@@ -142,8 +140,11 @@ Alpine.start();
 | `getRegisteredPlugin(name)`        | Look up a registered plugin                                             |
 | `getRegisteredPlugins()`           | List every plugin in registration order                                 |
 | `isPluginInitialized(name)`        | Whether a plugin has run with Alpine                                    |
+| `markPluginInitialized(name)`      | Mark a plugin as initialized (for adapters / sync paths)                |
 | `resetPluginRegistry()`            | Clear the registry (tests / storybook)                                  |
 | `resolvePluginEntries(names?)`     | Resolve names to registry entries (internal helper, exported for tests) |
+| `setRegistryDebugSink(sink)`       | Forward registry events to a `DebugLogger`                              |
+| `getRegistryDebugSink()`           | Retrieve the configured debug sink                                      |
 
 ### Init
 
@@ -157,8 +158,27 @@ Alpine.start();
 
 | Export                         | Description                                                                                |
 | ------------------------------ | ------------------------------------------------------------------------------------------ |
-| `definePlugin(kinds, options)` | Build a typed plugin definition; kinds is `readonly ('magic' \| 'store' \| 'directive')[]` |
+| `definePlugin(kinds, options)` | Build a typed plugin definition; `kinds` is `readonly ('magic' \| 'store' \| 'directive')[]` |
 | `lazyPlugin(kinds, options)`   | Same as `definePlugin` but with a deferred `import()` loader                               |
+
+Both `definePlugin` and `lazyPlugin` accept a `kinds` array and a
+`names` field whose shape depends on `kinds`:
+
+```ts
+// Single kind — flat names array
+definePlugin(['magic'], { names: ['share'], plugin: cb });
+definePlugin(['store'], { names: ['theme'], plugin: cb });
+definePlugin(['directive'], { names: ['x-child'], plugin: cb });
+
+// Multiple kinds — names becomes an object keyed by kind
+definePlugin(['magic', 'store'], {
+  names: { magic: ['wakelock'], store: ['idle'] },
+  plugin: cb,
+});
+```
+
+Pass `{ allowNameCrossKind: true }` to allow the same name under
+multiple kinds of one plugin (e.g. `magic: ['theme']` + `store: ['theme']`).
 
 ### Browser capability helpers
 
@@ -171,13 +191,20 @@ Alpine.start();
 
 ### Controller primitives
 
-| Export                        | Description                                                 |
-| ----------------------------- | ----------------------------------------------------------- |
-| `BaseController<EventMap>`    | Abstract base for every headless controller                 |
-| `TypedEventEmitter<EventMap>` | Strongly-typed `on` / `once` / `off` / `emit` bus           |
-| `CleanupStack`                | LIFO stack of cleanup callbacks with idempotent `dispose()` |
-| `InstanceRegistry<T>`         | Map of controller instances keyed by string ID              |
-| `ToolkitError`                | Base error with stable `code` and optional `cause`          |
+| Export                    | Description                                                 |
+| ------------------------- | ----------------------------------------------------------- |
+| `BaseController<EventMap>`| Abstract base for every headless controller                 |
+| `EventEmitter<EventMap>`  | Strongly-typed `on` / `once` / `off` / `emit` bus           |
+| `CleanupStack`            | LIFO stack of cleanup callbacks with idempotent `dispose()` |
+| `InstanceRegistry<T>`     | Map of controller instances keyed by string ID              |
+| `ToolkitError`            | Base error with stable `code` and optional `cause`          |
+
+### Generic Alpine typings
+
+| Export                | Description                                                         |
+| --------------------- | ------------------------------------------------------------------- |
+| `Alpine<Stores>`      | Typed view of `Alpine` whose `store()` overloads narrow to `Stores` |
+| `PluginCallback<T>`   | Generic `Alpine.plugin()` callback typed against an `Alpine` view   |
 
 ### Errors
 
@@ -210,12 +237,17 @@ Plugin loaders run only when you call `initPlugins()` or
 ## TypeScript
 
 ```ts
+/// <reference types="@types/alpinejs" />
 /// <reference types="@ailuracode/alpine-core" />
 /// <reference types="@ailuracode/alpine-core/global" />
 ```
 
-The `global` subpath mirrors `@types/alpinejs` so consumers that only augment
-`Alpine.*` do not pull in the runtime entrypoint.
+The `./global` subpath re-exports the named-export surface of
+`@types/alpinejs` so consumers that augment `Alpine.*` do not have to
+add the `@types/alpinejs` triple-slash directive on top. Per the
+toolkit convention, this package does NOT augment external modules —
+consumers type their runtime with `Alpine<Stores>` from
+`@ailuracode/alpine-core` instead.
 
 ## License
 

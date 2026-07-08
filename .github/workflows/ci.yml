@@ -93,4 +93,29 @@ jobs:
       - name: Audit critical vulnerabilities
         run: pnpm audit --audit-level critical
 
+  bundle-size:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        run: |
+          set -euo pipefail
+          git init
+          git remote add origin "https://github.com/${GITHUB_REPOSITORY}.git"
+          git fetch --depth=1 --no-tags origin "${GITHUB_SHA}"
+          git checkout FETCH_HEAD
+
+      - uses: ./.github/actions/setup
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build packages
+        run: pnpm run build
+
+      # `size-limit` enforces the `.size-limit.json` budgets — fails
+      # the PR if any committed package exceeds its gzip / brotli budget.
+      # Run locally with `pnpm run size:check` before pushing.
+      - name: Enforce bundle-size budgets
+        run: pnpm run size
+
   # changeset check removed — publishing is manual

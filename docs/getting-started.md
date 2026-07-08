@@ -32,37 +32,35 @@ Register plugins in your app entry (`main.js`, `app.ts`, etc.). Only the plugins
 import Alpine from "alpinejs";
 import {
   createAlpinePlugin,
-  defineStorePlugin,
+  definePlugin,
   lazyPlugin,
   registerPlugin,
 } from "@ailuracode/alpine-core";
-
-function applyTheme({ resolved }) {
-  document.documentElement.classList.toggle("dark", resolved === "dark");
-}
+import { themePlugin } from "@ailuracode/alpine-theme";
 
 registerPlugin(
   "theme",
-  defineStorePlugin(["theme"], async () => {
-    const { default: theme } = await import("@ailuracode/alpine-theme");
-    return theme({ onChange: applyTheme });
+  definePlugin(["store"], {
+    names: ["theme"],
+    plugin: () => themePlugin(),
   })
 );
 
 registerPlugin(
   "toast",
-  lazyPlugin({
-    kind: "magic",
-    magics: ["toast"],
+  lazyPlugin(["magic"], {
+    names: ["toast"],
     import: () => import("@ailuracode/alpine-toast"),
   })
 );
 
-registerPlugin("media", lazyPlugin({
-  kind: "store",
-  stores: ["media"],
-  import: () => import("@ailuracode/alpine-media"),
-}));
+registerPlugin(
+  "media",
+  lazyPlugin(["store"], {
+    names: ["media"],
+    import: () => import("@ailuracode/alpine-media"),
+  })
+);
 
 Alpine.plugin(createAlpinePlugin(["theme", "toast", "media"]));
 Alpine.start();
@@ -78,9 +76,8 @@ import { initPlugins, lazyPlugin, registerPlugin } from "@ailuracode/alpine-core
 
 registerPlugin(
   "scroll",
-  lazyPlugin({
-    kind: "store",
-    stores: ["scroll"],
+  lazyPlugin(["store"], {
+    names: ["scroll"],
     import: () => import("@ailuracode/alpine-scroll"),
   })
 );
@@ -91,7 +88,7 @@ Alpine.start();
 
 Use `createAlpinePlugin()` when you prefer the standard `Alpine.plugin()` bridge. Use `initPlugins()` directly in async entrypoints (SSR hydration, route-based loading).
 
-See [Core](./core.md) for sync init, plugin kinds, and factory plugins like `theme({ onChange })`.
+See [Core](./core.md) for sync init, plugin kinds, and factory plugins like `themePlugin()`.
 
 ## Direct registration (simple apps)
 
@@ -99,10 +96,10 @@ If you do not need lazy loading yet, register plugins directly — still **befor
 
 ```js
 import Alpine from "alpinejs";
-import theme from "@ailuracode/alpine-theme";
-import media from "@ailuracode/alpine-media";
+import { themePlugin } from "@ailuracode/alpine-theme";
+import { media } from "@ailuracode/alpine-media";
 
-Alpine.plugin(theme({ onChange: applyTheme }));
+Alpine.plugin(themePlugin());
 Alpine.plugin(media);
 
 Alpine.start();
@@ -110,16 +107,25 @@ Alpine.start();
 
 Migrate to the core registry when you want code-splitting or a single init pipeline.
 
+To react to theme transitions, subscribe through the `Alpine.store("theme")` instance and apply classes yourself — the package is intentionally CSS-framework agnostic:
+
+```js
+Alpine.store("theme").on("change", (detail) => {
+  document.documentElement.classList.toggle("dark", detail.resolved === "dark");
+});
+```
+
 ## Using in HTML
 
 ### Stores
 
 ```html
-<button :class="{ active: $store.theme.isDark }" @click="$store.theme.set('dark')">
-  Dark
-</button>
+<button @click="$store.theme.set('dark')">Dark</button>
+<button @click="$store.theme.set('light')">Light</button>
+<button @click="$store.theme.set('system')">System</button>
+<button @click="$store.theme.toggle()">Toggle</button>
 
-<div x-show="$store.media.isMobile">Mobile layout</div>
+<div x-show="$store.media.matches('mobile')">Mobile layout</div>
 
 <button x-show="$store.scroll.showToTop" @click="$store.scroll.toTop()">
   Back to top
@@ -158,12 +164,29 @@ See [`$toast.fromPayload`](./plugins/toast.md) for the full payload shape.
 ```html
 <script type="module">
   import Alpine from "https://esm.sh/alpinejs";
-  import theme from "https://esm.sh/@ailuracode/alpine-theme";
+  import { themePlugin } from "https://esm.sh/@ailuracode/alpine-theme";
 
-  Alpine.plugin(theme({ onChange: ({ resolved }) => {
-    document.documentElement.classList.toggle("dark", resolved === "dark");
-  }}));
+  Alpine.plugin(themePlugin());
   Alpine.start();
+</script>
+```
+
+To react to theme transitions from a CDN snippet:
+
+```html
+<script type="module">
+  import Alpine from "https://esm.sh/alpinejs";
+  import { themePlugin } from "https://esm.sh/@ailuracode/alpine-theme";
+
+  Alpine.plugin(themePlugin());
+  Alpine.start();
+
+  // Apply classes via the $theme magic once Alpine is ready
+  document.addEventListener("alpine:init", () => {
+    Alpine.store("theme").on("change", (detail) => {
+      document.documentElement.classList.toggle("dark", detail.resolved === "dark");
+    });
+  });
 </script>
 ```
 

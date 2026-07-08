@@ -135,11 +135,9 @@ const toggle = createToggle({
 
 toggle.value          // current state
 toggle.states         // { on, off, indeterminate }
-toggle.on             // shorthand for states.on
-toggle.off            // shorthand for states.off
-toggle.indeterminate  // shorthand for states.indeterminate (undefined for binary)
 toggle.is(value)      // boolean — strict equality against the current value
 toggle.set(value)     // void — silently no-ops on invalid / unchanged input
+toggle.setSilently(value) // void — sets without emitting (use for hydration)
 toggle.toggle()       // flips on ↔ off; from indeterminate → on
 toggle.next()         // advances through [on, off, indeterminate]
 toggle.reset()        // restores initial
@@ -149,6 +147,15 @@ toggle.destroy()      // idempotent, releases listeners
 
 ```ts
 Alpine.plugin(togglePlugin({ id?: string }));
+```
+
+`setSilently(value)` is the hydration escape hatch — set the value without broadcasting a transition. Pair it with the queued initialization microtask to seed the controller from an authoritative source (`localStorage`, server-provided state) without producing a spurious `'user'` event:
+
+```ts
+const persisted = readPersisted();
+const toggle = createToggle({ states: { on, off, indeterminate } });
+toggle.setSilently(persisted); // preserved through the init microtask
+toggle.on("change", (detail) => persist(detail.current));
 ```
 
 ## SSR
@@ -162,15 +169,17 @@ The package is fully importable in a Node runtime. The controller never touches 
 | `0.1.x`                                                          | `0.2.x`                                                                                            |
 | ---------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
 | `states.truly` / `states.falsely` / `states.ternary`             | `states.on` / `states.off` / `states.indeterminate`                                                |
-| `createToggle(options)` returns a plain object                   | `createToggle(options)` returns a `ToggleController extends BaseController<ToggleEvents>`         |
+| `createToggle(options)` returns a plain object                   | `createToggle(options)` returns a `ToggleController` (uses `EventEmitter` from `@ailuracode/alpine-core`) |
 | `cycle()`                                                        | `next()` (semantics unchanged — advance through every state in declaration order)                  |
 | `set(value)` returns `boolean`                                   | `set(value)` returns `void`; subscribe to `on('change', ...)` for transition notifications        |
 | No events                                                        | `change` event with `{ current, previous, source }` detail payload                                 |
 | `default export togglePlugin(Alpine) => void`                    | Named `togglePlugin(options?) => Alpine.PluginCallback` factory (matches `themePlugin` shape)      |
-| `createToggleMagic()` helper                                     | Removed — the plugin inlines the factory; standalone consumers use `createToggle(...)`             |
-| Constructor is plain                                             | Extends `BaseController` — `id`, `phase`, `isMounted`, `isDestroyed`, `mount()`, `destroy()` exposed |
+| `createToggleMagic()` helper                                     | Removed — the plugin inlines the magic factory; standalone consumers use `createToggle(...)`      |
+| No hydration API                                                 | `setSilently(value)` sets without emitting; the queued init microtask preserves any hydrated value |
 
 The default export is gone — use `import { togglePlugin } from "@ailuracode/alpine-toggle"`. This matches the rest of the toolkit (`themePlugin`, `themeController`, etc.).
+
+`0.3.0` adds `setSilently()` and tweaks the init microtask to preserve hydrated values — additive only, no breaking changes.
 
 ## License
 

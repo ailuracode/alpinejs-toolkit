@@ -87,7 +87,7 @@ Do **not** bump `version` in `package.json` manually for releases — use Change
 
 ### CSS
 
-Plugins must stay **CSS-framework agnostic**. Do not hardcode `data-theme`, Tailwind `.dark`, or similar in plugin source. The consumer applies styles via callbacks (e.g. `theme({ onChange })`, `scroll({ onLockChange })`).
+Plugins must stay **CSS-framework agnostic**. Do not hardcode `data-theme`, Tailwind `.dark`, or similar in plugin source. The consumer applies styles via `on('change', listener)` subscriptions (e.g. `$store.theme.on('change', detail => applyClass(detail.resolved))`, `$store.scroll.on('change', detail => lock(detail.locked))`).
 
 ### Plugin shape
 
