@@ -2,7 +2,7 @@ import accordion from "@ailuracode/alpine-accordion";
 import attention from "@ailuracode/alpine-attention";
 import calendar from "@ailuracode/alpine-calendar";
 import carousel from "@ailuracode/alpine-carousel";
-import child from "@ailuracode/alpine-child";
+import { childPlugin as child } from "@ailuracode/alpine-child";
 import command from "@ailuracode/alpine-command";
 import { definePlugin, registerPlugin } from "@ailuracode/alpine-core";
 import dialog from "@ailuracode/alpine-dialog";
@@ -147,7 +147,7 @@ export function registerDemoPlugins(): void {
     "child",
     definePlugin(["directive"], {
       names: ["child"],
-      plugin: child,
+      plugin: child(),
     })
   );
 

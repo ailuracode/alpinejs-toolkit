@@ -43,5 +43,14 @@
     "gzip": true,
     "brotli": true,
     "limit": "1.5 kB"
+  },
+  {
+    "name": "alpine-child — full surface",
+    "path": "packages/child/dist/index.js",
+    "import": "*",
+    "ignore": ["alpinejs"],
+    "gzip": true,
+    "brotli": true,
+    "limit": "3.5 kB"
   }
 ]

@@ -1,7 +1,7 @@
 import morph from "@alpinejs/morph";
 import Alpine from "alpinejs";
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
-import childPlugin from "../src/index.js";
+import { childPlugin } from "../src/index.js";
 
 let alpineStarted = false;
 
@@ -16,7 +16,7 @@ async function mountLayout(html: string): Promise<void> {
   if (!alpineStarted) {
     window.Alpine = Alpine;
     Alpine.plugin(morph);
-    Alpine.plugin(childPlugin);
+    Alpine.plugin(childPlugin());
     Alpine.start();
     alpineStarted = true;
   } else {

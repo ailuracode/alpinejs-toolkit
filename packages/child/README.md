@@ -13,10 +13,10 @@ npm install @ailuracode/alpine-child @alpinejs/morph alpinejs
 ```js
 import Alpine from "alpinejs";
 import morph from "@alpinejs/morph";
-import child from "@ailuracode/alpine-child";
+import { childPlugin } from "@ailuracode/alpine-child";
 
 Alpine.plugin(morph);
-Alpine.plugin(child);
+Alpine.plugin(childPlugin());
 Alpine.start();
 ```
 

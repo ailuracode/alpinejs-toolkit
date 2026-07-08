@@ -1,7 +1,9 @@
 import morph from "@alpinejs/morph";
 import Alpine from "alpinejs";
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
-import childPlugin, {
+import {
+  childPlugin,
+  clearTransferredAttributes,
   findFirstElementChild,
   parseChildDirective,
   transferAttributes,
@@ -15,7 +17,7 @@ async function mount(html: string): Promise<void> {
   if (!alpineStarted) {
     window.Alpine = Alpine;
     Alpine.plugin(morph);
-    Alpine.plugin(childPlugin);
+    Alpine.plugin(childPlugin());
     Alpine.start();
     alpineStarted = true;
   } else {
@@ -130,6 +132,17 @@ describe("@ailuracode/alpine-child transfer utilities", () => {
 
     expect(child.hasAttribute("x-child")).toBe(false);
     expect(child.getAttribute("class")).toBe("btn");
+  });
+
+  it("clears every attribute from the wrapper", () => {
+    const wrapper = document.createElement("span");
+    wrapper.setAttribute("x-child", "");
+    wrapper.setAttribute("class", "btn");
+    wrapper.setAttribute("aria-label", "Open");
+
+    clearTransferredAttributes(wrapper);
+
+    expect(wrapper.attributes.length).toBe(0);
   });
 });
 
