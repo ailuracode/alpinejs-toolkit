@@ -5,7 +5,7 @@
  * without touching `window` / `document`. Mirrors the structure of
  * `@ailuracode/alpine-theme`'s `internal/validation` module — same
  * separation of concerns (pure logic in `internal/`, public surface
- * in `controller.ts`).
+ * in `controller.ts`.
  */
 
 /**
@@ -84,15 +84,4 @@ export function buildStateCycle<TOn, TOff, TIndet>(states: {
     return [states.on, states.off, (states as { readonly indeterminate: TIndet }).indeterminate];
   }
   return [states.on, states.off];
-}
-
-/**
- * Generates a stable id for a controller when the consumer omits one.
- * Mirrors the convention from `@ailuracode/alpine-core` — short,
- * human-readable, monotonic per process.
- */
-let controllerCounter = 0;
-export function generateControllerId(): string {
-  controllerCounter += 1;
-  return `toggle-${controllerCounter}`;
 }

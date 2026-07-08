@@ -27,8 +27,9 @@
 // --- Controller primitives (used by every feature package) ---------------
 export { BaseController } from "./controller";
 export { CleanupStack } from "./core/cleanup";
-// --- Controller + event-emitter type helpers -----------------------------
 export type { LifecyclePhase } from "./core/controller";
+// --- Controller + event-emitter type helpers -----------------------------
+export { generateId } from "./core/controller-id";
 export type { DebugEvent, DebugLogger, DebugOption } from "./core/debug";
 export type { ToolkitErrorCode } from "./core/error";
 export { ToolkitError } from "./core/error";

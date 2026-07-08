@@ -44,7 +44,7 @@
   },
   "scripts": {
     "clean": "rm -rf dist",
-    "build": "tsup src/index.ts --format esm --dts --clean --out-dir dist && cp src/global.d.ts dist/global.d.ts",
+    "build": "tsup --config tsup.config.ts && cp src/global.d.ts dist/global.d.ts",
     "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.test.json",
     "test": "vitest run --config ../../vitest.config.ts test",
     "test:watch": "vitest --config ../../vitest.config.ts"

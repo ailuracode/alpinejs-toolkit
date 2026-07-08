@@ -1,5 +1,5 @@
 import { type Cleanup, CleanupStack } from "./cleanup";
-import { generateControllerId } from "./controller-id";
+import { generateId } from "./controller-id";
 import { ToolkitError } from "./error";
 import { EventEmitter, type Unsubscribe } from "./event";
 
@@ -14,7 +14,7 @@ export abstract class BaseController<
   #phase: LifecyclePhase = "idle";
 
   constructor(id?: string) {
-    this.#id = id ?? generateControllerId(this);
+    this.#id = id ?? generateId("controller");
     this.#events = new EventEmitter<EventMap>();
     this.#cleanup = new CleanupStack();
   }

@@ -49,7 +49,7 @@
  * - `destroy()` MUST be idempotent.
  */
 
-import { BaseController } from "@ailuracode/alpine-core";
+import { BaseController, generateId } from "@ailuracode/alpine-core";
 import { type ToggleChangeDetail, ToggleController } from "@ailuracode/alpine-toggle";
 import type { ThemeEvents } from "./events";
 import { createDomStrategy } from "./internal/dom-strategy";
@@ -127,7 +127,8 @@ export class ThemeController extends BaseController<ThemeEvents> {
   #resolved: ResolvedTheme;
 
   constructor(options: CreateThemeOptions) {
-    super(options.id);
+    const id = options.id ?? generateId("theme");
+    super(id);
 
     this.#defaultTheme = coerceThemePreference(options.defaultTheme, defaultThemePreference());
     this.#storage = options.storage ?? createLocalStorageThemeStorage();
@@ -147,7 +148,7 @@ export class ThemeController extends BaseController<ThemeEvents> {
     this.#toggle = new ToggleController<"light", "dark", "system">({
       states: { on: "light", off: "dark", indeterminate: "system" },
       initial: this.#defaultTheme,
-      id: options.id ? `${options.id}-current` : undefined,
+      id: `${id}-current`,
     });
 
     // Forward every toggle `change` to the theme-level emit so

@@ -32,11 +32,10 @@
  */
 
 import type { Unsubscribe } from "@ailuracode/alpine-core";
-import { EventEmitter } from "@ailuracode/alpine-core";
+import { EventEmitter, generateId } from "@ailuracode/alpine-core";
 import type { ToggleEvents } from "./events";
 import {
   buildStateCycle,
-  generateControllerId,
   hasIndeterminateState,
   isConfiguredState,
   resolveInitial,
@@ -62,7 +61,7 @@ export class ToggleController<TA, TB, TN, V extends TA | TB | TN = TA | TB | TN>
   #destroyed = false;
 
   constructor(options: ToggleOptions<TA, TB, TN>) {
-    this.#id = options.id ?? generateControllerId();
+    this.#id = options.id ?? generateId("toggle");
 
     const hasTernary = hasIndeterminateState(options.states);
     this.#hasTernary = hasTernary;
