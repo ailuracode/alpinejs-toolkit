@@ -47,13 +47,13 @@ describe("safeMatchMedia", () => {
         Object.defineProperty(globalThis, "window", originalWindow);
       } else {
         // jsdom cleanup needs the slot freed
-        delete (globalThis as { window?: unknown }).window;
+        (globalThis as { window?: unknown }).window = undefined;
       }
       if (originalDocument) {
         Object.defineProperty(globalThis, "document", originalDocument);
       } else {
         // jsdom cleanup needs the slot freed
-        delete (globalThis as { document?: unknown }).document;
+        (globalThis as { document?: unknown }).document = undefined;
       }
     }
   });

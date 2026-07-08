@@ -8,7 +8,7 @@
  *   common case where every plugin has been pre-resolved at registration time.
  */
 import type { Alpine } from "alpinejs";
-import type { PluginDefinition, PluginRegistryEntry } from "../types";
+import type { PluginRegistryEntry } from "../types";
 import { resolvePluginLoader, resolvePluginLoaderSync } from "./loader";
 import { markPluginInitialized, resolvePluginEntries } from "./registry";
 

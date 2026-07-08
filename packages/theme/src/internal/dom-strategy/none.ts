@@ -18,7 +18,7 @@ export class NoneStrategy implements DomStrategy {
   // `new NoneStrategy(options)` with the same shape it uses for the
   // other strategies. The implicit zero-arg constructor would reject
   // the argument and break that symmetry.
-  // oxlint-disable-next-line no-useless-constructor: required by the discriminated union
+  // biome-ignore lint/complexity/noUselessConstructor: required by the discriminated union
   constructor(_options: NoneOptions) {
     // intentionally empty
   }

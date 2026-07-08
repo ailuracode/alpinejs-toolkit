@@ -400,7 +400,9 @@ describe("createTheme — destroy()", () => {
     const theme = createTheme({ defaultTheme: "light" });
     let calls = 0;
     theme.on("change", (detail) => {
-      if (detail.source === "storage") calls += 1;
+      if (detail.source === "storage") {
+        calls += 1;
+      }
     });
     theme.destroy();
 
@@ -509,10 +511,18 @@ describe("createTheme — constructor purity", () => {
           matches: false,
           media: "",
           onchange: null,
-          addEventListener() {},
-          removeEventListener() {},
-          addListener() {},
-          removeListener() {},
+          addEventListener() {
+            // No-op.
+          },
+          removeEventListener() {
+            // No-op.
+          },
+          addListener() {
+            // No-op.
+          },
+          removeListener() {
+            // No-op.
+          },
           dispatchEvent: () => true,
         };
       },

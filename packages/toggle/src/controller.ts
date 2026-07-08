@@ -92,11 +92,22 @@ export class ToggleController<TA, TB, TN, V extends TA | TB | TN = TA | TB | TN>
     // can subscribe synchronously after `new ToggleController(...)`
     // returns and still receive the initial state. Mirrors the
     // behaviour of `@ailuracode/alpine-theme`'s controller.
+    //
+    // The emit targets `#value` (current) rather than `#initial`
+    // so consumers who call `setSilently(...)` BEFORE the
+    // microtask fires (a common hydration pattern) keep their
+    // hydrated value. The `previous` field stays `null` per the
+    // initialization contract — listeners can distinguish init
+    // from any later change via the `source` discriminator.
     queueMicrotask(() => {
       if (this.#destroyed) {
         return;
       }
-      this.#applySet(this.#initial, "initialization");
+      this.#emitter.emit("change", {
+        current: this.#value,
+        previous: null,
+        source: "initialization",
+      });
     });
   }
 
@@ -164,6 +175,38 @@ export class ToggleController<TA, TB, TN, V extends TA | TB | TN = TA | TB | TN>
       return;
     }
     this.#applySet(value, "user");
+  }
+
+  /**
+   * Sets the value without emitting a `change` event and without
+   * updating `#lastWritten` markers — escape hatch for hydration
+   * paths where the consumer has authoritative state (e.g. read
+   * from `localStorage`) and wants the controller to start from
+   * that value without broadcasting a transition.
+   *
+   * Silent semantics:
+   *
+   * - No `change` event is emitted — listeners stay quiet.
+   * - `#initial` is NOT updated — `reset()` still restores the
+   *   originally-configured `initial`, not the hydrated value.
+   *   Callers that want a different reset target should pass the
+   *   hydrated value through the constructor's `initial` option
+   *   instead.
+   * - The queued initialization microtask (if it hasn't fired
+   *   yet) preserves the hydrated value instead of resetting to
+   *   `#initial` — see the constructor for details.
+   *
+   * Invalid values (not in `states`) are silently rejected, same
+   * as `set()`. `destroy()`d controllers ignore the call.
+   */
+  setSilently(value: V): void {
+    if (this.#destroyed) {
+      return;
+    }
+    if (!isConfiguredState(this.#states, value)) {
+      return;
+    }
+    this.#value = value as TA | TB | TN;
   }
 
   toggle(): V {

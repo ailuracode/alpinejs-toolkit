@@ -223,6 +223,58 @@ describe("ToggleController — events", () => {
   });
 });
 
+describe("ToggleController — silent hydration", () => {
+  it("setSilently() changes the value without emitting", () => {
+    const toggle = createToggle({ states: { on: 1, off: 0 }, initial: 1 });
+    const events: ToggleChangeDetail<number, number, undefined>[] = [];
+    toggle.on("change", (detail) => events.push(detail));
+
+    toggle.setSilently(0);
+    expect(toggle.value).toBe(0);
+    expect(events).toHaveLength(0);
+  });
+
+  it("setSilently() rejects invalid values", () => {
+    const toggle = createToggle({ states: { on: 1, off: 0 }, initial: 1 });
+    const events: ToggleChangeDetail<number, number, undefined>[] = [];
+    toggle.on("change", (detail) => events.push(detail));
+
+    toggle.setSilently(42 as never);
+    expect(toggle.value).toBe(1);
+    expect(events).toHaveLength(0);
+  });
+
+  it("setSilently() before the init microtask preserves the hydrated value", async () => {
+    const toggle = createToggle({ states: { on: 1, off: 0 }, initial: 1 });
+    toggle.setSilently(0);
+    // Microtask has not run yet — wait for it.
+    await Promise.resolve();
+    expect(toggle.value).toBe(0);
+  });
+
+  it("init event carries the hydrated value (not the original initial)", async () => {
+    const toggle = createToggle({
+      states: { on: "on" as const, off: "off" as const },
+      initial: "on",
+    });
+    toggle.setSilently("off");
+    const events: ToggleChangeDetail<"on", "off", undefined>[] = [];
+    toggle.on("change", (detail) => events.push(detail));
+    await Promise.resolve();
+    expect(events).toEqual([{ current: "off", previous: null, source: "initialization" }]);
+  });
+
+  it("reset() restores the original initial, not the hydrated value", () => {
+    const toggle = createToggle({
+      states: { on: "on" as const, off: "off" as const },
+      initial: "on",
+    });
+    toggle.setSilently("off");
+    toggle.reset();
+    expect(toggle.value).toBe("on");
+  });
+});
+
 describe("ToggleController — lifecycle", () => {
   it("exposes an auto-generated id when none is provided", () => {
     const toggle = createToggle({ states: { on: 1, off: 0 } });

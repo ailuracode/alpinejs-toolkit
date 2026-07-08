@@ -54,7 +54,9 @@ describe("cross-tab synchronization", () => {
     const theme = createTheme({ defaultTheme: "light" });
     let calls = 0;
     theme.on("change", (detail) => {
-      if (detail.source === "storage") calls += 1;
+      if (detail.source === "storage") {
+        calls += 1;
+      }
     });
 
     fireStorage("other-key", "dark");
@@ -74,7 +76,9 @@ describe("cross-tab synchronization", () => {
     const theme = createTheme({ defaultTheme: "light" });
     let calls = 0;
     theme.on("change", (detail) => {
-      if (detail.source === "storage") calls += 1;
+      if (detail.source === "storage") {
+        calls += 1;
+      }
     });
     theme.destroy();
     fireStorage("theme", "dark");
@@ -85,7 +89,9 @@ describe("cross-tab synchronization", () => {
     const theme = createTheme({ defaultTheme: "light" });
     let storageEvents = 0;
     theme.on("change", (detail) => {
-      if (detail.source === "storage") storageEvents += 1;
+      if (detail.source === "storage") {
+        storageEvents += 1;
+      }
     });
     // The manager writes the value as part of `set()`.
     theme.set("dark");

@@ -454,6 +454,9 @@ importers:
       '@ailuracode/alpine-core':
         specifier: workspace:*
         version: link:../core
+      '@ailuracode/alpine-toggle':
+        specifier: workspace:*
+        version: link:../toggle
       '@types/alpinejs':
         specifier: ^3.13.10
         version: 3.13.11

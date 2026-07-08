@@ -32,7 +32,7 @@ function createMockAlpine(): MockAlpine {
       cb(alpine);
     },
     store(name, value?) {
-      if (arguments.length === 1) {
+      if (value === undefined) {
         return alpine.stores[name];
       }
       alpine.stores[name] = value;
@@ -77,7 +77,7 @@ describe("themePlugin — registration", () => {
         cb(Alpine);
       },
       store(name, value?) {
-        if (arguments.length === 1) {
+        if (value === undefined) {
           return stores[name];
         }
         stores[name] = value;

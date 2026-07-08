@@ -164,8 +164,8 @@ describe("togglePlugin — cleanup", () => {
     >;
 
     for (const fn of Alpine.cleanups) {
-            fn();
-        }
+      fn();
+    }
 
     assert.equal(a.isDestroyed, true);
     assert.equal(b.isDestroyed, true);

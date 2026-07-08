@@ -59,7 +59,9 @@ function createList(query: string, initial = false): MockMediaQueryListInternal 
     __listeners: listeners,
     __fire() {
       const event = { matches: list.matches, media: list.media } as MediaQueryListEvent;
-      for (const listener of listeners) listener(event);
+      for (const listener of listeners) {
+        listener(event);
+      }
     },
   };
   return list;
@@ -117,6 +119,6 @@ afterAll(() => {
   if (originalMatchMedia) {
     Object.defineProperty(window, "matchMedia", originalMatchMedia);
   } else {
-    delete (window as { matchMedia?: unknown }).matchMedia;
+    (window as { matchMedia?: unknown }).matchMedia = undefined;
   }
 });

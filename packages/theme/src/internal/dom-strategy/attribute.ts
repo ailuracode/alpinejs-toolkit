@@ -9,7 +9,6 @@
  * there is no accumulation because the attribute key is fixed.
  */
 
-import { safeDocument } from "@ailuracode/alpine-core";
 import type { ResolvedTheme } from "../../types";
 import { safeDocumentElement } from "../browser";
 import type { AttributeOptions, DomStrategy } from "./types";

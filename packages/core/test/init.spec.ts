@@ -76,7 +76,11 @@ describe("initPlugins — selection", () => {
     await initPlugins(asAlpine(Alpine), ["theme", "share"]);
 
     assert.equal(Alpine.pluginCalls.length, 2);
-    for (const callback of Alpine.pluginCalls) callback(Alpine);
+    await Promise.all(
+      Alpine.pluginCalls.map(async (callback) => {
+        await Promise.resolve(callback(Alpine));
+      })
+    );
 
     assert.deepEqual(calls, ["theme", "share"]);
     assert.equal(isPluginInitialized("theme"), true);

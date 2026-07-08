@@ -27,11 +27,11 @@ function createMockAlpine<TStores extends Record<string, unknown>>(seed: TStores
   const stores = new Map<string, unknown>(Object.entries(seed));
   const alpine = {
     store(name: string, value?: unknown): unknown {
-      if (arguments.length === 2) {
-        stores.set(name, value);
-        return undefined;
+      if (value === undefined) {
+        return stores.get(name);
       }
-      return stores.get(name);
+      stores.set(name, value);
+      return undefined;
     },
   };
   return alpine as unknown as Alpine<TStores>;

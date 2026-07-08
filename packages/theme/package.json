@@ -55,6 +55,7 @@
   },
   "devDependencies": {
     "@ailuracode/alpine-core": "workspace:*",
+    "@ailuracode/alpine-toggle": "workspace:*",
     "@types/alpinejs": "^3.13.10",
     "@types/node": "^26.1.0",
     "@vitest/coverage-v8": "^4.1.9",
@@ -63,6 +64,7 @@
   },
   "peerDependencies": {
     "@ailuracode/alpine-core": "^0.1.0",
+    "@ailuracode/alpine-toggle": "^0.3.0",
     "alpinejs": "^3.0.0"
   },
   "peerDependenciesMeta": {

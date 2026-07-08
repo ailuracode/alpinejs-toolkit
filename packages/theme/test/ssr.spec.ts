@@ -36,8 +36,12 @@ function shadowGlobals(): () => void {
   (globalThis as { matchMedia?: unknown }).matchMedia = undefined;
 
   return () => {
-    if (originalWindow) Object.defineProperty(globalThis, "window", originalWindow);
-    if (originalDocument) Object.defineProperty(globalThis, "document", originalDocument);
+    if (originalWindow) {
+      Object.defineProperty(globalThis, "window", originalWindow);
+    }
+    if (originalDocument) {
+      Object.defineProperty(globalThis, "document", originalDocument);
+    }
     if (originalMatchMedia === undefined) {
       (globalThis as { matchMedia?: unknown }).matchMedia = undefined;
     } else {
@@ -99,7 +103,7 @@ describe("SSR-safe package surface", () => {
           cb(Alpine);
         },
         store(name, value?) {
-          if (arguments.length === 1) {
+          if (value === undefined) {
             return stores[name];
           }
           stores[name] = value;

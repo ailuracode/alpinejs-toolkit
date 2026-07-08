@@ -1,34 +1,56 @@
 /**
  * Theme controller — the framework-agnostic core of
- * `@ailuracode/alpine-theme`. Extends {@link BaseController} so the
- * typed event bus, cleanup stack, and lifecycle phase tracking are
- * shared with every other controller in the toolkit.
+ * `@ailuracode/alpine-theme`. Composes a
+ * {@link ToggleController} from `@ailuracode/alpine-toggle` to
+ * model the three-value `current` state machine (`light` /
+ * `dark` / `system`) and layers persistence, DOM application,
+ * system observation, and cross-tab synchronization on top.
  *
  * Responsibilities:
  *
- * 1. State — owns `current`, `system`, `resolved`.
- * 2. Persistence — delegates to a {@link ThemeStorage} adapter.
- * 3. DOM sync — delegates to a {@link DomStrategy}.
- * 4. System theme — observes `prefers-color-scheme` and updates
+ * 1. **State** — owns `current` (via the inner toggle),
+ *    `system`, and the derived `resolved`.
+ * 2. **Persistence** — delegates to a {@link ThemeStorage} adapter.
+ * 3. **DOM sync** — delegates to a {@link DomStrategy}.
+ * 4. **System theme** — observes `prefers-color-scheme` and updates
  *    `resolved` only when `current === 'system'`.
- * 5. Cross-tab — subscribes to the storage adapter's `subscribe`
- *    hook when available (internal API; consumers subscribe via
- *    `controller.on('change', ...)`).
- * 6. Subscriptions — typed `on('change', listener)` from the
- *    inherited bus.
+ * 5. **Cross-tab** — subscribes to the storage adapter's
+ *    `subscribe` hook when available.
+ * 6. **Subscriptions** — typed `on('change', listener)` from the
+ *    inherited bus, with the theme-level detail shape
+ *    (`current` / `system` / `resolved` / `source` / `previous`).
+ *
+ * Composition with `ToggleController`:
+ *
+ * - The inner toggle owns the **state machine of `current`** —
+ *   validation, transitions, and the basic `change` event.
+ * - `set` / `toggle` / `reset` delegate to the toggle. `toggle()`
+ *   flips based on `resolved` (not `current`), so it diverges
+ *   from the toggle's own `toggle()` (which always lands on the
+ *   `'on'` state from `'indeterminate'`).
+ * - Hydration from storage uses `setSilently(value)` so the
+ *   toggle's queued init microtask preserves the hydrated value
+ *   instead of resetting to `defaultTheme`.
+ * - The toggle's `change` event is intercepted and re-emitted as a
+ *   theme-level event with `system` / `resolved` / `source`
+ *   enriched. Cross-tab and system changes **bypass** the toggle
+ *   because they don't model `current` transitions in the same
+ *   way (`system` flip changes `resolved` without changing
+ *   `current`; cross-tab propagates with `source: 'storage'`
+ *   instead of `source: 'user'`).
  *
  * Construction rules:
  *
  * - The constructor MUST NOT access `window` / `document` /
- *   `localStorage` directly. Browser reads go through
- *   {@link isBrowser} and the storage adapter.
- * - The controller auto-mounts: `createTheme()` returns a fully
- *   initialized controller whose effects are already running. The
- *   factory is the public way to build a singleton service.
+ *   `localStorage`. The toggle's own constructor is pure; theme
+ *   reads storage in `mount()`.
+ * - The controller auto-mounts so `createTheme()` returns a
+ *   fully-initialized instance.
  * - `destroy()` MUST be idempotent.
  */
 
 import { BaseController } from "@ailuracode/alpine-core";
+import { type ToggleChangeDetail, ToggleController } from "@ailuracode/alpine-toggle";
 import type { ThemeEvents } from "./events";
 import { createDomStrategy } from "./internal/dom-strategy";
 import { buildDomOptions } from "./internal/dom-strategy/options";
@@ -50,19 +72,13 @@ import type {
  * accepts as the `source` parameter. The constraint is enforced at the
  * type level so callers cannot pass `'initialization'` or `'system'`
  * by mistake — those sources own their own emit paths.
- *
- * Named (instead of inline `Extract`) so the rule shows up in IDE
- * hover and `go to definition` jumps land here.
  */
 type ApplySetSource = Extract<ThemeChangeSource, "user" | "storage" | "reset">;
 
 /**
  * Public entrypoint — builds and mounts a fully-initialized
- * {@link ThemeController}. The constructor itself stays pure (no
- * `window`, `document`, `localStorage`, or listener registration —
- * see `.agents/instructions/controllers.instructions.md`); this
- * factory wires the browser-touching `mount()` step so callers
- * keep the one-liner convenience.
+ * {@link ThemeController}. The constructor itself stays pure; the
+ * factory wires the browser-touching `mount()` step.
  */
 export function createTheme(options: CreateThemeOptions = {}): ThemeController {
   const controller = new ThemeController(options);
@@ -72,9 +88,10 @@ export function createTheme(options: CreateThemeOptions = {}): ThemeController {
 
 /**
  * Headless controller for `@ailuracode/alpine-theme`. Owns every
- * piece of theme state, persistence, DOM sync, system observation,
- * and cross-tab synchronization. Mounts automatically inside the
- * constructor so the factory is the public entrypoint.
+ * piece of theme state via composition with {@link ToggleController},
+ * plus persistence, DOM sync, system observation, and cross-tab
+ * synchronization. Mounts automatically inside the constructor so
+ * the factory is the public entrypoint.
  */
 export class ThemeController extends BaseController<ThemeEvents> {
   readonly #defaultTheme: ThemePreference;
@@ -83,22 +100,31 @@ export class ThemeController extends BaseController<ThemeEvents> {
   readonly #watchSystem: boolean;
   readonly #crossTab: boolean;
 
-  #current: ThemePreference;
-  #system: ResolvedTheme;
-  #resolved: ResolvedTheme;
+  /**
+   * Inner toggle models the `current` state machine. `set` /
+   * `toggle` / `reset` route through it (with `toggle()`
+   * overriding the flip target to use `resolved`).
+   */
+  readonly #toggle: ToggleController<"light", "dark", "system">;
+
   /**
    * Tracks the last value we wrote to storage so the cross-tab
-   * `storage` event echoes do not generate feedback loops.
-   *
-   * `undefined` is the "no pending echo" sentinel: it is the
-   * initial value, the value after the echo detector consumed a
-   * match, and the value after `reset()` (which clears storage but
-   * does NOT touch this marker — the marker keeps reflecting the
-   * last value we wrote via `set`, so a subsequent legitimate
-   * `null` from a cross-tab remove is correctly classified as
-   * "external clear" rather than as an echo).
+   * `storage` event echoes do not generate feedback loops. See
+   * `#handleCrossTabUpdate` for the consumption logic.
    */
   #lastWritten: ThemePreference | undefined = undefined;
+
+  /**
+   * When non-null, the next `change` event from the inner toggle
+   * is re-emitted with this `source` instead of the toggle's own
+   * `'user'`. Used by `#handleCrossTabUpdate` so cross-tab updates
+   * translate to `source: 'storage'` rather than `source: 'user'`.
+   * Cleared after each event.
+   */
+  #pendingSource: ThemeChangeSource | null = null;
+
+  #system: ResolvedTheme;
+  #resolved: ResolvedTheme;
 
   constructor(options: CreateThemeOptions) {
     super(options.id);
@@ -108,28 +134,36 @@ export class ThemeController extends BaseController<ThemeEvents> {
     this.#watchSystem = options.watchSystem !== false;
     this.#crossTab = options.crossTab !== false;
 
-    // `target` stays as configured in the constructor — if the consumer
-    // did not supply one, we leave it `null` and let the DOM strategy
-    // resolve the default lazily on first apply (which only runs
-    // after `mount()`). This keeps the constructor pure per
-    // `.agents/instructions/controllers.instructions.md`.
     const target = options.target ?? null;
     this.#dom = createDomStrategy(buildDomOptions(options, target));
 
-    // Seed deterministic state — replaced during `mount()` once the
-    // runtime confirms `window` is present. Per
-    // `.agents/instructions/controllers.instructions.md`, the
-    // constructor MUST NOT touch `window`, `document`, `localStorage`,
-    // or register listeners. Side effects start in `mount()`.
-    this.#current = this.#defaultTheme;
+    // Seed deterministic SSR-safe defaults. `mount()` re-reads
+    // the system preference, hydrates the inner toggle from
+    // storage, and recomputes `resolved` once the browser is
+    // known to be present.
     this.#system = "light";
-    this.#resolved = resolveTheme(this.#current, this.#system);
+    this.#resolved = resolveTheme(this.#defaultTheme, this.#system);
+
+    this.#toggle = new ToggleController<"light", "dark", "system">({
+      states: { on: "light", off: "dark", indeterminate: "system" },
+      initial: this.#defaultTheme,
+      id: options.id ? `${options.id}-current` : undefined,
+    });
+
+    // Forward every toggle `change` to the theme-level emit so
+    // listeners receive the full `system` / `resolved` /
+    // `source` shape. Theme emits its own `initialization` event
+    // in `#init()` after hydration; the toggle's queued init
+    // microtask is intentionally NOT consumed here.
+    this.#toggle.on("change", this.#onToggleChange);
+
+    this.registerCleanup(this.#toggle.destroy.bind(this.#toggle));
   }
 
   // ── Public state surface ────────────────────────────────────────
 
   get current(): ThemePreference {
-    return this.#current;
+    return this.#toggle.value;
   }
 
   get system(): ResolvedTheme {
@@ -137,12 +171,12 @@ export class ThemeController extends BaseController<ThemeEvents> {
   }
 
   get resolved(): ResolvedTheme {
-    return this.#resolved;
+    return resolveTheme(this.#toggle.value, this.#system);
   }
 
   get(): ThemeState {
     return {
-      current: this.#current,
+      current: this.#toggle.value,
       system: this.#system,
       resolved: this.#resolved,
     };
@@ -154,21 +188,20 @@ export class ThemeController extends BaseController<ThemeEvents> {
     if (this.isDestroyed) {
       return;
     }
-    // Coerce invalid input to the configured default. The type system
-    // already blocks garbage, but runtime consumers (JSON from a
-    // server, query strings) can sneak through.
     const safe = coerceThemePreference(value, this.#defaultTheme);
-    this.applySet(safe, "user");
+    this.#toggle.set(safe);
   }
 
   toggle(): void {
     if (this.isDestroyed) {
       return;
     }
-    // Toggle on the RESOLVED theme. After a toggle the manager holds
-    // an explicit user preference — it does not return to `'system'`.
+    // Flip based on `resolved`, not `current` — diverges from the
+    // toggle's own `toggle()` (which moves `'indeterminate' →
+    // 'on'`). Theme's behavior: pick the explicit opposite of
+    // whatever the user is currently seeing.
     const next: ThemePreference = this.#resolved === "dark" ? "light" : "dark";
-    this.applySet(next, "user");
+    this.#toggle.set(next);
   }
 
   reset(): void {
@@ -176,18 +209,14 @@ export class ThemeController extends BaseController<ThemeEvents> {
       return;
     }
     this.#storage.remove();
-    // Note: `#lastWritten` is NOT cleared here. Keeping the marker
-    // pinned to the last value we wrote via `set` lets the echo
-    // detector classify a subsequent `null` cross-tab event as
-    // "external clear" rather than as our own echo.
-    this.applySet(this.#defaultTheme, "reset");
+    this.#toggle.reset();
   }
 
   /**
    * Tears down every side effect. Idempotent. `super.destroy()` runs
-   * first so the registered cleanups (system observer, cross-tab
-   * listener) execute against a live lifecycle; the DOM strategy's
-   * own teardown runs second.
+   * first so the registered cleanups (toggle, system observer,
+   * cross-tab listener) execute against a live lifecycle; the DOM
+   * strategy's own teardown runs second.
    */
   override destroy(): void {
     if (this.isDestroyed) {
@@ -200,8 +229,8 @@ export class ThemeController extends BaseController<ThemeEvents> {
   /**
    * Starts the controller's side effects. The constructor leaves
    * `#current` / `#system` / `#resolved` at deterministic SSR-safe
-   * defaults; `mount()` runs the actual init sequence (storage read,
-   * system observer, cross-tab listener, init event).
+   * defaults; `mount()` runs the actual init sequence (storage
+   * read, system observer, cross-tab listener, init event).
    *
    * Calling `mount()` more than once is a no-op — `BaseController`
    * guards the phase. Calling it after `destroy()` throws.
@@ -217,26 +246,33 @@ export class ThemeController extends BaseController<ThemeEvents> {
   // ── Initialization ──────────────────────────────────────────────
 
   /**
-   * Predictable init order per the spec:
+   * Predictable init order:
    *
-   * 1. Read the persisted preference.
-   * 2. Fall back to the configured default.
-   * 3. Detect the system theme.
-   * 4. Resolve the effective theme.
-   * 5. Apply it to the DOM.
-   * 6. Register system preference listeners.
-   * 7. Notify subscribers (with `source: 'initialization'`).
-   *
-   * Steps 1–6 run synchronously. Step 7 is scheduled on a microtask
-   * so consumers can `createTheme()` and then `on('change', ...)`
-   * from the same synchronous block and still receive the init event.
+   * 1. Read the persisted preference (if any).
+   * 2. Hydrate the inner toggle via `setSilently` so the queued
+   *    init microtask preserves the hydrated value instead of
+   *    resetting to `defaultTheme`.
+   * 3. Read the OS preference.
+   * 4. Resolve `resolved` and apply to the DOM.
+   * 5. Register the system-preference listener (if `watchSystem`).
+   * 6. Register the cross-tab listener (if `crossTab` and the
+   *    storage adapter supports `subscribe`).
+   * 7. Schedule the theme `initialization` event on a microtask.
+   *    The toggle's own init microtask runs too, but its
+   *    `change` listener is attached from the constructor so it
+   *    gets ignored — the theme emits one init event with the
+   *    correct shape.
    */
   #init(): void {
     const persisted = this.#storage.get();
-    const current = persisted ?? this.#defaultTheme;
-    this.#current = current;
+    const initial = persisted ?? this.#defaultTheme;
+
+    if (initial !== this.#toggle.value) {
+      this.#toggle.setSilently(initial);
+    }
+
     this.#system = readSystemTheme();
-    this.#resolved = resolveTheme(current, this.#system);
+    this.#resolved = resolveTheme(this.#toggle.value, this.#system);
     this.#dom.apply(this.#resolved);
 
     if (this.#watchSystem) {
@@ -256,14 +292,12 @@ export class ThemeController extends BaseController<ThemeEvents> {
       }
     }
 
-    // Schedule the init notification on a microtask so consumers can
-    // attach subscribers synchronously after `createTheme()` returns.
     queueMicrotask(() => {
       if (this.isDestroyed) {
         return;
       }
       this.#emitChange({
-        current: this.#current,
+        current: this.#toggle.value,
         system: this.#system,
         resolved: this.#resolved,
         source: "initialization",
@@ -272,55 +306,111 @@ export class ThemeController extends BaseController<ThemeEvents> {
     });
   }
 
-  // ── Private transitions ─────────────────────────────────────────
+  // ── Toggle → theme event bridge ────────────────────────────────
 
   /**
-   * Applies a new preference. Updates the manager state, persists
-   * when the source is `'user'` (so external clears via `'reset'`
-   * or cross-tab changes via `'storage'` never write back), and
-   * emits the `change` event with the previous snapshot.
+   * Receives every `change` event from the inner toggle. The
+   * toggle's queued init microtask fires immediately after
+   * construction with `source: 'initialization'` and
+   * `previous: null`; we drop that one and let the theme emit
+   * its own init event with the full shape.
+   *
+   * `pendingSource` overrides the source for cross-tab updates so
+   * they surface as `source: 'storage'` rather than
+   * `source: 'user'`.
    */
-  applySet(value: ThemePreference, source: ApplySetSource): void {
-    if (this.#current === value && source !== "reset") {
+  #onToggleChange = (detail: ToggleChangeDetail<"light", "dark", "system">): void => {
+    if (detail.source === "initialization") {
+      // Skip the toggle's own init event — theme emits its
+      // own from `#init()` with the correct shape.
       return;
     }
-    const previous = this.#current;
-    const previousResolved = this.#resolved;
-    this.#current = value;
-    const nextResolved = resolveTheme(value, this.#system);
-    const resolvedChanged = nextResolved !== previousResolved;
-    this.#resolved = nextResolved;
+    const source = this.#pendingSource ?? this.#mapToggleSource(detail.source);
+    this.#pendingSource = null;
+    this.#handleCurrentChange(detail.previous, source);
+  };
+
+  /**
+   * Applies the side effects that follow a `current` transition:
+   * persist when the user picked the value, refresh `resolved`,
+   * apply the DOM, and emit the theme-level event.
+   */
+  #handleCurrentChange(
+    previousCurrent: "light" | "dark" | "system" | null,
+    source: ThemeChangeSource
+  ): void {
+    if (this.isDestroyed) {
+      return;
+    }
+
+    const newCurrent = this.#toggle.value;
+    const previousResolved =
+      previousCurrent === null ? null : resolveTheme(previousCurrent, this.#system);
+
+    // Re-read the OS preference to keep `system` fresh alongside
+    // every `current` change.
+    const nextSystem = readSystemTheme();
+    this.#system = nextSystem;
+    const newResolved = resolveTheme(newCurrent, nextSystem);
+    const resolvedChanged = previousResolved === null || newResolved !== previousResolved;
+    this.#resolved = newResolved;
+
     if (resolvedChanged) {
-      this.#dom.apply(nextResolved);
+      this.#dom.apply(newResolved);
     }
+
     if (source === "user") {
-      this.#storage.set(value);
-      this.#lastWritten = value;
+      this.#storage.set(newCurrent);
+      this.#lastWritten = newCurrent;
     }
+
     this.#emitChange({
-      current: this.#current,
-      system: this.#system,
-      resolved: this.#resolved,
+      current: newCurrent,
+      system: nextSystem,
+      resolved: newResolved,
       source,
-      previous: {
-        current: previous,
-        system: this.#system,
-        resolved: previousResolved,
-      },
+      previous:
+        previousCurrent === null
+          ? null
+          : {
+              current: previousCurrent,
+              system: nextSystem,
+              resolved: previousResolved as ResolvedTheme,
+            },
     });
   }
 
+  /**
+   * Maps a `ToggleChangeSource` to the equivalent
+   * `ThemeChangeSource`. The toggle's vocabulary is a subset of
+   * the theme's, so this is mostly an identity function — kept
+   * explicit so adding a new source to either side becomes a
+   * deliberate decision (the compiler will flag the omission).
+   */
+  #mapToggleSource(toggleSource: "user" | "reset"): ThemeChangeSource {
+    return toggleSource;
+  }
+
+  // ── System observer path ───────────────────────────────────────
+
+  /**
+   * Reacts to an OS preference flip. Updates `system` and (when
+   * `current === 'system'`) the derived `resolved`. Bypasses the
+   * inner toggle because `current` does not change here — only
+   * `system` and possibly `resolved`.
+   */
   #handleSystemChange(next: ResolvedTheme): void {
     if (this.isDestroyed) {
       return;
     }
-    if (this.#current !== "system") {
-      // Explicit user choice — do NOT change `resolved` when the OS flips.
+    if (this.#toggle.value !== "system") {
+      // Explicit user choice — do NOT change `resolved` when
+      // the OS flips, but keep `system` observable.
       this.#system = next;
       return;
     }
     if (next === this.#resolved) {
-      // The system already matches; just record the value and exit.
+      // The system already matches; just record the value.
       this.#system = next;
       return;
     }
@@ -329,64 +419,72 @@ export class ThemeController extends BaseController<ThemeEvents> {
     this.#resolved = next;
     this.#dom.apply(next);
     this.#emitChange({
-      current: this.#current,
-      system: this.#system,
-      resolved: this.#resolved,
+      current: "system",
+      system: next,
+      resolved: next,
       source: "system",
       previous: {
-        current: this.#current,
+        current: "system",
         system: next,
         resolved: previousResolved,
       },
     });
   }
 
+  // ── Cross-tab path ─────────────────────────────────────────────
+
+  /**
+   * Reacts to a `storage` event from another tab. Echo detection:
+   * if the incoming value matches the last value we wrote, we
+   * suppress the event (consume the marker) and bail. When the
+   * incoming value is `null` (another tab removed the key), we
+   * apply the configured default with `source: 'storage'`.
+   */
   #handleCrossTabUpdate(next: ThemePreference | null): void {
     if (this.isDestroyed) {
       return;
     }
-    // Echo detection: the only way `#lastWritten` equals the incoming
-    // value is when we wrote the same value via `set` and the storage
-    // adapter echoed it back. We consume the marker (back to
-    // `undefined`) so a follow-up identical event is processed normally.
     if (this.#lastWritten !== undefined && this.#lastWritten === next) {
       this.#lastWritten = undefined;
       return;
     }
     if (next === null) {
-      // External clear (another tab removed the key, or a non-user
-      // path cleared it). Apply the configured default with a
-      // `'storage'` source so observers can react.
       this.applySet(this.#defaultTheme, "storage");
       return;
     }
-    if (this.#current === next) {
+    if (this.#toggle.value === next) {
       return;
     }
-    const previous = this.#current;
-    const previousResolved = this.#resolved;
-    this.#current = next;
-    const nextResolved = resolveTheme(next, this.#system);
-    this.#resolved = nextResolved;
-    if (nextResolved !== previousResolved) {
-      this.#dom.apply(nextResolved);
-    }
-    this.#emitChange({
-      current: this.#current,
-      system: this.#system,
-      resolved: this.#resolved,
-      source: "storage",
-      previous: {
-        current: previous,
-        system: this.#system,
-        resolved: previousResolved,
-      },
-    });
+    // Translate the upcoming toggle `'user'` emit into
+    // `source: 'storage'` via the pending-source flag.
+    this.#pendingSource = "storage";
+    this.#toggle.set(next);
+    this.#pendingSource = null;
   }
 
   /**
-   * Emits a `change` event through the inherited typed bus.
+   * Public escape hatch for callers (mainly the storage adapter)
+   * that need to push a value through the manager without going
+   * through the user-facing `set()`. Equivalent to `set(value)`
+   * semantically — kept as a separate entry point so the storage
+   * path can stay isolated.
    */
+  applySet(value: ThemePreference, source: ApplySetSource): void {
+    if (this.isDestroyed) {
+      return;
+    }
+    if (source === "reset") {
+      this.reset();
+      return;
+    }
+    const safe = coerceThemePreference(value, this.#defaultTheme);
+    this.#pendingSource = source === "storage" ? "storage" : null;
+    this.#toggle.set(safe);
+    this.#pendingSource = null;
+  }
+
+  // ── Emitter ────────────────────────────────────────────────────
+
   #emitChange(detail: ThemeChangeDetail): void {
     this.emit("change", detail);
   }
