@@ -14,19 +14,19 @@
  * `matchMedia` is missing) get a no-op cleanup.
  */
 
-import { safeMatchMedia, type Unsubscribe } from '@ailuracode/alpine-core';
-import type { ResolvedTheme } from '../types';
+import { safeMatchMedia, type Unsubscribe } from "@ailuracode/alpine-core";
+import type { ResolvedTheme } from "../types";
 
 /** Stable media query string — kept in one place so tests can target it. */
-export const PREFERS_COLOR_SCHEME_DARK_QUERY = '(prefers-color-scheme: dark)';
+export const PREFERS_COLOR_SCHEME_DARK_QUERY = "(prefers-color-scheme: dark)";
 
 /** Reads the current OS preference. Returns `'light'` on the server / when the API is missing. */
 export function readSystemTheme(): ResolvedTheme {
-    const media = safeMatchMedia(PREFERS_COLOR_SCHEME_DARK_QUERY);
-    if (!media) {
-        return 'light';
-    }
-    return media.matches ? 'dark' : 'light';
+  const media = safeMatchMedia(PREFERS_COLOR_SCHEME_DARK_QUERY);
+  if (!media) {
+    return "light";
+  }
+  return media.matches ? "dark" : "light";
 }
 
 /**
@@ -37,27 +37,27 @@ export function readSystemTheme(): ResolvedTheme {
  * manager can wire teardown uniformly.
  */
 export function createSystemObserver(listener: (next: ResolvedTheme) => void): Unsubscribe {
-    const systemMedia = safeMatchMedia(PREFERS_COLOR_SCHEME_DARK_QUERY);
+  const systemMedia = safeMatchMedia(PREFERS_COLOR_SCHEME_DARK_QUERY);
 
-    if (!systemMedia) {
-        return () => undefined;
+  if (!systemMedia) {
+    return () => undefined;
+  }
+
+  let active = true;
+  const onChange = (event: MediaQueryListEvent): void => {
+    if (!active) {
+      return;
     }
+    listener(event.matches ? "dark" : "light");
+  };
 
-    let active = true;
-    const onChange = (event: MediaQueryListEvent): void => {
-        if (!active) {
-            return;
-        }
-        listener(event.matches ? 'dark' : 'light');
-    };
+  systemMedia.addEventListener("change", onChange);
 
-    systemMedia.addEventListener('change', onChange);
-
-    return () => {
-        if (!active) {
-            return;
-        }
-        active = false;
-        systemMedia.removeEventListener('change', onChange);
-    };
+  return () => {
+    if (!active) {
+      return;
+    }
+    active = false;
+    systemMedia.removeEventListener("change", onChange);
+  };
 }

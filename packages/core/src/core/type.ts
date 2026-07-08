@@ -15,7 +15,7 @@
  *   plugin (e.g. `themePlugin(...)`) drops straight into
  *   `Alpine.plugin(...)` without a cast.
  */
-import Base from "alpinejs";
+import type Base from "alpinejs";
 
 /**
  * Generic `Alpine` view that narrows `store()` to a typed `Stores` map.
@@ -31,8 +31,8 @@ import Base from "alpinejs";
  * is assignable to any `Alpine<TStores>` without a cast.
  */
 export interface Alpine<TStores extends Base.Stores = Base.Stores> extends Base.Alpine {
-    store<T extends keyof TStores>(name: T, value: TStores[T]): void;
-    store<T extends keyof TStores>(name: T): TStores[T];
+  store<T extends keyof TStores>(name: T, value: TStores[T]): void;
+  store<T extends keyof TStores>(name: T): TStores[T];
 }
 
 /**
@@ -54,5 +54,5 @@ export interface Alpine<TStores extends Base.Stores = Base.Stores> extends Base.
  *   `Base.Alpine`.
  */
 export interface PluginCallback<T extends Base.Alpine = Base.Alpine> extends Base.PluginCallback {
-    (alpine: T): void;
+  (alpine: T): void;
 }

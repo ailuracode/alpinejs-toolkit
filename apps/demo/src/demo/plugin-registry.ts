@@ -1,10 +1,10 @@
-import { definePlugin, registerPlugin } from "@ailuracode/alpine-core";
 import accordion from "@ailuracode/alpine-accordion";
 import attention from "@ailuracode/alpine-attention";
 import calendar from "@ailuracode/alpine-calendar";
 import carousel from "@ailuracode/alpine-carousel";
 import child from "@ailuracode/alpine-child";
 import command from "@ailuracode/alpine-command";
+import { definePlugin, registerPlugin } from "@ailuracode/alpine-core";
 import dialog from "@ailuracode/alpine-dialog";
 import env from "@ailuracode/alpine-env";
 import geo from "@ailuracode/alpine-geo";
@@ -16,16 +16,16 @@ import notify from "@ailuracode/alpine-notify";
 import query from "@ailuracode/alpine-query";
 import {
   createAlpineNanostoresAdapter,
-  default as queryKit,
   NanoStores,
   queryDevtoolsPlugin,
+  default as queryKit,
 } from "@ailuracode/alpine-query-kit";
 import scroll from "@ailuracode/alpine-scroll";
 import sidebar from "@ailuracode/alpine-sidebar";
 import tabs from "@ailuracode/alpine-tabs";
 import { themePlugin } from "@ailuracode/alpine-theme";
 import toast, { toastPositions, toastVariants } from "@ailuracode/alpine-toast";
-import toggle from "@ailuracode/alpine-toggle";
+import { togglePlugin } from "@ailuracode/alpine-toggle";
 import tooltip from "@ailuracode/alpine-tooltip";
 import transfer from "@ailuracode/alpine-transfer";
 import type { AlpineInstance } from "../types/alpine.js";
@@ -148,14 +148,6 @@ export function registerDemoPlugins(): void {
     definePlugin(["magic"], {
       names: ["clipboard", "share", "export"],
       plugin: transfer(),
-    })
-  );
-
-  registerPlugin(
-    "toggle",
-    definePlugin(["magic"], {
-      names: ["toggle"],
-      plugin: toggle,
     })
   );
 
@@ -316,7 +308,8 @@ export function registerDemoPlugins(): void {
 /** Demo-specific Alpine.data handlers and devtools — run after initPlugins(). */
 export function setupDemoExtensions(Alpine: AlpineInstance): void {
   Alpine.plugin(themePlugin());
-  
+  Alpine.plugin(togglePlugin());
+
   const queryDemoStores = registerQueryDemos(Alpine);
   registerQueryAdvancedDemo(Alpine);
   registerJsonApiDemo(Alpine);

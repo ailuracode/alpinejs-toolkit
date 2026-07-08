@@ -8,7 +8,7 @@
  * `events.ts ↔ types.ts` import cycle.
  */
 
-import type { ThemeChangeDetail } from './types';
+import type { ThemeChangeDetail } from "./types";
 
 /**
  * Event map consumed by `BaseController<ThemeEvents>`. Single-key
@@ -16,7 +16,7 @@ import type { ThemeChangeDetail } from './types';
  * {@link ThemeChangeDetail} payload.
  */
 export interface ThemeEvents extends Record<string, unknown> {
-    change: ThemeChangeDetail;
+  change: ThemeChangeDetail;
 }
 
 /**

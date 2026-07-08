@@ -8,38 +8,38 @@
  * strategy file import only what it needs.
  */
 
-import type { ResolvedTheme, ThemeDomStrategy } from '../../types';
+import type { ResolvedTheme, ThemeDomStrategy } from "../../types";
 
 /** Public contract every DOM strategy implements. */
 export interface DomStrategy {
-    /** Applies the current resolved theme to the configured target. */
-    apply(resolved: ResolvedTheme): void;
-    /** Releases the reference to the target. Idempotent. */
-    destroy(): void;
+  /** Applies the current resolved theme to the configured target. */
+  apply(resolved: ResolvedTheme): void;
+  /** Releases the reference to the target. Idempotent. */
+  destroy(): void;
 }
 
 /** Common option fields every strategy option union shares. */
 export interface BaseOptions {
-    readonly target: HTMLElement | null;
-    readonly strategy: ThemeDomStrategy;
+  readonly target: HTMLElement | null;
+  readonly strategy: ThemeDomStrategy;
 }
 
 /** Options for the `'class'` strategy. */
 export interface ClassOptions extends BaseOptions {
-    readonly strategy: 'class';
-    readonly darkClass: string;
-    readonly lightClass: string;
+  readonly strategy: "class";
+  readonly darkClass: string;
+  readonly lightClass: string;
 }
 
 /** Options for the `'attribute'` strategy. */
 export interface AttributeOptions extends BaseOptions {
-    readonly strategy: 'attribute';
-    readonly attribute: string;
+  readonly strategy: "attribute";
+  readonly attribute: string;
 }
 
 /** Options for the `'none'` strategy. */
 export interface NoneOptions extends BaseOptions {
-    readonly strategy: 'none';
+  readonly strategy: "none";
 }
 
 /** Discriminated union of every strategy's option shape. */

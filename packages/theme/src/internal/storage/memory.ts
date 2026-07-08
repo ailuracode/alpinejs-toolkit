@@ -13,39 +13,39 @@
  * was cleared" from "a new preference was set".
  */
 
-import type { Unsubscribe } from '@ailuracode/alpine-core';
-import type { ThemePreference, ThemeStorage } from '../../types';
+import type { Unsubscribe } from "@ailuracode/alpine-core";
+import type { ThemePreference, ThemeStorage } from "../../types";
 
 export function createMemoryThemeStorage(
-    initial: ThemePreference | null = null,
+  initial: ThemePreference | null = null
 ): ThemeStorage & { subscribe: (listener: (next: ThemePreference | null) => void) => Unsubscribe } {
-    let value: ThemePreference | null = initial;
-    const listeners = new Set<(next: ThemePreference | null) => void>();
+  let value: ThemePreference | null = initial;
+  const listeners = new Set<(next: ThemePreference | null) => void>();
 
-    return {
-        get(): ThemePreference | null {
-            return value;
-        },
-        set(next: ThemePreference): void {
-            value = next;
-            for (const listener of listeners) {
-                listener(next);
-            }
-        },
-        remove(): void {
-            if (value === null) {
-                return;
-            }
-            value = null;
-            for (const listener of listeners) {
-                listener(null);
-            }
-        },
-        subscribe(listener): Unsubscribe {
-            listeners.add(listener);
-            return () => {
-                listeners.delete(listener);
-            };
-        },
-    };
+  return {
+    get(): ThemePreference | null {
+      return value;
+    },
+    set(next: ThemePreference): void {
+      value = next;
+      for (const listener of listeners) {
+        listener(next);
+      }
+    },
+    remove(): void {
+      if (value === null) {
+        return;
+      }
+      value = null;
+      for (const listener of listeners) {
+        listener(null);
+      }
+    },
+    subscribe(listener): Unsubscribe {
+      listeners.add(listener);
+      return () => {
+        listeners.delete(listener);
+      };
+    },
+  };
 }

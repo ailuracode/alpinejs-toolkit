@@ -19,10 +19,10 @@
  * (`PLUGIN_DUPLICATE`, `PLUGIN_UNKNOWN`, …) cover the diagnostic surface
  * that actually matters.
  */
-import type { DebugLogger } from '../core/debug';
-import { ToolkitError } from '../core/error';
-import type { PluginDefinition, PluginRegistryEntry } from '../types';
-import { assertValidDefinition } from './assert';
+import type { DebugLogger } from "../core/debug";
+import { ToolkitError } from "../core/error";
+import type { PluginDefinition, PluginRegistryEntry } from "../types";
+import { assertValidDefinition } from "./assert";
 
 /**
  * Diagnostic event emitted by the loader layer when a plugin's
@@ -33,11 +33,11 @@ import { assertValidDefinition } from './assert';
  * `DebugEvent<TDetail>` from `core/debug`.
  */
 export type RegistryEventLike = {
-    readonly source: 'registry';
-    readonly action: 'load-error';
-    readonly plugin: string;
-    readonly reason: string;
-    readonly timestamp: number;
+  readonly source: "registry";
+  readonly action: "load-error";
+  readonly plugin: string;
+  readonly reason: string;
+  readonly timestamp: number;
 };
 
 /**
@@ -53,12 +53,12 @@ let debugSink: DebugLogger<RegistryEventLike> | null = null;
  * silent mode.
  */
 export function setRegistryDebugSink(sink: DebugLogger<RegistryEventLike> | null): void {
-    debugSink = sink;
+  debugSink = sink;
 }
 
 /** Returns the currently wired sink. Exposed for tests + diagnostics. */
 export function getRegistryDebugSink(): DebugLogger<RegistryEventLike> | null {
-    return debugSink;
+  return debugSink;
 }
 
 /**
@@ -68,20 +68,20 @@ export function getRegistryDebugSink(): DebugLogger<RegistryEventLike> | null {
  * call it directly.
  */
 export function emitLoadError(plugin: string, reason: string): void {
-    if (!debugSink) {
-        return;
-    }
-    try {
-        debugSink({
-            source: 'registry',
-            action: 'load-error',
-            plugin,
-            reason,
-            timestamp: Date.now(),
-        });
-    } catch {
-        // A throwing logger must never break the loader.
-    }
+  if (!debugSink) {
+    return;
+  }
+  try {
+    debugSink({
+      source: "registry",
+      action: "load-error",
+      plugin,
+      reason,
+      timestamp: Date.now(),
+    });
+  } catch {
+    // A throwing logger must never break the loader.
+  }
 }
 
 /* ------------------------------------------------------------------ */
@@ -91,75 +91,66 @@ export function emitLoadError(plugin: string, reason: string): void {
 const registry = new Map<string, PluginRegistryEntry>();
 
 function normalizePluginName(name: string): string {
-    const normalized = name.trim();
+  const normalized = name.trim();
 
-    if (!normalized) {
-        throw new ToolkitError(
-            'Plugin name must be a non-empty string',
-            'PLUGIN_NAME_REQUIRED',
-        );
-    }
+  if (!normalized) {
+    throw new ToolkitError("Plugin name must be a non-empty string", "PLUGIN_NAME_REQUIRED");
+  }
 
-    return normalized;
+  return normalized;
 }
 
 /** Registers a plugin definition without initializing it. Safe at import time. */
 export function registerPlugin(name: string, definition: PluginDefinition): void {
-    const normalizedName = normalizePluginName(name);
-    assertValidDefinition(definition);
+  const normalizedName = normalizePluginName(name);
+  assertValidDefinition(definition);
 
-    if (registry.has(normalizedName)) {
-        throw new ToolkitError(
-            `Plugin "${normalizedName}" is already registered`,
-            'PLUGIN_DUPLICATE',
-        );
-    }
+  if (registry.has(normalizedName)) {
+    throw new ToolkitError(`Plugin "${normalizedName}" is already registered`, "PLUGIN_DUPLICATE");
+  }
 
-    registry.set(normalizedName, {
-        name: normalizedName,
-        definition,
-        initialized: false,
-    });
+  registry.set(normalizedName, {
+    name: normalizedName,
+    definition,
+    initialized: false,
+  });
 }
 
 /** Removes a plugin from the registry. Returns whether it existed. */
 export function unregisterPlugin(name: string): boolean {
-    return registry.delete(normalizePluginName(name));
+  return registry.delete(normalizePluginName(name));
 }
 
 /** Returns a registered plugin entry, if present. */
 export function getRegisteredPlugin(name: string): PluginRegistryEntry | undefined {
-    return registry.get(normalizePluginName(name));
+  return registry.get(normalizePluginName(name));
 }
 
 /** Returns all registered plugins in registration order. */
 export function getRegisteredPlugins(): readonly PluginRegistryEntry[] {
-    return [...registry.values()];
+  return [...registry.values()];
 }
 
 /** Returns whether a plugin has been initialized with Alpine. */
 export function isPluginInitialized(name: string): boolean {
-    const entry = registry.get(normalizePluginName(name));
-    return entry?.initialized ?? false;
+  const entry = registry.get(normalizePluginName(name));
+  return entry?.initialized ?? false;
 }
 
 /** Marks a plugin as initialized. */
 export function markPluginInitialized(name: string): void {
-    const entry = registry.get(normalizePluginName(name));
+  const entry = registry.get(normalizePluginName(name));
 
-    if (!entry) {
-        throw new ToolkitError(
-            `Cannot mark unknown plugin "${name}" as initialized`,
-            'PLUGIN_UNKNOWN',
-        );
-    }
+  if (!entry) {
+    throw new ToolkitError(`Cannot mark unknown plugin "${name}" as initialized`, "PLUGIN_UNKNOWN");
+  }
 
-    entry.initialized = true;
+  entry.initialized = true;
 }
 
 /** Clears the registry. Intended for tests and storybook resets. */
 export function resetPluginRegistry(): void {
-    registry.clear();
+  registry.clear();
 }
 
 /**
@@ -167,30 +158,27 @@ export function resetPluginRegistry(): void {
  * returns every plugin in registration order. An empty array is a valid no-op.
  */
 export function resolvePluginEntries(names?: string | readonly string[]): PluginRegistryEntry[] {
-    if (names === undefined) {
-        return [...getRegisteredPlugins()];
+  if (names === undefined) {
+    return [...getRegisteredPlugins()];
+  }
+
+  const requested = Array.isArray(names) ? names : [names];
+
+  if (requested.length === 0) {
+    return [];
+  }
+
+  const entries: PluginRegistryEntry[] = [];
+
+  for (const name of requested) {
+    const entry = getRegisteredPlugin(name);
+
+    if (!entry) {
+      throw new ToolkitError(`Plugin "${name}" is not registered`, "PLUGIN_UNKNOWN");
     }
 
-    const requested = Array.isArray(names) ? names : [names];
+    entries.push(entry);
+  }
 
-    if (requested.length === 0) {
-        return [];
-    }
-
-    const entries: PluginRegistryEntry[] = [];
-
-    for (const name of requested) {
-        const entry = getRegisteredPlugin(name);
-
-        if (!entry) {
-            throw new ToolkitError(
-                `Plugin "${name}" is not registered`,
-                'PLUGIN_UNKNOWN',
-            );
-        }
-
-        entries.push(entry);
-    }
-
-    return entries;
+  return entries;
 }

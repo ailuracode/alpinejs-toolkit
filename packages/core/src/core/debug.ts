@@ -56,8 +56,8 @@
  * declaration is structurally compatible.
  */
 export type DebugEvent<TDetail> = TDetail & {
-    /** Monotonic timestamp (ms) captured at emit time. */
-    readonly timestamp: number;
+  /** Monotonic timestamp (ms) captured at emit time. */
+  readonly timestamp: number;
 };
 
 /**

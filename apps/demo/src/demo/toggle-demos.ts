@@ -1,4 +1,4 @@
-import type { ToggleInstance, ToggleMagic } from "@ailuracode/alpine-toggle";
+import type { ToggleInstance } from "@ailuracode/alpine-toggle";
 import type { AlpineInstance } from "../types/alpine.js";
 
 type BinaryPower = ToggleInstance<"on", "off", undefined, "on" | "off">;
@@ -14,12 +14,23 @@ type ToggleTernaryDemoData = {
   init(): void;
 };
 
+type ToggleFactory = {
+  <TA, TB>(options: {
+    states: { on: TA; off: TB };
+    initial?: TA | TB;
+  }): ToggleInstance<TA, TB, undefined, TA | TB>;
+  <TA, TB, TN>(options: {
+    states: { on: TA; off: TB; indeterminate: TN };
+    initial?: TA | TB | TN;
+  }): ToggleInstance<TA, TB, TN, TA | TB | TN>;
+};
+
 type ToggleBinaryDemoComponent = ToggleBinaryDemoData & {
-  $toggle: ToggleMagic;
+  $toggle: ToggleFactory;
 };
 
 type ToggleTernaryDemoComponent = ToggleTernaryDemoData & {
-  $toggle: ToggleMagic;
+  $toggle: ToggleFactory;
 };
 
 export function registerToggleDemos(Alpine: AlpineInstance): void {
@@ -29,7 +40,7 @@ export function registerToggleDemos(Alpine: AlpineInstance): void {
       power: null,
       init(this: ToggleBinaryDemoComponent) {
         this.power = this.$toggle({
-          states: { truly: "on", falsely: "off" },
+          states: { on: "on", off: "off" },
           initial: "off",
         });
       },
@@ -42,7 +53,7 @@ export function registerToggleDemos(Alpine: AlpineInstance): void {
       answer: null,
       init(this: ToggleTernaryDemoComponent) {
         this.answer = this.$toggle({
-          states: { truly: "yes", falsely: "no", ternary: "unknown" },
+          states: { on: "yes", off: "no", indeterminate: "unknown" },
           initial: "unknown",
         });
       },

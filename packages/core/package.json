@@ -1,66 +1,66 @@
 {
-    "name": "@ailuracode/alpine-core",
-    "version": "0.1.0",
-    "description": "Lazy plugin registry, initializer, and browser capability helpers for Alpine.js.",
-    "keywords": [
-        "alpine",
-        "alpinejs",
-        "controller",
-        "headless",
-        "lazy",
-        "plugin",
-        "registry",
-        "tree-shaking"
-    ],
-    "homepage": "https://github.com/ailuracode/alpinejs-toolkit/tree/main/packages/core#readme",
-    "bugs": {
-        "url": "https://github.com/ailuracode/alpinejs-toolkit/issues"
+  "name": "@ailuracode/alpine-core",
+  "version": "0.1.0",
+  "description": "Lazy plugin registry, initializer, and browser capability helpers for Alpine.js.",
+  "keywords": [
+    "alpine",
+    "alpinejs",
+    "controller",
+    "headless",
+    "lazy",
+    "plugin",
+    "registry",
+    "tree-shaking"
+  ],
+  "homepage": "https://github.com/ailuracode/alpinejs-toolkit/tree/main/packages/core#readme",
+  "bugs": {
+    "url": "https://github.com/ailuracode/alpinejs-toolkit/issues"
+  },
+  "license": "MIT",
+  "author": "ailuracode",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ailuracode/alpinejs-toolkit.git",
+    "directory": "packages/core"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "type": "module",
+  "sideEffects": false,
+  "types": "./dist/global.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
     },
-    "license": "MIT",
-    "author": "ailuracode",
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/ailuracode/alpinejs-toolkit.git",
-        "directory": "packages/core"
-    },
-    "files": [
-        "dist",
-        "README.md"
-    ],
-    "type": "module",
-    "sideEffects": false,
-    "types": "./dist/global.d.ts",
-    "exports": {
-        ".": {
-            "types": "./dist/index.d.ts",
-            "default": "./dist/index.js"
-        },
-        "./global": {
-            "types": "./dist/global.d.ts"
-        }
-    },
-    "publishConfig": {
-        "access": "public"
-    },
-    "scripts": {
-        "clean": "rm -rf dist",
-        "build": "tsup src/index.ts --format esm --dts --clean --out-dir dist && cp src/global.d.ts dist/global.d.ts",
-        "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.test.json",
-        "test": "vitest run --config ../../vitest.config.ts packages/core",
-        "test:watch": "vitest --config ../../vitest.config.ts packages/core",
-        "test:coverage": "vitest run --coverage --config ../../vitest.config.ts packages/core"
-    },
-    "devDependencies": {
-        "@types/alpinejs": "^3.13.11",
-        "@types/node": "^26.1.0",
-        "tsup": "^8.5.0"
-    },
-    "peerDependencies": {
-        "alpinejs": "^3.0.0"
-    },
-    "peerDependenciesMeta": {
-        "@types/alpinejs": {
-            "optional": true
-        }
+    "./global": {
+      "types": "./dist/global.d.ts"
     }
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "clean": "rm -rf dist",
+    "build": "tsup src/index.ts --format esm --dts --clean --out-dir dist && cp src/global.d.ts dist/global.d.ts",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.test.json",
+    "test": "vitest run --config ../../vitest.config.ts packages/core",
+    "test:watch": "vitest --config ../../vitest.config.ts packages/core",
+    "test:coverage": "vitest run --coverage --config ../../vitest.config.ts packages/core"
+  },
+  "devDependencies": {
+    "@types/alpinejs": "^3.13.11",
+    "@types/node": "^26.1.0",
+    "tsup": "^8.5.0"
+  },
+  "peerDependencies": {
+    "alpinejs": "^3.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@types/alpinejs": {
+      "optional": true
+    }
+  }
 }

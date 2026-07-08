@@ -17,11 +17,11 @@
  */
 
 export type {
-    Alpine as AlpineGlobal,
-    AlpineComponent,
-    AlpineMagic,
-    AlpineStore,
-    XAttributes,
-} from 'alpinejs';
+  Alpine as AlpineGlobal,
+  AlpineComponent,
+  AlpineMagic,
+  AlpineStore,
+  XAttributes,
+} from "alpinejs";
 
-export type { AlpineToolkit } from './internal/init';
+export type { AlpineToolkit } from "./internal/init";

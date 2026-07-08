@@ -9,8 +9,6 @@ export interface ToggleTernaryStates<TA, TB, TN> extends ToggleBinaryStates<TA, 
   ternary: TN;
 }
 
-export type ToggleValue<TA, TB, TN = undefined> = TN extends undefined ? TA | TB : TA | TB | TN;
-
 export interface ToggleOptions<TA, TB, TN = undefined> {
   states: ToggleBinaryStates<TA, TB> & { ternary?: TN };
   initial?: TA | TB | TN;

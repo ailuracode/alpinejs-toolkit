@@ -12,13 +12,13 @@
  * Coverage defaults live on the root config — the per-package file only
  * declares what is genuinely different.
  */
-import { defineProject } from 'vitest/config';
+import { defineProject } from "vitest/config";
 
 export default defineProject({
-    test: {
-        globals: true,
-        environment: 'jsdom',
-        include: ['test/**/*.{test,spec}.ts'],
-        setupFiles: ['./test/setup.ts'],
-    },
+  test: {
+    globals: true,
+    environment: "jsdom",
+    include: ["test/**/*.{test,spec}.ts"],
+    setupFiles: ["./test/setup.ts"],
+  },
 });

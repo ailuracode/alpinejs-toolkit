@@ -1,26 +1,35 @@
 {
   "name": "@ailuracode/alpine-toggle",
-  "version": "0.1.0",
-  "description": "Alpine.js toggle magic with binary and ternary state inference",
-  "type": "module",
+  "version": "0.2.0",
+  "description": "Alpine.js toggle magic for binary and ternary state machines with typed change events.",
+  "keywords": [
+    "alpine",
+    "alpinejs",
+    "binary",
+    "magic",
+    "plugin",
+    "state-machine",
+    "ternary",
+    "toggle"
+  ],
+  "homepage": "https://github.com/ailuracode/alpinejs-toolkit/tree/main/packages/toggle#readme",
+  "bugs": {
+    "url": "https://github.com/ailuracode/alpinejs-toolkit/issues"
+  },
   "license": "MIT",
   "author": "ailuracode",
-  "publishConfig": {
-    "access": "public"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ailuracode/alpinejs-toolkit.git",
     "directory": "packages/toggle"
   },
-  "bugs": {
-    "url": "https://github.com/ailuracode/alpinejs-toolkit/issues"
-  },
-  "homepage": "https://github.com/ailuracode/alpinejs-toolkit/tree/master/packages/toggle#readme",
+  "type": "module",
+  "sideEffects": false,
   "files": [
     "dist",
     "README.md"
   ],
+  "types": "./dist/global.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -30,26 +39,29 @@
       "types": "./dist/global.d.ts"
     }
   },
-  "types": "./dist/global.d.ts",
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "clean": "rm -rf dist",
+    "build": "tsup src/index.ts --format esm --dts --clean --out-dir dist && cp src/global.d.ts dist/global.d.ts",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.test.json",
+    "test": "vitest run --config ../../vitest.config.ts test",
+    "test:watch": "vitest --config ../../vitest.config.ts"
+  },
+  "devDependencies": {
+    "@ailuracode/alpine-core": "workspace:*",
+    "@types/alpinejs": "^3.13.10",
+    "@types/node": "^26.1.0",
+    "tsup": "^8.5.0"
+  },
   "peerDependencies": {
-    "alpinejs": "^3.0.0",
-    "@types/alpinejs": "^3.13.11"
+    "@ailuracode/alpine-core": "^0.1.0",
+    "alpinejs": "^3.0.0"
   },
   "peerDependenciesMeta": {
     "@types/alpinejs": {
       "optional": true
     }
-  },
-  "scripts": {
-    "build": "tsup src/index.ts --format esm --dts --clean --out-dir dist && cp src/global.d.ts dist/global.d.ts",
-    "prepublishOnly": "pnpm run build",
-    "test": "vitest run --config ../../vitest.config.ts test"
-  },
-  "keywords": [
-    "alpinejs",
-    "alpine",
-    "plugin",
-    "toggle",
-    "state"
-  ]
+  }
 }

@@ -21,27 +21,27 @@
  */
 
 export type {
-    AttributeOptions,
-    BaseOptions,
-    ClassOptions,
-    DomStrategy,
-    DomStrategyOptions,
-    NoneOptions,
-} from './types';
+  AttributeOptions,
+  BaseOptions,
+  ClassOptions,
+  DomStrategy,
+  DomStrategyOptions,
+  NoneOptions,
+} from "./types";
 
-import { AttributeStrategy } from './attribute';
-import { ClassStrategy } from './class';
-import { NoneStrategy } from './none';
-import type { DomStrategy, DomStrategyOptions } from './types';
+import { AttributeStrategy } from "./attribute";
+import { ClassStrategy } from "./class";
+import { NoneStrategy } from "./none";
+import type { DomStrategy, DomStrategyOptions } from "./types";
 
 /** Builds the strategy that matches `options.strategy`. */
 export function createDomStrategy(options: DomStrategyOptions): DomStrategy {
-    switch (options.strategy) {
-        case 'class':
-            return new ClassStrategy(options);
-        case 'attribute':
-            return new AttributeStrategy(options);
-        case 'none':
-            return new NoneStrategy(options);
-    }
+  switch (options.strategy) {
+    case "class":
+      return new ClassStrategy(options);
+    case "attribute":
+      return new AttributeStrategy(options);
+    case "none":
+      return new NoneStrategy(options);
+  }
 }

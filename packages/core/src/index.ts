@@ -24,66 +24,58 @@
  * the build, not the in-repo source.
  */
 
-// --- Browser capability helpers (SSR-safe) -------------------------------
-export { isBrowser, safeDocument, safeWindow, safeMatchMedia } from "./internal/browser";
-
-// --- Plugin definition helpers -------------------------------------------
-export {
-    definePlugin,
-    lazyPlugin,
-    type DefinePluginOptions,
-    type LazyPluginOptions,
-} from "./internal/define";
-
-// --- Plugin initialization ----------------------------------------------
-export {
-    initPlugins,
-    initPluginsSync,
-    createAlpinePlugin,
-} from "./internal/init";
-
-// --- Plugin registry -----------------------------------------------------
-export {
-    getRegisteredPlugin,
-    getRegisteredPlugins,
-    getRegistryDebugSink,
-    isPluginInitialized,
-    markPluginInitialized,
-    registerPlugin,
-    resetPluginRegistry,
-    resolvePluginEntries,
-    setRegistryDebugSink,
-    unregisterPlugin,
-    type RegistryEventLike,
-} from "./internal/registry";
-
-// --- Errors --------------------------------------------------------------
-export { PluginLoaderError } from "./internal/loader";
-
-// --- Controller primitives (used by every feature package) ---------------
-export { BaseController } from "./core/controller";
 export { CleanupStack } from "./core/cleanup";
-export { InstanceRegistry } from "./core/registry";
-export { ToolkitError } from "./core/error";
-export { EventEmitter } from "./core/event";
-
-// --- Public types --------------------------------------------------------
-export type {
-    AlpinePluginCallback,
-    PluginDefinition,
-    PluginKind,
-    PluginLoader,
-    PluginNames,
-    PluginRegistryEntry,
-    RegisteredPlugin,
-} from "./types";
-
-// --- Generic Alpine typings ----------------------------------------------
-export type { Alpine, PluginCallback } from "./core/type";
-
 // --- Controller + event-emitter type helpers -----------------------------
 export type { LifecyclePhase } from "./core/controller";
-export type { EventListener, Unsubscribe } from "./core/event";
-export type { RegisteredInstance } from "./core/registry";
-export type { ToolkitErrorCode } from "./core/error";
+// --- Controller primitives (used by every feature package) ---------------
+export { BaseController } from "./core/controller";
 export type { DebugEvent, DebugLogger, DebugOption } from "./core/debug";
+export type { ToolkitErrorCode } from "./core/error";
+export { ToolkitError } from "./core/error";
+export type { EventListener, Unsubscribe } from "./core/event";
+export { EventEmitter } from "./core/event";
+export type { RegisteredInstance } from "./core/registry";
+export { InstanceRegistry } from "./core/registry";
+// --- Generic Alpine typings ----------------------------------------------
+export type { Alpine, PluginCallback } from "./core/type";
+// --- Browser capability helpers (SSR-safe) -------------------------------
+export { isBrowser, safeDocument, safeMatchMedia, safeWindow } from "./internal/browser";
+// --- Plugin definition helpers -------------------------------------------
+export {
+  type DefinePluginOptions,
+  definePlugin,
+  type LazyPluginOptions,
+  lazyPlugin,
+} from "./internal/define";
+// --- Plugin initialization ----------------------------------------------
+export {
+  createAlpinePlugin,
+  initPlugins,
+  initPluginsSync,
+} from "./internal/init";
+// --- Errors --------------------------------------------------------------
+export { PluginLoaderError } from "./internal/loader";
+// --- Plugin registry -----------------------------------------------------
+export {
+  getRegisteredPlugin,
+  getRegisteredPlugins,
+  getRegistryDebugSink,
+  isPluginInitialized,
+  markPluginInitialized,
+  type RegistryEventLike,
+  registerPlugin,
+  resetPluginRegistry,
+  resolvePluginEntries,
+  setRegistryDebugSink,
+  unregisterPlugin,
+} from "./internal/registry";
+// --- Public types --------------------------------------------------------
+export type {
+  AlpinePluginCallback,
+  PluginDefinition,
+  PluginKind,
+  PluginLoader,
+  PluginNames,
+  PluginRegistryEntry,
+  RegisteredPlugin,
+} from "./types";

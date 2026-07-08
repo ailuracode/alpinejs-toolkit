@@ -34,7 +34,7 @@ export type { Unsubscribe };
  * Public: changing a member is a breaking change for anyone
  * branching on `detail.source`.
  */
-export type ThemeChangeSource = 'initialization' | 'user' | 'system' | 'storage' | 'reset';
+export type ThemeChangeSource = "initialization" | "user" | "system" | "storage" | "reset";
 
 /**
  * Structured state exposed by {@link ThemeManager}. All three fields are
@@ -45,9 +45,9 @@ export type ThemeChangeSource = 'initialization' | 'user' | 'system' | 'storage'
  * Example: `current='system'`, `system='dark'`, `resolved='dark'`.
  */
 export interface ThemeState {
-    readonly current: ThemePreference;
-    readonly system: ResolvedTheme;
-    readonly resolved: ResolvedTheme;
+  readonly current: ThemePreference;
+  readonly system: ResolvedTheme;
+  readonly resolved: ResolvedTheme;
 }
 
 /**
@@ -57,10 +57,10 @@ export interface ThemeState {
  * `source` discriminator and the previous snapshot.
  */
 export interface ThemeChangeDetail extends ThemeState {
-    /** Why the change happened. */
-    readonly source: ThemeChangeSource;
-    /** Previous state — `null` only on the first emit (initialization). */
-    readonly previous: ThemeState | null;
+  /** Why the change happened. */
+  readonly source: ThemeChangeSource;
+  /** Previous state — `null` only on the first emit (initialization). */
+  readonly previous: ThemeState | null;
 }
 
 /**
@@ -87,109 +87,109 @@ export type ThemeDomStrategy = "class" | "attribute" | "none";
  * deals with raw strings.
  */
 export interface ThemeStorage {
-    /** Reads the persisted preference. Returns `null` when nothing is stored. */
-    get(): ThemePreference | null;
-    /** Persists `value`. No-op when the API is unavailable. */
-    set(value: ThemePreference): void;
-    /** Removes the persisted value. */
-    remove(): void;
-    /**
-     * Optional subscription hook. The manager calls this when the
-     * adapter supports cross-instance change notifications (cross-tab,
-     * in-memory observers). Always return an unsubscribe function — a
-     * no-op is fine when the runtime cannot subscribe.
-     *
-     * The listener receives `null` when the adapter's underlying store
-     * is cleared (another tab called `removeItem`, the in-memory
-     * adapter's `remove()` ran). The manager treats `null` as a
-     * "fall back to the configured default" signal and emits a
-     * `change` event with `source: 'storage'`.
-     */
-    subscribe?(listener: (next: ThemePreference | null) => void): Unsubscribe;
+  /** Reads the persisted preference. Returns `null` when nothing is stored. */
+  get(): ThemePreference | null;
+  /** Persists `value`. No-op when the API is unavailable. */
+  set(value: ThemePreference): void;
+  /** Removes the persisted value. */
+  remove(): void;
+  /**
+   * Optional subscription hook. The manager calls this when the
+   * adapter supports cross-instance change notifications (cross-tab,
+   * in-memory observers). Always return an unsubscribe function — a
+   * no-op is fine when the runtime cannot subscribe.
+   *
+   * The listener receives `null` when the adapter's underlying store
+   * is cleared (another tab called `removeItem`, the in-memory
+   * adapter's `remove()` ran). The manager treats `null` as a
+   * "fall back to the configured default" signal and emits a
+   * `change` event with `source: 'storage'`.
+   */
+  subscribe?(listener: (next: ThemePreference | null) => void): Unsubscribe;
 }
 
 /** Options accepted by {@link createTheme}. */
 export interface CreateThemeOptions {
-    /**
-     * Stable identifier exposed via {@link ThemeController.id}. When
-     * omitted, the controller generates one from the constructor name.
-     */
-    readonly id?: string;
-    /**
-     * Preference applied when no valid value is persisted. Default:
-     * {@link DEFAULT_THEME_PREFERENCE} (`'system'`).
-     */
-    readonly defaultTheme?: ThemePreference;
-    /**
-     * Persistence adapter. Default: a {@link createLocalStorageThemeStorage}
-     * adapter with the default key. Pass an in-memory / noop adapter to
-     * disable persistence.
-     */
-    readonly storage?: ThemeStorage;
-    /** DOM strategy. Default: `'class'`. */
-    readonly strategy?: ThemeDomStrategy;
-    /**
-     * CSS class added to `target` when the resolved theme is `'dark'`.
-     * Only used when `strategy: 'class'`. Default: `'dark'`.
-     */
-    readonly darkClass?: string;
-    /**
-     * CSS class added to `target` when the resolved theme is `'light'`.
-     * Only used when `strategy: 'class'`. Default: `'light'`.
-     */
-    readonly lightClass?: string;
-    /**
-     * DOM attribute set to the resolved value when
-     * `strategy: 'attribute'`. Default: `'data-theme'`.
-     */
-    readonly attribute?: string;
-    /**
-     * Element the strategy mutates. Default: `document.documentElement`
-     * when `document` is present; otherwise the strategy is skipped.
-     */
-    readonly target?: HTMLElement | null;
-    /**
-     * When `true` (default), the manager listens to the OS
-     * `prefers-color-scheme` change events. Disabling freezes the
-     * resolved value to whatever the OS reported on init.
-     */
-    readonly watchSystem?: boolean;
-    /**
-     * When `true` (default) and the storage adapter exposes a
-     * `subscribe()` method, the manager reacts to cross-tab storage
-     * changes. The default localStorage adapter enables this.
-     */
-    readonly crossTab?: boolean;
+  /**
+   * Stable identifier exposed via {@link ThemeController.id}. When
+   * omitted, the controller generates one from the constructor name.
+   */
+  readonly id?: string;
+  /**
+   * Preference applied when no valid value is persisted. Default:
+   * {@link DEFAULT_THEME_PREFERENCE} (`'system'`).
+   */
+  readonly defaultTheme?: ThemePreference;
+  /**
+   * Persistence adapter. Default: a {@link createLocalStorageThemeStorage}
+   * adapter with the default key. Pass an in-memory / noop adapter to
+   * disable persistence.
+   */
+  readonly storage?: ThemeStorage;
+  /** DOM strategy. Default: `'class'`. */
+  readonly strategy?: ThemeDomStrategy;
+  /**
+   * CSS class added to `target` when the resolved theme is `'dark'`.
+   * Only used when `strategy: 'class'`. Default: `'dark'`.
+   */
+  readonly darkClass?: string;
+  /**
+   * CSS class added to `target` when the resolved theme is `'light'`.
+   * Only used when `strategy: 'class'`. Default: `'light'`.
+   */
+  readonly lightClass?: string;
+  /**
+   * DOM attribute set to the resolved value when
+   * `strategy: 'attribute'`. Default: `'data-theme'`.
+   */
+  readonly attribute?: string;
+  /**
+   * Element the strategy mutates. Default: `document.documentElement`
+   * when `document` is present; otherwise the strategy is skipped.
+   */
+  readonly target?: HTMLElement | null;
+  /**
+   * When `true` (default), the manager listens to the OS
+   * `prefers-color-scheme` change events. Disabling freezes the
+   * resolved value to whatever the OS reported on init.
+   */
+  readonly watchSystem?: boolean;
+  /**
+   * When `true` (default) and the storage adapter exposes a
+   * `subscribe()` method, the manager reacts to cross-tab storage
+   * changes. The default localStorage adapter enables this.
+   */
+  readonly crossTab?: boolean;
 }
 
 /** Public, framework-agnostic manager returned by {@link createTheme}. */
 export interface ThemeManager {
-    /** Current user preference. */
-    readonly current: ThemePreference;
-    /** OS-reported theme — updated when the system preference changes. */
-    readonly system: ResolvedTheme;
-    /** Effective theme applied to the DOM. */
-    readonly resolved: ResolvedTheme;
-    /** Read-only snapshot of the manager's state. */
-    get(): ThemeState;
-    /** Sets a new preference. Persists, recomputes, and applies. */
-    set(value: ThemePreference): void;
-    /**
-     * Toggles between `light` and `dark` based on the resolved theme.
-     * Calling `toggle()` creates an explicit user preference — the
-     * manager does NOT return to `'system'`.
-     */
-    toggle(): void;
-    /** Resets to the configured default and removes the persisted value. */
-    reset(): void;
-    /**
-     * Subscribes to a `change` event. Returns an unsubscribe function.
-     * Detail payload carries `current`, `system`, `resolved`, `source`,
-     * and `previous` (null on the initialization event).
-     */
-    on(event: "change", listener: (detail: ThemeChangeDetail) => void): Unsubscribe;
-    /** Tears down listeners and releases references. Idempotent. */
-    destroy(): void;
+  /** Current user preference. */
+  readonly current: ThemePreference;
+  /** OS-reported theme — updated when the system preference changes. */
+  readonly system: ResolvedTheme;
+  /** Effective theme applied to the DOM. */
+  readonly resolved: ResolvedTheme;
+  /** Read-only snapshot of the manager's state. */
+  get(): ThemeState;
+  /** Sets a new preference. Persists, recomputes, and applies. */
+  set(value: ThemePreference): void;
+  /**
+   * Toggles between `light` and `dark` based on the resolved theme.
+   * Calling `toggle()` creates an explicit user preference — the
+   * manager does NOT return to `'system'`.
+   */
+  toggle(): void;
+  /** Resets to the configured default and removes the persisted value. */
+  reset(): void;
+  /**
+   * Subscribes to a `change` event. Returns an unsubscribe function.
+   * Detail payload carries `current`, `system`, `resolved`, `source`,
+   * and `previous` (null on the initialization event).
+   */
+  on(event: "change", listener: (detail: ThemeChangeDetail) => void): Unsubscribe;
+  /** Tears down listeners and releases references. Idempotent. */
+  destroy(): void;
 }
 
 /**
@@ -209,22 +209,22 @@ export interface ThemeManager {
  * cast because the toolkit's `Alpine<Stores>` only ADDS overloads.
  */
 export type ThemeAlpine = Alpine<{ theme: ThemeStore }> & {
-    /**
-     * Forwarded through Alpine's cleanup mechanism when available.
-     * Older Alpine versions don't expose `cleanup`; the integration
-     * guards every call with a `typeof === "function"` check.
-     */
-    cleanup?(callback: () => void): void;
+  /**
+   * Forwarded through Alpine's cleanup mechanism when available.
+   * Older Alpine versions don't expose `cleanup`; the integration
+   * guards every call with a `typeof === "function"` check.
+   */
+  cleanup?(callback: () => void): void;
 };
 
 /** Alpine-facing store surface. The integration fills it from a manager. */
 export interface ThemeStore {
-    current: ThemePreference;
-    system: ResolvedTheme;
-    resolved: ResolvedTheme;
-    set(value: ThemePreference): void;
-    toggle(): void;
-    reset(): void;
+  current: ThemePreference;
+  system: ResolvedTheme;
+  resolved: ResolvedTheme;
+  set(value: ThemePreference): void;
+  toggle(): void;
+  reset(): void;
 }
 
 /**

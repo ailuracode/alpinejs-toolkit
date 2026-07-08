@@ -13,14 +13,14 @@
  * regular write.
  */
 
-import { safeWindow, type Unsubscribe } from '@ailuracode/alpine-core';
-import { DEFAULT_THEME_STORAGE_KEY, type ThemePreference, type ThemeStorage } from '../../types';
-import { isThemePreference } from '../validation';
+import { safeWindow, type Unsubscribe } from "@ailuracode/alpine-core";
+import { DEFAULT_THEME_STORAGE_KEY, type ThemePreference, type ThemeStorage } from "../../types";
+import { isThemePreference } from "../validation";
 
 /** Options accepted by {@link createLocalStorageThemeStorage}. */
 export interface LocalStorageThemeStorageOptions {
-    /** `localStorage` key. Default: {@link DEFAULT_THEME_STORAGE_KEY}. */
-    readonly key?: string;
+  /** `localStorage` key. Default: {@link DEFAULT_THEME_STORAGE_KEY}. */
+  readonly key?: string;
 }
 
 /**
@@ -30,48 +30,48 @@ export interface LocalStorageThemeStorageOptions {
  * to {@link DEFAULT_THEME_STORAGE_KEY}.
  */
 function readLocalStorage(key: string): ThemePreference | null {
-    const win = safeWindow();
-    if (!win) {
-        return null;
+  const win = safeWindow();
+  if (!win) {
+    return null;
+  }
+  try {
+    const raw = win.localStorage.getItem(key);
+    if (raw === null) {
+      return null;
     }
-    try {
-        const raw = win.localStorage.getItem(key);
-        if (raw === null) {
-            return null;
-        }
-        // Invalid values come back as `null` so the manager falls back
-        // to its configured default — never to a coerced `'system'`.
-        return isThemePreference(raw) ? raw : null;
-    } catch {
-        return null;
-    }
+    // Invalid values come back as `null` so the manager falls back
+    // to its configured default — never to a coerced `'system'`.
+    return isThemePreference(raw) ? raw : null;
+  } catch {
+    return null;
+  }
 }
 
 /** Writes `value` to `window.localStorage`. Best-effort — never throws. */
 function writeLocalStorage(key: string, value: ThemePreference): void {
-    const win = safeWindow();
-    if (!win) {
-        return;
-    }
-    try {
-        win.localStorage.setItem(key, value);
-    } catch {
-        // SecurityError (Safari private mode), quota exceeded, etc.
-        // Persistence is best-effort — fail silently so the UI keeps working.
-    }
+  const win = safeWindow();
+  if (!win) {
+    return;
+  }
+  try {
+    win.localStorage.setItem(key, value);
+  } catch {
+    // SecurityError (Safari private mode), quota exceeded, etc.
+    // Persistence is best-effort — fail silently so the UI keeps working.
+  }
 }
 
 /** Removes `key` from `window.localStorage`. Best-effort — never throws. */
 function removeLocalStorage(key: string): void {
-    const win = safeWindow();
-    if (!win) {
-        return;
-    }
-    try {
-        win.localStorage.removeItem(key);
-    } catch {
-        // Same rationale as `set`.
-    }
+  const win = safeWindow();
+  if (!win) {
+    return;
+  }
+  try {
+    win.localStorage.removeItem(key);
+  } catch {
+    // Same rationale as `set`.
+  }
 }
 
 /**
@@ -84,40 +84,40 @@ function removeLocalStorage(key: string): void {
  * listener can distinguish a clear from a write.
  */
 function subscribeLocalStorage(
-    key: string,
-    listener: (next: ThemePreference | null) => void,
+  key: string,
+  listener: (next: ThemePreference | null) => void
 ): Unsubscribe {
-    const win = safeWindow();
-    if (!win) {
-        return () => undefined;
+  const win = safeWindow();
+  if (!win) {
+    return () => undefined;
+  }
+  const onStorage = (event: StorageEvent): void => {
+    if (event.key !== key) {
+      return;
     }
-    const onStorage = (event: StorageEvent): void => {
-        if (event.key !== key) {
-            return;
-        }
-        if (event.newValue === null) {
-            listener(null);
-            return;
-        }
-        if (isThemePreference(event.newValue)) {
-            listener(event.newValue);
-        }
-    };
-    win.addEventListener('storage', onStorage);
-    return () => {
-        win.removeEventListener('storage', onStorage);
-    };
+    if (event.newValue === null) {
+      listener(null);
+      return;
+    }
+    if (isThemePreference(event.newValue)) {
+      listener(event.newValue);
+    }
+  };
+  win.addEventListener("storage", onStorage);
+  return () => {
+    win.removeEventListener("storage", onStorage);
+  };
 }
 
 export function createLocalStorageThemeStorage(
-    options: LocalStorageThemeStorageOptions = {},
+  options: LocalStorageThemeStorageOptions = {}
 ): ThemeStorage {
-    const key = options.key ?? DEFAULT_THEME_STORAGE_KEY;
+  const key = options.key ?? DEFAULT_THEME_STORAGE_KEY;
 
-    return {
-        get: () => readLocalStorage(key),
-        set: (value) => writeLocalStorage(key, value),
-        remove: () => removeLocalStorage(key),
-        subscribe: (listener) => subscribeLocalStorage(key, listener),
-    };
+  return {
+    get: () => readLocalStorage(key),
+    set: (value) => writeLocalStorage(key, value),
+    remove: () => removeLocalStorage(key),
+    subscribe: (listener) => subscribeLocalStorage(key, listener),
+  };
 }

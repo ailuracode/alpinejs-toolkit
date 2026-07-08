@@ -8,26 +8,26 @@
  * watching — only the DOM application is skipped.
  */
 
-import type { ResolvedTheme } from '../../types';
-import type { DomStrategy, NoneOptions } from './types';
+import type { ResolvedTheme } from "../../types";
+import type { DomStrategy, NoneOptions } from "./types";
 
 export type { NoneOptions };
 
 export class NoneStrategy implements DomStrategy {
-    // Accept `NoneOptions` so the factory in `./index` can call
-    // `new NoneStrategy(options)` with the same shape it uses for the
-    // other strategies. The implicit zero-arg constructor would reject
-    // the argument and break that symmetry.
-    // oxlint-disable-next-line no-useless-constructor: required by the discriminated union
-    constructor(_options: NoneOptions) {
-        // intentionally empty
-    }
+  // Accept `NoneOptions` so the factory in `./index` can call
+  // `new NoneStrategy(options)` with the same shape it uses for the
+  // other strategies. The implicit zero-arg constructor would reject
+  // the argument and break that symmetry.
+  // oxlint-disable-next-line no-useless-constructor: required by the discriminated union
+  constructor(_options: NoneOptions) {
+    // intentionally empty
+  }
 
-    apply(_resolved: ResolvedTheme): void {
-        // intentionally empty
-    }
+  apply(_resolved: ResolvedTheme): void {
+    // intentionally empty
+  }
 
-    destroy(): void {
-        // intentionally empty
-    }
+  destroy(): void {
+    // intentionally empty
+  }
 }

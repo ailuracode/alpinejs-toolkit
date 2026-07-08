@@ -20,19 +20,15 @@ import { emitLoadError } from "./registry";
  * consumers can branch on `error.code` without parsing the message.
  */
 export class PluginLoaderError extends ToolkitError {
-    constructor(message: string, options?: { cause?: unknown }) {
-        super(
-            message,
-            "PLUGIN_LOADER_INVALID",
-            options?.cause,
-        );
-        this.name = "PluginLoaderError";
-        Object.setPrototypeOf(this, new.target.prototype);
-    }
+  constructor(message: string, options?: { cause?: unknown }) {
+    super(message, "PLUGIN_LOADER_INVALID", options?.cause);
+    this.name = "PluginLoaderError";
+    Object.setPrototypeOf(this, new.target.prototype);
+  }
 }
 
 function isPluginCallback(value: unknown): value is PluginCallback {
-    return typeof value === "function";
+  return typeof value === "function";
 }
 
 /**
@@ -42,37 +38,37 @@ function isPluginCallback(value: unknown): value is PluginCallback {
  * of sync vs. async inference rules.
  */
 function isLazyFactory(
-    loader: PluginLoader,
+  loader: PluginLoader
 ): loader is (() => PluginCallback) | (() => Promise<PluginCallback>) {
-    return typeof loader === "function" && loader.length === 0;
+  return typeof loader === "function" && loader.length === 0;
 }
 
 /** Resolves a lazy plugin loader to an Alpine plugin callback. */
 export async function resolvePluginLoader(
-    loader: PluginLoader,
-    pluginName?: string,
+  loader: PluginLoader,
+  pluginName?: string
 ): Promise<PluginCallback> {
-    if (!isLazyFactory(loader)) {
-        return loader;
-    }
+  if (!isLazyFactory(loader)) {
+    return loader;
+  }
 
-    let resolved: unknown;
-    try {
-        const candidate = loader();
-        resolved = candidate instanceof Promise ? await candidate : candidate;
-    } catch (error) {
-        const reason = error instanceof Error ? error.message : String(error);
-        emitLoadError(pluginName ?? "<anonymous>", reason);
-        throw error;
-    }
+  let resolved: unknown;
+  try {
+    const candidate = loader();
+    resolved = candidate instanceof Promise ? await candidate : candidate;
+  } catch (error) {
+    const reason = error instanceof Error ? error.message : String(error);
+    emitLoadError(pluginName ?? "<anonymous>", reason);
+    throw error;
+  }
 
-    if (!isPluginCallback(resolved)) {
-        const reason = "Plugin loader must resolve to a function";
-        emitLoadError(pluginName ?? "<anonymous>", reason);
-        throw new PluginLoaderError(reason);
-    }
+  if (!isPluginCallback(resolved)) {
+    const reason = "Plugin loader must resolve to a function";
+    emitLoadError(pluginName ?? "<anonymous>", reason);
+    throw new PluginLoaderError(reason);
+  }
 
-    return resolved;
+  return resolved;
 }
 
 /**
@@ -81,30 +77,30 @@ export async function resolvePluginLoader(
  * code path — and that path is exactly what `initPlugins()` exists for.
  */
 export function resolvePluginLoaderSync(loader: PluginLoader, pluginName?: string): PluginCallback {
-    if (!isLazyFactory(loader)) {
-        return loader;
-    }
+  if (!isLazyFactory(loader)) {
+    return loader;
+  }
 
-    let candidate: unknown;
-    try {
-        candidate = loader();
-    } catch (error) {
-        const reason = error instanceof Error ? error.message : String(error);
-        emitLoadError(pluginName ?? "<anonymous>", reason);
-        throw error;
-    }
+  let candidate: unknown;
+  try {
+    candidate = loader();
+  } catch (error) {
+    const reason = error instanceof Error ? error.message : String(error);
+    emitLoadError(pluginName ?? "<anonymous>", reason);
+    throw error;
+  }
 
-    if (candidate instanceof Promise) {
-        const reason = "Async plugin loaders require initPlugins() before Alpine.start()";
-        emitLoadError(pluginName ?? "<anonymous>", reason);
-        throw new PluginLoaderError(reason, { cause: candidate });
-    }
+  if (candidate instanceof Promise) {
+    const reason = "Async plugin loaders require initPlugins() before Alpine.start()";
+    emitLoadError(pluginName ?? "<anonymous>", reason);
+    throw new PluginLoaderError(reason, { cause: candidate });
+  }
 
-    if (!isPluginCallback(candidate)) {
-        const reason = "Plugin loader must resolve to a function";
-        emitLoadError(pluginName ?? "<anonymous>", reason);
-        throw new PluginLoaderError(reason);
-    }
+  if (!isPluginCallback(candidate)) {
+    const reason = "Plugin loader must resolve to a function";
+    emitLoadError(pluginName ?? "<anonymous>", reason);
+    throw new PluginLoaderError(reason);
+  }
 
-    return candidate;
+  return candidate;
 }

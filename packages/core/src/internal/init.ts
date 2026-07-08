@@ -7,21 +7,18 @@
  * - `initPluginsSync` / `createAlpinePlugin`: sync; ergonomic bridge for the
  *   common case where every plugin has been pre-resolved at registration time.
  */
-import type { Alpine } from 'alpinejs';
-import type { PluginDefinition, PluginRegistryEntry } from '../types';
-import { resolvePluginLoader, resolvePluginLoaderSync } from './loader';
-import {
-    markPluginInitialized,
-    resolvePluginEntries,
-} from './registry';
+import type { Alpine } from "alpinejs";
+import type { PluginDefinition, PluginRegistryEntry } from "../types";
+import { resolvePluginLoader, resolvePluginLoaderSync } from "./loader";
+import { markPluginInitialized, resolvePluginEntries } from "./registry";
 
 async function initializeEntry(Alpine: Alpine, entry: PluginRegistryEntry): Promise<void> {
-    if (entry.initialized) {
-        return;
-    }
-    const callback = await resolvePluginLoader(entry.definition.plugin, entry.name);
-    Alpine.plugin(callback);
-    markPluginInitialized(entry.name);
+  if (entry.initialized) {
+    return;
+  }
+  const callback = await resolvePluginLoader(entry.definition.plugin, entry.name);
+  Alpine.plugin(callback);
+  markPluginInitialized(entry.name);
 }
 
 /**
@@ -29,16 +26,16 @@ async function initializeEntry(Alpine: Alpine, entry: PluginRegistryEntry): Prom
  * Call before `Alpine.start()` in SSR and client entrypoints.
  */
 export async function initPlugins(
-    Alpine: Alpine,
-    names?: string | readonly string[],
+  Alpine: Alpine,
+  names?: string | readonly string[]
 ): Promise<readonly PluginRegistryEntry[]> {
-    const entries = resolvePluginEntries(names);
+  const entries = resolvePluginEntries(names);
 
-    for (const entry of entries) {
-        await initializeEntry(Alpine, entry);
-    }
+  for (const entry of entries) {
+    await initializeEntry(Alpine, entry);
+  }
 
-    return entries;
+  return entries;
 }
 
 /**
@@ -46,21 +43,21 @@ export async function initPlugins(
  * Throws when a plugin uses an async loader — use `initPlugins()` instead.
  */
 export function initPluginsSync(
-    Alpine: Alpine,
-    names?: string | readonly string[],
+  Alpine: Alpine,
+  names?: string | readonly string[]
 ): readonly PluginRegistryEntry[] {
-    const entries = resolvePluginEntries(names);
+  const entries = resolvePluginEntries(names);
 
-    for (const entry of entries) {
-        if (entry.initialized) {
-            continue;
-        }
-        const callback = resolvePluginLoaderSync(entry.definition.plugin, entry.name);
-        Alpine.plugin(callback);
-        markPluginInitialized(entry.name);
+  for (const entry of entries) {
+    if (entry.initialized) {
+      continue;
     }
+    const callback = resolvePluginLoaderSync(entry.definition.plugin, entry.name);
+    Alpine.plugin(callback);
+    markPluginInitialized(entry.name);
+  }
 
-    return entries;
+  return entries;
 }
 
 /**
@@ -68,7 +65,7 @@ export function initPluginsSync(
  * plugins. Only supports sync loaders — use `initPlugins()` for dynamic imports.
  */
 export function createAlpinePlugin(names?: string | readonly string[]): (Alpine: Alpine) => void {
-    return (Alpine) => {
-        initPluginsSync(Alpine, names);
-    };
+  return (Alpine) => {
+    initPluginsSync(Alpine, names);
+  };
 }

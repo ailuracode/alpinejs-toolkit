@@ -20,42 +20,36 @@
  * system helper → constants → types.
  */
 
+export type { Unsubscribe } from "@ailuracode/alpine-core";
 // --- Public factory (framework-agnostic) -----------------------------
-export { ThemeController, createTheme } from './controller';
-
-// --- Alpine integration ----------------------------------------------
-export { createThemeStore, themePlugin } from './plugin';
-
+export { createTheme, ThemeController } from "./controller";
+// --- Event surface ---------------------------------------------------
+export type { ThemeEvents, ThemeListener } from "./events";
+export type { LocalStorageThemeStorageOptions } from "./internal/storage/local-storage";
 // --- Storage adapters -----------------------------------------------
-export { createLocalStorageThemeStorage } from './internal/storage/local-storage';
-export { createMemoryThemeStorage } from './internal/storage/memory';
-export type { LocalStorageThemeStorageOptions } from './internal/storage/local-storage';
-
+export { createLocalStorageThemeStorage } from "./internal/storage/local-storage";
+export { createMemoryThemeStorage } from "./internal/storage/memory";
 // --- System theme helper ---------------------------------------------
-export { readSystemTheme } from './internal/system-observer';
-
-// --- Public constants ------------------------------------------------
-export {
-    DEFAULT_THEME_PREFERENCE,
-    DEFAULT_THEME_STORAGE_KEY,
-} from './types';
-
+export { readSystemTheme } from "./internal/system-observer";
+// --- Alpine integration ----------------------------------------------
+export { createThemeStore, themePlugin } from "./plugin";
 // --- Public types (state, contracts, options) -------------------------
 export type {
-    CreateThemeOptions,
-    ResolvedTheme,
-    ThemeAlpine,
-    ThemeChangeDetail,
-    ThemeChangeSource,
-    ThemeDomStrategy,
-    ThemeManager,
-    ThemePluginCallback,
-    ThemePreference,
-    ThemeState,
-    ThemeStorage,
-    ThemeStore,
-} from './types';
-export type { Unsubscribe } from '@ailuracode/alpine-core';
-
-// --- Event surface ---------------------------------------------------
-export type { ThemeEvents, ThemeListener } from './events';
+  CreateThemeOptions,
+  ResolvedTheme,
+  ThemeAlpine,
+  ThemeChangeDetail,
+  ThemeChangeSource,
+  ThemeDomStrategy,
+  ThemeManager,
+  ThemePluginCallback,
+  ThemePreference,
+  ThemeState,
+  ThemeStorage,
+  ThemeStore,
+} from "./types";
+// --- Public constants ------------------------------------------------
+export {
+  DEFAULT_THEME_PREFERENCE,
+  DEFAULT_THEME_STORAGE_KEY,
+} from "./types";

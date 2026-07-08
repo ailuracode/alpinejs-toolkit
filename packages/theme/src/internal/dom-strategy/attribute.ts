@@ -9,37 +9,37 @@
  * there is no accumulation because the attribute key is fixed.
  */
 
-import { safeDocument } from '@ailuracode/alpine-core';
-import type { ResolvedTheme } from '../../types';
-import type { AttributeOptions, DomStrategy } from './types';
-import { safeDocumentElement } from '../browser';
+import { safeDocument } from "@ailuracode/alpine-core";
+import type { ResolvedTheme } from "../../types";
+import { safeDocumentElement } from "../browser";
+import type { AttributeOptions, DomStrategy } from "./types";
 
 export type { AttributeOptions };
 
 export class AttributeStrategy implements DomStrategy {
-    readonly #configuredTarget: HTMLElement | null;
-    readonly #attribute: string;
-    #current: ResolvedTheme | null = null;
+  readonly #configuredTarget: HTMLElement | null;
+  readonly #attribute: string;
+  #current: ResolvedTheme | null = null;
 
-    constructor(options: AttributeOptions) {
-        this.#configuredTarget = options.target;
-        this.#attribute = options.attribute;
-    }
+  constructor(options: AttributeOptions) {
+    this.#configuredTarget = options.target;
+    this.#attribute = options.attribute;
+  }
 
-    apply(resolved: ResolvedTheme): void {
-        const target = this.#configuredTarget ?? safeDocumentElement();
-        if (!target || resolved === this.#current) {
-            return;
-        }
-        target.setAttribute(this.#attribute, resolved);
-        this.#current = resolved;
+  apply(resolved: ResolvedTheme): void {
+    const target = this.#configuredTarget ?? safeDocumentElement();
+    if (!target || resolved === this.#current) {
+      return;
     }
+    target.setAttribute(this.#attribute, resolved);
+    this.#current = resolved;
+  }
 
-    destroy(): void {
-        const target = this.#configuredTarget ?? safeDocumentElement();
-        if (target && this.#current !== null) {
-            target.removeAttribute(this.#attribute);
-        }
-        this.#current = null;
+  destroy(): void {
+    const target = this.#configuredTarget ?? safeDocumentElement();
+    if (target && this.#current !== null) {
+      target.removeAttribute(this.#attribute);
     }
+    this.#current = null;
+  }
 }

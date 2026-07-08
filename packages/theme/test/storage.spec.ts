@@ -6,161 +6,161 @@
  * invalid stored values are ignored.
  */
 
-import assert from 'node:assert/strict';
-import { describe, it } from 'vitest';
-import { createLocalStorageThemeStorage, createMemoryThemeStorage } from '../src/index';
+import assert from "node:assert/strict";
+import { describe, it } from "vitest";
+import { createLocalStorageThemeStorage, createMemoryThemeStorage } from "../src/index";
 
-describe('createLocalStorageThemeStorage', () => {
-    it('returns null when nothing is stored', () => {
-        const storage = createLocalStorageThemeStorage();
-        assert.equal(storage.get(), null);
+describe("createLocalStorageThemeStorage", () => {
+  it("returns null when nothing is stored", () => {
+    const storage = createLocalStorageThemeStorage();
+    assert.equal(storage.get(), null);
+  });
+
+  it("roundtrips every valid preference", () => {
+    const storage = createLocalStorageThemeStorage({ key: "roundtrip" });
+    for (const value of ["light", "dark", "system"] as const) {
+      storage.set(value);
+      assert.equal(storage.get(), value);
+    }
+  });
+
+  it("ignores invalid stored values", () => {
+    localStorage.setItem("theme", "neon");
+    const storage = createLocalStorageThemeStorage();
+    assert.equal(storage.get(), null);
+  });
+
+  it("respects a custom key", () => {
+    const storage = createLocalStorageThemeStorage({ key: "app-theme" });
+    storage.set("dark");
+    assert.equal(localStorage.getItem("app-theme"), "dark");
+    assert.equal(localStorage.getItem("theme"), null);
+  });
+
+  it("removes the stored value", () => {
+    const storage = createLocalStorageThemeStorage({ key: "removable" });
+    storage.set("dark");
+    storage.remove();
+    assert.equal(storage.get(), null);
+  });
+
+  it("emits via subscribe when the storage event fires", () => {
+    const storage = createLocalStorageThemeStorage({ key: "cross-tab" });
+    const seen: Array<string | null> = [];
+    const unsubscribe = storage.subscribe?.((next) => {
+      seen.push(next);
+    });
+    assert.ok(unsubscribe);
+
+    window.dispatchEvent(new StorageEvent("storage", { key: "cross-tab", newValue: "dark" }));
+    assert.deepEqual(seen, ["dark"]);
+    unsubscribe?.();
+  });
+
+  it("subscribe ignores events for other keys", () => {
+    const storage = createLocalStorageThemeStorage({ key: "mine" });
+    const seen: Array<string | null> = [];
+    const unsubscribe = storage.subscribe?.((next) => {
+      seen.push(next);
     });
 
-    it('roundtrips every valid preference', () => {
-        const storage = createLocalStorageThemeStorage({ key: 'roundtrip' });
-        for (const value of ['light', 'dark', 'system'] as const) {
-            storage.set(value);
-            assert.equal(storage.get(), value);
-        }
+    window.dispatchEvent(new StorageEvent("storage", { key: "other", newValue: "dark" }));
+    assert.equal(seen.length, 0);
+    unsubscribe?.();
+  });
+
+  it("subscribe cleans up on unsubscribe", () => {
+    const storage = createLocalStorageThemeStorage({ key: "cleanup" });
+    const seen: Array<string | null> = [];
+    const unsubscribe = storage.subscribe?.((next) => {
+      seen.push(next);
     });
+    unsubscribe?.();
 
-    it('ignores invalid stored values', () => {
-        localStorage.setItem('theme', 'neon');
-        const storage = createLocalStorageThemeStorage();
-        assert.equal(storage.get(), null);
-    });
+    window.dispatchEvent(new StorageEvent("storage", { key: "cleanup", newValue: "light" }));
+    assert.equal(seen.length, 0);
+  });
 
-    it('respects a custom key', () => {
-        const storage = createLocalStorageThemeStorage({ key: 'app-theme' });
-        storage.set('dark');
-        assert.equal(localStorage.getItem('app-theme'), 'dark');
-        assert.equal(localStorage.getItem('theme'), null);
-    });
+  it("survives a SecurityError on get", () => {
+    const storage = createLocalStorageThemeStorage({ key: "protected" });
+    const original = Storage.prototype.getItem;
+    Storage.prototype.getItem = () => {
+      throw new Error("SecurityError");
+    };
+    try {
+      assert.equal(storage.get(), null);
+    } finally {
+      Storage.prototype.getItem = original;
+    }
+  });
 
-    it('removes the stored value', () => {
-        const storage = createLocalStorageThemeStorage({ key: 'removable' });
-        storage.set('dark');
-        storage.remove();
-        assert.equal(storage.get(), null);
-    });
-
-    it('emits via subscribe when the storage event fires', () => {
-        const storage = createLocalStorageThemeStorage({ key: 'cross-tab' });
-        const seen: Array<string | null> = [];
-        const unsubscribe = storage.subscribe?.((next) => {
-            seen.push(next);
-        });
-        assert.ok(unsubscribe);
-
-        window.dispatchEvent(new StorageEvent('storage', { key: 'cross-tab', newValue: 'dark' }));
-        assert.deepEqual(seen, ['dark']);
-        unsubscribe?.();
-    });
-
-    it('subscribe ignores events for other keys', () => {
-        const storage = createLocalStorageThemeStorage({ key: 'mine' });
-        const seen: Array<string | null> = [];
-        const unsubscribe = storage.subscribe?.((next) => {
-            seen.push(next);
-        });
-
-        window.dispatchEvent(new StorageEvent('storage', { key: 'other', newValue: 'dark' }));
-        assert.equal(seen.length, 0);
-        unsubscribe?.();
-    });
-
-    it('subscribe cleans up on unsubscribe', () => {
-        const storage = createLocalStorageThemeStorage({ key: 'cleanup' });
-        const seen: Array<string | null> = [];
-        const unsubscribe = storage.subscribe?.((next) => {
-            seen.push(next);
-        });
-        unsubscribe?.();
-
-        window.dispatchEvent(new StorageEvent('storage', { key: 'cleanup', newValue: 'light' }));
-        assert.equal(seen.length, 0);
-    });
-
-    it('survives a SecurityError on get', () => {
-        const storage = createLocalStorageThemeStorage({ key: 'protected' });
-        const original = Storage.prototype.getItem;
-        Storage.prototype.getItem = () => {
-            throw new Error('SecurityError');
-        };
-        try {
-            assert.equal(storage.get(), null);
-        } finally {
-            Storage.prototype.getItem = original;
-        }
-    });
-
-    it('survives a SecurityError on set', () => {
-        const storage = createLocalStorageThemeStorage({ key: 'protected' });
-        const original = Storage.prototype.setItem;
-        Storage.prototype.setItem = () => {
-            throw new Error('SecurityError');
-        };
-        try {
-            assert.doesNotThrow(() => storage.set('dark'));
-        } finally {
-            Storage.prototype.setItem = original;
-        }
-    });
+  it("survives a SecurityError on set", () => {
+    const storage = createLocalStorageThemeStorage({ key: "protected" });
+    const original = Storage.prototype.setItem;
+    Storage.prototype.setItem = () => {
+      throw new Error("SecurityError");
+    };
+    try {
+      assert.doesNotThrow(() => storage.set("dark"));
+    } finally {
+      Storage.prototype.setItem = original;
+    }
+  });
 });
 
-describe('createMemoryThemeStorage', () => {
-    it('starts at the initial value when supplied', () => {
-        const storage = createMemoryThemeStorage('dark');
-        assert.equal(storage.get(), 'dark');
-    });
+describe("createMemoryThemeStorage", () => {
+  it("starts at the initial value when supplied", () => {
+    const storage = createMemoryThemeStorage("dark");
+    assert.equal(storage.get(), "dark");
+  });
 
-    it('starts null when no initial value is supplied', () => {
-        const storage = createMemoryThemeStorage();
-        assert.equal(storage.get(), null);
-    });
+  it("starts null when no initial value is supplied", () => {
+    const storage = createMemoryThemeStorage();
+    assert.equal(storage.get(), null);
+  });
 
-    it('roundtrips values', () => {
-        const storage = createMemoryThemeStorage();
-        storage.set('light');
-        assert.equal(storage.get(), 'light');
-    });
+  it("roundtrips values", () => {
+    const storage = createMemoryThemeStorage();
+    storage.set("light");
+    assert.equal(storage.get(), "light");
+  });
 
-    it('notifies subscribers on set', () => {
-        const storage = createMemoryThemeStorage();
-        const seen: Array<string | null> = [];
-        const unsubscribe = storage.subscribe((next) => {
-            seen.push(next);
-        });
-        storage.set('dark');
-        assert.deepEqual(seen, ['dark']);
-        unsubscribe();
+  it("notifies subscribers on set", () => {
+    const storage = createMemoryThemeStorage();
+    const seen: Array<string | null> = [];
+    const unsubscribe = storage.subscribe((next) => {
+      seen.push(next);
     });
+    storage.set("dark");
+    assert.deepEqual(seen, ["dark"]);
+    unsubscribe();
+  });
 
-    it('clears the value on remove', () => {
-        const storage = createMemoryThemeStorage('dark');
-        storage.remove();
-        assert.equal(storage.get(), null);
-    });
+  it("clears the value on remove", () => {
+    const storage = createMemoryThemeStorage("dark");
+    storage.remove();
+    assert.equal(storage.get(), null);
+  });
 
-    it('notifies subscribers with null on remove', () => {
-        const storage = createMemoryThemeStorage('dark');
-        const seen: Array<string | null> = [];
-        const unsubscribe = storage.subscribe((next) => {
-            seen.push(next);
-        });
-        storage.remove();
-        assert.deepEqual(seen, [null]);
-        unsubscribe();
+  it("notifies subscribers with null on remove", () => {
+    const storage = createMemoryThemeStorage("dark");
+    const seen: Array<string | null> = [];
+    const unsubscribe = storage.subscribe((next) => {
+      seen.push(next);
     });
+    storage.remove();
+    assert.deepEqual(seen, [null]);
+    unsubscribe();
+  });
 
-    it('does not notify on remove when the value was already null', () => {
-        const storage = createMemoryThemeStorage();
-        const seen: Array<string | null> = [];
-        const unsubscribe = storage.subscribe((next) => {
-            seen.push(next);
-        });
-        storage.remove();
-        assert.deepEqual(seen, []);
-        unsubscribe();
+  it("does not notify on remove when the value was already null", () => {
+    const storage = createMemoryThemeStorage();
+    const seen: Array<string | null> = [];
+    const unsubscribe = storage.subscribe((next) => {
+      seen.push(next);
     });
+    storage.remove();
+    assert.deepEqual(seen, []);
+    unsubscribe();
+  });
 });
