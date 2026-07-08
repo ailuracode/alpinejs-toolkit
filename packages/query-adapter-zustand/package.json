@@ -39,7 +39,7 @@
     "zustand": "^5.0.11"
   },
   "scripts": {
-    "build": "tsup src/index.ts --format esm --dts --clean --sourcemap --out-dir dist --tsconfig tsconfig.build.json",
+    "build": "tsup src/index.ts --format esm --dts --clean --out-dir dist --tsconfig tsconfig.build.json",
     "prepublishOnly": "pnpm run build",
     "test": "vitest run --config ../../vitest.config.ts test"
   },
