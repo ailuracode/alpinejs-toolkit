@@ -16,12 +16,18 @@ npm install @ailuracode/alpine-lang alpinejs
 
 ```js
 import Alpine from "alpinejs";
-import lang from "@ailuracode/alpine-lang";
+import { langPlugin, createLang } from "@ailuracode/alpine-lang";
 
-Alpine.plugin(lang({
+Alpine.plugin(langPlugin({
   fallback: "en",
   normalize: true,
 }));
+
+// Optionally react to changes (load translations, sync <html lang>, persist…)
+const lang = createLang({ fallback: "en" });
+lang.on("change", (detail) => {
+  document.documentElement.lang = detail.current;
+});
 
 Alpine.start();
 ```
@@ -39,10 +45,12 @@ Alpine.start();
 | | |
 |-|-|
 | **Store** | `$store.lang` |
-| **State** | `current`, `base`, `region`, `languages`, `fallback` |
-| **Getter** | `isDetected` |
+| **Magic** | `$lang` |
+| **State** | `current`, `base`, `region`, `languages`, `fallback`, `isDetected` |
 | **Methods** | `is(value)`, `includes(value)`, `set(language)`, `reset()` |
-| **Options** | `fallback`, `normalize`, `onChange(language)` |
+| **Options** | `fallback`, `normalize` |
+| **Events** | `manager.on("change", detail)` → `LangChangeDetail` (`source`, `previous`, snapshot fields) |
+| **Headless** | `createLang(options)` → `LangController` (singleton per document) |
 
 ## License
 

@@ -1,23 +1,10 @@
 /**
  * Alpine.js integration for `@ailuracode/alpine-toggle`.
  *
- * The integration is a thin adapter — `$toggle(options)` constructs a
- * {@link ToggleController} per call and wraps it in `Alpine.reactive`
- * so Alpine templates can read `value` / `on` / `off` /
- * `indeterminate` reactively. The controller owns the state; the
- * reactive wrapper is a transparent proxy.
- *
- * Per `.agents/instructions/alpine-integration.instructions.md`:
- *
- * - The integration wires the controller into the `$toggle` magic.
- *   It does NOT contain feature logic — every command forwards to the
- *   controller.
- * - `Alpine.cleanup` is used when available to forward `destroy()` on
- *   every controller the plugin created.
- * - The plugin does NOT register a store (`$store.*`). Toggle is a
- *   factory, not a singleton — each call returns an independent
- *   instance. The `Magic` designation matches the toolkit's
- *   convention for one-off utilities (see `AGENTS.md`).
+ * Thin adapter that exposes `$toggle(options)` as a factory — every
+ * call returns an independent reactive instance backed by a
+ * {@link ToggleController}. No `$store.*` registration (see `AGENTS.md`
+ * for the integration contract).
  */
 
 import { InstanceRegistry } from "@ailuracode/alpine-core";
@@ -35,9 +22,10 @@ import type {
 const TOGGLE_MAGIC_KEY = "toggle";
 
 /**
- * Public factory signature. Matches the shape of `themePlugin(...)`
- * in `@ailuracode/alpine-theme` — a feature plugin is a factory that
- * returns the `Alpine.plugin()` callback.
+ * Plugin factory — returns the `Alpine.plugin()` callback. Pass
+ * {@link CreateToggleOptions} to configure {@link ToggleController},
+ * or `{}` for the package defaults. See `AGENTS.md` for the
+ * integration contract.
  */
 export function togglePlugin(options: CreateToggleOptions = {}): TogglePluginCallback {
   return function registerToggle(alpine: AlpineBase): void {

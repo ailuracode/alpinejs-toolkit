@@ -1,18 +1,9 @@
 /**
  * Alpine.js integration for `@ailuracode/alpine-theme`.
  *
- * The integration is a thin adapter — every command forwards to a
- * `createTheme()` manager. The manager owns the state; the store is a
- * reactive mirror that Alpine can use inside `x-text` / `x-show`
- * directives and `$store.theme` / `$theme` magic references.
- *
- * Per `.agents/instructions/alpine-integration.instructions.md`:
- *
- * - The integration wires the headless manager into `$store.theme` and
- *   the `$theme` magic. It does NOT contain the feature logic.
- * - The store is reactive — Alpine wraps the object in `reactive()`
- *   so consumers can bind `$store.theme.resolved` to `x-text`.
- * - `Alpine.cleanup` is used when available to forward `destroy()`.
+ * Thin adapter that wires {@link ThemeController} into `$store.theme`
+ * and the `$theme` magic. Every command forwards to the controller
+ * (see `AGENTS.md` for the integration contract).
  */
 
 import type { Alpine } from "alpinejs";
@@ -23,7 +14,12 @@ import type { CreateThemeOptions, ThemeAlpine, ThemePluginCallback, ThemeStore }
 /** Key under which the theme store is registered on `$store`. */
 const THEME_STORE_KEY = "theme";
 
-/** Public factory signature. */
+/**
+ * Plugin factory — returns the `Alpine.plugin()` callback. Pass
+ * {@link CreateThemeOptions} to configure {@link ThemeController},
+ * or `{}` for the package defaults. See `AGENTS.md` for the
+ * integration contract.
+ */
 export function themePlugin(options: CreateThemeOptions = {}): ThemePluginCallback {
   return function registerTheme(alpine: Alpine): void {
     // Narrow the base `Alpine` runtime to the toolkit's typed view.

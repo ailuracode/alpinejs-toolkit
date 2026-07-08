@@ -13,7 +13,7 @@ Alpine.js plugin monorepo by **ailuracode**. Twenty-six independent npm packages
 | `@ailuracode/alpine-media` | Store | `$store.media` |
 | `@ailuracode/alpine-scroll` | Store | `$store.scroll` |
 | `@ailuracode/alpine-sidebar` | Store | `$store.sidebar` |
-| `@ailuracode/alpine-lang` | Store | `$store.lang` |
+| `@ailuracode/alpine-lang` | Store | `$store.lang` — headless `LangController` (singleton) + typed `change` event; `langPlugin` named export |
 | `@ailuracode/alpine-dialog` | Store | `$store.dialog` |
 | `@ailuracode/alpine-menu` | Store | `$store.menu` |
 | `@ailuracode/alpine-tooltip` | Store | `$store.tooltip` |

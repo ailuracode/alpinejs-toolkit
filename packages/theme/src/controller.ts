@@ -49,7 +49,12 @@
  * - `destroy()` MUST be idempotent.
  */
 
-import { BaseController, generateId } from "@ailuracode/alpine-core";
+import {
+  BaseController,
+  clearSingleton,
+  createSingleton,
+  generateId,
+} from "@ailuracode/alpine-core";
 import { type ToggleChangeDetail, ToggleController } from "@ailuracode/alpine-toggle";
 import type { ThemeEvents } from "./events";
 import { createDomStrategy } from "./internal/dom-strategy";
@@ -76,14 +81,33 @@ import type {
 type ApplySetSource = Extract<ThemeChangeSource, "user" | "storage" | "reset">;
 
 /**
+ * Stable registry key for the singleton theme controller. The
+ * `options.id` is **not** part of the key — `id` identifies the
+ * controller instance, but two `createTheme()` calls in the same
+ * document describe the same singleton (the document's theme).
+ * Tests should call `clearSingleton(THEME_SINGLETON_KEY)` (or
+ * `clearAllSingletons()`) to reset between cases.
+ */
+const THEME_SINGLETON_KEY = "@ailuracode/alpine-theme/default";
+
+/**
  * Public entrypoint — builds and mounts a fully-initialized
  * {@link ThemeController}. The constructor itself stays pure; the
  * factory wires the browser-touching `mount()` step.
+ *
+ * Singleton guarantee: at most one live `ThemeController` per
+ * document. Repeated calls return the existing instance; the
+ * controller's `destroy()` releases the slot so the next call
+ * builds a fresh one. Direct `new ThemeController(...)` is still
+ * supported for tests and advanced consumers — only the
+ * `createTheme()` factory enforces uniqueness.
  */
 export function createTheme(options: CreateThemeOptions = {}): ThemeController {
-  const controller = new ThemeController(options);
-  controller.mount();
-  return controller;
+  return createSingleton(THEME_SINGLETON_KEY, () => {
+    const controller = new ThemeController(options);
+    controller.mount();
+    return controller;
+  });
 }
 
 /**
@@ -218,6 +242,9 @@ export class ThemeController extends BaseController<ThemeEvents> {
    * first so the registered cleanups (toggle, system observer,
    * cross-tab listener) execute against a live lifecycle; the DOM
    * strategy's own teardown runs second.
+   *
+   * Also releases the singleton slot so the next `createTheme()`
+   * call builds a fresh controller.
    */
   override destroy(): void {
     if (this.isDestroyed) {
@@ -225,6 +252,7 @@ export class ThemeController extends BaseController<ThemeEvents> {
     }
     super.destroy();
     this.#dom.destroy();
+    clearSingleton(THEME_SINGLETON_KEY);
   }
 
   /**

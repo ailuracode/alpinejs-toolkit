@@ -70,6 +70,14 @@ export {
   setRegistryDebugSink,
   unregisterPlugin,
 } from "./internal/registry";
+// --- Singleton helper (intended for toolkit-internal singleton feature controllers) ---
+export {
+  clearAllSingletons,
+  clearSingleton,
+  createSingleton,
+  getSingleton,
+  setSingleton,
+} from "./internal/singleton";
 // --- Public types --------------------------------------------------------
 export type {
   AlpinePluginCallback,

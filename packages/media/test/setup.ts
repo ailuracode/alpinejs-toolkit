@@ -1,20 +1,19 @@
 /**
- * Vitest setup for `@ailuracode/alpine-theme`.
+ * Vitest setup for `@ailuracode/alpine-media`.
  *
  * Installs a controllable `matchMedia` polyfill on `window` so the
- * system observer can be exercised deterministically. jsdom does NOT
- * ship `matchMedia`; the package must work under both the real API and
- * the test stub.
+ * controller can be exercised deterministically. The root-level
+ * `test/setup.ts` already stubs `globalThis.matchMedia`, but the
+ * controller reads through `safeMatchMedia` from
+ * `@ailuracode/alpine-core`, which resolves `window.matchMedia`
+ * directly per the SSR contract documented in core's source. The
+ * per-package setup guarantees the right surface is wired when the
+ * package is exercised in isolation (`pnpm --filter ...`).
  *
- * The stub is mounted on `window.matchMedia` (NOT `globalThis.matchMedia`)
- * because `@ailuracode/alpine-core`'s `safeMatchMedia` — which the
- * system observer uses — reads the API from `window.matchMedia` per
- * the SSR contract documented in core's source.
- *
- * Resets `localStorage` between tests so persisted values do not leak.
- *
- * Per `.agents/instructions/tooling.instructions.md`, `setupFiles` MUST
- * point to `test/setup.ts` when global stubs are needed.
+ * Resets `localStorage` between tests so persisted values from
+ * other packages in the workspace do not leak into media tests
+ * (media itself does not persist, but the cleanup mirrors the
+ * convention used by `@ailuracode/alpine-theme`).
  */
 
 import { clearAllSingletons } from "@ailuracode/alpine-core";
@@ -77,9 +76,6 @@ const matchMediaMock = vi.fn((query: string): MockMediaQueryList => {
   return entry;
 });
 
-// Save the original `window.matchMedia` so we can restore it during
-// `beforeEach`. The core spec does the same dance — see
-// `packages/core/test/match-media.spec.ts`.
 const originalMatchMedia = Object.getOwnPropertyDescriptor(window, "matchMedia");
 Object.defineProperty(window, "matchMedia", {
   configurable: true,
@@ -109,25 +105,22 @@ export function getMatchMedia(query: string): boolean {
 beforeEach(() => {
   queries.clear();
   localStorage.clear();
-  // Reset documentElement classes / attributes between tests.
-  document.documentElement.className = "";
-  document.documentElement.removeAttribute("data-theme");
-});
-
-afterEach(() => {
-  // Reset the singleton registry so each test gets a fresh
-  // `createTheme()` instance. Tests that don't call `destroy()`
-  // (or that throw before reaching it) would otherwise leak the
-  // previous controller into the next case.
-  clearAllSingletons();
 });
 
 afterAll(() => {
-  // Restore the original `window.matchMedia` so we don't leak the stub
-  // into other test files that share the same jsdom worker.
   if (originalMatchMedia) {
     Object.defineProperty(window, "matchMedia", originalMatchMedia);
   } else {
     (window as { matchMedia?: unknown }).matchMedia = undefined;
   }
+});
+
+// Reset the controller's singleton slot between tests so each case
+// builds a fresh `MediaController`. `controller.destroy()` already
+// calls `clearSingleton(MEDIA_SINGLETON_KEY)`, but a test that
+// forgets to destroy would leak state into the next one — the
+// `afterEach` hook makes the test suite independent of cleanup
+// order.
+afterEach(() => {
+  clearAllSingletons();
 });

@@ -9,8 +9,8 @@ import dialog from "@ailuracode/alpine-dialog";
 import env from "@ailuracode/alpine-env";
 import geo from "@ailuracode/alpine-geo";
 import jsonApi from "@ailuracode/alpine-json-api";
-import lang from "@ailuracode/alpine-lang";
-import media from "@ailuracode/alpine-media";
+import { langPlugin as lang } from "@ailuracode/alpine-lang";
+import { mediaPlugin } from "@ailuracode/alpine-media";
 import menu from "@ailuracode/alpine-menu";
 import notify from "@ailuracode/alpine-notify";
 import query from "@ailuracode/alpine-query";
@@ -74,14 +74,6 @@ export function registerDemoPlugins(): void {
   if (pluginsRegistered) {
     return;
   }
-
-  registerPlugin(
-    "media",
-    definePlugin(["store"], {
-      names: ["media"],
-      plugin: media({ intervals: mediaIntervals }),
-    })
-  );
 
   registerPlugin(
     "scroll",
@@ -307,8 +299,7 @@ export function registerDemoPlugins(): void {
 
 /** Demo-specific Alpine.data handlers and devtools — run after initPlugins(). */
 export function setupDemoExtensions(Alpine: AlpineInstance): void {
-  Alpine.plugin(themePlugin());
-  Alpine.plugin(togglePlugin());
+  Alpine.plugin([togglePlugin(), themePlugin(), mediaPlugin({ intervals: mediaIntervals })]);
 
   const queryDemoStores = registerQueryDemos(Alpine);
   registerQueryAdvancedDemo(Alpine);
