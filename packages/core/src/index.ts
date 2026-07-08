@@ -1,112 +1,89 @@
-import type AlpineType from "alpinejs";
-import { resolvePluginLoader, resolvePluginLoaderSync } from "./loader.js";
-import { markPluginInitialized, resolvePluginEntries } from "./registry.js";
-import type { PluginDefinition, RegisteredPlugin } from "./types.js";
+/**
+ * Public entrypoint for `@ailuracode/alpine-core`.
+ *
+ * Per [public-api.instructions.md](../../../.agents/instructions/public-api.instructions.md),
+ * this file MUST only contain re-exports. Implementations live under
+ * `./internal/` and `./core/` so the public surface is easy to audit and
+ * the package stays tree-shakeable (each export resolves to a single named
+ * binding).
+ *
+ * Core exposes two layers of functionality:
+ *
+ * 1. **Plugin registry + Alpine bridge** — register plugins at import time,
+ *    initialize them on demand, support both sync and dynamic `import()`
+ *    loaders, and stay SSR-safe.
+ * 2. **Headless controller primitives** — `BaseController`,
+ *    `TypedEventEmitter`, `CleanupStack`, `InstanceRegistry`, and
+ *    `ToolkitError`, which every feature package in this monorepo is
+ *    expected to use.
+ *
+ * Imports omit the extension so the file compiles cleanly to ESM under
+ * `tsc` (which resolves bare specifiers against the package's own
+ * `package.json#type=module`). `allowImportingTsExtensions` is intentionally
+ * NOT enabled here because the public source is the `dist/` emitted by
+ * the build, not the in-repo source.
+ */
 
+// --- Browser capability helpers (SSR-safe) -------------------------------
+export { isBrowser, safeDocument, safeWindow, safeMatchMedia } from "./internal/browser";
+
+// --- Plugin definition helpers -------------------------------------------
 export {
-  defineDirectivePlugin,
-  defineHybridPlugin,
-  defineMagicPlugin,
-  defineStorePlugin,
-  lazyPlugin,
-} from "./define.js";
-export { PluginLoaderError } from "./loader.js";
+    definePlugin,
+    lazyPlugin,
+    type DefinePluginOptions,
+    type LazyPluginOptions,
+} from "./internal/define";
+
+// --- Plugin initialization ----------------------------------------------
 export {
-  createMatchMediaWatcher,
-  safeMatchMedia,
-  watchMatchMedia,
-} from "./match-media.js";
+    initPlugins,
+    initPluginsSync,
+    createAlpinePlugin,
+} from "./internal/init";
+
+// --- Plugin registry -----------------------------------------------------
 export {
-  getRegisteredPlugin,
-  getRegisteredPlugins,
-  isPluginInitialized,
-  registerPlugin,
-  resetPluginRegistry,
-  unregisterPlugin,
-} from "./registry.js";
-export type { TouchCapabilities } from "./touch-capabilities.js";
-export { readTouchCapabilities } from "./touch-capabilities.js";
+    getRegisteredPlugin,
+    getRegisteredPlugins,
+    getRegistryDebugSink,
+    isPluginInitialized,
+    markPluginInitialized,
+    registerPlugin,
+    resetPluginRegistry,
+    resolvePluginEntries,
+    setRegistryDebugSink,
+    unregisterPlugin,
+    type RegistryEventLike,
+} from "./internal/registry";
+
+// --- Errors --------------------------------------------------------------
+export { PluginLoaderError } from "./internal/loader";
+
+// --- Controller primitives (used by every feature package) ---------------
+export { BaseController } from "./core/controller";
+export { CleanupStack } from "./core/cleanup";
+export { InstanceRegistry } from "./core/registry";
+export { ToolkitError } from "./core/error";
+export { EventEmitter } from "./core/event";
+
+// --- Public types --------------------------------------------------------
 export type {
-  AlpinePluginCallback,
-  DirectivePluginDefinition,
-  HybridPluginDefinition,
-  MagicPluginDefinition,
-  PluginDefinition,
-  PluginLoader,
-  PluginRegistryEntry,
-  RegisteredPlugin,
-  StorePluginDefinition,
-} from "./types.js";
+    AlpinePluginCallback,
+    PluginDefinition,
+    PluginKind,
+    PluginLoader,
+    PluginNames,
+    PluginRegistryEntry,
+    RegisteredPlugin,
+} from "./types";
 
-function toRegisteredPlugin(entry: {
-  name: string;
-  definition: PluginDefinition;
-}): RegisteredPlugin {
-  return {
-    name: entry.name,
-    definition: entry.definition,
-  };
-}
+// --- Generic Alpine typings ----------------------------------------------
+export type { Alpine, PluginCallback } from "./core/type";
 
-async function initializeEntry(
-  Alpine: AlpineType.Alpine,
-  entry: ReturnType<typeof resolvePluginEntries>[number]
-): Promise<void> {
-  if (entry.initialized) {
-    return;
-  }
-
-  const callback = await resolvePluginLoader(entry.definition.plugin);
-  Alpine.plugin(callback);
-  markPluginInitialized(entry.name);
-}
-
-/**
- * Initializes registered plugins on demand. Supports async dynamic imports.
- * Call before `Alpine.start()` in SSR and client entrypoints.
- */
-export async function initPlugins(
-  Alpine: AlpineType.Alpine,
-  names?: string | readonly string[]
-): Promise<readonly RegisteredPlugin[]> {
-  const entries = resolvePluginEntries(names);
-
-  for (const entry of entries) {
-    await initializeEntry(Alpine, entry);
-  }
-
-  return entries.map(toRegisteredPlugin);
-}
-
-/**
- * Initializes registered plugins synchronously.
- * Throws when a plugin uses an async loader — use `initPlugins()` instead.
- */
-export function initPluginsSync(
-  Alpine: AlpineType.Alpine,
-  names?: string | readonly string[]
-): readonly RegisteredPlugin[] {
-  const entries = resolvePluginEntries(names);
-
-  for (const entry of entries) {
-    if (entry.initialized) {
-      continue;
-    }
-
-    const callback = resolvePluginLoaderSync(entry.definition.plugin);
-    Alpine.plugin(callback);
-    markPluginInitialized(entry.name);
-  }
-
-  return entries.map(toRegisteredPlugin);
-}
-
-/**
- * Returns an Alpine.js plugin callback that initializes the given registered plugins.
- * Only supports sync loaders — use `initPlugins()` for dynamic imports.
- */
-export function createAlpinePlugin(names?: string | readonly string[]): AlpineType.PluginCallback {
-  return (Alpine) => {
-    initPluginsSync(Alpine, names);
-  };
-}
+// --- Controller + event-emitter type helpers -----------------------------
+export type { LifecyclePhase } from "./core/controller";
+export type { EventListener, Unsubscribe } from "./core/event";
+export type { RegisteredInstance } from "./core/registry";
+export type { ToolkitErrorCode } from "./core/error";
+export type { DebugEvent, DebugLogger, DebugOption } from "./core/debug";

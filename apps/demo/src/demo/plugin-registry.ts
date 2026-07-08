@@ -1,16 +1,33 @@
-import {
-  defineHybridPlugin,
-  defineMagicPlugin,
-  defineStorePlugin,
-  lazyPlugin,
-  registerPlugin,
-} from "@ailuracode/alpine-core";
+import { definePlugin, registerPlugin } from "@ailuracode/alpine-core";
+import accordion from "@ailuracode/alpine-accordion";
+import attention from "@ailuracode/alpine-attention";
+import calendar from "@ailuracode/alpine-calendar";
+import carousel from "@ailuracode/alpine-carousel";
+import child from "@ailuracode/alpine-child";
+import command from "@ailuracode/alpine-command";
+import dialog from "@ailuracode/alpine-dialog";
+import env from "@ailuracode/alpine-env";
+import geo from "@ailuracode/alpine-geo";
+import jsonApi from "@ailuracode/alpine-json-api";
+import lang from "@ailuracode/alpine-lang";
 import media from "@ailuracode/alpine-media";
-import { queryDevtoolsPlugin } from "@ailuracode/alpine-query-kit";
+import menu from "@ailuracode/alpine-menu";
+import notify from "@ailuracode/alpine-notify";
+import query from "@ailuracode/alpine-query";
+import {
+  createAlpineNanostoresAdapter,
+  default as queryKit,
+  NanoStores,
+  queryDevtoolsPlugin,
+} from "@ailuracode/alpine-query-kit";
 import scroll from "@ailuracode/alpine-scroll";
 import sidebar from "@ailuracode/alpine-sidebar";
-import theme from "@ailuracode/alpine-theme";
+import tabs from "@ailuracode/alpine-tabs";
+import { themePlugin } from "@ailuracode/alpine-theme";
 import toast, { toastPositions, toastVariants } from "@ailuracode/alpine-toast";
+import toggle from "@ailuracode/alpine-toggle";
+import tooltip from "@ailuracode/alpine-tooltip";
+import transfer from "@ailuracode/alpine-transfer";
 import type { AlpineInstance } from "../types/alpine.js";
 import { registerCalendarDemo } from "./calendar-demo.js";
 import { registerDemoShell, registerToastDemoHandlers } from "./demo-shell.js";
@@ -50,11 +67,6 @@ function scrollLockHandler(Alpine: AlpineInstance) {
   };
 }
 
-function applyTheme({ resolved }: { resolved: "light" | "dark" }) {
-  document.documentElement.classList.toggle("dark", resolved === "dark");
-  document.documentElement.style.colorScheme = resolved;
-}
-
 let pluginsRegistered = false;
 
 /** Register all demo plugins with @ailuracode/alpine-core (no Alpine side effects yet). */
@@ -63,18 +75,27 @@ export function registerDemoPlugins(): void {
     return;
   }
 
-  // Essentials — eager sync loaders (shell needs these immediately)
-  registerPlugin("theme", defineStorePlugin(["theme"], theme({ onChange: applyTheme })));
+  registerPlugin(
+    "media",
+    definePlugin(["store"], {
+      names: ["media"],
+      plugin: media({ intervals: mediaIntervals }),
+    })
+  );
 
-  registerPlugin("media", defineStorePlugin(["media"], media({ intervals: mediaIntervals })));
-
-  registerPlugin("scroll", defineStorePlugin(["scroll"], scroll()));
+  registerPlugin(
+    "scroll",
+    definePlugin(["store"], {
+      names: ["scroll"],
+      plugin: scroll(),
+    })
+  );
 
   registerPlugin(
     "sidebar",
-    defineHybridPlugin({
-      stores: ["sidebar"],
-      magics: ["sidebar"],
+    definePlugin(["store", "magic"], {
+      names: { store: ["sidebar"], magic: ["sidebar"] },
+      allowNameCrossKind: true,
       plugin: (Alpine) => {
         sidebar({
           onShow() {
@@ -94,11 +115,11 @@ export function registerDemoPlugins(): void {
 
   registerPlugin(
     "toast",
-    defineHybridPlugin({
-      stores: ["toast"],
-      magics: ["toast"],
+    definePlugin(["store", "magic"], {
+      names: { store: ["toast"], magic: ["toast"] },
+      allowNameCrossKind: true,
       plugin: (Alpine) => {
-        const registerToast = toast({
+        toast({
           variants: toastDemoVariants,
           positions: toastDemoPositions,
           promise: {
@@ -108,213 +129,184 @@ export function registerDemoPlugins(): void {
           },
           maxToasts: 5,
           maxVisible: 3,
-        });
-
-        registerToast?.(Alpine);
+        })?.(Alpine);
       },
     })
   );
 
+  // Extended — eager imports (no dynamic code splitting)
   registerPlugin(
     "env",
-    lazyPlugin({
-      kind: "magic",
-      magics: ["network", "visibility", "battery", "platform"],
-      import: () => import("@ailuracode/alpine-env"),
+    definePlugin(["magic"], {
+      names: ["network", "visibility", "battery", "platform"],
+      plugin: env(),
     })
   );
 
   registerPlugin(
     "transfer",
-    lazyPlugin({
-      kind: "magic",
-      magics: ["clipboard", "share", "export"],
-      import: () => import("@ailuracode/alpine-transfer"),
+    definePlugin(["magic"], {
+      names: ["clipboard", "share", "export"],
+      plugin: transfer(),
     })
   );
 
-  // Extended — lazy dynamic imports
   registerPlugin(
     "toggle",
-    lazyPlugin({
-      kind: "magic",
-      magics: ["toggle"],
-      import: () => import("@ailuracode/alpine-toggle"),
+    definePlugin(["magic"], {
+      names: ["toggle"],
+      plugin: toggle,
     })
   );
 
   registerPlugin(
     "child",
-    lazyPlugin({
-      kind: "directive",
-      directives: ["child"],
-      import: () => import("@ailuracode/alpine-child"),
+    definePlugin(["directive"], {
+      names: ["child"],
+      plugin: child,
     })
   );
 
   registerPlugin(
     "dialog",
-    defineHybridPlugin({
-      stores: ["dialog"],
-      magics: ["dialog"],
-      plugin: async () => {
-        const { default: dialog } = await import("@ailuracode/alpine-dialog");
-        return (Alpine: AlpineInstance) => {
-          dialog({ onLockChange: scrollLockHandler(Alpine) })(Alpine);
-        };
+    definePlugin(["store", "magic"], {
+      names: { store: ["dialog"], magic: ["dialog"] },
+      allowNameCrossKind: true,
+      plugin: (Alpine) => {
+        dialog({ onLockChange: scrollLockHandler(Alpine) })(Alpine);
       },
     })
   );
 
   registerPlugin(
     "menu",
-    defineHybridPlugin({
-      stores: ["menu"],
-      magics: ["menu"],
-      plugin: async () => {
-        const { default: menu } = await import("@ailuracode/alpine-menu");
-        return (Alpine: AlpineInstance) => {
-          menu({ onLockChange: scrollLockHandler(Alpine) })(Alpine);
-        };
+    definePlugin(["store", "magic"], {
+      names: { store: ["menu"], magic: ["menu"] },
+      allowNameCrossKind: true,
+      plugin: (Alpine) => {
+        menu({ onLockChange: scrollLockHandler(Alpine) })(Alpine);
       },
     })
   );
 
   registerPlugin(
     "tooltip",
-    lazyPlugin({
-      kind: "both",
-      stores: ["tooltip"],
-      magics: ["tooltip"],
-      import: () => import("@ailuracode/alpine-tooltip"),
+    definePlugin(["store", "magic"], {
+      names: { store: ["tooltip"], magic: ["tooltip"] },
+      allowNameCrossKind: true,
+      plugin: tooltip(),
     })
   );
 
   registerPlugin(
     "tabs",
-    lazyPlugin({
-      kind: "both",
-      stores: ["tabs"],
-      magics: ["tabs"],
-      import: () => import("@ailuracode/alpine-tabs"),
+    definePlugin(["store", "magic"], {
+      names: { store: ["tabs"], magic: ["tabs"] },
+      allowNameCrossKind: true,
+      plugin: tabs(),
     })
   );
 
   registerPlugin(
     "accordion",
-    lazyPlugin({
-      kind: "both",
-      stores: ["accordion"],
-      magics: ["accordion"],
-      import: () => import("@ailuracode/alpine-accordion"),
+    definePlugin(["store", "magic"], {
+      names: { store: ["accordion"], magic: ["accordion"] },
+      allowNameCrossKind: true,
+      plugin: accordion(),
     })
   );
 
   registerPlugin(
     "command",
-    lazyPlugin({
-      kind: "both",
-      stores: ["command"],
-      magics: ["command"],
-      import: () => import("@ailuracode/alpine-command"),
+    definePlugin(["store", "magic"], {
+      names: { store: ["command"], magic: ["command"] },
+      allowNameCrossKind: true,
+      plugin: command(),
     })
   );
 
   registerPlugin(
     "carousel",
-    lazyPlugin({
-      kind: "both",
-      stores: ["carousel"],
-      magics: ["carousel"],
-      import: () => import("@ailuracode/alpine-carousel"),
+    definePlugin(["store", "magic"], {
+      names: { store: ["carousel"], magic: ["carousel"] },
+      allowNameCrossKind: true,
+      plugin: carousel(),
     })
   );
 
-  // Advanced — lazy dynamic imports
   registerPlugin(
     "calendar",
-    lazyPlugin({
-      kind: "magic",
-      magics: ["calendar"],
-      import: () => import("@ailuracode/alpine-calendar"),
+    definePlugin(["magic"], {
+      names: ["calendar"],
+      plugin: calendar,
     })
   );
 
   registerPlugin(
     "attention",
-    lazyPlugin({
-      kind: "magic",
-      magics: ["wakelock", "idle"],
-      import: () => import("@ailuracode/alpine-attention"),
+    definePlugin(["magic"], {
+      names: ["wakelock", "idle"],
+      plugin: attention,
     })
   );
 
   registerPlugin(
     "geo",
-    lazyPlugin({
-      kind: "both",
-      stores: ["geo"],
-      magics: ["geo"],
-      import: () => import("@ailuracode/alpine-geo"),
+    definePlugin(["store", "magic"], {
+      names: { store: ["geo"], magic: ["geo"] },
+      allowNameCrossKind: true,
+      plugin: geo,
     })
   );
 
   registerPlugin(
     "lang",
-    lazyPlugin({
-      kind: "both",
-      stores: ["lang"],
-      magics: ["lang"],
-      import: () => import("@ailuracode/alpine-lang"),
+    definePlugin(["store", "magic"], {
+      names: { store: ["lang"], magic: ["lang"] },
+      allowNameCrossKind: true,
+      plugin: lang(),
     })
   );
 
   registerPlugin(
     "notify",
-    lazyPlugin({
-      kind: "magic",
-      magics: ["notify"],
-      import: () => import("@ailuracode/alpine-notify"),
-    })
-  );
-
-  registerPlugin(
-    "nanostores",
-    lazyPlugin({
-      kind: "magic",
-      magics: ["nano"],
-      import: async () => {
-        const { NanoStores } = await import("@ailuracode/alpine-query-kit");
-        return { default: NanoStores };
+    definePlugin(["magic"], {
+      names: ["notify"],
+      plugin: (Alpine) => {
+        notify()?.(Alpine);
       },
     })
   );
 
   registerPlugin(
-    "query",
-    defineStorePlugin(["query"], async () => {
-      const [{ default: query }, { createAlpineNanostoresAdapter }] = await Promise.all([
-        import("@ailuracode/alpine-query"),
-        import("@ailuracode/alpine-query-kit"),
-      ]);
+    "nanostores",
+    definePlugin(["magic"], {
+      names: ["nano"],
+      plugin: NanoStores,
+    })
+  );
 
-      return query({ adapter: createAlpineNanostoresAdapter });
+  registerPlugin(
+    "query",
+    definePlugin(["store"], {
+      names: ["query"],
+      plugin: query({ adapter: createAlpineNanostoresAdapter }),
     })
   );
 
   registerPlugin(
     "query-kit",
-    defineStorePlugin(["query"], async () => {
-      const { default: queryKit } = await import("@ailuracode/alpine-query-kit");
-      return queryKit;
+    definePlugin(["store"], {
+      names: ["query"],
+      plugin: queryKit,
     })
   );
 
   registerPlugin(
     "json-api",
-    defineMagicPlugin(["jsonapi"], async () => {
-      const { default: jsonApi } = await import("@ailuracode/alpine-json-api");
-      return jsonApi(jsonApiDemoOptions);
+    definePlugin(["magic"], {
+      names: ["jsonapi"],
+      plugin: jsonApi(jsonApiDemoOptions),
     })
   );
 
@@ -323,6 +315,8 @@ export function registerDemoPlugins(): void {
 
 /** Demo-specific Alpine.data handlers and devtools — run after initPlugins(). */
 export function setupDemoExtensions(Alpine: AlpineInstance): void {
+  Alpine.plugin(themePlugin());
+  
   const queryDemoStores = registerQueryDemos(Alpine);
   registerQueryAdvancedDemo(Alpine);
   registerJsonApiDemo(Alpine);

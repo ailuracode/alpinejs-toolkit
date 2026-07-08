@@ -24,7 +24,7 @@ export default defineConfig({
     environment: "happy-dom",
     setupFiles: [path.join(root, "test/setup.ts")],
     include: [
-      path.join(root, "packages/*/test/**/*.test.ts"),
+      path.join(root, "packages/*/test/**/*.{test,spec}.ts"),
       path.join(root, "apps/demo/test/**/*.test.ts"),
     ],
     coverage: {

@@ -11,19 +11,16 @@ const themeBtnActive = segmentButtonActiveClass;
 
 <DemoSection id={plugin.id} title={plugin.title} api={plugin.api} description={plugin.description}>
 	<ul class="list-disc list-inside space-y-1 text-sm">
-		<li>Preference: <strong x-text="$store.theme.mode"></strong></li>
+		<li>Preference (current): <strong x-text="$store.theme.current"></strong></li>
+		<li>System: <strong x-text="$store.theme.system"></strong></li>
 		<li>Resolved: <strong x-text="$store.theme.resolved"></strong></li>
-		<li x-show="$store.theme.isSystem" x-cloak>
-			isResolvedDark: <strong x-text="$store.theme.isResolvedDark"></strong>
-		</li>
-		<li>is('dark'): <strong x-text="$store.theme.is('dark')"></strong></li>
 	</ul>
 	<div class="flex flex-wrap gap-2 mt-3">
-		<DemoButton class={themeBtnActive} x-bind:data-active="$store.theme.isLight ? 'true' : null" @click="$store.theme.set('light')">Light</DemoButton>
-		<DemoButton class={themeBtnActive} x-bind:data-active="$store.theme.isDark ? 'true' : null" @click="$store.theme.set('dark')">Dark</DemoButton>
-		<DemoButton class={themeBtnActive} x-bind:data-active="$store.theme.isSystem ? 'true' : null" @click="$store.theme.set('system')">System</DemoButton>
-		<DemoButton @click="$store.theme.cycle()">Cycle</DemoButton>
-		<DemoButton @click="$store.theme.refresh()">refresh()</DemoButton>
+		<DemoButton class={themeBtnActive} x-bind:data-active="$store.theme.current === 'light' ? 'true' : null" @click="$store.theme.set('light')">Light</DemoButton>
+		<DemoButton class={themeBtnActive} x-bind:data-active="$store.theme.current === 'dark' ? 'true' : null" @click="$store.theme.set('dark')">Dark</DemoButton>
+		<DemoButton class={themeBtnActive} x-bind:data-active="$store.theme.current === 'system' ? 'true' : null" @click="$store.theme.set('system')">System</DemoButton>
+		<DemoButton @click="$store.theme.toggle()">toggle()</DemoButton>
+		<DemoButton @click="$store.theme.reset()">reset()</DemoButton>
 	</div>
 	<p class="text-xs text-muted-foreground mt-3">
 		Package: <code>{plugin.package}</code>

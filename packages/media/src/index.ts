@@ -1,9 +1,7 @@
-import {
-  createMatchMediaWatcher,
-  readTouchCapabilities,
-  safeMatchMedia,
-} from "@ailuracode/alpine-core";
+import { safeMatchMedia } from "@ailuracode/alpine-core";
 import type AlpineType from "alpinejs";
+import { createMatchMediaWatcher } from "./internal/match-media";
+import { readTouchCapabilities } from "./internal/touch-capabilities";
 
 // ── Types ──────────────────────────────────────────────────────────
 
