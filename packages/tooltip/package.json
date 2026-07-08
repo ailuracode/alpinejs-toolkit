@@ -44,7 +44,7 @@
     "@alpinejs/anchor": "^3.15.12"
   },
   "scripts": {
-    "build": "tsup src/index.ts --format esm --dts --clean --sourcemap --out-dir dist && cp src/global.d.ts dist/global.d.ts",
+    "build": "tsup src/index.ts --format esm --dts --clean --out-dir dist && cp src/global.d.ts dist/global.d.ts",
     "prepublishOnly": "pnpm run build",
     "test": "vitest run --config ../../vitest.config.ts test"
   },

@@ -45,7 +45,7 @@
     }
   },
   "scripts": {
-    "build": "tsup src/index.ts --format esm --dts --clean --sourcemap --out-dir dist --external @ailuracode/alpine-env && cp src/global.d.ts dist/global.d.ts && cp src/notify-sw.js dist/notify-sw.js",
+    "build": "tsup src/index.ts --format esm --dts --clean --out-dir dist --external @ailuracode/alpine-env && cp src/global.d.ts dist/global.d.ts && cp src/notify-sw.js dist/notify-sw.js",
     "prepublishOnly": "pnpm run build",
     "test": "vitest run --config ../../vitest.config.ts test"
   },
