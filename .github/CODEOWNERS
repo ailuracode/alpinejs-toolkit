@@ -1,0 +1,52 @@
+# CODEOWNERS — ailuracode/alpinejs-toolkit
+# Docs: https://docs.github.com/en/repositories/creating-and-managing-repositories/about-code-owners
+
+# Default owner for the entire repo (replace with the actual maintainer handle if different)
+*                                    @SiddharthaGF
+
+# Release / CI infrastructure
+/.github/                            @SiddharthaGF
+/.changeset/                         @SiddharthaGF
+/AGENTS.md                           @SiddharthaGF
+/package.json                        @SiddharthaGF
+/pnpm-workspace.yaml                 @SiddharthaGF
+/biome.json                          @SiddharthaGF
+/tsconfig.json                       @SiddharthaGF
+/vitest.config.ts                    @SiddharthaGF
+/scripts/                            @SiddharthaGF
+/patches/                            @SiddharthaGF
+
+# Core (touched by most plugins)
+/packages/core/                      @SiddharthaGF
+
+# Plugins — one owner per package so CODEOWNERS scales as contributors join
+/packages/accordion/                 @SiddharthaGF
+/packages/attention/                 @SiddharthaGF
+/packages/calendar/                  @SiddharthaGF
+/packages/carousel/                  @SiddharthaGF
+/packages/child/                     @SiddharthaGF
+/packages/command/                   @SiddharthaGF
+/packages/dialog/                    @SiddharthaGF
+/packages/env/                       @SiddharthaGF
+/packages/geo/                       @SiddharthaGF
+/packages/json-api/                  @SiddharthaGF
+/packages/lang/                      @SiddharthaGF
+/packages/media/                     @SiddharthaGF
+/packages/menu/                      @SiddharthaGF
+/packages/notify/                    @SiddharthaGF
+/packages/query/                     @SiddharthaGF
+/packages/query-adapter-alpine/      @SiddharthaGF
+/packages/query-adapter-zustand/     @SiddharthaGF
+/packages/query-kit/                 @SiddharthaGF
+/packages/scroll/                    @SiddharthaGF
+/packages/sidebar/                   @SiddharthaGF
+/packages/tabs/                      @SiddharthaGF
+/packages/theme/                     @SiddharthaGF
+/packages/toast/                     @SiddharthaGF
+/packages/toggle/                    @SiddharthaGF
+/packages/tooltip/                   @SiddharthaGF
+/packages/transfer/                  @SiddharthaGF
+
+# Docs and demo
+/docs/                               @SiddharthaGF
+/apps/demo/                          @SiddharthaGF
