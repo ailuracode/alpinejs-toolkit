@@ -27,6 +27,7 @@ declare global {
   }
 }
 
+export type { SidebarEvents, SidebarListener } from "./events.js";
 export type {
   SidebarAlpine,
   SidebarBreakpointOption,
@@ -37,4 +38,3 @@ export type {
   SidebarPluginCallback,
   SidebarStore,
 } from "./types.js";
-export type { SidebarEvents, SidebarListener } from "./events.js";

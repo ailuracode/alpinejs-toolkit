@@ -55,8 +55,8 @@ import {
 import type { ToggleChangeDetail } from "@ailuracode/alpine-toggle";
 import { ToggleController } from "@ailuracode/alpine-toggle";
 import type { SidebarEvents } from "./events";
-import { attachEscapeListener } from "./internal/escape-listener";
 import { observeBreakpoint } from "./internal/breakpoint-observer";
+import { attachEscapeListener } from "./internal/escape-listener";
 import type {
   CreateSidebarOptions,
   SidebarBreakpointOption,
@@ -113,10 +113,7 @@ export function createSidebar(options: CreateSidebarOptions = {}): SidebarContro
  * the public entrypoint. Tests can construct directly with
  * `new SidebarController(options)` and call `mount()` themselves.
  */
-export class SidebarController
-  extends BaseController<SidebarEvents>
-  implements SidebarManager
-{
+export class SidebarController extends BaseController<SidebarEvents> implements SidebarManager {
   /**
    * Inner toggle models the `visible` boolean. `set` / `toggle` /
    * `reset` route through it; `show` / `hide` set `#pendingSource`
@@ -321,34 +318,27 @@ export class SidebarController
     }
 
     if (this.#breakpointOption) {
-      const cleanup = observeBreakpoint(
-        this.#breakpointOption.query,
-        (event) => {
-          if (this.isDestroyed) {
-            return;
-          }
-          this.#lastMatchesBreakpoint = event.matches;
-          this.#pendingSource = "breakpoint";
-          this.#pendingEvent = event;
-
-          // Auto-hide when the query stops matching AND the
-          // consumer opted into the v1 behaviour. The `'keep'`
-          // discriminator only updates `matchesBreakpoint` so the
-          // `change` event still fires (visible stays put).
-          if (
-            !event.matches &&
-            this.#breakpointOption?.onMismatch === "hide" &&
-            this.#toggle.value
-          ) {
-            this.#toggle.set(false);
-          } else {
-            // No toggle transition — emit the breakpoint change
-            // directly so consumers see `matchesBreakpoint` flips
-            // even when visibility does not move.
-            this.#emitChange();
-          }
+      const cleanup = observeBreakpoint(this.#breakpointOption.query, (event) => {
+        if (this.isDestroyed) {
+          return;
         }
-      );
+        this.#lastMatchesBreakpoint = event.matches;
+        this.#pendingSource = "breakpoint";
+        this.#pendingEvent = event;
+
+        // Auto-hide when the query stops matching AND the
+        // consumer opted into the v1 behaviour. The `'keep'`
+        // discriminator only updates `matchesBreakpoint` so the
+        // `change` event still fires (visible stays put).
+        if (!event.matches && this.#breakpointOption?.onMismatch === "hide" && this.#toggle.value) {
+          this.#toggle.set(false);
+        } else {
+          // No toggle transition — emit the breakpoint change
+          // directly so consumers see `matchesBreakpoint` flips
+          // even when visibility does not move.
+          this.#emitChange();
+        }
+      });
       this.registerCleanup(cleanup);
     }
 

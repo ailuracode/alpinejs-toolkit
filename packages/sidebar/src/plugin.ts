@@ -22,7 +22,7 @@
  */
 
 import type { Alpine } from "alpinejs";
-import { type SidebarController, createSidebar } from "./controller";
+import { createSidebar, type SidebarController } from "./controller";
 import type {
   CreateSidebarOptions,
   SidebarAlpine,

@@ -72,12 +72,16 @@ function scrollLockHandler(Alpine: AlpineInstance) {
  * `source: 'user'` transitions and translate them into DOM / scrollbar /
  * body scroll-lock side effects. Escape / breakpoint / initialization
  * transitions are intentionally ignored so they flow through naturally
- * without extra side effects.
+ * without extra side effects. The controller itself is torn down via
+ * `Alpine.cleanup` registered by `sidebarPlugin`, so the demo does not
+ * need to keep the unsubscribe handle.
  */
-function registerSidebarUserEffects(Alpine: AlpineInstance): () => void {
+function registerSidebarUserEffects(Alpine: AlpineInstance): void {
   const scroll = Alpine.store("scroll") as { lock(): void; unlock(): void };
-  return createSidebar().on("change", (detail) => {
-    if (detail.source !== "user") return;
+  createSidebar().on("change", (detail) => {
+    if (detail.source !== "user") {
+      return;
+    }
     if (detail.visible) {
       document.documentElement.setAttribute("data-sidebar", "");
       document.documentElement.style.scrollbarGutter = "stable";
@@ -91,8 +95,6 @@ function registerSidebarUserEffects(Alpine: AlpineInstance): () => void {
 }
 
 let pluginsRegistered = false;
-/** Unsubscribe handle for the sidebar user-effect subscriber. */
-let sidebarUserEffects: (() => void) | undefined;
 
 /** Register all demo plugins with @ailuracode/alpine-core (no Alpine side effects yet). */
 export function registerDemoPlugins(): void {
@@ -121,10 +123,10 @@ export function registerDemoPlugins(): void {
             onMismatch: "hide",
           },
         })(Alpine);
-        // Side effects for `source: 'user'` transitions live in
-        // `registerSidebarUserEffects`, wired from `setupDemoExtensions`
-        // so the order matches the registry initialization.
-        sidebarUserEffects = registerSidebarUserEffects(Alpine);
+        // Subscribe DOM / scrollbar / body scroll-lock side effects to
+        // `source: 'user'` transitions via the controller's typed
+        // `change` event.
+        registerSidebarUserEffects(Alpine);
       },
     })
   );

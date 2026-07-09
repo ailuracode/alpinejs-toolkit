@@ -49,7 +49,9 @@ const REGISTRY = new Map<string, SingletonRecord<unknown>>();
  */
 export function getSingleton<T>(key: string): T | undefined {
   const record = REGISTRY.get(key) as SingletonRecord<T> | undefined;
-  if (!record || record.destroyed) return undefined;
+  if (!record || record.destroyed) {
+    return undefined;
+  }
   return record.instance;
 }
 
@@ -78,7 +80,9 @@ export function getSingleton<T>(key: string): T | undefined {
  */
 export function createSingleton<T>(key: string, factory: () => T): T {
   const existing = getSingleton<T>(key);
-  if (existing) return existing;
+  if (existing) {
+    return existing;
+  }
   const instance = factory();
   setSingleton(key, instance);
   return instance;

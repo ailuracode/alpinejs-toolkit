@@ -21,11 +21,11 @@
  */
 
 // --- Controller primitives (used directly + by the plugin) -----------
-export { SidebarController, createSidebar } from "./controller";
-// --- Alpine plugin adapter -----------------------------------------
-export { sidebarPlugin, createSidebarStore } from "./plugin";
+export { createSidebar, SidebarController } from "./controller";
 // --- Event surface ---------------------------------------------------
 export type { SidebarEvents, SidebarListener } from "./events";
+// --- Alpine plugin adapter -----------------------------------------
+export { createSidebarStore, sidebarPlugin } from "./plugin";
 // --- Public types (state contracts, options, plugin callback) --------
 export type {
   CreateSidebarOptions,

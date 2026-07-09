@@ -32,12 +32,7 @@ export type { Unsubscribe };
  * Public: changing a member is a breaking change for anyone branching
  * on `detail.source`.
  */
-export type SidebarChangeSource =
-  | "user"
-  | "breakpoint"
-  | "escape"
-  | "reset"
-  | "initialization";
+export type SidebarChangeSource = "user" | "breakpoint" | "escape" | "reset" | "initialization";
 
 /**
  * Action the controller takes when the configured breakpoint media
@@ -74,9 +69,7 @@ export interface SidebarChangeDetail {
   readonly visible: boolean;
   readonly matchesBreakpoint: boolean;
   readonly source: SidebarChangeSource;
-  readonly previous:
-    | { readonly visible: boolean; readonly matchesBreakpoint: boolean }
-    | null;
+  readonly previous: { readonly visible: boolean; readonly matchesBreakpoint: boolean } | null;
   readonly event?: KeyboardEvent | MediaQueryListEvent;
 }
 

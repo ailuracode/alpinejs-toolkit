@@ -19,7 +19,7 @@ import type {
   SidebarChangeSource,
   SidebarOnMismatch,
 } from "../src/index";
-import { SidebarController, createSidebar } from "../src/index";
+import { createSidebar, type SidebarController } from "../src/index";
 
 describe("@ailuracode/alpine-sidebar type contract", () => {
   it("SidebarController has visible / isVisible / hasOverlay / matchesBreakpoint (boolean)", () => {

@@ -15,10 +15,7 @@
  * fallback.
  */
 
-import type {
-  SidebarBreakpointOption,
-  SidebarOnMismatch,
-} from "../types.js";
+import type { SidebarBreakpointOption, SidebarOnMismatch } from "../types.js";
 
 const VALID_ON_MISMATCH: readonly SidebarOnMismatch[] = ["hide", "keep"];
 
@@ -26,10 +23,7 @@ const VALID_ON_MISMATCH: readonly SidebarOnMismatch[] = ["hide", "keep"];
  * Type guard for the `onMismatch` discriminator.
  */
 export function isBreakpointOnMismatch(value: unknown): value is SidebarOnMismatch {
-  return (
-    typeof value === "string" &&
-    (VALID_ON_MISMATCH as readonly string[]).includes(value)
-  );
+  return typeof value === "string" && (VALID_ON_MISMATCH as readonly string[]).includes(value);
 }
 
 /**
