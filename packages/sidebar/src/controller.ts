@@ -295,7 +295,7 @@ export class SidebarController extends BaseController<SidebarEvents> implements 
 
   // ── Lifecycle ───────────────────────────────────────────────────
 
-/**
+  /**
    * Tears down every side effect. Idempotent — subsequent calls are
    * no-ops. Also releases the singleton slot so the next
    * `createSidebar()` call builds a fresh one.

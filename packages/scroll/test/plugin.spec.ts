@@ -8,15 +8,10 @@
  * `scrollPlugin` / `createScrollStore` surface.
  */
 
-import type { Alpine as AlpineBase } from "alpinejs";
 import { clearAllSingletons } from "@ailuracode/alpine-core";
+import type { Alpine as AlpineBase } from "alpinejs";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import {
-  createScroll,
-  ScrollController,
-  type ScrollStore,
-  scrollPlugin,
-} from "../src/index";
+import { createScroll, ScrollController, type ScrollStore, scrollPlugin } from "../src/index";
 
 interface MockAlpine {
   stores: Record<string, unknown>;
@@ -190,7 +185,7 @@ describe("createScroll — singleton guarantee", () => {
     // owns is the same singleton `createScroll()` resolves.
     const Alpine = createMockAlpine();
     scrollPlugin({ id: "shared" })(Alpine as unknown as AlpineBase);
-    const fromPlugin = (Alpine.stores.scroll as ScrollStore);
+    const fromPlugin = Alpine.stores.scroll as ScrollStore;
     const fromFactory = createScroll({ id: "ignored" });
     // Same controller — locking via the store should be visible via
     // `controller.isLocked`.

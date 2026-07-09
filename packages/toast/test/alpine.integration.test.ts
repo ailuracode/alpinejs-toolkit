@@ -1,5 +1,6 @@
 import Alpine from "alpinejs";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { startAlpine } from "../../../test/helpers.js";
 import toastPlugin, { type ToastStore } from "../src/index.js";
 
 const integrationPlugin = () =>
@@ -13,7 +14,20 @@ const integrationPlugin = () =>
 
 describe("@ailuracode/alpine-toast alpine integration", () => {
   beforeEach(() => {
-    vi.useFakeTimers();
+    // `startAlpine` registers the plugin and only calls `Alpine.start()`
+    // on the first invocation (gated by a module-level `alpineStarted`
+    // flag). Calling `Alpine.start()` again on every test would make
+    // Alpine emit the "already been initialized" warning and leak state
+    // between tests. Runs on REAL timers: happy-dom 20.3.3+ mocks the
+    // microtask queue under `vi.useFakeTimers()` and Alpine's mutation
+    // observer would never fire, leaving directives like `@click`
+    // unprocessed. Each test flips to fake timers only after the markup
+    // is mounted and reactive.
+    const register = integrationPlugin();
+    if (!register) {
+      throw new Error("Expected toast plugin factory");
+    }
+    startAlpine(register);
   });
 
   afterEach(() => {
@@ -29,14 +43,7 @@ describe("@ailuracode/alpine-toast alpine integration", () => {
         <div id="visible" x-show="$store.toast.items.length > 0">shown</div>
       </div>
     `;
-
-    const register = integrationPlugin();
-    if (!register) {
-      throw new Error("Expected toast plugin factory");
-    }
-
-    Alpine.plugin(register);
-    Alpine.start();
+    await Alpine.nextTick();
 
     document.getElementById("btn")?.click();
     await Promise.resolve();
@@ -58,14 +65,12 @@ describe("@ailuracode/alpine-toast alpine integration", () => {
         <span id="title" x-text="$store.toast.items[0]?.title"></span>
       </div>
     `;
+    await Alpine.nextTick();
 
-    const register = integrationPlugin();
-    if (!register) {
-      throw new Error("Expected toast plugin factory");
-    }
-
-    Alpine.plugin(register);
-    Alpine.start();
+    // Flip to fake timers only after Alpine's mutation observer has
+    // processed the markup. Otherwise happy-dom 20.3.3+ swallows the
+    // observer microtasks and `@click` never binds.
+    vi.useFakeTimers();
 
     document.getElementById("btn")?.click();
     await Promise.resolve();

@@ -28,12 +28,7 @@ export default defineProject({
     forbidOnly: true,
     coverage: {
       include: ["src/**/*.ts"],
-      exclude: [
-        "src/index.ts",
-        "src/global.d.ts",
-        "src/types.ts",
-        "src/events.ts",
-      ],
+      exclude: ["src/index.ts", "src/global.d.ts", "src/types.ts", "src/events.ts"],
     },
   },
 });

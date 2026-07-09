@@ -28,7 +28,7 @@
 
 import type { Alpine } from "alpinejs";
 import { createScrollStore as buildStore } from "./alpine/store";
-import { createScroll, ScrollController } from "./controller";
+import { createScroll, type ScrollController } from "./controller";
 import type {
   ScrollAlpine,
   ScrollOptions,

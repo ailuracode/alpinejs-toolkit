@@ -13,8 +13,8 @@
  * `$store.sidebar` and `$sidebar` magic.
  */
 
-import type { ScrollStore } from "@ailuracode/alpine-scroll";
 import type { Alpine, PluginCallback, Unsubscribe } from "@ailuracode/alpine-core";
+import type { ScrollStore } from "@ailuracode/alpine-scroll";
 import type { Alpine as AlpineBase } from "alpinejs";
 
 /** Re-exported so consumers can grab the unsubscribe helper from one path. */

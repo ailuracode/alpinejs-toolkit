@@ -355,8 +355,11 @@ describe("MediaController — media features", () => {
     Object.defineProperty(navigator, "maxTouchPoints", { configurable: true, value: 0 });
     // happy-dom exposes `ontouchstart` on `window`; strip it so the
     // heuristic only consults the cached media queries. `'ontouchstart'
-    // in win` checks key existence, not the value, so define with
-    // `undefined` and then delete the key.
+    // in win` checks key existence, not the value, so we delete the key
+    // outright. `Object.defineProperty` with `value: undefined` keeps the
+    // own property, which still satisfies the `in` check, so a bare
+    // assignment also fails on recent happy-dom (the property becomes
+    // read-only). `delete` is the only form that actually clears it.
     Object.defineProperty(window, "ontouchstart", { configurable: true, value: undefined });
     delete (window as { ontouchstart?: unknown }).ontouchstart;
 

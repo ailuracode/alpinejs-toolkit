@@ -1,10 +1,13 @@
 import Alpine from "alpinejs";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { startAlpine } from "../../../test/helpers.js";
 import menuPlugin, { type MenuStore } from "../src/index.js";
 
 function startMenuAlpine(): MenuStore {
-  Alpine.plugin(menuPlugin());
-  Alpine.start();
+  // `startAlpine` gates `Alpine.start()` behind a module-level flag so
+  // repeated test invocations don't emit the "already been initialized"
+  // warning or leak state. The helper also registers the plugin for us.
+  startAlpine(menuPlugin());
   return Alpine.store("menu") as MenuStore;
 }
 
@@ -14,6 +17,11 @@ describe("@ailuracode/alpine-menu teleported menu", () => {
   });
 
   it("opens below the trigger and closes from an outside click", async () => {
+    // `startAlpine` overwrites `document.body.innerHTML` with a placeholder
+    // and arms the mutation observer that processes the markup we mount
+    // right after.
+    const store = startMenuAlpine();
+
     document.body.innerHTML = `
       <div id="overlay-root"></div>
       <div
@@ -34,8 +42,7 @@ describe("@ailuracode/alpine-menu teleported menu", () => {
         </template>
       </div>
     `;
-
-    const store = startMenuAlpine();
+    await Alpine.nextTick();
 
     const trigger = document.getElementById("trigger-wrap");
     if (!trigger) {
@@ -62,6 +69,11 @@ describe("@ailuracode/alpine-menu teleported menu", () => {
   });
 
   it("closes the previous menu when opening another through the Alpine store proxy", async () => {
+    // `startAlpine` overwrites `document.body.innerHTML` with a placeholder
+    // and arms the mutation observer that processes the markup we mount
+    // right after.
+    const store = startMenuAlpine();
+
     document.body.innerHTML = `
       <div id="overlay-root"></div>
       <div
@@ -76,8 +88,7 @@ describe("@ailuracode/alpine-menu teleported menu", () => {
         <button id="actions" type="button" @click="$store.menu.toggle('actions-menu')">Actions</button>
       </div>
     `;
-
-    const store = startMenuAlpine();
+    await Alpine.nextTick();
 
     document.getElementById("account")?.click();
     await Alpine.nextTick();

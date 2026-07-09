@@ -310,7 +310,7 @@ export function setupDemoExtensions(Alpine: AlpineInstance): void {
         onMismatch: "hide",
       },
       scroll: Alpine.store("scroll"),
-    }),
+    })
   );
 
   const queryDemoStores = registerQueryDemos(Alpine);

@@ -22,7 +22,7 @@
  */
 
 export type { Unsubscribe } from "@ailuracode/alpine-core";
-export { createScroll, ScrollController, SCROLL_SINGLETON_KEY } from "./controller.js";
+export { createScroll, SCROLL_SINGLETON_KEY, ScrollController } from "./controller.js";
 // --- Public types (state contracts, options, plugin callback) --------
 export type { ScrollErrorCode } from "./error.js";
 export { isScrollErrorCode, ScrollError } from "./error.js";
