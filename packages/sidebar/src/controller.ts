@@ -141,7 +141,7 @@ export class SidebarController extends BaseController<SidebarEvents> implements 
   readonly #closeOnEscape: boolean;
   readonly #closeOnOverlayClick: boolean;
   readonly #breakpointOption: SidebarBreakpointOption | undefined;
-  readonly #initialVisible: boolean;
+  readonly #initial: boolean;
 
   /**
    * Snapshot of `matchesBreakpoint` at construction time. `reset()`
@@ -157,11 +157,11 @@ export class SidebarController extends BaseController<SidebarEvents> implements 
     this.#closeOnEscape = options.closeOnEscape !== false;
     this.#closeOnOverlayClick = options.closeOnOverlayClick !== false;
     this.#breakpointOption = options.breakpoint;
-    this.#initialVisible = options.initialVisible ?? false;
+    this.#initial = options.initial ?? false;
 
     this.#toggle = new ToggleController<true, false, undefined, boolean>({
       states: { on: true, off: false },
-      initial: this.#initialVisible,
+      initial: this.#initial,
       id: `${id}-visible`,
     });
 

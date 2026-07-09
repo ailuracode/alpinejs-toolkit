@@ -105,7 +105,7 @@ export interface CreateSidebarOptions {
    */
   readonly breakpoint?: SidebarBreakpointOption;
   /** Initial visibility. Default: `false`. */
-  readonly initialVisible?: boolean;
+  readonly initial?: boolean;
 }
 
 /**

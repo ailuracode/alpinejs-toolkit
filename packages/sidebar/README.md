@@ -75,7 +75,7 @@ import { createSidebar } from "@ailuracode/alpine-sidebar";
 const controller = createSidebar({
   closeOnEscape: true,
   breakpoint: { query: "(min-width: 1024px)", onMismatch: "hide" },
-  initialVisible: false,
+  initial: false,
 });
 
 controller.on("change", (detail) => {
@@ -130,7 +130,7 @@ interface CreateSidebarOptions {
   closeOnEscape?: boolean;              // default: true
   closeOnOverlayClick?: boolean;        // default: true
   breakpoint?: SidebarBreakpointOption; // default: undefined
-  initialVisible?: boolean;             // default: false
+  initial?: boolean;             // default: false
 }
 
 interface SidebarBreakpointOption {
