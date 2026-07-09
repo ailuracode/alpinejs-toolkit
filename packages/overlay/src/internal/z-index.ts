@@ -113,7 +113,10 @@ export function releaseSlot(
 }
 
 /** Linear scan — stacks rarely exceed ~10 entries. */
-function findEntry(stack: readonly OverlayStackEntry[], key: string): OverlayStackEntry | null {
+export function findEntry(
+  stack: readonly OverlayStackEntry[],
+  key: string
+): OverlayStackEntry | null {
   for (const entry of stack) {
     if (slotKey(entry.plugin, entry.id) === key) {
       return entry;
@@ -122,8 +125,15 @@ function findEntry(stack: readonly OverlayStackEntry[], key: string): OverlaySta
   return null;
 }
 
-/** Inserts `entry` into `stack` keeping `zIndex` ascending. */
-function insertSortedByZIndex(stack: OverlayStackEntry[], entry: OverlayStackEntry): void {
+/**
+ * Inserts `entry` into `stack` keeping `zIndex` ascending.
+ * Exported for direct unit testing — the public register path
+ * always feeds monotonic zIndices (burned-slot allocator), so this
+ * branch is unreachable from the controller API; tests that
+ * exercise a non-monotonic insertion simulate the corner case the
+ * spec calls out (#240 C4 + the verify report F5 follow-up).
+ */
+export function insertSortedByZIndex(stack: OverlayStackEntry[], entry: OverlayStackEntry): void {
   for (let i = 0; i < stack.length; i += 1) {
     const current = stack[i];
     if (!current) {
