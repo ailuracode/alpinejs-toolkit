@@ -6,6 +6,7 @@ import tooltipPlugin from "../src/index.js";
 describe("@ailuracode/alpine-tooltip playground markup", () => {
   beforeEach(() => {
     document.body.innerHTML = `
+      <div id="overlay-root"></div>
       <div
         x-data="{
           demos: [
@@ -39,7 +40,7 @@ describe("@ailuracode/alpine-tooltip playground markup", () => {
         </template>
 
         <template x-if="activeDemo?.placement === 'top'">
-          <template x-teleport="body">
+          <template x-teleport="#overlay-root">
             <div
               id="tooltip-panel"
               x-show="activeDemo && $store.tooltip.isOpen(activeDemo.id)"
@@ -50,7 +51,7 @@ describe("@ailuracode/alpine-tooltip playground markup", () => {
           </template>
         </template>
         <template x-if="activeDemo?.placement === 'bottom'">
-          <template x-teleport="body">
+          <template x-teleport="#overlay-root">
             <div
               id="tooltip-panel-bottom"
               x-show="activeDemo && $store.tooltip.isOpen(activeDemo.id)"

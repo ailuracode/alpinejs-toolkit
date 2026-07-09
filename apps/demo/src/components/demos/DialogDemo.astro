@@ -24,11 +24,12 @@ const buttonClasses =
 				Open settings
 			</button>
 
-			<template x-teleport="body">
+			<template x-teleport="#overlay-root">
 				<div
 					x-show="$store.dialog.isOpen('settings')"
 					x-transition
-					class="fixed inset-0 z-[60] flex items-center justify-center p-4"
+					class="fixed inset-0 flex items-center justify-center p-4"
+					:style="{ zIndex: $store.overlay.zIndexOf('dialog', 'settings') }"
 				>
 					<div
 						class="absolute inset-0 bg-black/50"

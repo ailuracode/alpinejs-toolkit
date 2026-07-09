@@ -15,6 +15,7 @@ describe("@ailuracode/alpine-menu teleported menu", () => {
 
   it("opens below the trigger and closes from an outside click", async () => {
     document.body.innerHTML = `
+      <div id="overlay-root"></div>
       <div
         x-data="{ ids: ['profile', 'settings'] }"
         x-init="
@@ -26,7 +27,7 @@ describe("@ailuracode/alpine-menu teleported menu", () => {
         <div id="trigger-wrap" x-init="$store.menu.bindTrigger('user-menu', $el)">
           <button id="trigger" type="button" @click="$store.menu.toggle('user-menu')">Account</button>
         </div>
-        <template x-teleport="body">
+        <template x-teleport="#overlay-root">
           <ul id="menu" x-show="$store.menu.isOpen('user-menu')" x-init="$store.menu.bindMenu('user-menu', $el)">
             <li><button type="button" role="menuitem" tabindex="0">profile</button></li>
           </ul>
@@ -62,6 +63,7 @@ describe("@ailuracode/alpine-menu teleported menu", () => {
 
   it("closes the previous menu when opening another through the Alpine store proxy", async () => {
     document.body.innerHTML = `
+      <div id="overlay-root"></div>
       <div
         x-data
         x-init="

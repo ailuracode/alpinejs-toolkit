@@ -126,6 +126,22 @@ export function registerDemoPlugins(): void {
     })
   );
 
+  // INSERTION-ORDER INVARIANT — overlay-plugin/design §9.
+  // `overlayPlugin()` MUST register before any plugin whose templates
+  // use `x-teleport="#overlay-root"` (dialog, menu, tooltip, command).
+  // The overlay plugin calls `configure()` synchronously on registration,
+  // which eagerly appends `<div id="overlay-root">` to `document.body`.
+  // Without this, `x-teleport="#overlay-root"` silently no-ops and Alpine
+  // logs "Unable to find element with selector #overlay-root".
+  registerPlugin(
+    "overlay",
+    defineHybridPlugin({
+      stores: ["overlay"],
+      magics: ["overlay"],
+      plugin: overlayPlugin(),
+    })
+  );
+
   registerPlugin(
     "dialog",
     definePlugin(["store", "magic"], {
