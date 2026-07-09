@@ -10,8 +10,8 @@
  */
 
 import { describe, expect, it } from "vitest";
-import { isOverlayErrorCode, OverlayError } from "../src/error.js";
 import type { OverlayErrorCode } from "../src/error.js";
+import { isOverlayErrorCode, OverlayError } from "../src/error.js";
 
 const ALL_CODES: OverlayErrorCode[] = [
   "OVERLAY_NOT_CONFIGURED",
