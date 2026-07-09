@@ -14,8 +14,8 @@
 
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { OverlayController } from "../src/controller.js";
-import type { OverlayStackEntry } from "../src/types.js";
 import { findEntry, insertSortedByZIndex, slotKey } from "../src/internal/z-index.js";
+import type { OverlayStackEntry } from "../src/types.js";
 
 function entry(plugin: string, id: string, zIndex: number): OverlayStackEntry {
   return { plugin, id, zIndex, openedAt: Date.now() };
@@ -130,10 +130,7 @@ describe("insertSortedByZIndex (direct — defensive non-monotonic branch)", () 
   });
 
   it("inserts at the head when the new entry's z-index is lower than every existing entry", () => {
-    const stack: OverlayStackEntry[] = [
-      entry("dialog", "a", 1020),
-      entry("menu", "b", 1040),
-    ];
+    const stack: OverlayStackEntry[] = [entry("dialog", "a", 1020), entry("menu", "b", 1040)];
     insertSortedByZIndex(stack, entry("tooltip", "c", 1000));
     expect(stack.map((e) => e.zIndex)).toEqual([1000, 1020, 1040]);
   });

@@ -5,8 +5,8 @@
  * implementation contracts.
  */
 
-export { createOverlayStore } from "./alpine/store.js";
 export { createOverlayMagic } from "./alpine/magic.js";
+export { createOverlayStore } from "./alpine/store.js";
 export {
   createOverlay,
   OVERLAY_SINGLETON_KEY,

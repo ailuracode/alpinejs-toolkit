@@ -8,3 +8,8 @@ coverage
 apps/demo/node_modules
 apps/demo/dist
 apps/demo/.astro
+
+# Local-only caches and tooling state
+.atl/
+.codegraph/
+.vscode/
