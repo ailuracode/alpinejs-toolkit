@@ -29,16 +29,17 @@ import {
   type SidebarAlpineLike,
 } from "../../types";
 
-/** Shape of the proxy returned by `withSidebarVisiblePersist`. */
-export type SidebarVisibleProxy = {
-  readonly visible: boolean;
-  // The proxy returned by `withSidebarVisiblePersist` is built with
-  // an object literal so the consumer reads `proxy.visible` and writes
-  // `proxy.visible = v`. Object-literal getter/setter accessors are
-  // defined on the function value, not the type. A plain type alias
-  // matches that shape without forcing the interface-with-accessor
-  // syntax (which is invalid in `.d.ts`-style positions).
-};
+/**
+ * Shape of the proxy returned by `withSidebarVisiblePersist`.
+ *
+ * The proxy is built with an object literal getter/setter so the
+ * consumer reads `proxy.visible` and writes `proxy.visible = v`.
+ * `readonly: false` because the setter MUST mutate the bound store
+ * (it does NOT persist — the proxy is a pure facade).
+ */
+export interface SidebarVisibleProxy {
+  visible: boolean;
+}
 
 /**
  * Wires `Alpine.$persist` into `Alpine.store('sidebar').visible`.
