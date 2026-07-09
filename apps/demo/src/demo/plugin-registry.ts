@@ -21,7 +21,7 @@ import {
   default as queryKit,
 } from "@ailuracode/alpine-query-kit";
 import scroll from "@ailuracode/alpine-scroll";
-import sidebar from "@ailuracode/alpine-sidebar";
+import { createSidebar, sidebarPlugin } from "@ailuracode/alpine-sidebar";
 import tabs from "@ailuracode/alpine-tabs";
 import { themePlugin } from "@ailuracode/alpine-theme";
 import toast, { toastPositions, toastVariants } from "@ailuracode/alpine-toast";
@@ -67,6 +67,33 @@ function scrollLockHandler(Alpine: AlpineInstance) {
   };
 }
 
+/**
+ * Subscribe to the sidebar controller's typed `change` event for the
+ * `source: 'user'` transitions and translate them into DOM / scrollbar /
+ * body scroll-lock side effects. Escape / breakpoint / initialization
+ * transitions are intentionally ignored so they flow through naturally
+ * without extra side effects. The controller itself is torn down via
+ * `Alpine.cleanup` registered by `sidebarPlugin`, so the demo does not
+ * need to keep the unsubscribe handle.
+ */
+function registerSidebarUserEffects(Alpine: AlpineInstance): void {
+  const scroll = Alpine.store("scroll") as { lock(): void; unlock(): void };
+  createSidebar().on("change", (detail) => {
+    if (detail.source !== "user") {
+      return;
+    }
+    if (detail.visible) {
+      document.documentElement.setAttribute("data-sidebar", "");
+      document.documentElement.style.scrollbarGutter = "stable";
+      scroll.lock();
+    } else {
+      document.documentElement.removeAttribute("data-sidebar");
+      document.documentElement.style.scrollbarGutter = "";
+      scroll.unlock();
+    }
+  });
+}
+
 let pluginsRegistered = false;
 
 /** Register all demo plugins with @ailuracode/alpine-core (no Alpine side effects yet). */
@@ -89,18 +116,17 @@ export function registerDemoPlugins(): void {
       names: { store: ["sidebar"], magic: ["sidebar"] },
       allowNameCrossKind: true,
       plugin: (Alpine) => {
-        sidebar({
-          onShow() {
-            document.documentElement.setAttribute("data-sidebar", "");
-            document.documentElement.style.scrollbarGutter = "stable";
-            (Alpine.store("scroll") as { lock(): void }).lock();
-          },
-          onHide() {
-            document.documentElement.removeAttribute("data-sidebar");
-            document.documentElement.style.scrollbarGutter = "";
-            (Alpine.store("scroll") as { unlock(): void }).unlock();
+        sidebarPlugin({
+          closeOnEscape: true,
+          breakpoint: {
+            query: "(max-width: 1023px)",
+            onMismatch: "hide",
           },
         })(Alpine);
+        // Subscribe DOM / scrollbar / body scroll-lock side effects to
+        // `source: 'user'` transitions via the controller's typed
+        // `change` event.
+        registerSidebarUserEffects(Alpine);
       },
     })
   );

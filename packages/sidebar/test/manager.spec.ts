@@ -15,11 +15,7 @@
  */
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import {
-  type SidebarChangeDetail,
-  SidebarController,
-  createSidebar,
-} from "../src/index";
+import { createSidebar, type SidebarChangeDetail, type SidebarController } from "../src/index";
 import { setMatchMedia } from "./setup";
 
 const MIN_WIDTH_1024 = "(min-width: 1024px)";
@@ -280,7 +276,7 @@ describe("SidebarController — lifecycle", () => {
     expect(controller.isDestroyed).toBe(true);
   });
 
-  it("post-destroy show/hide/toggle are no-ops", async () => {
+  it("post-destroy show/hide/toggle are no-ops", () => {
     const controller = createSidebar();
     controller.destroy();
     const events: SidebarChangeDetail[] = [];

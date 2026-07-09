@@ -13,10 +13,7 @@
  * separate callback signature.
  */
 
-import {
-  safeWindow,
-  type Unsubscribe,
-} from "@ailuracode/alpine-core";
+import { safeWindow, type Unsubscribe } from "@ailuracode/alpine-core";
 
 /**
  * Subscribes to `Escape` keydown events on `window`. Returns a
@@ -25,9 +22,7 @@ import {
  * Returns a no-op cleanup when the runtime has no `window` so the
  * manager can wire teardown uniformly.
  */
-export function attachEscapeListener(
-  listener: (event: KeyboardEvent) => void
-): Unsubscribe {
+export function attachEscapeListener(listener: (event: KeyboardEvent) => void): Unsubscribe {
   const win = safeWindow();
 
   if (!win) {

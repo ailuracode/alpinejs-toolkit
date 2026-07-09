@@ -9,16 +9,8 @@
  * 6 tests map to the spec matrix rows #27–#32.
  */
 
-import {
-  afterEach,
-  beforeEach,
-  describe,
-  expect,
-  it,
-  vi,
-} from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { type SidebarStore, sidebarPlugin } from "../src/index";
-import { setMatchMedia } from "./setup";
 
 interface MockAlpine {
   stores: Record<string, unknown>;
@@ -69,7 +61,7 @@ describe("sidebarPlugin — registration", () => {
     expect(typeof store.toggle).toBe("function");
   });
 
-  it("\$sidebar magic returns the same reactive reference as Alpine.store('sidebar')", () => {
+  it("$sidebar magic returns the same reactive reference as Alpine.store('sidebar')", () => {
     const Alpine = createMockAlpine();
     sidebarPlugin()(Alpine as never);
     const fromStore = Alpine.store("sidebar");

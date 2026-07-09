@@ -162,11 +162,7 @@ export function parseChildDirective(el: Element): ChildDirectiveConfig | null {
  * Public from the controller's perspective — `internal/` re-export
  * is internal-by-convention, not strict.
  */
-export function transferAttributes(
-  wrapper: Element,
-  child: Element,
-  mode: ChildMergeMode
-): void {
+export function transferAttributes(wrapper: Element, child: Element, mode: ChildMergeMode): void {
   // `NamedNodeMap` is unique by name — iterate directly without
   // building an intermediate Set.
   for (const { name } of wrapper.attributes) {
