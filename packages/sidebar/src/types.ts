@@ -188,7 +188,7 @@ export interface PersistSidebarVisibleOptions {
   readonly key?: string;
   /**
    * When `true`, the helper throws `ToolkitError` instead of
-   * `console.warn` on missing plugin or store. Default: `false`.
+   * on missing plugin or store. Default: `false`.
    */
   readonly strict?: boolean;
 }

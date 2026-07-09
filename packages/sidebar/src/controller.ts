@@ -474,10 +474,12 @@ export class SidebarController extends BaseController<SidebarEvents> implements 
     try {
       this.#storage.set(visible);
       this.#lastWritten = visible;
-    } catch (error) {
+    } catch {
       this.#lastWritten = undefined;
-      // biome-ignore lint/suspicious/noConsole: best-effort persistence
-      console.warn("[alpine-sidebar] storage.set threw:", error);
+      // Best-effort persistence: storage.set failures (Safari
+      // private mode, quota, third-party adapter throws) are
+      // silently absorbed. Echo detection is reset so the next
+      // legitimate cross-tab update is not suppressed.
     }
   }
 

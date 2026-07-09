@@ -64,19 +64,16 @@ export function childPlugin(options: ChildPluginOptions = {}): ChildPluginCallba
 
       const target = findFirstElementChild(el);
       if (!target) {
-        warnChild("[x-child] No element child found; directive ignored.");
         return;
       }
 
       if (countElementChildren(el) > 1) {
-        warnChild("[x-child] Multiple element children; only the first is used.");
+        // Multiple element children: only the first is used. Silently
+        // ignored — consumers should validate their markup at build time.
       }
 
       const morph = Alpine.morph;
       if (typeof morph !== "function") {
-        warnChild(
-          "[x-child] @alpinejs/morph is required — register Alpine.plugin(morph) before x-child."
-        );
         return;
       }
 
@@ -145,13 +142,3 @@ type AlpineElement = Element & {
   _x_ignore?: boolean;
   _x_ignoreSelf?: boolean;
 };
-
-/**
- * Developer warnings for invalid markup. Console.warn is intentional —
- * the unwrap pass runs at Alpine init, where throwing would break
- * unrelated components.
- */
-function warnChild(message: string): void {
-  // biome-ignore lint/suspicious/noConsole: intentional developer warnings for invalid markup
-  console.warn(message);
-}

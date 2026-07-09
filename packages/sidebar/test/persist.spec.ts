@@ -84,14 +84,13 @@ describe("persistSidebarVisible", () => {
     assert.equal(Alpine.asCalls[0].key, "sidebar-visible");
   });
 
-  it("Alpine.$persist undefined → console.warn + returns false; no throw", () => {
+  it("Alpine.$persist undefined → returns false silently; no throw", () => {
     const Alpine = createMockAlpine({ hasPersist: false, storeValue: { visible: false } });
     const warn = vi.spyOn(console, "warn").mockImplementation(() => undefined);
     try {
       const result = persistSidebarVisible(Alpine);
       assert.equal(result, false);
-      assert.equal(warn.mock.calls.length, 1);
-      assert.match(warn.mock.calls[0][0] as string, /@alpinejs\/persist plugin not detected/);
+      assert.equal(warn.mock.calls.length, 0);
     } finally {
       warn.mockRestore();
     }
@@ -111,14 +110,13 @@ describe("persistSidebarVisible", () => {
     }
   });
 
-  it("Alpine.store('sidebar') missing → warns + returns false", () => {
+  it("Alpine.store('sidebar') missing → returns false silently; no throw", () => {
     const Alpine = createMockAlpine({ storeValue: undefined });
     const warn = vi.spyOn(console, "warn").mockImplementation(() => undefined);
     try {
       const result = persistSidebarVisible(Alpine);
       assert.equal(result, false);
-      assert.equal(warn.mock.calls.length, 1);
-      assert.match(warn.mock.calls[0][0] as string, /register sidebarPlugin/);
+      assert.equal(warn.mock.calls.length, 0);
     } finally {
       warn.mockRestore();
     }

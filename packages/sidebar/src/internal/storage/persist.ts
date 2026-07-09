@@ -5,7 +5,7 @@
  *
  * 1. `persistSidebarVisible(Alpine, options?)` — wraps
  *    `Alpine.store('sidebar').visible` with `Alpine.$persist(...).as(key)`.
- *    Returns `true` on success; `false` (with `console.warn`) if
+ *    Returns `true` on success; `false` (silently) if
  *    `@alpinejs/persist` is not loaded or the store isn't registered.
  *    Never throws in the default mode — `strict: true` opts into
  *    `ToolkitError` for production code that wants hard failure.
@@ -59,25 +59,23 @@ export function persistSidebarVisible(
   options: PersistSidebarVisibleOptions = {}
 ): boolean {
   if (typeof Alpine.$persist !== "function") {
-    const message =
-      "[alpine-sidebar] @alpinejs/persist plugin not detected; $persist helper is a no-op";
     if (options.strict === true) {
-      throw new ToolkitError(message, "TOOLKIT_NOT_SUPPORTED");
+      throw new ToolkitError(
+        "[alpine-sidebar] @alpinejs/persist plugin not detected; $persist helper is a no-op",
+        "TOOLKIT_NOT_SUPPORTED"
+      );
     }
-    // biome-ignore lint/suspicious/noConsole: best-effort helper
-    console.warn(message);
     return false;
   }
 
   const store = Alpine.store("sidebar") as { visible?: unknown } | undefined;
   if (!store || typeof store !== "object") {
-    const message =
-      "[alpine-sidebar] register sidebarPlugin(...) before calling persistSidebarVisible()";
     if (options.strict === true) {
-      throw new ToolkitError(message, "TOOLKIT_INVALID_STATE");
+      throw new ToolkitError(
+        "[alpine-sidebar] register sidebarPlugin(...) before calling persistSidebarVisible()",
+        "TOOLKIT_INVALID_STATE"
+      );
     }
-    // biome-ignore lint/suspicious/noConsole: best-effort helper
-    console.warn(message);
     return false;
   }
 
