@@ -21,6 +21,20 @@ import { setMatchMedia } from "./setup";
 
 const PREFERS_DARK = "(prefers-color-scheme: dark)";
 
+/**
+ * Builds a synthetic `storage` event with `key` + `newValue` and
+ * dispatches it on `window`. Avoids `new StorageEvent(type, init)`
+ * because some runtimes (and static analyzers like CodeQL) flag
+ * the init object as a "superfluous trailing argument" — the
+ * property setters on a plain `Event` are the supported path.
+ */
+function fireStorage(key: string, newValue: string | null): void {
+  const event = new Event("storage");
+  Object.defineProperty(event, "key", { value: key });
+  Object.defineProperty(event, "newValue", { value: newValue });
+  window.dispatchEvent(event);
+}
+
 describe("createTheme — initial state", () => {
   it("uses the configured default when no value is persisted", () => {
     const theme = createTheme({ defaultTheme: "light" });
@@ -407,7 +421,7 @@ describe("createTheme — destroy()", () => {
     theme.destroy();
 
     // Dispatch a storage event after destroy — the listener should be gone.
-    window.dispatchEvent(new StorageEvent("storage", { key: "theme", newValue: "dark" }));
+    fireStorage("theme", "dark");
     assert.equal(calls, 0);
   });
 

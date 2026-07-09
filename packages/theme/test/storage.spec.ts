@@ -10,6 +10,20 @@ import assert from "node:assert/strict";
 import { describe, it } from "vitest";
 import { createLocalStorageThemeStorage, createMemoryThemeStorage } from "../src/index";
 
+/**
+ * Builds a synthetic `storage` event with `key` + `newValue` and
+ * dispatches it on `window`. Avoids `new StorageEvent(type, init)`
+ * because some runtimes (and static analyzers like CodeQL) flag
+ * the init object as a "superfluous trailing argument" — the
+ * property setters on a plain `Event` are the supported path.
+ */
+function fireStorage(key: string, newValue: string | null): void {
+  const event = new Event("storage");
+  Object.defineProperty(event, "key", { value: key });
+  Object.defineProperty(event, "newValue", { value: newValue });
+  window.dispatchEvent(event);
+}
+
 describe("createLocalStorageThemeStorage", () => {
   it("returns null when nothing is stored", () => {
     const storage = createLocalStorageThemeStorage();
@@ -52,7 +66,7 @@ describe("createLocalStorageThemeStorage", () => {
     });
     assert.ok(unsubscribe);
 
-    window.dispatchEvent(new StorageEvent("storage", { key: "cross-tab", newValue: "dark" }));
+    fireStorage("cross-tab", "dark");
     assert.deepEqual(seen, ["dark"]);
     unsubscribe?.();
   });
@@ -64,7 +78,7 @@ describe("createLocalStorageThemeStorage", () => {
       seen.push(next);
     });
 
-    window.dispatchEvent(new StorageEvent("storage", { key: "other", newValue: "dark" }));
+    fireStorage("other", "dark");
     assert.equal(seen.length, 0);
     unsubscribe?.();
   });
@@ -77,7 +91,7 @@ describe("createLocalStorageThemeStorage", () => {
     });
     unsubscribe?.();
 
-    window.dispatchEvent(new StorageEvent("storage", { key: "cleanup", newValue: "light" }));
+    fireStorage("cleanup", "light");
     assert.equal(seen.length, 0);
   });
 

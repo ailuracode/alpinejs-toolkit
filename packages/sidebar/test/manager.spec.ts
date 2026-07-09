@@ -834,7 +834,7 @@ describe("SidebarController — onVisibilityChange option", () => {
     controller.destroy();
   });
 
-  it("does NOT fire after destroy() even when a stale transition is queued", async () => {
+  it("does NOT fire after destroy() even when a stale transition is queued", () => {
     const calls: unknown[] = [];
     const controller = createSidebar({
       onVisibilityChange: (visible, source) => {
