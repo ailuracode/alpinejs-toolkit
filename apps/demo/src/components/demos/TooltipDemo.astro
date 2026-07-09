@@ -6,7 +6,7 @@ const plugin = getPluginNavItem("tooltip")!;
 const buttonClasses =
   "inline-flex min-w-28 items-center justify-center rounded-md border border-input bg-background px-3 py-2 text-sm font-medium hover:bg-accent focus:outline-none focus-visible:ring-2 focus-visible:ring-ring";
 const tooltipClasses =
-  "pointer-events-none z-[60] whitespace-nowrap rounded-md border bg-popover px-3 py-1.5 text-xs text-popover-foreground shadow-md";
+  "pointer-events-none whitespace-nowrap rounded-md border bg-popover px-3 py-1.5 text-xs text-popover-foreground shadow-md";
 ---
 
 <DemoSection id={plugin.id} title={plugin.title} api={plugin.api} description={plugin.description}>
@@ -64,97 +64,105 @@ const tooltipClasses =
 			</div>
 
 			<template x-if="activeDemo?.placement === 'top'">
-				<template x-teleport="body">
+				<template x-teleport="#overlay-root">
 					<div
 						id="tip-grid-tooltip"
 						x-show="activeDemo && $store.tooltip.isOpen(activeDemo.id)"
 						x-anchor.top.fixed.noflip.offset.8="activeTrigger"
 						role="tooltip"
 						class={tooltipClasses}
+						:style="{ zIndex: $store.overlay.zIndexOf('tooltip', activeDemo.id) }"
 						x-text="activeDemo?.text"
 					></div>
 				</template>
 			</template>
 			<template x-if="activeDemo?.placement === 'top-start'">
-				<template x-teleport="body">
+				<template x-teleport="#overlay-root">
 					<div
 						id="tip-grid-tooltip"
 						x-show="activeDemo && $store.tooltip.isOpen(activeDemo.id)"
 						x-anchor.top-start.fixed.noflip.offset.8="activeTrigger"
 						role="tooltip"
 						class={tooltipClasses}
+						:style="{ zIndex: $store.overlay.zIndexOf('tooltip', activeDemo.id) }"
 						x-text="activeDemo?.text"
 					></div>
 				</template>
 			</template>
 			<template x-if="activeDemo?.placement === 'top-end'">
-				<template x-teleport="body">
+				<template x-teleport="#overlay-root">
 					<div
 						id="tip-grid-tooltip"
 						x-show="activeDemo && $store.tooltip.isOpen(activeDemo.id)"
 						x-anchor.top-end.fixed.noflip.offset.8="activeTrigger"
 						role="tooltip"
 						class={tooltipClasses}
+						:style="{ zIndex: $store.overlay.zIndexOf('tooltip', activeDemo.id) }"
 						x-text="activeDemo?.text"
 					></div>
 				</template>
 			</template>
 			<template x-if="activeDemo?.placement === 'bottom'">
-				<template x-teleport="body">
+				<template x-teleport="#overlay-root">
 					<div
 						id="tip-grid-tooltip"
 						x-show="activeDemo && $store.tooltip.isOpen(activeDemo.id)"
 						x-anchor.bottom.fixed.noflip.offset.8="activeTrigger"
 						role="tooltip"
 						class={tooltipClasses}
+						:style="{ zIndex: $store.overlay.zIndexOf('tooltip', activeDemo.id) }"
 						x-text="activeDemo?.text"
 					></div>
 				</template>
 			</template>
 			<template x-if="activeDemo?.placement === 'bottom-start'">
-				<template x-teleport="body">
+				<template x-teleport="#overlay-root">
 					<div
 						id="tip-grid-tooltip"
 						x-show="activeDemo && $store.tooltip.isOpen(activeDemo.id)"
 						x-anchor.bottom-start.fixed.noflip.offset.8="activeTrigger"
 						role="tooltip"
 						class={tooltipClasses}
+						:style="{ zIndex: $store.overlay.zIndexOf('tooltip', activeDemo.id) }"
 						x-text="activeDemo?.text"
 					></div>
 				</template>
 			</template>
 			<template x-if="activeDemo?.placement === 'bottom-end'">
-				<template x-teleport="body">
+				<template x-teleport="#overlay-root">
 					<div
 						id="tip-grid-tooltip"
 						x-show="activeDemo && $store.tooltip.isOpen(activeDemo.id)"
 						x-anchor.bottom-end.fixed.noflip.offset.8="activeTrigger"
 						role="tooltip"
 						class={tooltipClasses}
+						:style="{ zIndex: $store.overlay.zIndexOf('tooltip', activeDemo.id) }"
 						x-text="activeDemo?.text"
 					></div>
 				</template>
 			</template>
 			<template x-if="activeDemo?.placement === 'left'">
-				<template x-teleport="body">
+				<template x-teleport="#overlay-root">
 					<div
 						id="tip-grid-tooltip"
 						x-show="activeDemo && $store.tooltip.isOpen(activeDemo.id)"
 						x-anchor.left.fixed.noflip.offset.8="activeTrigger"
 						role="tooltip"
 						class={tooltipClasses}
+						:style="{ zIndex: $store.overlay.zIndexOf('tooltip', activeDemo.id) }"
 						x-text="activeDemo?.text"
 					></div>
 				</template>
 			</template>
 			<template x-if="activeDemo?.placement === 'right'">
-				<template x-teleport="body">
+				<template x-teleport="#overlay-root">
 					<div
 						id="tip-grid-tooltip"
 						x-show="activeDemo && $store.tooltip.isOpen(activeDemo.id)"
 						x-anchor.right.fixed.noflip.offset.8="activeTrigger"
 						role="tooltip"
 						class={tooltipClasses}
+						:style="{ zIndex: $store.overlay.zIndexOf('tooltip', activeDemo.id) }"
 						x-text="activeDemo?.text"
 					></div>
 				</template>
@@ -186,13 +194,14 @@ const tooltipClasses =
 				</div>
 			</div>
 
-			<template x-teleport="body">
+			<template x-teleport="#overlay-root">
 				<div
 					id="tip-scroll-tooltip"
 					x-show="$store.tooltip.isOpen('tip-scroll')"
 					x-anchor.top.fixed.noflip.offset.8="scrollTrigger"
 					role="tooltip"
 					class={tooltipClasses}
+					:style="{ zIndex: $store.overlay.zIndexOf('tooltip', 'tip-scroll') }"
 				>
 					Follows anchor on scroll
 				</div>
