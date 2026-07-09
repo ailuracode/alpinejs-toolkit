@@ -58,3 +58,17 @@ export function coerceBreakpointOption(
 
   return { query, onMismatch: candidate.onMismatch };
 }
+
+/**
+ * Type guard that narrows `raw` to the literal strings `"true"` or
+ * `"false"`. Rejects anything else — including the `boolean` value
+ * `true` / `false` (use at the call site to coerce first) and
+ * non-boolean strings like `"yes"`, `"1"`, `"0"`.
+ *
+ * Used by the `localStorage` storage adapter to filter invalid
+ * values written by a third-party script. Mirrors
+ * `@ailuracode/alpine-theme`'s `isThemePreference` helper.
+ */
+export function isBooleanString(raw: string): raw is "true" | "false" {
+  return raw === "true" || raw === "false";
+}
