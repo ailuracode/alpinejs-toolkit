@@ -2,26 +2,25 @@
  * Overlay controller — the headless domain logic for the
  * `@ailuracode/alpine-overlay` package.
  *
- * The controller owns:
- * - The slot allocator (delegated to {@link createSlotState}).
- * - The portal root reference.
- * - The listener registry for `change` events.
+ * Extends `BaseController<OverlayEvents>` from
+ * `@ailuracode/alpine-core`. The base class supplies:
+ * - Stable `id` (`generateId("controller")`)
+ * - `mount()` / `destroy()` lifecycle + phase tracking
+ * - `on / once / off / emit` typed event surface
+ * - `registerCleanup()` for resource handles
+ * - `ToolkitError('CONTROLLER_DESTROYED')` on misuse
  *
- * It exposes:
- * - `configure({ root, baseZIndex, step })` — idempotent.
- * - `register(plugin, id)` / `unregister(plugin, id)`.
- * - `zIndexOf(plugin, id)` / `isOpen(plugin, id)`.
- * - `state` (readonly snapshot for templates).
- * - `on('change', listener)` (inherited from the EventEmitter
- *   implementation embedded below — kept inline because master
- *   core does not yet export `BaseController`).
+ * Overlay-specific concerns added on top:
+ * - The slot allocator (delegated to {@link createSlotState})
+ * - The portal root reference (resolved lazily via
+ *   {@link resolveOrCreatePortalRoot})
+ * - Idempotent `register` / `unregister` against the slot map
  *
- * Construction is side-effect free — no DOM access, no listener
- * registration. `mount()` is a no-op kept for symmetry with the
- * future headless-controller split. `destroy()` clears the stack
- * and removes every listener (idempotent).
+ * The singleton instance is registered via `createSingleton` from
+ * core (replaces the previous inlined `Map`-based registry).
  */
 
+import { BaseController, clearSingleton, createSingleton } from "@ailuracode/alpine-core";
 import { OverlayError } from "./error.js";
 import type { OverlayEvents } from "./events.js";
 import { resolveOrCreatePortalRoot, safeDocument } from "./internal/portal.js";
@@ -37,23 +36,18 @@ import type {
 /** Singleton key used by {@link createOverlay}. Mirrors scroll / sidebar / theme. */
 export const OVERLAY_SINGLETON_KEY = "@ailuracode/alpine-overlay/default";
 
-type Listener = (detail: OverlayChangeDetail) => void;
-
 /**
  * Headless overlay controller. Private state is held via `#field`
  * syntax; the public surface is getters + imperative methods.
  */
-export class OverlayController {
-  readonly #id: string;
+export class OverlayController extends BaseController<OverlayEvents> {
   #state: OverlayState | null = null;
   readonly #slots: SlotState;
   #root: HTMLElement | null = null;
   #configured = false;
-  #destroyed = false;
-  readonly #listeners = new Map<keyof OverlayEvents, Set<Listener>>();
 
   constructor(options?: OverlayOptions) {
-    this.#id = `${OVERLAY_SINGLETON_KEY}#${Math.random().toString(36).slice(2, 9)}`;
+    super();
     // Eagerly normalize so a controller that is created without
     // configure() still has sensible defaults — `register()` will
     // lazily allocate slots even before `configure()` runs.
@@ -64,16 +58,11 @@ export class OverlayController {
     }
   }
 
-  /** Stable controller id — exposed for debugging / cross-keying. */
-  get id(): string {
-    return this.#id;
-  }
-
   /** Snapshot of the current state, or `null` when destroyed. */
   get state(): OverlayState {
-    if (this.#destroyed) {
+    if (this.isDestroyed) {
       throw new OverlayError(
-        `Overlay controller "${this.#id}" was destroyed.`,
+        `Overlay controller "${this.id}" was destroyed.`,
         "OVERLAY_NOT_CONFIGURED"
       );
     }
@@ -91,7 +80,7 @@ export class OverlayController {
 
   /** Idempotent. Second call with the same options is a no-op. */
   configure(options: OverlayOptions): void {
-    if (this.#destroyed) {
+    if (this.isDestroyed) {
       return;
     }
     const normalized = normalizeOverlayOptions(options);
@@ -110,20 +99,13 @@ export class OverlayController {
           "INVALID_OPTIONS"
         );
       }
-      // root change on a live stack is also risky — only honor it
-      // when the new root is a non-null `HTMLElement` (string
-      // re-resolve is fine; null/HTMLElement swap mid-stack would
-      // orphan references). For simplicity, ignore root changes
-      // when the stack is non-empty.
       return;
     }
 
     // Stack is empty — first-time configure (or re-configure with
     // empty stack). Apply options in place.
-    Object.assign(this.#slots as object, {
-      baseZIndex: normalized.baseZIndex,
-      step: normalized.step,
-    });
+    (this.#slots as { baseZIndex: number; step: number }).baseZIndex = normalized.baseZIndex;
+    (this.#slots as { baseZIndex: number; step: number }).step = normalized.step;
 
     this.#root = resolveOrCreatePortalRoot(normalized.root, safeDocument());
     this.#configured = true;
@@ -135,7 +117,7 @@ export class OverlayController {
    * z-index is returned and no `change` event fires.
    */
   register(plugin: string, id: string): number {
-    if (this.#destroyed) {
+    if (this.isDestroyed) {
       throw new OverlayError(
         `Cannot register on destroyed overlay controller.`,
         "OVERLAY_NOT_CONFIGURED"
@@ -143,9 +125,6 @@ export class OverlayController {
     }
     assertNonEmptyPluginId(plugin, id);
 
-    // Lazy portal materialization so a controller that never calls
-    // `configure()` still resolves a root the moment any register
-    // hits a real DOM.
     if (!this.#configured) {
       this.configure({});
     }
@@ -163,7 +142,7 @@ export class OverlayController {
 
   /** Silent no-op when the pair is unknown. */
   unregister(plugin: string, id: string): void {
-    if (this.#destroyed) {
+    if (this.isDestroyed) {
       return;
     }
     assertNonEmptyPluginId(plugin, id);
@@ -181,59 +160,44 @@ export class OverlayController {
 
   /** Returns `null` when the pair is unknown. */
   zIndexOf(plugin: string, id: string): number | null {
-    if (this.#destroyed) {
+    if (this.isDestroyed) {
       return null;
     }
     return this.#slots.slots.get(slotKeyOf(plugin, id)) ?? null;
   }
 
   isOpen(plugin: string, id: string): boolean {
-    if (this.#destroyed) {
+    if (this.isDestroyed) {
       return false;
     }
     return this.#slots.slots.has(slotKeyOf(plugin, id));
   }
 
-  /**
-   * Subscribes to `change` events. Returns an idempotent
-   * unsubscribe function — calling it more than once is safe.
-   */
-  on(event: "change", listener: OverlayChangeListener): () => void {
-    if (this.#destroyed) {
-      return () => undefined;
-    }
-    const set = this.#listeners.get(event) ?? new Set<Listener>();
-    set.add(listener as Listener);
-    this.#listeners.set(event, set);
-    return () => {
-      set.delete(listener as Listener);
-    };
-  }
-
   /** Idempotent. No-op when the controller has not been mounted. */
-  mount(): void {
-    if (this.#destroyed) {
-      throw new OverlayError(
-        `Cannot mount destroyed overlay controller "${this.#id}".`,
-        "OVERLAY_NOT_CONFIGURED"
-      );
+  override mount(): void {
+    if (this.isDestroyed) {
+      // BaseController already throws ToolkitError('CONTROLLER_DESTROYED')
+      // for the same case — let it propagate.
+      super.mount();
+      return;
     }
+    super.mount();
     if (!this.#configured) {
       this.configure({});
     }
   }
 
-  /** Idempotent. Clears the stack and removes every listener. */
-  destroy(): void {
-    if (this.#destroyed) {
+  /** Idempotent. Clears the stack, removes listeners (inherited). */
+  override destroy(): void {
+    if (this.isDestroyed) {
       return;
     }
-    this.#destroyed = true;
     this.#slots.slots.clear();
     this.#slots.stack.length = 0;
-    this.#listeners.clear();
     this.#state = null;
     this.#root = null;
+    super.destroy();
+    clearSingleton(OVERLAY_SINGLETON_KEY);
   }
 
   #emit(detail: OverlayChangeDetail): void {
@@ -244,13 +208,10 @@ export class OverlayController {
       baseZIndex: this.#slots.baseZIndex,
       step: this.#slots.step,
     };
-    const set = this.#listeners.get("change");
-    if (!set) {
-      return;
-    }
-    for (const listener of set) {
-      listener(detail);
-    }
+    // `emit` is `protected` on BaseController — using the typed
+    // narrow here keeps the call site typed without exposing emit
+    // on the public surface.
+    this.emit("change", detail);
   }
 }
 
@@ -273,28 +234,20 @@ function slotKeyOf(plugin: string, id: string): string {
   return `${plugin}::${id}`;
 }
 
-/* Module-level singleton registry (kept inline because master
- * core does not yet export `createSingleton`). */
-const singletons = new Map<string, OverlayController>();
-
 /**
  * Returns the singleton controller, building + mounting one on the
  * first call. Mirrors the singleton pattern used by `theme`,
- * `lang`, `sidebar`, and `media`.
+ * `lang`, `sidebar`, `media`, and `scroll` v1.0.0.
  */
 export function createOverlay(options?: OverlayOptions): OverlayController {
-  const existing = singletons.get(OVERLAY_SINGLETON_KEY);
-  if (existing && !existing.state.count && !existing.state.root) {
-    // Defensive: a controller whose state was reset (e.g. destroyed
-    // by a test) should not be reused. Replace it.
-    singletons.delete(OVERLAY_SINGLETON_KEY);
-  }
-  const live = singletons.get(OVERLAY_SINGLETON_KEY);
-  if (live) {
-    return live;
-  }
-  const controller = new OverlayController(options);
-  controller.mount();
-  singletons.set(OVERLAY_SINGLETON_KEY, controller);
-  return controller;
+  const existing = createSingleton<OverlayController>(OVERLAY_SINGLETON_KEY, () => {
+    const controller = new OverlayController(options);
+    controller.mount();
+    return controller;
+  });
+  return existing;
 }
+
+/** Type-narrowed `on` that exposes only the overlay event surface. */
+export type OverlayControllerOn = OverlayController["on"];
+export type _OverlayChangeListener = OverlayChangeListener;

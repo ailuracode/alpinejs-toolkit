@@ -11,7 +11,7 @@
 
 import { afterEach, describe, expect, it } from "vitest";
 import { startAlpine } from "../../../test/helpers.js";
-import { createOverlay, OVERLAY_SINGLETON_KEY } from "../src/controller.js";
+import { createOverlay } from "../src/controller.js";
 import { overlayPlugin } from "../src/plugin.js";
 
 describe("overlayPlugin", () => {
@@ -44,10 +44,14 @@ describe("overlayPlugin", () => {
   it("shares state with createOverlay() singleton", () => {
     startAlpine(overlayPlugin());
     const standalone = createOverlay();
-    const key = OVERLAY_SINGLETON_KEY;
-    // Both must resolve to the same singleton via the documented
-    // key. The standalone call MUST NOT allocate a separate
-    // controller.
-    expect(standalone.id.startsWith(key)).toBe(true);
+    const again = createOverlay();
+    // Both must resolve to the same singleton instance via
+    // `createSingleton` from core. The standalone call MUST NOT
+    // allocate a separate controller — reference equality proves
+    // the singleton slot is reused.
+    expect(standalone).toBe(again);
+    // `id` is supplied by `BaseController.generateId` (not the
+    // singleton key) — verify the format instead.
+    expect(standalone.id).toMatch(/^controller-/);
   });
 });

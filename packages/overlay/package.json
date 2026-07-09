@@ -37,6 +37,7 @@
   },
   "peerDependencies": {
     "alpinejs": "^3.0.0",
+    "@ailuracode/alpine-core": "^0.1.0",
     "@types/alpinejs": "^3.13.11"
   },
   "peerDependenciesMeta": {
@@ -45,6 +46,7 @@
     }
   },
   "devDependencies": {
+    "@ailuracode/alpine-core": "workspace:*",
     "@ailuracode/alpine-ui": "workspace:*"
   },
   "scripts": {

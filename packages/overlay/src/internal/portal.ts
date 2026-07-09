@@ -3,8 +3,12 @@
  *
  * Pure function (no module-level `window` / `document` import —
  * the `Document` is injected). The controller calls this during
- * `configure()` with the result of a `typeof document` check; the
- * function itself never reaches for a global.
+ * `configure()` with the result of `safeDocument()`; the function
+ * itself never reaches for a global.
+ *
+ * `safeDocument()` is re-exported from this module so consumers
+ * that already depend on `@ailuracode/alpine-overlay` (not
+ * `@ailuracode/alpine-core`) can pick it up transitively.
  *
  * Behavior:
  * - `null` doc (SSR) → returns `null`.
@@ -12,6 +16,8 @@
  * - String selector → returns the matching element, OR creates a
  *   `<div id="<selector>">` and appends it to `doc.body`.
  */
+
+import { safeDocument as coreSafeDocument } from "@ailuracode/alpine-core";
 
 export interface PortalResolveOptions {
   /**
@@ -74,14 +80,11 @@ export function resolveOrCreatePortalRoot(
 }
 
 /**
- * Returns `document` if available, `null` under SSR. Mirrors the
- * `safeDocument()` helper planned for `@ailuracode/alpine-core` —
- * inlined here so the overlay package does not have a runtime
- * dependency on a primitive that core has not exported yet.
+ * Returns `document` if available, `null` under SSR. Re-exported
+ * from `@ailuracode/alpine-core` so overlay consumers don't have
+ * to add `@ailuracode/alpine-core` to their direct dependency
+ * graph.
  */
 export function safeDocument(): Document | null {
-  if (typeof document === "undefined") {
-    return null;
-  }
-  return document;
+  return coreSafeDocument();
 }

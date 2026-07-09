@@ -1,7 +1,8 @@
 /**
  * Alpine plugin factory for `@ailuracode/alpine-overlay`.
  *
- * Mirrors the reactive wiring strategy used by `alpine-scroll`:
+ * Mirrors the reactive wiring strategy used by
+ * `alpine-scroll` v1.0.0 (`packages/scroll/src/plugin.ts`):
  * 1. Build the singleton controller via {@link createOverlay}.
  * 2. Build the plain-object store via {@link createOverlayStore}.
  * 3. Install the store with `Alpine.store('overlay', store)`.
@@ -14,9 +15,8 @@
  * 6. Register the `$overlay` magic so templates can write
  *    `$overlay.zIndexOf('dialog', id)` as a shorthand.
  *
- * Cleanup is wired through `controller.destroy()` on the next
- * `Alpine.cleanup` invocation (kept manual here because master
- * core does not yet expose a plugin-lifecycle helper).
+ * Cleanup is wired through `Alpine.cleanup(() => controller.destroy())`
+ * so the singleton slot is released on Alpine teardown.
  */
 
 import type AlpineType from "alpinejs";

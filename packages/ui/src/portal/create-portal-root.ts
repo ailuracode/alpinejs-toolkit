@@ -13,22 +13,11 @@
  * root, but nothing in this module depends on Alpine.
  */
 
+import { safeDocument } from "@ailuracode/alpine-core";
 import type { PortalRootOptions } from "./types.js";
 
 const DEFAULT_ID = "overlay-root";
 const DEFAULT_TAG: keyof HTMLElementTagNameMap = "div";
-
-/**
- * Returns `document` if available, `null` under SSR. Centralised
- * so the portal helper stays a single-purpose primitive without a
- * runtime dependency on `@ailuracode/alpine-core`.
- */
-function getDocument(): Document | null {
-  if (typeof document === "undefined") {
-    return null;
-  }
-  return document;
-}
 
 /**
  * Returns the portal container for `opts.id`, creating it on the
@@ -39,7 +28,7 @@ function getDocument(): Document | null {
  *   unavailable (SSR / Node test runners).
  */
 export function createPortalRoot(opts: PortalRootOptions = {}): HTMLElement | null {
-  const doc = getDocument();
+  const doc = safeDocument();
   if (!doc) {
     return null;
   }
