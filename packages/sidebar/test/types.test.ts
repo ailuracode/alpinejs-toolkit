@@ -57,9 +57,9 @@ describe("@ailuracode/alpine-sidebar type contract", () => {
     >();
   });
 
-  it("SidebarChangeSource is the 5-value literal union", () => {
+  it("SidebarChangeSource is the 6-value literal union (5 + 'storage' added in v2.1.0)", () => {
     expectTypeOf<SidebarChangeSource>().toEqualTypeOf<
-      "user" | "breakpoint" | "escape" | "reset" | "initialization"
+      "user" | "breakpoint" | "escape" | "reset" | "initialization" | "storage"
     >();
   });
 

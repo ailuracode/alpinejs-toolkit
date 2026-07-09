@@ -28,11 +28,19 @@ export type { Unsubscribe };
  * - `'reset'` — `controller.reset()` call.
  * - `'initialization'` — first emit right after `mount()`, scheduled on a
  *   microtask so consumers can subscribe synchronously.
+ * - `'storage'` — cross-tab sync via the storage adapter's `subscribe`
+ *   hook. Additive in v2.1.0 — no existing consumer code breaks.
  *
  * Public: changing a member is a breaking change for anyone branching
  * on `detail.source`.
  */
-export type SidebarChangeSource = "user" | "breakpoint" | "escape" | "reset" | "initialization";
+export type SidebarChangeSource =
+  | "user"
+  | "breakpoint"
+  | "escape"
+  | "reset"
+  | "initialization"
+  | "storage";
 
 /**
  * Action the controller takes when the configured breakpoint media
@@ -104,9 +112,97 @@ export interface CreateSidebarOptions {
    * `matchesBreakpoint` only.
    */
   readonly breakpoint?: SidebarBreakpointOption;
-  /** Initial visibility. Default: `false`. */
+  /**
+   * Initial visibility. Default: `false`. Hydration from a
+   * {@link SidebarStorage} adapter (when provided) takes precedence
+   * over this option — `storage` reflects the user's persisted intent.
+   *
+   * Renamed from `initialVisible` in v2.1.0.
+   */
   readonly initial?: boolean;
+  /**
+   * Persistence adapter. When provided, the controller hydrates
+   * `visible` from `storage.get()` on `mount()` and writes
+   * `storage.set(visible)` after every `source: 'user'` transition.
+   * Cross-tab sync via `storage.subscribe?.()` emits
+   * `source: 'storage'` on incoming events. Echo detection prevents
+   * same-tab feedback loops.
+   *
+   * When omitted, the sidebar behaves as a pure in-memory state
+   * machine (the v2.0 default).
+   */
+  readonly storage?: SidebarStorage;
+  /**
+   * Convenience shortcut for `storage: createLocalStorageSidebarStorage({ key })`.
+   * Ignored when `storage` is also provided — the explicit adapter wins.
+   */
+  readonly persistKey?: string;
 }
+
+/** Default `localStorage` key used by {@link createLocalStorageSidebarStorage}. */
+export const DEFAULT_SIDEBAR_STORAGE_KEY = "sidebar-visible";
+
+/**
+ * Persistence adapter contract. Mirrors `ThemeStorage` from
+ * `@ailuracode/alpine-theme` with `boolean` instead of `ThemePreference`.
+ * Parsing / validation happens inside the adapter so the controller
+ * never sees raw strings.
+ */
+export interface SidebarStorage {
+  /** Reads the persisted boolean. Returns `null` when nothing / invalid value stored. */
+  get(): boolean | null;
+  /** Persists `value`. No-op when the API is unavailable. */
+  set(value: boolean): void;
+  /** Removes the persisted value. */
+  remove(): void;
+  /**
+   * Optional subscription hook. The controller calls this when the
+   * adapter supports cross-instance change notifications (cross-tab,
+   * in-memory observers). Returns an `Unsubscribe` function — a no-op
+   * is fine when the runtime cannot subscribe.
+   *
+   * The listener receives `null` when the adapter's underlying store
+   * is cleared (another tab called `removeItem`, the in-memory
+   * adapter's `remove()` ran). The controller treats `null` as a
+   * "fall back to the configured `initial`" signal and emits
+   * `change` with `source: 'storage'`.
+   */
+  subscribe?(listener: (next: boolean | null) => void): Unsubscribe;
+}
+
+/** Options accepted by {@link createLocalStorageSidebarStorage}. */
+export interface LocalStorageSidebarStorageOptions {
+  /** `localStorage` key. Default: {@link DEFAULT_SIDEBAR_STORAGE_KEY}. */
+  readonly key?: string;
+  /**
+   * Subscribe to cross-tab `storage` events. Default: `true`.
+   * Consumers needing no cross-tab sync can disable it to skip the
+   * `window.addEventListener('storage', ...)` registration.
+   */
+  readonly crossTab?: boolean;
+}
+
+/** Options accepted by {@link persistSidebarVisible} and {@link withSidebarVisiblePersist}. */
+export interface PersistSidebarVisibleOptions {
+  /** Storage key passed to `Alpine.$persist`. Default: {@link DEFAULT_SIDEBAR_STORAGE_KEY}. */
+  readonly key?: string;
+  /**
+   * When `true`, the helper throws `ToolkitError` instead of
+   * `console.warn` on missing plugin or store. Default: `false`.
+   */
+  readonly strict?: boolean;
+}
+
+/**
+ * Type-level Alpine contract for the `$persist` helpers. The toolkit's
+ * `Alpine` generic already exposes `store(name)`; this adds the
+ * optional `$persist` member with a permissive signature so helpers
+ * can be used with both the real Alpine runtime and lightweight mocks.
+ */
+export type SidebarAlpineLike = {
+  $persist?: (...args: unknown[]) => unknown;
+  store(name: string): unknown;
+};
 
 /**
  * Alpine-facing store surface. The integration fills it from a
