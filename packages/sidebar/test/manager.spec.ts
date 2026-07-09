@@ -15,7 +15,13 @@
  */
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { createSidebar, type SidebarChangeDetail, type SidebarController } from "../src/index";
+import {
+  createLocalStorageSidebarStorage,
+  createMemorySidebarStorage,
+  createSidebar,
+  type SidebarChangeDetail,
+  type SidebarController,
+} from "../src/index";
 import { setMatchMedia } from "./setup";
 
 const MIN_WIDTH_1024 = "(min-width: 1024px)";
@@ -399,6 +405,187 @@ describe("SidebarController — event bus", () => {
     controller.removeAllListeners();
     expect(controller.listenerCount("change")).toBe(0);
 
+    controller.destroy();
+  });
+});
+
+describe("SidebarController + storage — hydration", () => {
+  beforeEach(() => {
+    localStorage.clear();
+  });
+
+  it("mount() hydrates from storage via setSilently, no extra change event beyond the init one", () => {
+    localStorage.setItem("k1", "true");
+    const events: SidebarChangeDetail[] = [];
+    const controller = createSidebar({ storage: createLocalStorageSidebarStorage({ key: "k1" }) });
+    controller.on("change", (detail) => events.push(detail));
+    // The hydration is silent — the toggle.setSilently call does not
+    // emit. Only the queued init microtask fires.
+    return Promise.resolve().then(() => {
+      expect(controller.visible).toBe(true);
+      // The init event reflects the hydrated value.
+      const init = events.find((e) => e.source === "initialization");
+      expect(init?.visible).toBe(true);
+      // No duplicate 'storage' or 'user' event for the hydration itself.
+      const sources = events.map((e) => e.source);
+      expect(sources.filter((s) => s === "user" || s === "storage")).toHaveLength(0);
+      controller.destroy();
+    });
+  });
+
+  it("storage wins over `initial` when both are present (storage:false overrides initial:true)", () => {
+    localStorage.setItem("k2", "false");
+    const controller = createSidebar({
+      initial: true,
+      storage: createLocalStorageSidebarStorage({ key: "k2" }),
+    });
+    // Storage is read inside #init() at mount, which createSidebar already
+    // called. Constructor sets initial:true, but the init hydration
+    // overrides with the persisted false.
+    expect(controller.visible).toBe(false);
+    controller.destroy();
+  });
+});
+
+describe("SidebarController + storage — write paths", () => {
+  beforeEach(() => {
+    localStorage.clear();
+  });
+
+  it("show() / hide() / toggle() write the literal string to localStorage", () => {
+    const storage = createLocalStorageSidebarStorage({ key: "kw" });
+    const controller = createSidebar({ storage });
+
+    controller.show();
+    expect(localStorage.getItem("kw")).toBe("true");
+    controller.hide();
+    expect(localStorage.getItem("kw")).toBe("false");
+    controller.toggle();
+    expect(localStorage.getItem("kw")).toBe("true");
+
+    controller.destroy();
+  });
+
+  it("breakpoint / escape / reset / initialization do NOT write to storage", () => {
+    const storage = createLocalStorageSidebarStorage({ key: "kw2" });
+    setMatchMedia(MIN_WIDTH_1024, true);
+    const controller = createSidebar({
+      breakpoint: { query: MIN_WIDTH_1024, onMismatch: "hide" },
+      storage,
+    });
+    controller.show();
+    // `show()` writes once.
+    expect(localStorage.getItem("kw2")).toBe("true");
+
+    // Breakpoint flip to false hides (source: 'breakpoint') — must NOT write.
+    setMatchMedia(MIN_WIDTH_1024, false);
+    expect(localStorage.getItem("kw2")).toBe("true");
+
+    // Re-show so the escape has something to close.
+    controller.show();
+    expect(localStorage.getItem("kw2")).toBe("true");
+
+    // Escape hides (source: 'escape') — must NOT write.
+    window.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }));
+    expect(localStorage.getItem("kw2")).toBe("true");
+
+    // Reset (source: 'reset') — must NOT write.
+    controller.show();
+    expect(localStorage.getItem("kw2")).toBe("true");
+    controller.reset();
+    expect(localStorage.getItem("kw2")).toBe("true");
+
+    controller.destroy();
+  });
+});
+
+describe("SidebarController + storage — cross-tab", () => {
+  beforeEach(() => {
+    localStorage.clear();
+  });
+
+  it("storage event in tab B → controller.visible updated + emits source:'storage'", () => {
+    const storage = createLocalStorageSidebarStorage({ key: "kx" });
+    const controller = createSidebar({ storage });
+    const events: SidebarChangeDetail[] = [];
+    controller.on("change", (detail) => events.push(detail));
+    expect(controller.visible).toBe(false);
+
+    // Simulate tab A writing 'true' by dispatching a cross-tab event.
+    window.dispatchEvent(new StorageEvent("storage", { key: "kx", newValue: "true" }));
+
+    expect(controller.visible).toBe(true);
+    const storageEvent = events.find((e) => e.source === "storage");
+    expect(storageEvent?.visible).toBe(true);
+    expect(storageEvent?.previous?.visible).toBe(false);
+    controller.destroy();
+  });
+
+  it("echo detection: storage event matching the last write is dropped", () => {
+    const storage = createLocalStorageSidebarStorage({ key: "ke" });
+    const controller = createSidebar({ storage });
+    const events: SidebarChangeDetail[] = [];
+    controller.on("change", (detail) => events.push(detail));
+
+    controller.show();
+    const before = events.length;
+
+    // Echo — the localStorage event fires with the same value we just wrote.
+    window.dispatchEvent(new StorageEvent("storage", { key: "ke", newValue: "true" }));
+
+    // No new event emitted (the echo was consumed).
+    expect(events.length).toBe(before);
+    controller.destroy();
+  });
+
+  it("storage event newValue:null falls back to `initial`", () => {
+    const storage = createLocalStorageSidebarStorage({ key: "kf" });
+    const controller = createSidebar({ initial: true, storage });
+    const events: SidebarChangeDetail[] = [];
+    controller.on("change", (detail) => events.push(detail));
+
+    // Set visible to true (write 'true' to storage).
+    controller.show();
+    // Clear storage via the adapter — this drops a real `storage` event
+    // in jsdom, but we dispatch the cross-tab event manually for control.
+    const before = events.length;
+    window.dispatchEvent(new StorageEvent("storage", { key: "kf", newValue: null }));
+
+    // The cross-tab clear falls back to `initial: true` and emits
+    // source: 'storage'. visible is already true so no toggle
+    // transition fires, but the fallback path was taken.
+    // Verify by transitioning to false first:
+    controller.hide();
+    const hideAt = events.length;
+    window.dispatchEvent(new StorageEvent("storage", { key: "kf", newValue: null }));
+    expect(controller.visible).toBe(true);
+    const storageEvent = events.slice(hideAt).find((e) => e.source === "storage");
+    expect(storageEvent?.visible).toBe(true);
+    void before;
+    controller.destroy();
+  });
+});
+
+describe("SidebarController + storage — persistKey shortcut", () => {
+  beforeEach(() => {
+    localStorage.clear();
+  });
+
+  it("persistKey builds createLocalStorageSidebarStorage({ key }) internally", () => {
+    localStorage.setItem("app-sidebar", "true");
+    const controller = createSidebar({ persistKey: "app-sidebar" });
+    expect(controller.visible).toBe(true);
+    controller.destroy();
+  });
+
+  it("storage option wins when both persistKey and storage are provided", () => {
+    localStorage.setItem("app-sidebar", "true");
+    localStorage.setItem("memory", "false");
+    const memory = createMemorySidebarStorage(false);
+    const controller = createSidebar({ persistKey: "app-sidebar", storage: memory });
+    // Memory adapter seeded to false; localStorage was 'true' but
+    // explicit storage wins over the persistKey shortcut.
+    expect(controller.visible).toBe(false);
     controller.destroy();
   });
 });

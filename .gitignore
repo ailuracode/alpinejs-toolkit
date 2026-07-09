@@ -4,6 +4,7 @@ dist
 *.log
 coverage
 .pnpm-store
+.vscode
 apps/demo/node_modules
 apps/demo/dist
 apps/demo/.astro

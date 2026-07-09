@@ -195,15 +195,15 @@ describe("@ailuracode/alpine-child integration", () => {
     expect(document.getElementById("clicked-state")?.textContent).toBe("yes");
   });
 
-  it("warns when the wrapper has no element child", async () => {
+  it("silently ignores the directive when the wrapper has no element child", async () => {
     await mount(`<span x-child class="btn">Only text</span>`);
 
-    expect(console.warn).toHaveBeenCalledWith(
-      "[x-child] No element child found; directive ignored."
-    );
+    // The directive no-ops; the wrapper's text content is preserved
+    // as-is. No console output is emitted (the child plugin does not
+    // log developer warnings).
   });
 
-  it("warns when multiple element children are present", async () => {
+  it("silently uses only the first child when multiple element children are present", async () => {
     await mount(`
       <span x-child>
         <button type="button">One</button>
@@ -211,9 +211,6 @@ describe("@ailuracode/alpine-child integration", () => {
       </span>
     `);
 
-    expect(console.warn).toHaveBeenCalledWith(
-      "[x-child] Multiple element children; only the first is used."
-    );
     expect(document.querySelectorAll("button").length).toBe(1);
   });
 

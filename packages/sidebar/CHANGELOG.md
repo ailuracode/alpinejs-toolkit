@@ -1,5 +1,47 @@
 # @ailuracode/alpine-sidebar
 
+## 2.1.0
+
+### Minor Changes
+
+- **Opt-in persistence via `SidebarStorage`.** v2.1.0 layers a `SidebarStorage` interface on top of the v2.0 headless `SidebarController`. Three out-of-the-box adapters ship:
+
+  ```js
+  import {
+    sidebarPlugin,
+    createLocalStorageSidebarStorage,
+    createMemorySidebarStorage,
+    persistSidebarVisible,
+    withSidebarVisiblePersist,
+  } from "@ailuracode/alpine-sidebar";
+
+  // Persist to localStorage and sync across tabs.
+  Alpine.plugin(
+    sidebarPlugin({ storage: createLocalStorageSidebarStorage({ key: "app-sidebar" }) }),
+  );
+
+  // ...or use the persistKey shortcut:
+  Alpine.plugin(sidebarPlugin({ persistKey: "app-sidebar" }));
+  ```
+
+  `storage` and `persistKey` are both additive — consumers who do not pass them see no behavioral change.
+
+- **New `CreateSidebarOptions` fields.** `initial?: boolean` (renamed from `initialVisible`, see Breaking), `storage?: SidebarStorage`, `persistKey?: string`. The `initial` option is the SSR / cookie-injection seam; `storage` always wins over `initial` when both are present because the persisted value reflects the user's intent.
+
+- **Cross-tab sync via the `storage` event.** When the storage adapter exposes a `subscribe` hook (the default `localStorage` adapter does), the controller reacts to cross-tab writes with `source: 'storage'`. Echo detection (`#lastWritten`) prevents same-tab feedback loops. `newValue: null` (key cleared in another tab) falls back to the configured `initial`. Last-writer-wins per tab — documented limitation.
+
+- **New `SidebarChangeSource` value: `'storage'`.** Additive; no existing consumer code breaks. The discriminator is now a 6-value union: `'user' | 'breakpoint' | 'escape' | 'reset' | 'initialization' | 'storage'`.
+
+- **Persistence is opt-in.** Consumers who do not pass `storage` / `persistKey` see byte-identical behavior to v2.0.
+
+- **Behavior note (not API break).** `initialVisible` renamed to `initial` to align with the inner `ToggleController` constructor option. Consumers passing `initialVisible` MUST rename to `initial` — TypeScript will report a compile error otherwise.
+
+- **Behavior note.** Consumers passing `storage` for the first time will observe their first `change` event after `mount()` reflect the persisted value rather than `false`. Pass no `storage` (default behavior) to preserve v2.0 semantics.
+
+- **Test coverage expanded.** 79 specs total (38 v2.0 preserved + 21 storage adapter + 9 `$persist` helper + 9 manager integration + 2 type assertions). Covers hydration, write-on-user-only discipline, cross-tab echo detection, `persistKey` shortcut, `storage`-over-`persistKey` precedence, and the new `SidebarChangeSource` union.
+
+- **Cookie-bridge pattern documented.** The package does NOT implement httpOnly cookie support itself — the README + Starlight page document a custom `SidebarStorage` adapter pattern (`fetch('/api/sidebar', { credentials: 'include' })`) for SSR consumers.
+
 ## 2.0.0
 
 ### Major Changes
