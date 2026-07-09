@@ -30,6 +30,10 @@ function setupOverlayAlpine(): void {
   }
 }
 
+interface MagicWindow {
+  __facade?: OverlayMagicFacade;
+}
+
 describe("overlay $overlay magic", () => {
   beforeAll(() => {
     // No-op — setupOverlayAlpine is invoked per test so the body
@@ -60,7 +64,7 @@ describe("overlay $overlay magic", () => {
     `;
     setupOverlayAlpine();
     await Alpine.nextTick();
-    const facade = (window as unknown as { __facade?: OverlayMagicFacade }).__facade ?? null;
+    const facade = (window as unknown as MagicWindow).__facade ?? null;
     expect(facade).not.toBeNull();
     if (!facade) {
       return;
@@ -80,7 +84,34 @@ describe("overlay $overlay magic", () => {
     `;
     setupOverlayAlpine();
     await Alpine.nextTick();
-    const facade = (window as unknown as { __facade?: OverlayMagicFacade }).__facade ?? null;
+    const facade = (window as unknown as MagicWindow).__facade ?? null;
     expect(facade?.zIndexOf("dialog", "missing")).toBeNull();
+  });
+
+  it("returns the SAME reference as Alpine.store('overlay') (ADR-5 reactive bridge)", async () => {
+    // Alpine wraps the plain-object store in a reactive proxy on
+    // .store(name, value) install. Both `$store.overlay` and
+    // `$overlay` MUST resolve to the same proxy — otherwise Alpine
+    // would re-render one but not the other. Verify the contract.
+    document.body.innerHTML = `
+      <div x-data="{ init() { window.__facade = $overlay; } }"></div>
+    `;
+    setupOverlayAlpine();
+    await Alpine.nextTick();
+    const facade = (window as unknown as MagicWindow).__facade ?? null;
+    const storeRef = Alpine.store("overlay");
+    expect(facade).not.toBeNull();
+    if (!facade) {
+      return;
+    }
+    // Reference equality — `toBe` is strict identity.
+    expect(facade).toBe(storeRef);
+    // Sanity: every expected method is present on the returned
+    // magic reference (so `$overlay.configure(...)` etc. all work).
+    expect(typeof facade.configure).toBe("function");
+    expect(typeof facade.register).toBe("function");
+    expect(typeof facade.unregister).toBe("function");
+    expect(typeof facade.zIndexOf).toBe("function");
+    expect(typeof facade.isOpen).toBe("function");
   });
 });
