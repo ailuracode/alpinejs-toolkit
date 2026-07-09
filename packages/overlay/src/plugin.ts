@@ -20,9 +20,11 @@
  */
 
 import type AlpineType from "alpinejs";
+import { createOverlayMagic } from "./alpine/magic.js";
 import { createOverlayStore } from "./alpine/store.js";
 import { createOverlay, OVERLAY_SINGLETON_KEY } from "./controller.js";
 import type {
+  OverlayAlpine,
   OverlayChangeDetail,
   OverlayMagicFacade,
   OverlayOptions,
@@ -73,7 +75,7 @@ export function overlayPlugin(options: OverlayOptions = {}): AlpineType.PluginCa
       reactiveStore.step = controller.state.step;
     });
 
-    typedAlpine.magic("overlay", () => reactiveStore as unknown as OverlayMagicFacade);
+    typedAlpine.magic("overlay", createOverlayMagic(alpine as unknown as OverlayAlpine));
 
     if (typeof augmented.cleanup === "function") {
       augmented.cleanup(() => {
