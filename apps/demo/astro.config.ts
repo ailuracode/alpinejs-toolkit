@@ -146,6 +146,7 @@ export default defineConfig({
         "@ailuracode/alpine-json-api": pkg("json-api"),
         "@ailuracode/alpine-lang": pkg("lang"),
         "@ailuracode/alpine-notify": pkg("notify"),
+        "@ailuracode/alpine-overlay": pkg("overlay"),
         "@ailuracode/alpine-query": pkg("query"),
         "@ailuracode/alpine-query-adapter-alpine": pkg("query-adapter-alpine"),
         "@ailuracode/alpine-query-adapter-zustand": pkg("query-adapter-zustand"),
