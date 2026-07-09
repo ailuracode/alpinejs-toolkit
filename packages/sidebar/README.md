@@ -317,9 +317,9 @@ sidebarPlugin({
 // + subscribe in your Alpine init or component:
 import { createSidebar } from "@ailuracode/alpine-sidebar";
 
-createSidebar().on("change", ({ current, previous }) => {
-  if (current.visible && previous?.visible === false) lockScroll();
-  if (!current.visible && previous?.visible === true) unlockScroll();
+createSidebar().on("change", ({ visible, previous }) => {
+  if (visible && previous?.visible === false) lockScroll();
+  if (!visible && previous?.visible === true) unlockScroll();
 });
 ```
 
