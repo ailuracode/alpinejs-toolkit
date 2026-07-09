@@ -103,6 +103,7 @@ Start here for most Alpine apps.
 | Package | API | Description |
 |---------|-----|-------------|
 | [`@ailuracode/alpine-geo`](./packages/geo/README.md) | `$store.geo` | Geolocation |
+| [`@ailuracode/alpine-overlay`](./packages/overlay/README.md) | `$store.overlay` | Portal root + z-index slot allocation for dialog, menu, tooltip, command |
 | [`@ailuracode/alpine-attention`](./packages/attention/README.md) | `$wakelock`, `$idle` | Wake Lock and Idle Detection |
 | [`@ailuracode/alpine-notify`](./packages/notify/README.md) | `$notify` | Web Notifications |
 | [`@ailuracode/alpine-calendar`](./packages/calendar/README.md) | `$calendar` | Calendar date logic (date-fns) |
@@ -137,6 +138,7 @@ See [AGENTS.md](./AGENTS.md) for the full checklist when adding a plugin.
 - [Core](./docs/core.md) — plugin registry
 - **Essentials** — [theme](./docs/plugins/theme.md), [media](./docs/plugins/media.md), [scroll](./docs/plugins/scroll.md), [sidebar](./docs/plugins/sidebar.md), [lang](./docs/plugins/lang.md)
 - **Headless UI** — [dialog](./docs/plugins/dialog.md), [menu](./docs/plugins/menu.md), [tooltip](./docs/plugins/tooltip.md), [toast](./docs/plugins/toast.md), [tabs](./docs/plugins/tabs.md), [accordion](./docs/plugins/accordion.md), [command](./docs/plugins/command.md), [carousel](./docs/plugins/carousel.md)
+- **Infrastructure** — [overlay](./docs/plugins/overlay.md) — portal root + z-index allocator shared by dialog, menu, tooltip, command
 - [Query](./docs/query.md) · [Query devtools](./docs/plugins/query-kit.md#devtools)
 - [AGENTS.md](./AGENTS.md) — guide for AI agents and maintainers
 
