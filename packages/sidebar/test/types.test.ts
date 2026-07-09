@@ -77,4 +77,23 @@ describe("@ailuracode/alpine-sidebar type contract", () => {
     const bad: CreateSidebarOptions = { breakpoint: "(min-width: 1024px)" };
     void bad;
   });
+
+  it("SidebarStorage shape: get() boolean|null, set(v: boolean), remove(), subscribe?(listener): Unsubscribe", () => {
+    // The v2.1.0 persistence contract — mirrors ThemeStorage with
+    // `boolean` instead of `ThemePreference`.
+    expectTypeOf<{
+      get(): boolean | null;
+      set(v: boolean): void;
+      remove(): void;
+      subscribe?(listener: (next: boolean | null) => void): import("@ailuracode/alpine-core").Unsubscribe;
+    }>().toMatchTypeOf<import("../src/index").SidebarStorage>();
+  });
+
+  it("CreateSidebarOptions adds initial?: boolean, storage?: SidebarStorage, persistKey?: string (no breaking change)", () => {
+    expectTypeOf<CreateSidebarOptions["initial"]>().toEqualTypeOf<boolean | undefined>();
+    expectTypeOf<CreateSidebarOptions["storage"]>().toEqualTypeOf<
+      import("../src/index").SidebarStorage | undefined
+    >();
+    expectTypeOf<CreateSidebarOptions["persistKey"]>().toEqualTypeOf<string | undefined>();
+  });
 });
