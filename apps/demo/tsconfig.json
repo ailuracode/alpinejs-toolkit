@@ -24,6 +24,7 @@
       "@ailuracode/alpine-json-api": ["../../packages/json-api/src/index.ts"],
       "@ailuracode/alpine-lang": ["../../packages/lang/src/index.ts"],
       "@ailuracode/alpine-notify": ["../../packages/notify/src/index.ts"],
+      "@ailuracode/alpine-overlay": ["../../packages/overlay/src/index.ts"],
       "@ailuracode/alpine-query": ["../../packages/query/src/index.ts"],
       "@ailuracode/alpine-query-adapter-alpine": [
         "../../packages/query-adapter-alpine/src/index.ts"
