@@ -74,12 +74,15 @@ dialog({
     Settings
   </button>
 
-  <template x-teleport="body">
+  <template x-teleport="#overlay-root">
     <div
       x-show="$store.dialog.isOpen('settings')"
-      class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+      :style="{ zIndex: $store.overlay.zIndexOf('dialog', 'settings') }"
+      class="fixed inset-0 flex items-center justify-center p-4"
     >
+      <div class="absolute inset-0 bg-black/50" aria-hidden="true"></div>
       <div
+        class="relative z-10 w-full max-w-md rounded-lg border bg-background p-6 shadow-lg"
         x-bind="$store.dialog.dialogProps('settings')"
         x-init="$store.dialog.bindContainer('settings', $el)"
         @click.stop
@@ -92,6 +95,43 @@ dialog({
   </template>
 </div>
 ```
+
+## Stacking & z-index (overlay)
+
+When you load `@ailuracode/alpine-overlay` alongside dialog, the teleported
+container reads its `z-index` from `$store.overlay` instead of a hardcoded
+utility class:
+
+```html
+<template x-teleport="#overlay-root">
+  <div
+    :style="{ zIndex: $store.overlay.zIndexOf('dialog', 'settings') }"
+    class="fixed inset-0 flex items-center justify-center p-4"
+  >
+    <div class="absolute inset-0 bg-black/50" aria-hidden="true"></div>
+    <div class="relative z-10 …"> … </div>
+  </div>
+</template>
+```
+
+Why this matters: dialog, menu, tooltip, and command all share the same
+portal. When two overlays are open concurrently the overlay store hands
+out staggered z-indices from a single scale — modal A stays under modal
+B without per-template hacks. Register `Alpine.plugin(overlayPlugin())`
+**before** dialog (the portal root is created eagerly on registration, so
+any `x-teleport="#overlay-root"` that evaluates earlier will no-op).
+
+Removal note: drop your old `z-[N]` / `z-50` / `z-60` / `z-[60]` class
+from the dialog wrapper. Programmatic `style.zIndex` has higher
+specificity than any utility class, so the leftover class would
+silently lose — leaving it works visually, but wastes a style rule.
+
+Soft-peer fallback: if you do **not** load overlay, keep the legacy
+`x-teleport="body"` template with a Tailwind z-class. Alpine logs a
+warning when a template references `$store.overlay` that does not
+exist, but pages render correctly. See
+[Overlay → When NOT to use](./overlay.md#when-not-to-use-overlay) for
+the full migration matrix.
 
 ## Accessibility
 

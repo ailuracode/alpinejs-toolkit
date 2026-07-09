@@ -128,13 +128,14 @@ $store.menu.register("account"); // no group — never auto-closed by group logi
     <button @click="$store.menu.toggle('user-menu')" aria-haspopup="menu">Account</button>
   </div>
 
-  <template x-teleport="body">
+  <template x-teleport="#overlay-root">
     <ul
       x-bind="$store.menu.menuProps('user-menu')"
       x-init="$store.menu.bindMenu('user-menu', $el)"
       x-show="$store.menu.isOpen('user-menu')"
+      :style="{ zIndex: $store.overlay.zIndexOf('menu', 'user-menu') }"
       x-anchor.bottom-start.offset.8.fixed="$refs.menuTrigger"
-      class="z-50 min-w-48"
+      class="min-w-48"
     >
     <template x-for="id in ['profile','settings','logout']" :key="id">
       <li>
@@ -149,6 +150,34 @@ $store.menu.register("account"); // no group — never auto-closed by group logi
   </template>
 </div>
 ```
+
+## Stacking & z-index (overlay)
+
+Menus are frequently the **first thing** to z-fight with dialogs and
+tooltips. When you load `@ailuracode/alpine-overlay`, the teleported
+panel reads its `z-index` from `$store.overlay.zIndexOf('menu', id)`
+so concurrent menus (and any modals) share a single scale:
+
+```html
+<template x-teleport="#overlay-root">
+  <ul
+    :style="{ zIndex: $store.overlay.zIndexOf('menu', 'user-menu') }"
+    x-anchor.bottom-start.offset.8.fixed="$refs.menuTrigger"
+    class="min-w-48"
+  >
+    <!-- items -->
+  </ul>
+</template>
+```
+
+Register `Alpine.plugin(overlayPlugin())` **before** menu in your
+entrypoint so the portal root is created synchronously, otherwise
+`x-teleport="#overlay-root"` silently no-ops. Drop the old
+`z-50` / `z-[N]` from the panel — `style.zIndex` wins specificity.
+
+Soft-peer fallback: keep `x-teleport="body"` + the legacy utility
+class if you do not load overlay. See
+[Overlay → When NOT to use](./overlay.md#when-not-to-use-overlay).
 
 ## Accessibility
 
