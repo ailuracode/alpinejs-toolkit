@@ -15,6 +15,20 @@ import assert from "node:assert/strict";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { createLocalStorageAdapter, createMemoryAdapter } from "../src/index";
 
+/**
+ * Builds a synthetic `storage` event with `key` + `newValue` and
+ * dispatches it on `window`. Avoids `new StorageEvent(type, init)`
+ * because some runtimes (and static analyzers like CodeQL) flag
+ * the init object as a "superfluous trailing argument" — the
+ * property setters on a plain `Event` are the supported path.
+ */
+function fireStorage(key: string, newValue: string | null): void {
+  const event = new Event("storage");
+  Object.defineProperty(event, "key", { value: key });
+  Object.defineProperty(event, "newValue", { value: newValue });
+  window.dispatchEvent(event);
+}
+
 describe("createLocalStorageAdapter", () => {
   beforeEach(() => {
     localStorage.clear();
@@ -135,8 +149,7 @@ describe("createLocalStorageAdapter", () => {
       const unsubscribe = storage.subscribe(listener);
       const storageAdds = addSpy.mock.calls.filter(([t]) => t === "storage").length;
       expect(storageAdds).toBe(0);
-      const event = new StorageEvent("storage", { key: "k8", newValue: "true" });
-      window.dispatchEvent(event);
+      fireStorage("k8", "true");
       expect(listener).not.toHaveBeenCalled();
       expect(() => unsubscribe()).not.toThrow();
     } finally {
@@ -153,8 +166,7 @@ describe("createLocalStorageAdapter", () => {
     const listener = vi.fn();
     const unsubscribe = storage.subscribe(listener);
 
-    const event = new StorageEvent("storage", { key: "k9", newValue: "true" });
-    window.dispatchEvent(event);
+    fireStorage("k9", "true");
 
     expect(listener).toHaveBeenCalledWith(true);
     unsubscribe();
@@ -169,8 +181,7 @@ describe("createLocalStorageAdapter", () => {
     const listener = vi.fn();
     const unsubscribe = storage.subscribe(listener);
 
-    const event = new StorageEvent("storage", { key: "k10", newValue: null });
-    window.dispatchEvent(event);
+    fireStorage("k10", null);
 
     expect(listener).toHaveBeenCalledWith(null);
     unsubscribe();
@@ -185,8 +196,7 @@ describe("createLocalStorageAdapter", () => {
     const listener = vi.fn();
     const unsubscribe = storage.subscribe(listener);
 
-    const event = new StorageEvent("storage", { key: "other-key", newValue: "true" });
-    window.dispatchEvent(event);
+    fireStorage("other-key", "true");
 
     expect(listener).not.toHaveBeenCalled();
     unsubscribe();
@@ -201,8 +211,7 @@ describe("createLocalStorageAdapter", () => {
     const listener = vi.fn();
     const unsubscribe = storage.subscribe(listener);
 
-    const event = new StorageEvent("storage", { key: "k12", newValue: "garbage" });
-    window.dispatchEvent(event);
+    fireStorage("k12", "garbage");
 
     expect(listener).not.toHaveBeenCalled();
     unsubscribe();
@@ -218,8 +227,7 @@ describe("createLocalStorageAdapter", () => {
     const unsubscribe = storage.subscribe(listener);
     unsubscribe();
 
-    const event = new StorageEvent("storage", { key: "k13", newValue: "true" });
-    window.dispatchEvent(event);
+    fireStorage("k13", "true");
 
     expect(listener).not.toHaveBeenCalled();
   });

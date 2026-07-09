@@ -14,8 +14,8 @@
  * suite focused.
  */
 
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { ScrollStore } from "@ailuracode/alpine-scroll";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   createLocalStorageSidebarStorage,
   createMemorySidebarStorage,
@@ -26,6 +26,20 @@ import {
 import { setMatchMedia } from "./setup";
 
 const MIN_WIDTH_1024 = "(min-width: 1024px)";
+
+/**
+ * Builds a synthetic `storage` event with `key` + `newValue` and
+ * dispatches it on `window`. Avoids `new StorageEvent(type, init)`
+ * because some runtimes (and static analyzers like CodeQL) flag
+ * the init object as a "superfluous trailing argument" — the
+ * property setters on a plain `Event` are the supported path.
+ */
+function fireStorage(key: string, newValue: string | null): void {
+  const event = new Event("storage");
+  Object.defineProperty(event, "key", { value: key });
+  Object.defineProperty(event, "newValue", { value: newValue });
+  window.dispatchEvent(event);
+}
 
 describe("SidebarController — initial state", () => {
   it("matchesBreakpoint === false before any media-query read", () => {
@@ -513,7 +527,7 @@ describe("SidebarController + storage — cross-tab", () => {
     expect(controller.visible).toBe(false);
 
     // Simulate tab A writing 'true' by dispatching a cross-tab event.
-    window.dispatchEvent(new StorageEvent("storage", { key: "kx", newValue: "true" }));
+    fireStorage("kx", "true");
 
     expect(controller.visible).toBe(true);
     const storageEvent = events.find((e) => e.source === "storage");
@@ -532,7 +546,7 @@ describe("SidebarController + storage — cross-tab", () => {
     const before = events.length;
 
     // Echo — the localStorage event fires with the same value we just wrote.
-    window.dispatchEvent(new StorageEvent("storage", { key: "ke", newValue: "true" }));
+    fireStorage("ke", "true");
 
     // No new event emitted (the echo was consumed).
     expect(events.length).toBe(before);
@@ -550,7 +564,7 @@ describe("SidebarController + storage — cross-tab", () => {
     // Clear storage via the adapter — this drops a real `storage` event
     // in jsdom, but we dispatch the cross-tab event manually for control.
     const before = events.length;
-    window.dispatchEvent(new StorageEvent("storage", { key: "kf", newValue: null }));
+    fireStorage("kf", null);
 
     // The cross-tab clear falls back to `initial: true` and emits
     // source: 'storage'. visible is already true so no toggle
@@ -558,7 +572,7 @@ describe("SidebarController + storage — cross-tab", () => {
     // Verify by transitioning to false first:
     controller.hide();
     const hideAt = events.length;
-    window.dispatchEvent(new StorageEvent("storage", { key: "kf", newValue: null }));
+    fireStorage("kf", null);
     expect(controller.visible).toBe(true);
     const storageEvent = events.slice(hideAt).find((e) => e.source === "storage");
     expect(storageEvent?.visible).toBe(true);
