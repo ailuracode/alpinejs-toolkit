@@ -1,0 +1,127 @@
+---
+import { getPluginNavItem } from "../../plugin-nav";
+import DemoButton from "../astro/DemoButton.astro";
+import DemoSection from "../DemoSection.astro";
+
+const plugin = getPluginNavItem("overlay")!;
+const sectionId = "stack-render";
+---
+
+<DemoSection
+	id={plugin.id}
+	title={plugin.title}
+	api={plugin.api}
+	description={plugin.description}
+>
+	<div class="grid gap-4" x-data>
+		<div>
+			<h3 class="text-sm font-medium mb-2">Live stack</h3>
+			<p class="text-xs text-muted-foreground mb-3">
+				Open count: <strong x-text="$store.overlay.count"></strong> · base z-index:
+				<code x-text="$store.overlay.baseZIndex"></code> · step:
+				<code x-text="$store.overlay.step"></code>
+			</p>
+
+			<ol
+				class="text-xs bg-muted rounded-md p-3 font-mono space-y-1 min-h-12"
+				data-testid="overlay-stack-list"
+			>
+				<template x-if="$store.overlay.stack.length === 0">
+					<li class="text-muted-foreground">(stack empty — no overlays registered)</li>
+				</template>
+				<template x-for="entry in $store.overlay.stack" :key="entry.plugin + ':' + entry.id">
+					<li>
+						<span class="text-muted-foreground">[</span>
+						<span x-text="entry.zIndex"></span>
+						<span class="text-muted-foreground">]</span>
+						<strong x-text="entry.plugin"></strong>
+						<span>:</span>
+						<span x-text="entry.id"></span>
+					</li>
+				</template>
+			</ol>
+		</div>
+
+		<div>
+			<h3 class="text-sm font-medium mb-2">Open three concurrent overlays</h3>
+			<p class="text-xs text-muted-foreground mb-3">
+				Each gets a staggered z-index from a single scale. The most recently opened
+				sits on top — open the dialog last and it covers both the menu and the tooltip.
+			</p>
+
+			<div class="flex flex-wrap gap-2">
+				<DemoButton @click="$store.overlay.register('menu', 'demo-menu')">open menu</DemoButton>
+				<DemoButton @click="$store.overlay.register('tooltip', 'demo-tooltip')">open tooltip</DemoButton>
+				<DemoButton @click="$store.overlay.register('dialog', 'demo-dialog')">open dialog</DemoButton>
+				<DemoButton @click="$store.overlay.unregister('menu', 'demo-menu')">close menu</DemoButton>
+				<DemoButton @click="$store.overlay.unregister('tooltip', 'demo-tooltip')">close tooltip</DemoButton>
+				<DemoButton @click="$store.overlay.unregister('dialog', 'demo-dialog')">close dialog</DemoButton>
+				<DemoButton @click="['menu', 'tooltip', 'dialog'].forEach((p) => ['demo-menu', 'demo-tooltip', 'demo-dialog'].forEach((id) => $store.overlay.unregister(p, id)))">
+					reset
+				</DemoButton>
+			</div>
+		</div>
+
+		<div>
+			<h3 class="text-sm font-medium mb-2">Visible render</h3>
+			<div
+				class="relative h-72 border rounded-md overflow-hidden bg-gradient-to-br from-muted/40 to-background"
+				:id={sectionId}
+			>
+				<template x-teleport={`#${sectionId}`}>
+					<!-- menu: bottom-left, lowest of the three slots -->
+					<div
+						x-show="$store.overlay.isOpen('menu', 'demo-menu')"
+						:style="{ zIndex: $store.overlay.zIndexOf('menu', 'demo-menu') }"
+						class="absolute bottom-4 left-4 w-48 rounded-md border bg-background p-3 shadow-md text-xs"
+					>
+						<header class="font-medium mb-1">menu · demo-menu</header>
+						<p class="text-muted-foreground">click <em>open menu</em> again to keep me alive; <em>reset</em> dismisses.</p>
+					</div>
+				</template>
+
+				<template x-teleport={`#${sectionId}`}>
+					<!-- tooltip: top-right, mid slot -->
+					<div
+						x-show="$store.overlay.isOpen('tooltip', 'demo-tooltip')"
+						:style="{ zIndex: $store.overlay.zIndexOf('tooltip', 'demo-tooltip') }"
+						class="absolute top-4 right-4 rounded-md border bg-foreground text-background px-3 py-1.5 text-xs shadow"
+					>
+						tooltip · demo-tooltip
+					</div>
+				</template>
+
+				<template x-teleport={`#${sectionId}`}>
+					<!-- dialog: centered, highest slot; backdrop first (no z-index), panel sibling with relative z-10 -->
+					<div
+						x-show="$store.overlay.isOpen('dialog', 'demo-dialog')"
+						:style="{ zIndex: $store.overlay.zIndexOf('dialog', 'demo-dialog') }"
+						class="absolute inset-0 flex items-center justify-center"
+					>
+						<div class="absolute inset-0 bg-black/40" aria-hidden="true"></div>
+						<div class="relative z-10 w-64 rounded-lg border bg-background p-4 shadow-xl text-xs">
+							<header class="font-medium mb-1">dialog · demo-dialog</header>
+							<p class="text-muted-foreground">highest z-index — opens last sits on top.</p>
+						</div>
+					</div>
+				</template>
+
+				<p class="absolute inset-0 flex items-center justify-center text-xs text-muted-foreground pointer-events-none">
+					(empty preview area)
+				</p>
+			</div>
+		</div>
+
+		<div>
+			<h3 class="text-sm font-medium mb-2">Notes</h3>
+			<ul class="text-xs text-muted-foreground list-disc pl-5 space-y-1">
+				<li>Slots are <strong>burned</strong> on close — re-opening uses the same z-index, never reuses a lower one. This guarantees stacking order matches allocation order.</li>
+				<li>The dialog backdrop has no explicit z-index — it relies on DOM order to stay <em>below</em> the panel, which uses <code>relative z-10</code>.</li>
+				<li>Source plugins (dialog, menu, tooltip, command) do <strong>not</strong> import <code>alpine-overlay</code>. They remain headless.</li>
+				<li>SSR safe — register, unregister, and zIndexOf all run under Node when <code>document</code> is absent.</li>
+			</ul>
+		</div>
+	</div>
+
+	<p class="text-xs text-muted-foreground mt-6">Package: <code>{plugin.package}</code></p>
+</DemoSection>

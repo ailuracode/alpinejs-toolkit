@@ -228,11 +228,21 @@ export const PLUGIN_NAV_GROUPS: PluginNavGroup[] = [
     label: "Data & APIs",
     items: [
       {
+        id: "overlay",
+        title: "Overlay",
+        package: "@ailuracode/alpine-overlay",
+        api: "$store.overlay · $overlay",
+        kind: "store",
+        tier: "advanced",
+        description:
+          "Shared portal root + z-index slot allocation that keeps dialog, menu, tooltip, and command stacked correctly without per-template Tailwind classes.",
+      },
+      {
         id: "geo",
         title: "Geo",
         package: "@ailuracode/alpine-geo",
         api: "$store.geo",
-        kind: "store",
+        kind: "advanced",
         tier: "advanced",
         description:
           "Geolocation coordinates, accuracy, and permission state with watch/start/stop actions.",
