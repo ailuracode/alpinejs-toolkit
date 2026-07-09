@@ -21,14 +21,14 @@
 
 // --- Media query helpers -----------------------------------------------
 export { createMediaQueryListener } from "./media/match-media.js";
+export type { PortalRootOptions } from "./portal/index.js";
+// --- Portal helpers ----------------------------------------------------
+export { createPortalRoot } from "./portal/index.js";
 // --- Storage adapters --------------------------------------------------
 export {
   createLocalStorageAdapter,
   createMemoryAdapter,
 } from "./storage/index.js";
-// --- Portal helpers ----------------------------------------------------
-export { createPortalRoot } from "./portal/index.js";
-export type { PortalRootOptions } from "./portal/index.js";
 // --- Public types -------------------------------------------------------
 export type {
   LocalStorageAdapterOptions,

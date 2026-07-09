@@ -25,12 +25,7 @@
 import { OverlayError } from "./error.js";
 import type { OverlayEvents } from "./events.js";
 import { resolveOrCreatePortalRoot, safeDocument } from "./internal/portal.js";
-import {
-  createSlotState,
-  nextSlot,
-  releaseSlot,
-  type SlotState,
-} from "./internal/z-index.js";
+import { createSlotState, nextSlot, releaseSlot, type SlotState } from "./internal/z-index.js";
 import { normalizeOverlayOptions } from "./options.js";
 import type {
   OverlayChangeDetail,

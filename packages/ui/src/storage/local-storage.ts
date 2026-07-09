@@ -23,7 +23,11 @@
  * without breaking their public adapter contract.
  */
 
-import type { LocalStorageAdapterOptions, SubscribableStorageAdapter, Unsubscribe } from "../types.js";
+import type {
+  LocalStorageAdapterOptions,
+  SubscribableStorageAdapter,
+  Unsubscribe,
+} from "../types.js";
 
 /** Returns `window` if available, `null` under SSR. */
 function safeWindow(): Window | null {

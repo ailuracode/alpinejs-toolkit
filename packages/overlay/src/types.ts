@@ -96,11 +96,19 @@ export interface OverlayEvents extends Record<string, unknown> {
 export type OverlayChangeListener = (detail: OverlayChangeDetail) => void;
 
 /**
- * Reactive shape installed at `$store.overlay`. Mirrors
- * {@link OverlayState} plus the imperative surface that templates
- * call into.
+ * Reactive shape installed at `$store.overlay`. The runtime
+ * treats every field as writable so Alpine's reactive proxy can
+ * push controller transitions into the store; the `readonly`
+ * annotations on {@link OverlayState} describe the public
+ * contract, not the proxy's setters.
  */
-export interface OverlayStore extends OverlayState {
+export interface OverlayStore
+  extends Omit<OverlayState, "stack" | "root" | "count" | "baseZIndex" | "step"> {
+  stack: OverlayStackEntry[];
+  root: HTMLElement | null;
+  count: number;
+  baseZIndex: number;
+  step: number;
   configure(options: OverlayOptions): void;
   /** Allocate a slot. Idempotent — repeat calls return the same `zIndex`. */
   register(plugin: string, id: string): number;

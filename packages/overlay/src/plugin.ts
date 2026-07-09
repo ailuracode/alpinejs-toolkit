@@ -20,29 +20,29 @@
  */
 
 import type AlpineType from "alpinejs";
-import { createOverlay, OVERLAY_SINGLETON_KEY } from "./controller.js";
 import { createOverlayStore } from "./alpine/store.js";
+import { createOverlay, OVERLAY_SINGLETON_KEY } from "./controller.js";
 import type {
   OverlayChangeDetail,
   OverlayMagicFacade,
   OverlayOptions,
+  OverlayStackEntry,
   OverlayStore,
 } from "./types.js";
 
 /** Cleans up an installed overlay plugin — primarily for tests. */
 export const OVERLAY_PLUGIN_INSTANCE_KEY = `${OVERLAY_SINGLETON_KEY}/plugin/instance`;
 
-/**
- * Mutable mirror of {@link OverlayStore} used by the plugin to
- * push controller transitions into the reactive proxy Alpine
- * installs at `$store.overlay`. The runtime treats these as
- * writable; the readonly annotations are a public-API contract
- * only.
- */
-type MutableOverlayStore = { -readonly [K in keyof OverlayStore]: OverlayStore[K] };
-
 interface AlpineAugmented {
   cleanup?(callback: () => void): void;
+}
+
+interface AlpineInstall {
+  store: {
+    (name: string, value: OverlayStore): void;
+    (name: "overlay"): OverlayStore;
+  };
+  magic: (name: string, factory: () => OverlayMagicFacade) => void;
 }
 
 /**
@@ -53,31 +53,27 @@ interface AlpineAugmented {
 export function overlayPlugin(options: OverlayOptions = {}): AlpineType.PluginCallback {
   return function registerOverlay(alpine: AlpineType.Alpine): void {
     const augmented = alpine as AlpineType.Alpine & AlpineAugmented;
+    const typedAlpine = alpine as unknown as AlpineInstall;
     const controller = createOverlay(options);
     const store = createOverlayStore(controller);
 
     // Install the plain-object store. Alpine wraps it in a
     // reactive proxy and returns the proxy when we re-fetch.
-    (alpine as unknown as { store: (n: string, v: OverlayStore) => void }).store(
-      "overlay",
-      store
-    );
+    typedAlpine.store("overlay", store);
 
-    const reactiveStore = (alpine as unknown as {
-      store: (n: "overlay") => OverlayStore;
-    }).store("overlay") as unknown as MutableOverlayStore;
+    const reactiveStore = typedAlpine.store("overlay");
 
     const unsubscribe = controller.on("change", (detail: OverlayChangeDetail) => {
-      reactiveStore.stack = detail.stack;
+      // The reactive proxy permits writes through the plain
+      // fields; the plugin-side listener copies the snapshot.
+      reactiveStore.stack = detail.stack as OverlayStackEntry[];
       reactiveStore.count = detail.stack.length;
       reactiveStore.root = controller.state.root;
       reactiveStore.baseZIndex = controller.state.baseZIndex;
       reactiveStore.step = controller.state.step;
     });
 
-    (alpine as unknown as {
-      magic: (n: string, factory: () => OverlayMagicFacade) => void;
-    }).magic("overlay", () => reactiveStore as unknown as OverlayMagicFacade);
+    typedAlpine.magic("overlay", () => reactiveStore as unknown as OverlayMagicFacade);
 
     if (typeof augmented.cleanup === "function") {
       augmented.cleanup(() => {

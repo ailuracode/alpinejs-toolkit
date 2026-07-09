@@ -2,9 +2,11 @@
  * Alpine adapter for the overlay controller.
  *
  * `createOverlayStore` returns the plain-object shape that Alpine
- * installs at `$store.overlay`. Every method delegates to the
- * controller — the store is intentionally a thin wrapper so there
- * is exactly one source of truth for the stack.
+ * installs at `$store.overlay`. The reactive state fields are
+ * kept on the store itself so the plugin's `change` listener can
+ * write them through Alpine's reactive proxy. Method bodies
+ * delegate to the controller — there is no shadow state in this
+ * module.
  *
  * The returned object is intentionally NOT frozen — Alpine wraps
  * it in a reactive proxy on installation and we want the proxy to
@@ -17,31 +19,26 @@ import type { OverlayController } from "../controller.js";
 import type {
   OverlayChangeListener,
   OverlayOptions,
+  OverlayStackEntry,
   OverlayStore,
 } from "../types.js";
 
 /**
  * Returns the {@link OverlayStore} that backs `$store.overlay`.
  * Method bodies delegate to the controller — there is no shadow
- * state in this module.
+ * state in this module. The reactive fields (`stack`, `count`,
+ * `root`, `baseZIndex`, `step`) start seeded from the controller's
+ * initial state and are updated in place by the plugin's
+ * `change` listener.
  */
 export function createOverlayStore(controller: OverlayController): OverlayStore {
-  return {
-    get stack(): readonly import("../types.js").OverlayStackEntry[] {
-      return controller.state.stack;
-    },
-    get count(): number {
-      return controller.state.count;
-    },
-    get root(): HTMLElement | null {
-      return controller.state.root;
-    },
-    get baseZIndex(): number {
-      return controller.state.baseZIndex;
-    },
-    get step(): number {
-      return controller.state.step;
-    },
+  const initial = controller.state;
+  const store: OverlayStore = {
+    stack: [...initial.stack] as OverlayStackEntry[],
+    count: initial.count,
+    root: initial.root,
+    baseZIndex: initial.baseZIndex,
+    step: initial.step,
 
     configure(options: OverlayOptions): void {
       controller.configure(options);
@@ -67,4 +64,5 @@ export function createOverlayStore(controller: OverlayController): OverlayStore 
       return controller.on(event, listener);
     },
   };
+  return store;
 }

@@ -5,15 +5,16 @@
  * implementation contracts.
  */
 
+export { createOverlayStore } from "./alpine/store.js";
 export {
+  createOverlay,
   OVERLAY_SINGLETON_KEY,
   OverlayController,
-  createOverlay,
 } from "./controller.js";
-export { overlayPlugin } from "./plugin.js";
-export { createOverlayStore } from "./alpine/store.js";
-export { OverlayError, isOverlayErrorCode } from "./error.js";
 export type { OverlayErrorCode } from "./error.js";
+export { isOverlayErrorCode, OverlayError } from "./error.js";
+export { DEFAULT_OVERLAY_OPTIONS, normalizeOverlayOptions } from "./options.js";
+export { overlayPlugin } from "./plugin.js";
 export type {
   OverlayAlpine,
   OverlayChangeDetail,
@@ -26,4 +27,3 @@ export type {
   OverlayState,
   OverlayStore,
 } from "./types.js";
-export { DEFAULT_OVERLAY_OPTIONS, normalizeOverlayOptions } from "./options.js";

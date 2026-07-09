@@ -25,9 +25,7 @@ export const DEFAULT_OVERLAY_OPTIONS = Object.freeze({
  * {@link NormalizedOverlayOptions}. Throws when `baseZIndex` or
  * `step` is negative, non-finite, or — for `step` — zero.
  */
-export function normalizeOverlayOptions(
-  options: OverlayOptions = {}
-): NormalizedOverlayOptions {
+export function normalizeOverlayOptions(options: OverlayOptions = {}): NormalizedOverlayOptions {
   const baseZIndex = options.baseZIndex ?? DEFAULT_BASE_Z_INDEX;
   const step = options.step ?? DEFAULT_STEP;
 
