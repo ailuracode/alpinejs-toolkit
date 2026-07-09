@@ -57,12 +57,14 @@ import { ToggleController } from "@ailuracode/alpine-toggle";
 import type { SidebarEvents } from "./events";
 import { observeBreakpoint } from "./internal/breakpoint-observer";
 import { attachEscapeListener } from "./internal/escape-listener";
+import { createLocalStorageSidebarStorage } from "./internal/storage/local-storage";
 import type {
   CreateSidebarOptions,
   SidebarBreakpointOption,
   SidebarChangeDetail,
   SidebarChangeSource,
   SidebarManager,
+  SidebarStorage,
 } from "./types";
 
 /**
@@ -74,6 +76,22 @@ import type {
  * `clearAllSingletons()`) to reset between cases.
  */
 const SIDEBAR_SINGLETON_KEY = "@ailuracode/alpine-sidebar/default";
+
+/**
+ * Resolves the persistence adapter from `CreateSidebarOptions`:
+ * explicit `storage` wins over the `persistKey` shortcut. Returns
+ * `undefined` when neither is set — the v2.0 default behaviour
+ * (in-memory only, no persistence).
+ */
+function resolveStorage(options: CreateSidebarOptions): SidebarStorage | undefined {
+  if (options.storage) {
+    return options.storage;
+  }
+  if (options.persistKey) {
+    return createLocalStorageSidebarStorage({ key: options.persistKey });
+  }
+  return undefined;
+}
 
 /**
  * Subset of {@link SidebarChangeSource} that the bridge layer maps
@@ -142,6 +160,15 @@ export class SidebarController extends BaseController<SidebarEvents> implements 
   readonly #closeOnOverlayClick: boolean;
   readonly #breakpointOption: SidebarBreakpointOption | undefined;
   readonly #initial: boolean;
+  readonly #storage: SidebarStorage | undefined;
+
+  /**
+   * Tracks the last value we wrote to storage so the cross-tab
+   * `storage` event echoes do not generate feedback loops. Cleared
+   * on consume (when the echoed event arrives) or on `storage.set`
+   * throw. See `#handleCrossTabUpdate` for the consumption logic.
+   */
+  #lastWritten: boolean | undefined = undefined;
 
   /**
    * Snapshot of `matchesBreakpoint` at construction time. `reset()`
@@ -158,6 +185,7 @@ export class SidebarController extends BaseController<SidebarEvents> implements 
     this.#closeOnOverlayClick = options.closeOnOverlayClick !== false;
     this.#breakpointOption = options.breakpoint;
     this.#initial = options.initial ?? false;
+    this.#storage = resolveStorage(options);
 
     this.#toggle = new ToggleController<true, false, undefined, boolean>({
       states: { on: true, off: false },
@@ -285,9 +313,17 @@ export class SidebarController extends BaseController<SidebarEvents> implements 
    *
    * 1. Read the breakpoint query (if configured) and seed
    *    `matchesBreakpoint` from `mql.matches`.
-   * 2. Wire the escape keydown listener (if `closeOnEscape`).
-   * 3. Wire the breakpoint observer (if configured).
-   * 4. Schedule the sidebar `initialization` event on a microtask.
+   * 2. Hydrate `visible` from `storage.get()` (if a storage adapter
+   *    is wired). `setSilently` so the queued init microtask
+   *    preserves the hydrated value instead of resetting to
+   *    `initial`. Storage always wins over `initial` when both
+   *    are present.
+   * 3. Wire the escape keydown listener (if `closeOnEscape`).
+   * 4. Wire the breakpoint observer (if configured).
+   * 5. Wire the cross-tab `storage.subscribe?.()` listener (if the
+   *    adapter supports it). Echo detection against `#lastWritten`
+   *    prevents same-tab feedback loops.
+   * 6. Schedule the sidebar `initialization` event on a microtask.
    *    The toggle's own init microtask runs too but its `change`
    *    listener is attached from the constructor — the toggle's
    *    `source: 'initialization'` is dropped in the bridge, so the
@@ -301,6 +337,8 @@ export class SidebarController extends BaseController<SidebarEvents> implements 
         this.#initialMatchesBreakpoint = initialMedia.matches;
       }
     }
+
+    this.#hydrateFromStorage();
 
     if (this.#closeOnEscape) {
       const cleanup = attachEscapeListener((event) => {
@@ -342,6 +380,13 @@ export class SidebarController extends BaseController<SidebarEvents> implements 
       this.registerCleanup(cleanup);
     }
 
+    if (this.#storage?.subscribe) {
+      const cleanup = this.#storage.subscribe((next) => this.#handleCrossTabUpdate(next));
+      if (cleanup) {
+        this.registerCleanup(cleanup);
+      }
+    }
+
     queueMicrotask(() => {
       if (this.isDestroyed) {
         return;
@@ -363,7 +408,8 @@ export class SidebarController extends BaseController<SidebarEvents> implements 
    * its own init event with the full shape.
    *
    * `pendingSource` overrides the source for escape / breakpoint /
-   * reset paths so they surface correctly instead of as `user`.
+   * reset / cross-tab paths so they surface correctly instead of
+   * as `user`.
    */
   #onToggleChange = (detail: ToggleChangeDetail<true, false, undefined>): void => {
     if (detail.source === "initialization") {
@@ -371,8 +417,10 @@ export class SidebarController extends BaseController<SidebarEvents> implements 
       // from `#init()` with the correct shape.
       return;
     }
-    this.#pendingSource = this.#pendingSource ?? this.#mapToggleSource(detail.source);
+    const source = this.#pendingSource ?? this.#mapToggleSource(detail.source);
+    this.#pendingSource = source;
     this.#emitChange();
+    this.#writeStorageOnUserChange(source);
   };
 
   /**
@@ -384,6 +432,87 @@ export class SidebarController extends BaseController<SidebarEvents> implements 
    */
   #mapToggleSource(toggleSource: MappedSidebarChangeSource): MappedSidebarChangeSource {
     return toggleSource;
+  }
+
+  // ── Persistence helpers ────────────────────────────────────────
+
+  /**
+   * Hydrates the inner toggle from `storage.get()` BEFORE the
+   * initialization microtask. Uses `setSilently` so the queued
+   * init event preserves the hydrated value. Storage always wins
+   * over the constructor `initial` because the persisted value
+   * reflects the user's intent.
+   */
+  #hydrateFromStorage(): void {
+    if (!this.#storage) {
+      return;
+    }
+    const persisted = this.#storage.get();
+    if (persisted !== null && persisted !== this.#toggle.value) {
+      this.#toggle.setSilently(persisted);
+    }
+  }
+
+  /**
+   * Persists the current `visible` to storage after every
+   * `source: 'user'` transition. Wraps the write in try/catch so
+   * Safari private mode / quota errors degrade silently. Tracks
+   * `#lastWritten` so the cross-tab `storage` event echoes do not
+   * generate feedback loops — cleared on throw so a stale marker
+   * does not block a later legitimate cross-tab event.
+   */
+  #writeStorageOnUserChange(source: SidebarChangeSource): void {
+    if (!this.#storage) {
+      return;
+    }
+    // Only user-initiated transitions persist. Breakpoint, escape,
+    // reset, initialization, and storage (cross-tab) do NOT write.
+    if (source !== "user") {
+      return;
+    }
+    const visible = this.#toggle.value;
+    try {
+      this.#storage.set(visible);
+      this.#lastWritten = visible;
+    } catch (error) {
+      this.#lastWritten = undefined;
+      console.warn("[alpine-sidebar] storage.set threw:", error);
+    }
+  }
+
+  /**
+   * Reacts to a cross-tab `storage` event. Echo detection: if the
+   * incoming value matches `#lastWritten`, suppress and bail
+   * (consume the marker). When the incoming value is `null`
+   * (another tab removed the key), fall back to `#initial` and
+   * emit `change` with `source: 'storage'`.
+   */
+  #handleCrossTabUpdate(next: boolean | null): void {
+    if (this.isDestroyed) {
+      return;
+    }
+    if (this.#lastWritten !== undefined && this.#lastWritten === next) {
+      this.#lastWritten = undefined;
+      return;
+    }
+    if (next === null) {
+      // Fall back to the constructor `initial` and emit so
+      // consumers can observe the cross-tab clear.
+      if (this.#toggle.value !== this.#initial) {
+        this.#pendingSource = "storage";
+        this.#toggle.set(this.#initial);
+        this.#pendingSource = null;
+      }
+      return;
+    }
+    if (this.#toggle.value === next) {
+      return;
+    }
+    // Translate the upcoming toggle `'user'` emit into
+    // `source: 'storage'` via the pending-source flag.
+    this.#pendingSource = "storage";
+    this.#toggle.set(next);
+    this.#pendingSource = null;
   }
 
   // ── Emitter ────────────────────────────────────────────────────
