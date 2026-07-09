@@ -50,11 +50,12 @@ const plugin = getPluginNavItem("command")!;
 			<DemoButton @click="$store.command.open()">Open command palette</DemoButton>
 		</div>
 
-		<template x-teleport="body">
+		<template x-teleport="#overlay-root">
 			<div
 				x-show="$store.command.isOpen"
 				x-transition
-				class="fixed inset-0 z-[60] flex items-start justify-center p-6 pt-[12vh]"
+				class="fixed inset-0 flex items-start justify-center p-6 pt-[12vh]"
+				:style="{ zIndex: $store.overlay.zIndexOf('command') ?? 1000 }"
 			>
 				<div class="absolute inset-0 bg-black/50" aria-hidden="true" @click="$store.command.close()"></div>
 				<div
