@@ -57,19 +57,48 @@ npm install @alpinejs/anchor
     Help
   </button>
 
-  <template x-teleport="body">
+  <template x-teleport="#overlay-root">
     <div
       id="help-tooltip"
       x-show="$store.tooltip.isOpen('help')"
+      :style="{ zIndex: $store.overlay.zIndexOf('tooltip', 'help') }"
       x-anchor.top.fixed.offset.8="$refs.helpAnchor"
       role="tooltip"
-      class="z-50"
+      class="rounded-md border bg-background px-2 py-1 text-sm shadow"
     >
       Tooltip content
     </div>
   </template>
 </div>
 ```
+
+## Stacking & z-index (overlay)
+
+Tooltips frequently race each other on hover, and they routinely
+collide with dropdowns and modals. When you load
+`@ailuracode/alpine-overlay`, the teleported arrow reads its
+`z-index` from the same scale dialog and menu use:
+
+```html
+<template x-teleport="#overlay-root">
+  <div
+    role="tooltip"
+    :style="{ zIndex: $store.overlay.zIndexOf('tooltip', 'help') }"
+    x-anchor.top.fixed.offset.8="$refs.helpAnchor"
+  >
+    <!-- tooltip body -->
+  </div>
+</template>
+```
+
+The first tooltip to open gets the base slot (default `1000`), the
+next gets `1010`, etc. — so two tooltips open at once no longer stack
+in DOM order (which can flip arbitrarily when anchors change).
+
+Register `Alpine.plugin(overlayPlugin())` **before** tooltip in your
+entrypoint. Drop the old `z-50` / `z-[N]` class. Soft-peer fallback:
+keep `x-teleport="body"` + your utility class if overlay is not
+loaded. See [Overlay → When NOT to use](./overlay.md#when-not-to-use-overlay).
 
 ## SSR
 
