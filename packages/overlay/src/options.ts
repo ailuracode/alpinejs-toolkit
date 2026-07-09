@@ -18,7 +18,7 @@ export const DEFAULT_STEP = 10;
 export const DEFAULT_OVERLAY_OPTIONS = Object.freeze({
   baseZIndex: DEFAULT_BASE_Z_INDEX,
   step: DEFAULT_STEP,
-}) as const;
+});
 
 /**
  * Resolves {@link OverlayOptions} into a fully-populated

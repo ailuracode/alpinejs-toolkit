@@ -32,15 +32,20 @@
       "types": "./dist/global.d.ts"
     }
   },
+  "dependencies": {
+    "@ailuracode/alpine-ui": "workspace:*"
+  },
   "peerDependencies": {
     "alpinejs": "^3.0.0",
-    "@types/alpinejs": "^3.13.11",
-    "@ailuracode/alpine-ui": "^0.1.0"
+    "@types/alpinejs": "^3.13.11"
   },
   "peerDependenciesMeta": {
     "@types/alpinejs": {
       "optional": true
     }
+  },
+  "devDependencies": {
+    "@ailuracode/alpine-ui": "workspace:*"
   },
   "scripts": {
     "build": "tsup src/index.ts --format esm --dts --clean --out-dir dist && cp src/global.d.ts dist/global.d.ts",

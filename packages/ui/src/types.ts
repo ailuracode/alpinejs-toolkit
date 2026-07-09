@@ -94,7 +94,7 @@ export type SubscribableStorageAdapter<Value> = StorageAdapter<Value> & {
 };
 
 /**
- * Re-exported so consumers can grab the `Unsubscribe` helper from
- * the same module path as the adapter contract.
+ * The `Unsubscribe` type is re-exported implicitly via the top of
+ * this file (`export type Unsubscribe = ...`). No additional
+ * re-export is needed here.
  */
-export type { Unsubscribe };
