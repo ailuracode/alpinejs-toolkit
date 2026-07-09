@@ -15,6 +15,7 @@
  */
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import type { ScrollStore } from "@ailuracode/alpine-scroll";
 import {
   createLocalStorageSidebarStorage,
   createMemorySidebarStorage,
@@ -586,6 +587,259 @@ describe("SidebarController + storage — persistKey shortcut", () => {
     // Memory adapter seeded to false; localStorage was 'true' but
     // explicit storage wins over the persistKey shortcut.
     expect(controller.visible).toBe(false);
+    controller.destroy();
+  });
+});
+
+describe("SidebarController — scroll option (body lock via @ailuracode/alpine-scroll)", () => {
+  function makeScrollSpy(): {
+    scroll: ScrollStore;
+    locks: string[];
+    unlocks: string[];
+    unlocksAll: number;
+  } {
+    const locks: string[] = [];
+    const unlocks: string[] = [];
+    let unlocksAll = 0;
+    let counter = 0;
+    // The sidebar only calls `lock` / `unlock` / `unlockAll` — the
+    // mock implements just those three. Cast through `unknown` so the
+    // unused `ScrollStore` fields do not require a full stub.
+    const scroll = {
+      lock: vi.fn((reason?: string) => {
+        counter += 1;
+        const handle = `h${counter}`;
+        locks.push(reason ?? "");
+        return handle;
+      }),
+      unlock: vi.fn((handle: string) => {
+        unlocks.push(handle);
+      }),
+      unlockAll: vi.fn(() => {
+        unlocksAll += 1;
+      }),
+    };
+    return {
+      scroll: scroll as unknown as ScrollStore,
+      locks,
+      unlocks,
+      get unlocksAll() {
+        return unlocksAll;
+      },
+    };
+  }
+
+  it("user-driven show() calls scroll.lock('sidebar') and stores the handle", () => {
+    const spy = makeScrollSpy();
+    const controller = createSidebar({ scroll: spy.scroll });
+    controller.show();
+    expect(spy.locks).toEqual(["sidebar"]);
+    expect(spy.unlocks).toEqual([]);
+    controller.destroy();
+  });
+
+  it("user-driven hide() calls scroll.unlock(handle) with the matching handle", () => {
+    const spy = makeScrollSpy();
+    const controller = createSidebar({ scroll: spy.scroll });
+    controller.show();
+    controller.hide();
+    expect(spy.unlocks).toEqual(["h1"]);
+    controller.destroy();
+  });
+
+  it("duplicate show() does NOT acquire a second lock", () => {
+    const spy = makeScrollSpy();
+    const controller = createSidebar({ scroll: spy.scroll });
+    controller.show();
+    controller.show();
+    expect(spy.locks).toEqual(["sidebar"]);
+    controller.destroy();
+  });
+
+  it("hide() without a held lock is a no-op (does NOT throw)", () => {
+    const spy = makeScrollSpy();
+    const controller = createSidebar({ scroll: spy.scroll });
+    expect(() => controller.hide()).not.toThrow();
+    expect(spy.unlocks).toEqual([]);
+    controller.destroy();
+  });
+
+  it("toggle() acquires on hidden→visible and releases on visible→hidden", () => {
+    const spy = makeScrollSpy();
+    const controller = createSidebar({ scroll: spy.scroll });
+    controller.toggle(); // hidden → visible
+    expect(spy.locks).toEqual(["sidebar"]);
+    controller.toggle(); // visible → hidden
+    expect(spy.unlocks).toEqual(["h1"]);
+    controller.destroy();
+  });
+
+  it("Escape hide does NOT release the lock (only user source triggers release)", () => {
+    const spy = makeScrollSpy();
+    const controller = createSidebar({
+      closeOnEscape: true,
+      scroll: spy.scroll,
+    });
+    controller.show();
+    expect(spy.locks).toEqual(["sidebar"]);
+    window.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }));
+    expect(spy.unlocks).toEqual([]);
+    controller.destroy();
+  });
+
+  it("breakpoint-driven hide does NOT release the lock", () => {
+    const spy = makeScrollSpy();
+    setMatchMedia(MIN_WIDTH_1024, true);
+    const controller = createSidebar({
+      breakpoint: { query: MIN_WIDTH_1024, onMismatch: "hide" },
+      scroll: spy.scroll,
+    });
+    controller.show();
+    expect(spy.locks).toEqual(["sidebar"]);
+    setMatchMedia(MIN_WIDTH_1024, false);
+    expect(spy.unlocks).toEqual([]);
+    controller.destroy();
+  });
+
+  it("destroy() releases a held lock so the page does not stay locked", () => {
+    const spy = makeScrollSpy();
+    const controller = createSidebar({ scroll: spy.scroll });
+    controller.show();
+    controller.destroy();
+    expect(spy.unlocks).toEqual(["h1"]);
+  });
+
+  it("destroy() without an active lock is a no-op for unlock", () => {
+    const spy = makeScrollSpy();
+    const controller = createSidebar({ scroll: spy.scroll });
+    controller.destroy();
+    expect(spy.unlocks).toEqual([]);
+  });
+
+  it("destroy() is idempotent — second call does not invoke unlock again", () => {
+    const spy = makeScrollSpy();
+    const controller = createSidebar({ scroll: spy.scroll });
+    controller.show();
+    controller.destroy();
+    controller.destroy();
+    expect(spy.unlocks).toEqual(["h1"]);
+  });
+
+  it("no scroll option means no lock side effects", () => {
+    const controller = createSidebar();
+    expect(() => {
+      controller.show();
+      controller.hide();
+    }).not.toThrow();
+    controller.destroy();
+  });
+});
+
+describe("SidebarController — onVisibilityChange option", () => {
+  it("fires synchronously after every show() / hide() with the resolved visible value", () => {
+    const calls: Array<{ visible: boolean; source: string }> = [];
+    const controller = createSidebar({
+      onVisibilityChange: (visible, source) => {
+        calls.push({ visible, source });
+      },
+    });
+    controller.show();
+    controller.hide();
+    expect(calls).toEqual([
+      { visible: true, source: "user" },
+      { visible: false, source: "user" },
+    ]);
+    controller.destroy();
+  });
+
+  it("fires on toggle() with the new resolved state", () => {
+    const calls: Array<{ visible: boolean }> = [];
+    const controller = createSidebar({
+      onVisibilityChange: (visible) => {
+        calls.push({ visible });
+      },
+    });
+    controller.toggle(); // hidden → visible
+    expect(calls.at(-1)?.visible).toBe(true);
+    controller.toggle(); // visible → hidden
+    expect(calls.at(-1)?.visible).toBe(false);
+    controller.destroy();
+  });
+
+  it("fires on Escape hide with source: 'escape'", () => {
+    const calls: Array<{ visible: boolean; source: string }> = [];
+    const controller = createSidebar({
+      closeOnEscape: true,
+      onVisibilityChange: (visible, source) => {
+        calls.push({ visible, source });
+      },
+    });
+    controller.show();
+    window.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }));
+    expect(calls.at(-1)).toEqual({ visible: false, source: "escape" });
+    controller.destroy();
+  });
+
+  it("fires on reset() with source: 'reset'", () => {
+    const calls: Array<{ visible: boolean; source: string }> = [];
+    const controller = createSidebar({
+      onVisibilityChange: (visible, source) => {
+        calls.push({ visible, source });
+      },
+    });
+    controller.show();
+    controller.reset();
+    expect(calls.at(-1)).toEqual({ visible: false, source: "reset" });
+    controller.destroy();
+  });
+
+  it("fires on initialization microtask with source: 'initialization'", async () => {
+    const calls: Array<{ visible: boolean; source: string }> = [];
+    createSidebar({
+      onVisibilityChange: (visible, source) => {
+        calls.push({ visible, source });
+      },
+    });
+    // Wait one microtask so the initialization emit fires.
+    await Promise.resolve();
+    expect(calls).toEqual([{ visible: false, source: "initialization" }]);
+  });
+
+  it("fires AFTER the change event so consumers see consistent state", () => {
+    const order: string[] = [];
+    const controller = createSidebar({
+      onVisibilityChange: () => {
+        order.push("onVisibilityChange");
+      },
+    });
+    controller.on("change", () => {
+      order.push("change");
+    });
+    controller.show();
+    expect(order).toEqual(["change", "onVisibilityChange"]);
+    controller.destroy();
+  });
+
+  it("does NOT fire after destroy() even when a stale transition is queued", async () => {
+    const calls: unknown[] = [];
+    const controller = createSidebar({
+      onVisibilityChange: (visible, source) => {
+        calls.push({ visible, source });
+      },
+    });
+    controller.destroy();
+    // Subsequent calls must not trigger the callback.
+    controller.show();
+    expect(calls).toEqual([]);
+  });
+
+  it("no onVisibilityChange option means the plugin does not crash on transitions", () => {
+    const controller = createSidebar();
+    expect(() => {
+      controller.show();
+      controller.hide();
+      controller.toggle();
+    }).not.toThrow();
     controller.destroy();
   });
 });

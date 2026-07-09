@@ -1,56 +1,67 @@
-# @ailuracode/alpine-scroll
+# `@ailuracode/alpine-scroll` v1.0.0
 
-Scroll position tracking and reference-counted body scroll lock for Alpine.js.
+Headless scroll controller + Alpine plugin for `@ailuracode/alpinejs-toolkit`.
 
-**[Full documentation →](../../docs/plugins/scroll.md)**
+## What it does
+
+Five concerns under one headless controller:
+
+1. **Position tracking** — `ScrollState` exposes the live snapshot (`x`, `y`, `direction`, `atTop`, `atBottom`, `progress`).
+2. **Body / scroll lock** — handle-based, ordered stack via `lockWithHandle` / `unlock(handle)`. Lock reason flows through `ScrollLockChangeDetail.reason`.
+3. **Section observer** — IntersectionObserver-backed visibility tracker that fires `section` events.
+4. **Navigation** — programmatic scroll with reduced-motion gate.
+5. **Plugin integration** — `scrollPlugin(options)` factory wires the controller into `$store.scroll` and the `$scroll` magic.
 
 ## Install
 
-```bash
-npm install @ailuracode/alpine-scroll alpinejs
+```sh
+pnpm add @ailuracode/alpine-scroll @ailuracode/alpine-core
 ```
 
-## Quick example
+## Quick start
 
-```js
+```ts
 import Alpine from "alpinejs";
-import scroll from "@ailuracode/alpine-scroll";
+import { ScrollPlugin } from "@ailuracode/alpine-scroll";
 
-Alpine.plugin(scroll());
+Alpine.plugin(ScrollPlugin.init({ id: "scroll" }));
 Alpine.start();
 ```
 
 ```html
-<button x-show="$store.scroll.showToTop" @click="$store.scroll.toTop()">Top</button>
+<button x-on:click="$store.scroll.toTop()">Back to top</button>
+<p>Scrolled: <span x-text="Math.round($store.scroll.progress)"></span>%</p>
 ```
 
-Scroll lock uses inline styles — no CSS classes required.
+## Public API
 
-## Exported helpers
+### `ScrollPlugin`
 
-```js
-import {
-  SCROLL_DIRECTIONS,
-  SCROLL_BEHAVIORS,
-  computeScrollDirection,
-  computeScrollMetrics,
-  readScrollSnapshot,
-  SCROLL_LOCK_AXES,
-  scrollOptions,
-} from "@ailuracode/alpine-scroll";
+- `ScrollPlugin.init(options?)` — factory returning a `PluginCallback` for `Alpine.plugin()`.
+- `plugin.register(Alpine)` — idempotent. Double-registration is a no-op.
+- `plugin.dispose()` — tears down listeners and destroys the controller.
+
+### `ScrollController`
+
+Construct directly with `new ScrollController(options?)` for advanced consumers; the plugin auto-mounts.
+
+// Lifecycle
+controller.destroy();
 ```
 
-## API summary
+The controller's `state` getter returns a frozen snapshot — external
+code cannot mutate the live state. See
+`.agents/adr/0002-scroll-bundle-exception.md` for the rationale behind
+shipping a separate headless class.
 
-| | |
-|-|-|
-| **Store** | `$store.scroll` |
-| **State** | `x`, `y`, `direction` (`ScrollDirection`), `progress`, `atTop`, `atBottom`, `locked` |
-| **Getters** | `isLocked`, `showToTop`, `isScrollingDown`, `isScrollingUp` |
-| **Methods** | `isDirection()`, `lock({ axis? })`, `unlock()`, `toggleLock({ axis? })`, `toTop()`, `toBottom()` |
-| **Lock axes** | `y` (default) — vertical only; `both` — vertical + horizontal |
-| **Options** | `scrollOptions({ onLockChange })` |
+## Reduced motion
+
+`prefers-reduced-motion: reduce` is honored by default — `smooth` scrolls degrade to `instant`. Disable with `respectReducedMotion: false`.
+
+## Bundle
+
+See `.agents/adr/0002-scroll-bundle-exception.md` for the measured gzipped size + fallback split plan.
 
 ## License
 
-MIT
+MIT © ailuracode

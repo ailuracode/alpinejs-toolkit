@@ -20,8 +20,8 @@ import {
   queryDevtoolsPlugin,
   default as queryKit,
 } from "@ailuracode/alpine-query-kit";
-import scroll from "@ailuracode/alpine-scroll";
-import { createSidebar, sidebarPlugin } from "@ailuracode/alpine-sidebar";
+import { scrollPlugin } from "@ailuracode/alpine-scroll";
+import { sidebarPlugin } from "@ailuracode/alpine-sidebar";
 import tabs from "@ailuracode/alpine-tabs";
 import { themePlugin } from "@ailuracode/alpine-theme";
 import toast, { toastPositions, toastVariants } from "@ailuracode/alpine-toast";
@@ -57,41 +57,19 @@ const mediaIntervals = [
 ] as const;
 
 function scrollLockHandler(Alpine: AlpineInstance) {
+  let handle: string | null = null;
   return (locked: boolean) => {
-    const scroll = Alpine.store("scroll") as { lock(): void; unlock(): void };
-    if (locked) {
-      scroll.lock();
-    } else {
-      scroll.unlock();
+    const scroll = Alpine.store("scroll") as {
+      lock(reason?: string): string;
+      unlock(handle: string): void;
+    };
+    if (locked && !handle) {
+      handle = scroll.lock("demo-handler");
+    } else if (!locked && handle) {
+      scroll.unlock(handle);
+      handle = null;
     }
   };
-}
-
-/**
- * Subscribe to the sidebar controller's typed `change` event for the
- * `source: 'user'` transitions and translate them into DOM / scrollbar /
- * body scroll-lock side effects. Escape / breakpoint / initialization
- * transitions are intentionally ignored so they flow through naturally
- * without extra side effects. The controller itself is torn down via
- * `Alpine.cleanup` registered by `sidebarPlugin`, so the demo does not
- * need to keep the unsubscribe handle.
- */
-function registerSidebarUserEffects(Alpine: AlpineInstance): void {
-  const scroll = Alpine.store("scroll") as { lock(): void; unlock(): void };
-  createSidebar().on("change", (detail) => {
-    if (detail.source !== "user") {
-      return;
-    }
-    if (detail.visible) {
-      document.documentElement.setAttribute("data-sidebar", "");
-      document.documentElement.style.scrollbarGutter = "stable";
-      scroll.lock();
-    } else {
-      document.documentElement.removeAttribute("data-sidebar");
-      document.documentElement.style.scrollbarGutter = "";
-      scroll.unlock();
-    }
-  });
 }
 
 let pluginsRegistered = false;
@@ -101,35 +79,6 @@ export function registerDemoPlugins(): void {
   if (pluginsRegistered) {
     return;
   }
-
-  registerPlugin(
-    "scroll",
-    definePlugin(["store"], {
-      names: ["scroll"],
-      plugin: scroll(),
-    })
-  );
-
-  registerPlugin(
-    "sidebar",
-    definePlugin(["store", "magic"], {
-      names: { store: ["sidebar"], magic: ["sidebar"] },
-      allowNameCrossKind: true,
-      plugin: (Alpine) => {
-        sidebarPlugin({
-          closeOnEscape: true,
-          breakpoint: {
-            query: "(max-width: 1023px)",
-            onMismatch: "hide",
-          },
-        })(Alpine);
-        // Subscribe DOM / scrollbar / body scroll-lock side effects to
-        // `source: 'user'` transitions via the controller's typed
-        // `change` event.
-        registerSidebarUserEffects(Alpine);
-      },
-    })
-  );
 
   registerPlugin(
     "toast",
@@ -325,7 +274,28 @@ export function registerDemoPlugins(): void {
 
 /** Demo-specific Alpine.data handlers and devtools — run after initPlugins(). */
 export function setupDemoExtensions(Alpine: AlpineInstance): void {
-  Alpine.plugin([togglePlugin(), themePlugin(), mediaPlugin({ intervals: mediaIntervals })]);
+  Alpine.plugin([
+    togglePlugin(),
+    themePlugin(),
+    mediaPlugin({ intervals: mediaIntervals }),
+    scrollPlugin({
+      id: "scroll",
+      respectReducedMotion: true,
+      reserveScrollbarGap: true,
+      target: document.body,
+    }),
+  ]);
+
+  Alpine.plugin(
+    sidebarPlugin({
+      closeOnEscape: true,
+      breakpoint: {
+        query: "(max-width: 1023px)",
+        onMismatch: "hide",
+      },
+      scroll: Alpine.store("scroll"),
+    }),
+  );
 
   const queryDemoStores = registerQueryDemos(Alpine);
   registerQueryAdvancedDemo(Alpine);

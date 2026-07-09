@@ -1,5 +1,24 @@
 # @ailuracode/alpine-scroll
 
+## 1.0.0
+
+### Major Changes
+
+- **BREAKING**: Full v1.0.0 redesign — headless `ScrollController` + `ScrollPlugin` Alpine adapter.
+- **BREAKING**: `$scroll` magic returns the `ScrollController` only (no callable surface, no `.store` / `.observer` / `.lockManager` bundle).
+- **BREAKING**: Removed factory exports: `getScroll`, `createScrollObserver`, `createScrollController`, `createScrollLock`.
+- **BREAKING**: Removed all `x-scroll-*` directives.
+- **BREAKING**: Lock changes emit `controller.on('lock', detail)` (event name renamed from `'lock-change'`).
+- **BREAKING**: Removed the `onLockChange` plugin callback option.
+- New `ScrollController.lockWithHandle(reason: string): string` returns a handle for ordered, ref-counted locking.
+- New `ScrollController.scrollIntoView({ x, y })` overload (absolute coordinates).
+- New section observer (`registerSection` / `unregisterSection` / `activeSection` / `visibleSections`).
+- New navigation surface: `by(delta, reason?)`, `toTop(reason?)`, `toBottom(reason?)`, `toElement(element, options?)`.
+- New `--ailura-scrollbar-gap` compensation on lock (configurable via `reserveScrollbarGap: false`).
+- Reduced-motion gate honors `prefers-reduced-motion` by default.
+
+See `.agents/adr/0002-scroll-bundle-exception.md` for the bundle-size exception.
+
 ## 0.3.1
 
 ### Patch Changes

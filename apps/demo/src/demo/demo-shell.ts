@@ -10,8 +10,22 @@ export type DemoShellData = {
    * Local visual state for the desktop sidebar width. Decoupled from
    * `$store.sidebar` (which only owns visibility). Consumers choose how
    * to render the panel — rail, mini, expanded, etc.
+   *
+   * Only meaningful on desktop — see {@link DemoShellData.effectivelyExpanded}
+   * for the layout-aware view that forces the expanded layout on
+   * mobile / tablet regardless of the persisted preference.
    */
   expanded: boolean;
+  /**
+   * Layout-aware expansion: `true` on every breakpoint where the
+   * sidebar is shown as an overlay (mobile / tablet), or the desktop
+   * `expanded` flag. Components use this for content layout (icon
+   * padding, labels visibility, etc.) — never use `expanded` directly,
+   * else the persisted compact preference leaks into the mobile
+   * overlay and the content renders icon-only inside a full-width
+   * drawer.
+   */
+  readonly effectivelyExpanded: boolean;
 };
 
 export function registerDemoShell(Alpine: AlpineInstance): void {
@@ -24,6 +38,9 @@ export function registerDemoShell(Alpine: AlpineInstance): void {
       exportedUrl: null,
       shared: null,
       expanded: Alpine.$persist(true).as("playground-sidebar-expanded"),
+      get effectivelyExpanded(): boolean {
+        return this.expanded || Alpine.store("media").breakpoint !== "desktop";
+      },
     })
   );
 }

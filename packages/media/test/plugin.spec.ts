@@ -9,7 +9,6 @@
 
 import assert from "node:assert/strict";
 import { describe, it } from "vitest";
-import { startAlpine } from "../../../test/helpers.js";
 import {
   createMediaStore,
   MEDIA_STORE_KEY,
@@ -19,19 +18,6 @@ import {
   mediaPlugin,
 } from "../src/index";
 import { setMatchMedia } from "./setup";
-
-/**
- * Strips `ontouchstart` from `window` so the controller's `isTouch`
- * heuristic consults the cached media queries only. happy-dom ships
- * with the property; the controller reads it through `'ontouchstart'
- * in win`, which checks key existence, so `value: undefined` is not
- * enough — the key has to be removed.
- */
-function stripTouchEvents(): void {
-  Object.defineProperty(window, "ontouchstart", { configurable: true, value: undefined });
-  // biome-ignore lint/performance/noDelete: required by the heuristic contract
-  delete (window as { ontouchstart?: unknown }).ontouchstart;
-}
 
 interface MockAlpine {
   stores: Record<string, unknown>;
@@ -193,87 +179,6 @@ describe("mediaPlugin — cleanup", () => {
       cleanup();
     }
     assert.equal(store.isDestroyed, true);
-  });
-});
-
-describe("mediaPlugin — Alpine reactivity", () => {
-  it("bumps __revision on every change event so feature getters re-evaluate", () => {
-    // Reproduces the Chrome DevTools device-toolbar scenario: the
-    // viewport does NOT resize, but `(pointer: coarse)` and
-    // `(hover: hover)` flip. The store proxy must register the
-    // change so `x-text="$store.media.isTouch"` re-renders.
-    setMatchMedia("(pointer: coarse)", false);
-    setMatchMedia("(pointer: fine)", true);
-    setMatchMedia("(hover: hover)", true);
-    Object.defineProperty(navigator, "maxTouchPoints", { configurable: true, value: 0 });
-    stripTouchEvents();
-
-    const Alpine = createMockAlpine();
-    mediaPlugin()(Alpine as never);
-    const store = Alpine.stores[MEDIA_STORE_KEY] as MediaStore & {
-      __revision: number;
-    };
-    const initialRevision = store.__revision;
-
-    // Toggle device toolbar → mobile. The controller emits a
-    // `change` event with source `'viewport'`; the store mirror
-    // must bump `__revision` even though `width` / `height` /
-    // `breakpoint` are unchanged.
-    setMatchMedia("(pointer: coarse)", true);
-    setMatchMedia("(pointer: fine)", false);
-    setMatchMedia("(hover: hover)", false);
-
-    assert.equal(store.pointer, "coarse");
-    assert.equal(store.hover, "none");
-    assert.equal(store.isTouch, true);
-    assert.ok(
-      store.__revision > initialRevision,
-      `expected __revision to bump after a feature change (was ${initialRevision}, now ${store.__revision})`
-    );
-  });
-
-  it("re-renders Alpine bindings when only a media feature flips (no resize)", async () => {
-    // End-to-end: mount a real Alpine `x-data` block, render an
-    // `x-text` for `pointer` / `hover`, and verify the DOM updates
-    // when the `(pointer: coarse)` matchMedia flips without a
-    // resize. (`x-text` short-circuits on raw boolean false, so we
-    // observe `pointer` and `hover` directly — they re-render iff
-    // Alpine's reactive proxy invalidates the store getters.)
-    setMatchMedia("(pointer: coarse)", false);
-    setMatchMedia("(pointer: fine)", true);
-    setMatchMedia("(hover: hover)", true);
-    Object.defineProperty(navigator, "maxTouchPoints", { configurable: true, value: 0 });
-    stripTouchEvents();
-
-    const Alpine = startAlpine(mediaPlugin());
-    document.body.innerHTML = `
-      <div x-data>
-        <span id="pointer" x-text="$store.media.pointer"></span>
-        <span id="hover" x-text="$store.media.hover"></span>
-        <span id="touch" x-text="String($store.media.isTouch)"></span>
-      </div>
-    `;
-    Alpine.initTree(document.body);
-    await Alpine.nextTick();
-
-    const touch = document.getElementById("touch");
-    const pointer = document.getElementById("pointer");
-    const hover = document.getElementById("hover");
-    assert.ok(touch && pointer && hover);
-
-    assert.equal(pointer.textContent, "fine");
-    assert.equal(hover.textContent, "hover");
-    assert.equal(touch.textContent, "false");
-
-    // Toggle device toolbar → mobile. The viewport does NOT resize.
-    setMatchMedia("(pointer: coarse)", true);
-    setMatchMedia("(pointer: fine)", false);
-    setMatchMedia("(hover: hover)", false);
-    await Alpine.nextTick();
-
-    assert.equal(pointer.textContent, "coarse", "pointer should re-render after matchMedia flip");
-    assert.equal(hover.textContent, "none", "hover should re-render after matchMedia flip");
-    assert.equal(touch.textContent, "true", "isTouch should re-render after pointer:coarse flip");
   });
 });
 

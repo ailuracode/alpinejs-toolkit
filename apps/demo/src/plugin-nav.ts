@@ -48,11 +48,11 @@ export const PLUGIN_NAV_GROUPS: PluginNavGroup[] = [
         id: "scroll",
         title: "Scroll",
         package: "@ailuracode/alpine-scroll",
-        api: "$store.scroll",
+        api: "$store.scroll / $scroll",
         kind: "store",
         tier: "essential",
         description:
-          "Scroll position, direction, progress, and body scroll lock. The sticky header progress bar and sidebar overlay lock both use this store.",
+          "Headless scroll controller — position tracking, section observer, handle-based body lock, and reduced-motion-aware navigation. v1.0.0 ships `ScrollController` + `scrollPlugin(options)` factory; the `$scroll` magic returns the same reactive store proxy as `$store.scroll`.",
       },
       {
         id: "sidebar",

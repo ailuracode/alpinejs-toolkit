@@ -35,10 +35,14 @@
   "peerDependencies": {
     "alpinejs": "^3.0.0",
     "@ailuracode/alpine-core": "^0.1.0",
-    "@ailuracode/alpine-toggle": "^0.3.0"
+    "@ailuracode/alpine-toggle": "^0.3.0",
+    "@ailuracode/alpine-scroll": "^1.0.0"
   },
   "peerDependenciesMeta": {
     "@types/alpinejs": {
+      "optional": true
+    },
+    "@ailuracode/alpine-scroll": {
       "optional": true
     }
   },
@@ -53,6 +57,7 @@
   },
   "devDependencies": {
     "@ailuracode/alpine-core": "workspace:*",
+    "@ailuracode/alpine-scroll": "workspace:*",
     "@ailuracode/alpine-toggle": "workspace:*",
     "@types/alpinejs": "^3.13.10",
     "@types/node": "^26.1.0",

@@ -52,6 +52,7 @@ import {
   generateId,
   safeMatchMedia,
 } from "@ailuracode/alpine-core";
+import type { ScrollStore } from "@ailuracode/alpine-scroll";
 import type { ToggleChangeDetail } from "@ailuracode/alpine-toggle";
 import { ToggleController } from "@ailuracode/alpine-toggle";
 import type { SidebarEvents } from "./events";
@@ -161,6 +162,10 @@ export class SidebarController extends BaseController<SidebarEvents> implements 
   readonly #breakpointOption: SidebarBreakpointOption | undefined;
   readonly #initial: boolean;
   readonly #storage: SidebarStorage | undefined;
+  readonly #scroll: ScrollStore | undefined;
+  readonly #onVisibilityChange:
+    | ((visible: boolean, source: SidebarChangeSource) => void)
+    | undefined;
 
   /**
    * Tracks the last value we wrote to storage so the cross-tab
@@ -169,6 +174,14 @@ export class SidebarController extends BaseController<SidebarEvents> implements 
    * throw. See `#handleCrossTabUpdate` for the consumption logic.
    */
   #lastWritten: boolean | undefined = undefined;
+
+  /**
+   * Opaque handle returned by `scroll.lock("sidebar")` on user-driven
+   * `show()`. Held between the show and the matching hide so the
+   * release call can target the same lock. Cleared after every
+   * `unlock` call (or on `destroy()`).
+   */
+  #lockHandle: string | null = null;
 
   /**
    * Snapshot of `matchesBreakpoint` at construction time. `reset()`
@@ -186,6 +199,8 @@ export class SidebarController extends BaseController<SidebarEvents> implements 
     this.#breakpointOption = options.breakpoint;
     this.#initial = options.initial ?? false;
     this.#storage = resolveStorage(options);
+    this.#scroll = options.scroll;
+    this.#onVisibilityChange = options.onVisibilityChange;
 
     this.#toggle = new ToggleController<true, false, undefined, boolean>({
       states: { on: true, off: false },
@@ -280,14 +295,23 @@ export class SidebarController extends BaseController<SidebarEvents> implements 
 
   // ── Lifecycle ───────────────────────────────────────────────────
 
-  /**
+/**
    * Tears down every side effect. Idempotent — subsequent calls are
    * no-ops. Also releases the singleton slot so the next
-   * `createSidebar()` call builds a fresh controller.
+   * `createSidebar()` call builds a fresh one.
+   *
+   * If a scroll lock was acquired through the `scroll` option,
+   * the held handle is released before `super.destroy()` so the
+   * page does not stay locked when the sidebar goes away without
+   * an explicit hide transition.
    */
   override destroy(): void {
     if (this.isDestroyed) {
       return;
+    }
+    if (this.#lockHandle !== null && this.#scroll) {
+      this.#scroll.unlock(this.#lockHandle);
+      this.#lockHandle = null;
     }
     super.destroy();
     clearSingleton(SIDEBAR_SINGLETON_KEY);
@@ -421,6 +445,7 @@ export class SidebarController extends BaseController<SidebarEvents> implements 
     this.#pendingSource = source;
     this.#emitChange();
     this.#writeStorageOnUserChange(source);
+    this.#updateScrollLock(source, this.#toggle.value);
   };
 
   /**
@@ -481,6 +506,55 @@ export class SidebarController extends BaseController<SidebarEvents> implements 
       // silently absorbed. Echo detection is reset so the next
       // legitimate cross-tab update is not suppressed.
     }
+  }
+
+  /**
+   * Mirrors the user-driven visibility flip onto the scroll lock.
+   * Mirrors the storage-write gate: only `source: 'user'`
+   * transitions trigger lock / unlock. Escape / breakpoint /
+   * reset / storage / initialization keep the lock as it was.
+   *
+   * Idempotent: a duplicate show without a matching hide does NOT
+   * acquire a second lock (the existing `#lockHandle` is reused).
+   * `hide()` without a held handle is a no-op.
+   */
+  #updateScrollLock(source: SidebarChangeSource, visible: boolean): void {
+    if (!this.#scroll || source !== "user") {
+      return;
+    }
+    if (visible) {
+      if (this.#lockHandle !== null) {
+        return;
+      }
+      this.#lockHandle = this.#scroll.lock("sidebar");
+      return;
+    }
+    if (this.#lockHandle === null) {
+      return;
+    }
+    this.#scroll.unlock(this.#lockHandle);
+    this.#lockHandle = null;
+  }
+
+  /**
+   * Fires the consumer-supplied `onVisibilityChange` callback AFTER
+   * the `change` event has been emitted. Synchronous and source-
+   * agnostic: every emit (`user`, `escape`, `breakpoint`, `reset`,
+   * `storage`, `initialization`) triggers the callback with the
+   * freshly resolved `visible` value so consumers can branch on
+   * `source` themselves. Keeps the plugin CSS-framework agnostic
+   * (no DOM markup, no class names) — DOM side effects stay in the
+   * consumer's callback.
+   *
+   * When `destroy()` has run between the toggle bridge and the
+   * emit path, the callback is a no-op so consumers do not see a
+   * phantom transition after teardown.
+   */
+  #runVisibilityChange(source: SidebarChangeSource, visible: boolean): void {
+    if (this.isDestroyed) {
+      return;
+    }
+    this.#onVisibilityChange?.(visible, source);
   }
 
   /**
@@ -566,6 +640,7 @@ export class SidebarController extends BaseController<SidebarEvents> implements 
       this.#pendingSource = null;
       this.#pendingEvent = undefined;
       this.emit("change", enriched);
+      this.#runVisibilityChange(source, visible);
       return;
     }
 
@@ -573,6 +648,7 @@ export class SidebarController extends BaseController<SidebarEvents> implements 
     this.#pendingSource = null;
     this.#pendingEvent = undefined;
     this.emit("change", detail);
+    this.#runVisibilityChange(source, visible);
   }
 
   /**

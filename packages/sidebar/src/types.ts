@@ -3,8 +3,8 @@
  *
  * Per `.agents/instructions/typescript.instructions.md`, every public type
  * lives in a `types.ts` module so consumers can import them without pulling
- * the implementation. The shape IS the contract — renaming a field or
- * changing a variant is a breaking change.
+ * the implementation. The shape IS the contract — changes
+ * to a field name or type are breaking changes.
  *
  * The sidebar package models a single boolean state machine (`visible`)
  * exposed through a headless {@link SidebarController} that composes
@@ -13,6 +13,7 @@
  * `$store.sidebar` and `$sidebar` magic.
  */
 
+import type { ScrollStore } from "@ailuracode/alpine-scroll";
 import type { Alpine, PluginCallback, Unsubscribe } from "@ailuracode/alpine-core";
 import type { Alpine as AlpineBase } from "alpinejs";
 
@@ -137,6 +138,60 @@ export interface CreateSidebarOptions {
    * Ignored when `storage` is also provided — the explicit adapter wins.
    */
   readonly persistKey?: string;
+  /**
+   * Pass the `@ailuracode/alpine-scroll` store (the
+   * `Alpine.store("scroll")` instance) so the sidebar can manage
+   * body scroll lock internally on user-driven visibility
+   * transitions. When provided:
+   *
+   * - `show()` / `toggle()` from user input call
+   *   `scroll.lock("sidebar")` and stash the handle.
+   * - The matching hide calls `scroll.unlock(handle)`.
+   * - `destroy()` releases the held handle so the page does not
+   *   stay locked when the sidebar is torn down without an
+   *   explicit hide.
+   *
+   * Lock / unlock fire ONLY on `source: 'user'` transitions.
+   * Escape, breakpoint, reset, storage, and initialization
+   * changes do NOT touch the lock — the page stays locked until
+   * the user closes the menu (or the sidebar is destroyed).
+   *
+   * `@ailuracode/alpine-scroll` is an optional peer dep — install
+   * it (and call `scrollPlugin(...)` before `sidebarPlugin(...)`)
+   * only when this option is used. The package itself stays
+   * agnostic of any specific scroll primitive; consumers that do
+   * not pass `scroll` see no lock side effects.
+   *
+   * ```ts
+   * Alpine.plugin(scrollPlugin());
+   * Alpine.plugin(
+   *   sidebarPlugin({
+   *     scroll: Alpine.store("scroll"),
+   *   }),
+   * );
+   * ```
+   */
+  readonly scroll?: ScrollStore;
+  /**
+   * Generic visibility side-effect callback. Fires synchronously
+   * after every `change` event emit, regardless of `source`, with
+   * the freshly resolved `visible` value. The callback receives the
+   * full source discriminator so consumers can branch on
+   * `'user' | 'escape' | 'breakpoint' | 'reset' | 'initialization' | 'storage'`.
+   *
+   * Use this for DOM side effects the plugin must stay agnostic of
+   * — toggling a `data-sidebar` attribute, setting
+   * `scrollbar-gutter: stable`, moving focus into the panel,
+   * announcing the new state to assistive tech, etc. The plugin
+   * itself never touches the DOM, mirroring the CSS-framework
+   * agnostic contract shared with `theme` / `scroll`.
+   *
+   * The callback runs AFTER the `change` event has been emitted
+   * and AFTER the internal `scroll` lock transition (if any), so
+   * the controller's internal state and any lock side effects are
+   * already in their target shape by the time the callback runs.
+   */
+  readonly onVisibilityChange?: (visible: boolean, source: SidebarChangeSource) => void;
 }
 
 /** Default `localStorage` key used by {@link createLocalStorageSidebarStorage}. */

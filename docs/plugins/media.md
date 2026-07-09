@@ -191,10 +191,6 @@ The plugin does not throw when `window` is undefined. Width and height default t
 - Breakpoint and media features update via `matchMedia` `change` events (with `addListener` fallback).
 - Width and height update on `resize`, debounced (default 100 ms, configurable via `debounceMs`).
 
-## Reactivity
-
-`$store.media` is a thin reactive mirror over the controller. The store re-assigns `width` / `height` / `breakpoint` on every `change` event and bumps an internal `__revision` counter so Alpine invalidates the feature getters (`pointer`, `hover`, `isTouch`, `prefersColorScheme`, …) even when no viewport field moved. This is what makes the bindings re-render when you toggle the Chrome DevTools device toolbar or change OS preferences without resizing the window.
-
 ## See also
 
 - [Getting started](../getting-started.md)

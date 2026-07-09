@@ -358,7 +358,6 @@ describe("MediaController — media features", () => {
     // in win` checks key existence, not the value, so define with
     // `undefined` and then delete the key.
     Object.defineProperty(window, "ontouchstart", { configurable: true, value: undefined });
-    // biome-ignore lint/performance/noDelete: required by the heuristic contract
     delete (window as { ontouchstart?: unknown }).ontouchstart;
 
     media = createMedia();
