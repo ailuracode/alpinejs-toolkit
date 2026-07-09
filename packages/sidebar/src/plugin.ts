@@ -38,6 +38,19 @@ const SIDEBAR_STORE_KEY = "sidebar";
  * {@link CreateSidebarOptions} to configure {@link SidebarController},
  * or `{}` for the package defaults. See `AGENTS.md` for the
  * integration contract.
+ *
+ * v2.1.0 forward-compatibility: every option in {@link CreateSidebarOptions}
+ * is forwarded as-is to `createSidebar(options)`:
+ *
+ * - `initial` — SSR / cookie-injection seam for the initial visibility.
+ * - `storage` — explicit `SidebarStorage` adapter. Wins over
+ *   `persistKey` when both are present (explicit preference is silent).
+ * - `persistKey` — convenience shortcut that builds
+ *   `createLocalStorageSidebarStorage({ key })` internally.
+ *
+ * Consumers that need `crossTab: false` MUST pass the full
+ * `storage: createLocalStorageSidebarStorage({ key, crossTab: false })`
+ * option — the shortcut always defaults to `crossTab: true`.
  */
 export function sidebarPlugin(options: CreateSidebarOptions = {}): SidebarPluginCallback {
   return function registerSidebar(alpine: Alpine): void {
@@ -47,6 +60,8 @@ export function sidebarPlugin(options: CreateSidebarOptions = {}): SidebarPlugin
     const Alpine = alpine as unknown as SidebarAlpine;
     // `createSidebar()` already mounts; the controller's constructor
     // stays pure (no `window` / `document` / `matchMedia` access).
+    // `createSidebar` resolves `storage` from `options.storage` or
+    // `options.persistKey` (explicit `storage` wins).
     const manager = createSidebar(options);
     const store = createSidebarStore(manager);
     Alpine.store(SIDEBAR_STORE_KEY, store);
