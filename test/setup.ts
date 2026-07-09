@@ -109,6 +109,10 @@ beforeEach(() => {
   document.documentElement.className = "";
   document.documentElement.removeAttribute("data-theme");
   document.documentElement.style.colorScheme = "";
+  // The `media` package tests poke at `window.ontouchstart` to verify the
+  // touch heuristic. Other tests must not leak that property into them.
+  Object.defineProperty(window, "ontouchstart", { configurable: true, value: undefined });
+  Reflect.deleteProperty(window, "ontouchstart");
 });
 
 // Replace `globalThis.fetch` with a stub that rejects synchronously. This prevents
