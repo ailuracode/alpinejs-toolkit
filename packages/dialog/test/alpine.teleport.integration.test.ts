@@ -9,9 +9,10 @@ describe("@ailuracode/alpine-dialog x-teleport integration", () => {
 
   it("closes when the close button is clicked inside a teleported dialog", async () => {
     document.body.innerHTML = `
+      <div id="overlay-root"></div>
       <div x-data x-init="$store.dialog.register('settings')">
         <button id="open" type="button" @click="$store.dialog.open('settings')">Open</button>
-        <template x-teleport="body">
+        <template x-teleport="#overlay-root">
           <div x-show="$store.dialog.isOpen('settings')" class="fixed inset-0 z-50">
             <div
               x-init="$store.dialog.bindContainer('settings', $el)"
