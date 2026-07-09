@@ -12,7 +12,15 @@ import { describe, it } from "vitest";
 import { createTheme } from "../src/index";
 
 function fireStorage(key: string, newValue: string | null): void {
-  window.dispatchEvent(new StorageEvent("storage", { key, newValue }));
+  // Build a plain `storage` `Event` and attach `key` / `newValue`
+  // via property descriptors. Avoids `new StorageEvent(type, init)`
+  // which static analyzers flag as "superfluous trailing argument"
+  // — the init object isn't guaranteed to round-trip on every
+  // runtime, and the listener only needs the two properties.
+  const event = new Event("storage");
+  Object.defineProperty(event, "key", { value: key });
+  Object.defineProperty(event, "newValue", { value: newValue });
+  window.dispatchEvent(event);
 }
 
 describe("cross-tab synchronization", () => {

@@ -19,6 +19,20 @@ import assert from "node:assert/strict";
 import { beforeEach, describe, it, vi } from "vitest";
 import { createLocalStorageSidebarStorage, createMemorySidebarStorage } from "../src/index";
 
+/**
+ * Builds a synthetic `storage` event with `key` + `newValue` and
+ * dispatches it on `window`. Avoids `new StorageEvent(type, init)`
+ * because some runtimes (and static analyzers like CodeQL) flag
+ * the init object as a "superfluous trailing argument" — the
+ * property setters on a plain `Event` are the supported path.
+ */
+function fireStorage(key: string, newValue: string | null): void {
+  const event = new Event("storage");
+  Object.defineProperty(event, "key", { value: key });
+  Object.defineProperty(event, "newValue", { value: newValue });
+  window.dispatchEvent(event);
+}
+
 describe("createLocalStorageSidebarStorage", () => {
   beforeEach(() => {
     // Hermetic teardown — the shared setup does not clear
@@ -104,7 +118,7 @@ describe("createLocalStorageSidebarStorage", () => {
     });
     assert.ok(unsubscribe);
 
-    window.dispatchEvent(new StorageEvent("storage", { key: "k9", newValue: "true" }));
+    fireStorage("k9", "true");
     assert.deepEqual(seen, [true]);
     unsubscribe?.();
   });
@@ -116,7 +130,7 @@ describe("createLocalStorageSidebarStorage", () => {
       seen.push(next);
     });
 
-    window.dispatchEvent(new StorageEvent("storage", { key: "k10", newValue: null }));
+    fireStorage("k10", null);
     assert.deepEqual(seen, [null]);
     unsubscribe?.();
   });
@@ -128,7 +142,7 @@ describe("createLocalStorageSidebarStorage", () => {
       seen.push(next);
     });
 
-    window.dispatchEvent(new StorageEvent("storage", { key: "other", newValue: "true" }));
+    fireStorage("other", "true");
     assert.equal(seen.length, 0);
     unsubscribe?.();
   });
@@ -140,7 +154,7 @@ describe("createLocalStorageSidebarStorage", () => {
       seen.push(next);
     });
 
-    window.dispatchEvent(new StorageEvent("storage", { key: "k12", newValue: "maybe" }));
+    fireStorage("k12", "maybe");
     assert.equal(seen.length, 0);
     unsubscribe?.();
   });
@@ -160,7 +174,7 @@ describe("createLocalStorageSidebarStorage", () => {
       assert.equal(storageAdds, 0);
 
       // Dispatching an event does NOT invoke the listener.
-      window.dispatchEvent(new StorageEvent("storage", { key: "k13", newValue: "true" }));
+      fireStorage("k13", "true");
       assert.equal(seen.length, 0);
       unsubscribe?.();
     } finally {
