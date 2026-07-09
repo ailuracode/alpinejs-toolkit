@@ -108,7 +108,7 @@ controller.on("change", (detail) => {
 interface SidebarChangeDetail {
   readonly visible: boolean;
   readonly matchesBreakpoint: boolean;
-  readonly source: "user" | "breakpoint" | "escape" | "reset" | "initialization";
+  readonly source: "user" | "breakpoint" | "escape" | "reset" | "initialization" | "storage";
   readonly previous: { visible: boolean; matchesBreakpoint: boolean } | null;
   readonly event?: KeyboardEvent | MediaQueryListEvent; // escape | breakpoint only
 }

@@ -48,6 +48,7 @@ export type {
   SidebarBreakpointOption,
   SidebarChangeDetail,
   SidebarChangeSource,
+  LocalStorageSidebarStorageOptions,
   SidebarManager,
   SidebarOnMismatch,
   SidebarPluginCallback,
