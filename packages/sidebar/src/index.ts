@@ -42,13 +42,13 @@ export { createSidebarStore, sidebarPlugin } from "./plugin";
 // --- Public types (state contracts, options, plugin callback) --------
 export type {
   CreateSidebarOptions,
+  LocalStorageSidebarStorageOptions,
   PersistSidebarVisibleOptions,
   SidebarAlpine,
   SidebarAlpineLike,
   SidebarBreakpointOption,
   SidebarChangeDetail,
   SidebarChangeSource,
-  LocalStorageSidebarStorageOptions,
   SidebarManager,
   SidebarOnMismatch,
   SidebarPluginCallback,
