@@ -17,10 +17,7 @@
 
 import assert from "node:assert/strict";
 import { beforeEach, describe, it, vi } from "vitest";
-import {
-  createLocalStorageSidebarStorage,
-  createMemorySidebarStorage,
-} from "../src/index";
+import { createLocalStorageSidebarStorage, createMemorySidebarStorage } from "../src/index";
 
 describe("createLocalStorageSidebarStorage", () => {
   beforeEach(() => {

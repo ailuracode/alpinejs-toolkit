@@ -59,20 +59,24 @@ export function persistSidebarVisible(
   options: PersistSidebarVisibleOptions = {}
 ): boolean {
   if (typeof Alpine.$persist !== "function") {
-    const message = "[alpine-sidebar] @alpinejs/persist plugin not detected; $persist helper is a no-op";
+    const message =
+      "[alpine-sidebar] @alpinejs/persist plugin not detected; $persist helper is a no-op";
     if (options.strict === true) {
       throw new ToolkitError(message, "TOOLKIT_NOT_SUPPORTED");
     }
+    // biome-ignore lint/suspicious/noConsole: best-effort helper
     console.warn(message);
     return false;
   }
 
   const store = Alpine.store("sidebar") as { visible?: unknown } | undefined;
   if (!store || typeof store !== "object") {
-    const message = "[alpine-sidebar] register sidebarPlugin(...) before calling persistSidebarVisible()";
+    const message =
+      "[alpine-sidebar] register sidebarPlugin(...) before calling persistSidebarVisible()";
     if (options.strict === true) {
       throw new ToolkitError(message, "TOOLKIT_INVALID_STATE");
     }
+    // biome-ignore lint/suspicious/noConsole: best-effort helper
     console.warn(message);
     return false;
   }

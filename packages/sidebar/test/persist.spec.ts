@@ -13,8 +13,8 @@ import assert from "node:assert/strict";
 import { describe, it, vi } from "vitest";
 import {
   persistSidebarVisible,
-  withSidebarVisiblePersist,
   type SidebarAlpineLike,
+  withSidebarVisiblePersist,
 } from "../src/index";
 
 /**
@@ -22,10 +22,9 @@ import {
  * proxy whose `.as(key)` returns a stable handle — tests inspect the
  * chain to confirm the helper forwarded the right key.
  */
-function createMockAlpine(opts: {
-  hasPersist?: boolean;
-  storeValue?: unknown;
-} = {}): SidebarAlpineLike & {
+function createMockAlpine(
+  opts: { hasPersist?: boolean; storeValue?: unknown } = {}
+): SidebarAlpineLike & {
   persistCalls: Array<{ args: unknown[] }>;
   asCalls: Array<{ key: string }>;
   storeCalls: Array<{ name: string }>;
@@ -35,8 +34,7 @@ function createMockAlpine(opts: {
   const persistCalls: Array<{ args: unknown[] }> = [];
   const asCalls: Array<{ key: string }> = [];
   const storeCalls: Array<{ name: string }> = [];
-  const proxy = { __isMockProxy: true } as Record<string, unknown> &
-    Record<symbol, unknown>;
+  const proxy = { __isMockProxy: true } as Record<string, unknown> & Record<symbol, unknown>;
 
   const mock = {
     persistCalls,
@@ -86,7 +84,7 @@ describe("persistSidebarVisible", () => {
     assert.equal(Alpine.asCalls[0].key, "sidebar-visible");
   });
 
-  it("Alpine.\$persist undefined → console.warn + returns false; no throw", () => {
+  it("Alpine.$persist undefined → console.warn + returns false; no throw", () => {
     const Alpine = createMockAlpine({ hasPersist: false, storeValue: { visible: false } });
     const warn = vi.spyOn(console, "warn").mockImplementation(() => undefined);
     try {
@@ -99,13 +97,13 @@ describe("persistSidebarVisible", () => {
     }
   });
 
-  it("Alpine.\$persist undefined + strict:true → throws ToolkitError", () => {
+  it("Alpine.$persist undefined + strict:true → throws ToolkitError", () => {
     const Alpine = createMockAlpine({ hasPersist: false, storeValue: { visible: false } });
     const warn = vi.spyOn(console, "warn").mockImplementation(() => undefined);
     try {
       assert.throws(
         () => persistSidebarVisible(Alpine, { strict: true }),
-        /@alpinejs\/persist plugin not detected/,
+        /@alpinejs\/persist plugin not detected/
       );
       assert.equal(warn.mock.calls.length, 0);
     } finally {
@@ -132,7 +130,7 @@ describe("persistSidebarVisible", () => {
     try {
       assert.throws(
         () => persistSidebarVisible(Alpine, { strict: true }),
-        /register sidebarPlugin/,
+        /register sidebarPlugin/
       );
       assert.equal(warn.mock.calls.length, 0);
     } finally {
@@ -140,7 +138,7 @@ describe("persistSidebarVisible", () => {
     }
   });
 
-  it("custom key flows through to Alpine.\$persist as first arg of .as()", () => {
+  it("custom key flows through to Alpine.$persist as first arg of .as()", () => {
     const Alpine = createMockAlpine({ storeValue: { visible: true } });
     const result = persistSidebarVisible(Alpine, { key: "my-sidebar" });
     assert.equal(result, true);

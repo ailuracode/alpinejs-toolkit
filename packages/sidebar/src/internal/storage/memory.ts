@@ -25,9 +25,7 @@ import type { SidebarStorage } from "../../types";
  * @param initial - Seed value (`true` / `false`). `null` (default)
  *   leaves the storage empty.
  */
-export function createMemorySidebarStorage(
-  initial: boolean | null = null
-): SidebarStorage & {
+export function createMemorySidebarStorage(initial: boolean | null = null): SidebarStorage & {
   subscribe: (listener: (next: boolean | null) => void) => Unsubscribe;
 } {
   let value: boolean | null = initial;

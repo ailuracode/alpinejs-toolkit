@@ -34,8 +34,8 @@ export { createLocalStorageSidebarStorage } from "./internal/storage/local-stora
 export { createMemorySidebarStorage } from "./internal/storage/memory";
 export {
   persistSidebarVisible,
-  withSidebarVisiblePersist,
   type SidebarVisibleProxy,
+  withSidebarVisiblePersist,
 } from "./internal/storage/persist";
 // --- Alpine plugin adapter -----------------------------------------
 export { createSidebarStore, sidebarPlugin } from "./plugin";

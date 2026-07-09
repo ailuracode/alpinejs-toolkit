@@ -87,10 +87,7 @@ function removeLocalStorage(key: string): void {
  * Forwards `null` when the key was removed in the other tab so the
  * listener can distinguish a clear from a write.
  */
-function subscribeLocalStorage(
-  key: string,
-  listener: (next: boolean | null) => void
-): Unsubscribe {
+function subscribeLocalStorage(key: string, listener: (next: boolean | null) => void): Unsubscribe {
   const win = safeWindow();
   if (!win) {
     return () => undefined;

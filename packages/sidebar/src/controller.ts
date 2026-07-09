@@ -476,6 +476,7 @@ export class SidebarController extends BaseController<SidebarEvents> implements 
       this.#lastWritten = visible;
     } catch (error) {
       this.#lastWritten = undefined;
+      // biome-ignore lint/suspicious/noConsole: best-effort persistence
       console.warn("[alpine-sidebar] storage.set threw:", error);
     }
   }
