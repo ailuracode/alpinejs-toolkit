@@ -1,5 +1,120 @@
 # @ailuracode/alpine-sidebar
 
+## 3.0.0
+
+### Major Changes
+
+- 7a9418a: Migrate to the headless controller architecture shared with `@ailuracode/alpine-theme` and `@ailuracode/alpine-lang`. The package now exposes a `SidebarController extends BaseController<SidebarEvents>` plus a headless `createSidebar(options)` factory (singleton per document); `sidebarPlugin(options)` is a thin Alpine adapter that wires the controller into `$store.sidebar` and `$sidebar`.
+
+  **Breaking changes:**
+
+  - Drop the default export. Import the named `sidebarPlugin` factory instead:
+    ```diff
+    - import sidebar from "@ailuracode/alpine-sidebar";
+    - Alpine.plugin(sidebar({ onShow: lock, onHide: unlock }));
+    + import { sidebarPlugin, createSidebar } from "@ailuracode/alpine-sidebar";
+    + Alpine.plugin(sidebarPlugin({ breakpoint: { query: "(min-width: 1024px)", onMismatch: "hide" } }));
+    + createSidebar().on("change", (detail) => {
+    +   if (detail.source !== "user") return;
+    +   detail.visible ? lock() : unlock();
+    + });
+    ```
+  - Drop the registration-time `onShow` / `onHide` / `onOverlayClick` callbacks. Subscribe to the controller's typed `change` event for side effects, with multiple subscribers and runtime (un)subscription. The payload includes `visible`, `matchesBreakpoint`, `source` (`'user' | 'breakpoint' | 'escape' | 'reset' | 'initialization'`), `previous`, and an optional `event` (`KeyboardEvent | MediaQueryListEvent`, only when `source` is `'escape'` or `'breakpoint'`).
+  - `breakpoint` shape changed from `string` to `{ query: string; onMismatch: 'hide' | 'keep' }`. Pick `'hide'` to preserve the v1 auto-hide behaviour; `'keep'` only updates `matchesBreakpoint`.
+  - `onOverlayClick` plugin option removed (it had no runtime effect). Wire the overlay's `@click` to `$store.sidebar.hide()` in your template.
+
+  **Not breaking:**
+
+  - The `$store.sidebar` surface (`.visible`, `.isVisible`, `.hasOverlay`, `.matchesBreakpoint`, `.show()`, `.hide()`, `.toggle()`) is unchanged. Templates that read `$store.sidebar.*` keep working without edits.
+  - `closeOnEscape` and `closeOnOverlayClick` plugin options are preserved with their v1 defaults.
+
+  **New additions:**
+
+  - `createSidebar(options)` returns the singleton `SidebarController` for non-Alpine consumers (custom stores, SSR adapters, tests).
+  - Typed `SidebarEvents` event map + `SidebarListener` callback alias (re-exported from the package root).
+  - `controller.reset()` hides + restores initial breakpoint state with `source: 'reset'`.
+  - SSR-safe: the constructor is pure — no `window`, `document`, or `matchMedia` access. `safeMatchMedia` is the resolution path under all environments.
+
+  **Internal:**
+
+  - Split the monolithic source into `controller.ts` / `plugin.ts` / `types.ts` / `events.ts` / `internal/*`; `index.ts` is re-exports only.
+  - Composes `ToggleController<true, false>` from `@ailuracode/alpine-toggle` internally for the boolean `visible` state machine (mirrors `@ailuracode/alpine-theme`'s `ToggleComposition` pattern).
+  - `@ailuracode/alpine-core` and `@ailuracode/alpine-toggle` are added as both `peerDependencies` and `devDependencies`.
+  - Tests split into `manager.spec.ts` (26 controller specs covering all 5 `SidebarChangeSource` values + lifecycle + leak detection), `plugin.spec.ts` (6 Alpine integration specs), and `types.test.ts` (6 compile-time `expectTypeOf` assertions).
+
+### Minor Changes
+
+- 7a9418a: `@ailuracode/alpine-sidebar@2.1.0` — opt-in persistence for the sidebar `visible` boolean.
+
+  **New `SidebarStorage` interface and three built-in adapters:**
+
+  - `createLocalStorageSidebarStorage({ key?, crossTab? })` — persist to `window.localStorage` and sync across tabs via the `storage` event.
+  - `createMemorySidebarStorage(initial?)` — hermetic in-process adapter for tests and SSR.
+  - `persistSidebarVisible(Alpine, options?)` + `withSidebarVisiblePersist(store, options?)` — wire the sidebar's `visible` to Alpine's `@alpinejs/persist` helper.
+
+  **New `CreateSidebarOptions` fields:**
+
+  - `initial?: boolean` — SSR / cookie-injection seam. Renamed from `initialVisible` (TypeScript compile error for v2.0 callers passing the old name).
+  - `storage?: SidebarStorage` — explicit persistence adapter. Wins over `persistKey` when both are present (silent preference).
+  - `persistKey?: string` — convenience shortcut for `createLocalStorageSidebarStorage({ key })`.
+
+  **Cross-tab sync via the `storage` event.** Echo detection (`#lastWritten`) prevents same-tab feedback loops. `newValue: null` falls back to `initial`. Last-writer-wins per tab — documented limitation.
+
+  **New `SidebarChangeSource` value: `'storage'`.** Additive; no existing consumer code breaks. The discriminator is now a 6-value union.
+
+  **Persistence is opt-in.** Consumers who do not pass `storage` / `persistKey` see byte-identical behavior to v2.0.
+
+  **Cookie-bridge pattern documented** for SSR consumers using httpOnly cookies — the package does NOT implement httpOnly cookie support itself; the README + Starlight page show a custom `SidebarStorage` adapter that proxies to `fetch('/api/sidebar', { credentials: 'include' })`.
+
+- 7a9418a: Sidebar now manages body scroll-lock internally via the new `scroll` option. The package gains `@ailuracode/alpine-scroll` as an optional peer dependency — install it (and call `scrollPlugin(...)` before `sidebarPlugin(...)`) only when this option is used.
+
+  **New API on `CreateSidebarOptions`:**
+
+  - `scroll?: ScrollStore` — when provided, the controller acquires a lock on user-driven `visible: true` transitions (`show()` / `toggle()` from user input) and releases it on the matching hide. The handle returned by `scroll.lock("sidebar")` is stored internally and passed back to `scroll.unlock(handle)` on release.
+  - `onVisibilityChange?: (visible: boolean, source: SidebarChangeSource) => void` — generic side-effect callback for DOM side effects (`data-sidebar` attribute, `scrollbar-gutter: stable`, focus management, A11y announcements). The plugin itself never touches the DOM. Source discriminator lets consumers filter.
+
+  **Behaviour:**
+
+  - Lock / unlock fire ONLY on `source: 'user'` transitions. Escape, breakpoint, reset, storage, and initialization changes do NOT touch the lock — matching the v2.0 demo wiring where only explicit user actions locked the scroll.
+  - A duplicate `show()` without a matching `hide()` does NOT acquire a second lock (idempotent).
+  - `hide()` without a held handle is a no-op (no throw).
+  - `destroy()` releases the held handle if any so the page does not stay locked when the sidebar is torn down without an explicit hide.
+
+  **Demo wiring** (`apps/demo/src/demo/plugin-registry.ts`):
+
+  ```ts
+  Alpine.plugin(scrollPlugin({ id: "scroll", respectReducedMotion: true }));
+  Alpine.plugin(
+    sidebarPlugin({
+      closeOnEscape: true,
+      breakpoint: { query: "(max-width: 1023px)", onMismatch: "hide" },
+      scroll: Alpine.store("scroll"),
+    })
+  );
+  ```
+
+  Order matters — the sidebar reads `Alpine.store("scroll")` at construction time, so the scroll plugin MUST run first. The two `Alpine.plugin()` calls keep the order explicit.
+
+  **Not breaking:**
+
+  - All existing `CreateSidebarOptions` fields keep their shape and defaults.
+  - `SidebarController` / `SidebarStore` / `SidebarManager` public surface is unchanged.
+  - Consumers that did not pass `scroll` see no behaviour change.
+
+### Patch Changes
+
+- Updated dependencies [7a9418a]
+- Updated dependencies [7a9418a]
+- Updated dependencies [7a9418a]
+- Updated dependencies [7a9418a]
+- Updated dependencies [7a9418a]
+- Updated dependencies [7a9418a]
+- Updated dependencies [7a9418a]
+- Updated dependencies [7a9418a]
+  - @ailuracode/alpine-core@0.2.0
+  - @ailuracode/alpine-scroll@2.0.0
+  - @ailuracode/alpine-toggle@1.0.0
+
 ## 2.1.0
 
 ### Minor Changes
@@ -17,7 +132,9 @@
 
   // Persist to localStorage and sync across tabs.
   Alpine.plugin(
-    sidebarPlugin({ storage: createLocalStorageSidebarStorage({ key: "app-sidebar" }) }),
+    sidebarPlugin({
+      storage: createLocalStorageSidebarStorage({ key: "app-sidebar" }),
+    })
   );
 
   // ...or use the persistKey shortcut:

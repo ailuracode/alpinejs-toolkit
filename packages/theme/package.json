@@ -1,6 +1,6 @@
 {
   "name": "@ailuracode/alpine-theme",
-  "version": "0.2.0",
+  "version": "1.0.0",
   "description": "Light, dark, and system theme store for Alpine.js — exposed as a single $store.theme store and $theme magic.",
   "keywords": [
     "alpine",
@@ -63,8 +63,8 @@
     "tsup": "^8.5.0"
   },
   "peerDependencies": {
-    "@ailuracode/alpine-core": "^0.1.0",
-    "@ailuracode/alpine-toggle": "^0.3.0",
+    "@ailuracode/alpine-core": "^0.2.0",
+    "@ailuracode/alpine-toggle": "^1.0.0",
     "alpinejs": "^3.0.0"
   },
   "peerDependenciesMeta": {

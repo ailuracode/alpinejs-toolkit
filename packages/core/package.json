@@ -1,6 +1,6 @@
 {
   "name": "@ailuracode/alpine-core",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Lazy plugin registry, initializer, and browser capability helpers for Alpine.js.",
   "keywords": [
     "alpine",

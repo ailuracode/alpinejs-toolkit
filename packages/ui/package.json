@@ -1,6 +1,6 @@
 {
   "name": "@ailuracode/alpine-ui",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "Shared UI primitives for @ailuracode/alpinejs-toolkit — generic storage adapters and headless patterns layered on @ailuracode/alpine-core.",
   "keywords": [
     "alpine",
@@ -53,6 +53,6 @@
     "tsup": "^8.5.0"
   },
   "peerDependencies": {
-    "@ailuracode/alpine-core": "^0.1.0"
+    "@ailuracode/alpine-core": "^0.2.0"
   }
 }
