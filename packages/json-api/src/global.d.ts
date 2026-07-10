@@ -3,6 +3,12 @@
 import type { JsonApiClient, JsonApiSchema } from "./types.js";
 
 export type {
+  JsonApiErrorDetail,
+  JsonApiEvents,
+  JsonApiRequestDetail,
+  JsonApiResponseDetail,
+} from "./events.js";
+export type {
   InferAttributes,
   InferRelationshipNames,
   InferRelationshipTarget,

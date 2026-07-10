@@ -1,63 +1,29 @@
 import type AlpineType from "alpinejs";
+import type {
+  IdleDetectorConstructor,
+  IdleDetectorLike,
+  IdleMagic,
+  WakeLockLike,
+  WakeLockMagic,
+  WakeLockSentinelLike,
+} from "./types.js";
+import { DEFAULT_IDLE_THRESHOLD, MIN_IDLE_THRESHOLD } from "./types.js";
 
-export type IdleUserState = "active" | "idle";
-export type IdleScreenState = "locked" | "unlocked";
-
-export interface WakeLockSentinelLike {
-  released: boolean;
-  addEventListener(type: string, listener: EventListener): void;
-  removeEventListener(type: string, listener: EventListener): void;
-  release(): Promise<void>;
-}
-
-export interface WakeLockLike {
-  request(type: "screen"): Promise<WakeLockSentinelLike>;
-}
-
-export interface IdleDetectorLike {
-  userState: IdleUserState;
-  screenState: IdleScreenState;
-  start(options?: { threshold?: number }): Promise<void>;
-  addEventListener(type: string, listener: EventListener): void;
-  removeEventListener(type: string, listener: EventListener): void;
-}
-
-export interface IdleDetectorConstructor {
-  new (): IdleDetectorLike;
-  requestPermission(): Promise<PermissionState>;
-}
+export type {
+  IdleDetectorConstructor,
+  IdleDetectorLike,
+  IdleMagic,
+  IdleScreenState,
+  IdleUserState,
+  WakeLockLike,
+  WakeLockMagic,
+  WakeLockSentinelLike,
+} from "./types.js";
+export { DEFAULT_IDLE_THRESHOLD, MIN_IDLE_THRESHOLD } from "./types.js";
 
 type NavigatorWithWakeLock = Navigator & {
   wakeLock?: WakeLockLike;
 };
-
-export interface WakeLockMagic {
-  error: string | null;
-  isRequesting: boolean;
-  isActive: boolean;
-  readonly isSupported: boolean;
-  request(): Promise<boolean>;
-  release(): Promise<boolean>;
-}
-
-export interface IdleMagic {
-  userState: IdleUserState | null;
-  screenState: IdleScreenState | null;
-  permission: PermissionState | null;
-  error: string | null;
-  threshold: number;
-  isLoading: boolean;
-  isWatching: boolean;
-  readonly isSupported: boolean;
-  readonly isActive: boolean;
-  readonly isIdle: boolean;
-  requestPermission(): Promise<PermissionState>;
-  start(options?: { threshold?: number }): Promise<boolean>;
-  stop(): boolean;
-}
-
-export const DEFAULT_IDLE_THRESHOLD = 60_000;
-export const MIN_IDLE_THRESHOLD = 60_000;
 
 const IDLE_DETECTION_PERMISSION = "idle-detection" as PermissionName;
 

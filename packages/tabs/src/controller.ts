@@ -1,45 +1,15 @@
-export type TabsOrientation = "horizontal" | "vertical";
+/**
+ * Tabs controller — the framework-agnostic core of
+ * `@ailuracode/alpine-tabs`. Manages tab groups with selection,
+ * keyboard navigation, URL sync, and ARIA props.
+ *
+ * Emits a typed `change` event on every selection so consumers
+ * can react programmatically.
+ */
 
-export type TabItem = {
-  id: string;
-  disabled: boolean;
-};
-
-export type TabsGroupOptions = {
-  orientation?: TabsOrientation;
-  activation?: "automatic" | "manual";
-  urlParam?: string;
-  defaultTab?: string;
-  onChange?: (tabId: string) => void;
-};
-
-export type TabsGroup = {
-  activeTabId: string | null;
-  orientation: TabsOrientation;
-  activation: "automatic" | "manual";
-  urlParam?: string;
-  items: TabItem[];
-  onChange?: (tabId: string) => void;
-};
-
-export type TabsStore = {
-  /** Reactive registry of tab groups. */
-  groups: Record<string, TabsGroup>;
-  register(groupId: string, options?: TabsGroupOptions): void;
-  unregister(groupId: string): void;
-  registerTab(groupId: string, tabId: string, disabled?: boolean): void;
-  unregisterTab(groupId: string, tabId: string): void;
-  select(groupId: string, tabId: string): void;
-  active(groupId: string): string | null;
-  isActive(groupId: string, tabId: string): boolean;
-  next(groupId: string): void;
-  previous(groupId: string): void;
-  handleKeydown(groupId: string, event: KeyboardEvent): void;
-  tabProps(groupId: string, tabId: string): Record<string, string | number | boolean | undefined>;
-  panelProps(groupId: string, tabId: string): Record<string, string | boolean | undefined>;
-  tablistProps(groupId: string): Record<string, string | undefined>;
-  destroy(): void;
-};
+import { BaseController, generateId, safeWindow } from "@ailuracode/alpine-core";
+import type { TabsEvents } from "./events";
+import type { TabItem, TabsGroup, TabsGroupOptions, TabsStore } from "./types";
 
 function enabledTabs(group: TabsGroup): TabItem[] {
   return group.items.filter((item) => !item.disabled);
@@ -61,21 +31,21 @@ function moveTab(group: TabsGroup, delta: number): string | null {
 }
 
 function readUrlTab(param: string): string | null {
-  if (typeof window === "undefined") {
+  const win = safeWindow();
+  if (!win) {
     return null;
   }
-
-  return new URLSearchParams(window.location.search).get(param);
+  return new URLSearchParams(win.location.search).get(param);
 }
 
 function writeUrlTab(param: string, tabId: string): void {
-  if (typeof window === "undefined") {
+  const win = safeWindow();
+  if (!win) {
     return;
   }
-
-  const url = new URL(window.location.href);
+  const url = new URL(win.location.href);
   url.searchParams.set(param, tabId);
-  window.history.replaceState({}, "", url);
+  win.history.replaceState({}, "", url);
 }
 
 function createGroup(options: TabsGroupOptions = {}): TabsGroup {
@@ -98,7 +68,6 @@ function focusTab(
     select(group, tabId);
     return;
   }
-
   group.activeTabId = tabId;
 }
 
@@ -141,40 +110,204 @@ function handleTabsKeydown(
     focusRelativeTab(group, 1, event, select);
     return;
   }
-
   if (event.key === "ArrowLeft" && horizontal) {
     focusRelativeTab(group, -1, event, select);
     return;
   }
-
   if (event.key === "ArrowDown" && vertical) {
     focusRelativeTab(group, 1, event, select);
     return;
   }
-
   if (event.key === "ArrowUp" && vertical) {
     focusRelativeTab(group, -1, event, select);
     return;
   }
-
   if (event.key === "Home") {
     focusEdgeTab(group, "start", event, select);
     return;
   }
-
   if (event.key === "End") {
     focusEdgeTab(group, "end", event, select);
   }
 }
 
-/** Creates the headless tabs controller. */
-export function createTabsStore(): TabsStore {
-  function getOrCreate(store: TabsStore, groupId: string): TabsGroup {
-    store.groups[groupId] ??= createGroup();
-    return store.groups[groupId];
+/**
+ * Headless tabs controller. Manages multiple tab groups with
+ * selection, keyboard navigation, URL sync, and ARIA props.
+ */
+export class TabsController extends BaseController<TabsEvents> {
+  #groups: Record<string, TabsGroup> = {};
+
+  constructor(id?: string) {
+    super(id ?? generateId("tabs"));
   }
 
-  function selectInternal(group: TabsGroup, tabId: string): void {
+  get groups(): Readonly<Record<string, TabsGroup>> {
+    return this.#groups;
+  }
+
+  register(groupId: string, options: TabsGroupOptions = {}): void {
+    if (this.isDestroyed) {
+      return;
+    }
+    const group = createGroup(options);
+    if (options.urlParam) {
+      const fromUrl = readUrlTab(options.urlParam);
+      if (fromUrl) {
+        group.activeTabId = fromUrl;
+      }
+    }
+    this.#groups[groupId] = group;
+  }
+
+  unregister(groupId: string): void {
+    if (this.isDestroyed) {
+      return;
+    }
+    delete this.#groups[groupId];
+  }
+
+  registerTab(groupId: string, tabId: string, disabled = false): void {
+    if (this.isDestroyed) {
+      return;
+    }
+    const group = this.#getOrCreate(groupId);
+    const existing = group.items.find((item) => item.id === tabId);
+    if (existing) {
+      existing.disabled = disabled;
+    } else {
+      group.items.push({ id: tabId, disabled });
+    }
+
+    if (!(group.activeTabId || disabled)) {
+      group.activeTabId = tabId;
+    }
+  }
+
+  unregisterTab(groupId: string, tabId: string): void {
+    if (this.isDestroyed) {
+      return;
+    }
+    const group = this.#groups[groupId];
+    if (!group) {
+      return;
+    }
+
+    group.items = group.items.filter((item) => item.id !== tabId);
+    if (group.activeTabId === tabId) {
+      group.activeTabId = enabledTabs(group)[0]?.id ?? null;
+    }
+  }
+
+  select(groupId: string, tabId: string): void {
+    if (this.isDestroyed) {
+      return;
+    }
+    const group = this.#groups[groupId];
+    if (!group) {
+      return;
+    }
+    this.#selectInternal(group, groupId, tabId);
+  }
+
+  active(groupId: string): string | null {
+    return this.#groups[groupId]?.activeTabId ?? null;
+  }
+
+  isActive(groupId: string, tabId: string): boolean {
+    return this.#groups[groupId]?.activeTabId === tabId;
+  }
+
+  next(groupId: string): void {
+    if (this.isDestroyed) {
+      return;
+    }
+    const group = this.#groups[groupId];
+    if (!group) {
+      return;
+    }
+    const nextTab = moveTab(group, 1);
+    if (nextTab) {
+      this.#selectInternal(group, groupId, nextTab);
+    }
+  }
+
+  previous(groupId: string): void {
+    if (this.isDestroyed) {
+      return;
+    }
+    const group = this.#groups[groupId];
+    if (!group) {
+      return;
+    }
+    const prevTab = moveTab(group, -1);
+    if (prevTab) {
+      this.#selectInternal(group, groupId, prevTab);
+    }
+  }
+
+  handleKeydown(groupId: string, event: KeyboardEvent): void {
+    const group = this.#groups[groupId];
+    if (group) {
+      handleTabsKeydown(group, event, (g, tabId) => this.#selectInternal(g, groupId, tabId));
+    }
+  }
+
+  tabProps(groupId: string, tabId: string): Record<string, string | number | boolean | undefined> {
+    const active = this.isActive(groupId, tabId);
+    return {
+      role: "tab",
+      id: `${groupId}-tab-${tabId}`,
+      "aria-selected": active,
+      "aria-controls": `${groupId}-panel-${tabId}`,
+      tabindex: active ? 0 : -1,
+    };
+  }
+
+  panelProps(groupId: string, tabId: string): Record<string, string | boolean | undefined> {
+    const active = this.isActive(groupId, tabId);
+    return {
+      role: "tabpanel",
+      id: `${groupId}-panel-${tabId}`,
+      "aria-labelledby": `${groupId}-tab-${tabId}`,
+      hidden: !active,
+    };
+  }
+
+  tablistProps(groupId: string): Record<string, string | undefined> {
+    const group = this.#groups[groupId];
+    return {
+      role: "tablist",
+      "aria-orientation": group?.orientation,
+    };
+  }
+
+  toStore(): TabsStore {
+    return {
+      groups: this.#groups,
+      register: (id, opts) => this.register(id, opts),
+      unregister: (id) => this.unregister(id),
+      registerTab: (id, tabId, disabled) => this.registerTab(id, tabId, disabled),
+      unregisterTab: (id, tabId) => this.unregisterTab(id, tabId),
+      select: (id, tabId) => this.select(id, tabId),
+      active: (id) => this.active(id),
+      isActive: (id, tabId) => this.isActive(id, tabId),
+      next: (id) => this.next(id),
+      previous: (id) => this.previous(id),
+      handleKeydown: (id, event) => this.handleKeydown(id, event),
+      tabProps: (id, tabId) => this.tabProps(id, tabId),
+      panelProps: (id, tabId) => this.panelProps(id, tabId),
+      tablistProps: (id) => this.tablistProps(id),
+      destroy: () => this.destroy(),
+    };
+  }
+
+  #getOrCreate(groupId: string): TabsGroup {
+    this.#groups[groupId] ??= createGroup();
+    return this.#groups[groupId];
+  }
+
+  #selectInternal(group: TabsGroup, groupId: string, tabId: string): void {
     const tab = group.items.find((item) => item.id === tabId);
     if (!tab || tab.disabled) {
       return;
@@ -184,140 +317,23 @@ export function createTabsStore(): TabsStore {
     if (group.urlParam) {
       writeUrlTab(group.urlParam, tabId);
     }
+
+    this.emit("change", {
+      groupId,
+      activeTabId: tabId,
+      source: "user",
+    });
+
     group.onChange?.(tabId);
   }
-
-  const store: TabsStore = {
-    groups: {},
-
-    register(groupId, options = {}) {
-      const group = createGroup(options);
-      if (options.urlParam) {
-        const fromUrl = readUrlTab(options.urlParam);
-        if (fromUrl) {
-          group.activeTabId = fromUrl;
-        }
-      }
-      this.groups[groupId] = group;
-    },
-
-    unregister(groupId) {
-      delete this.groups[groupId];
-    },
-
-    registerTab(groupId, tabId, disabled = false) {
-      const group = getOrCreate(this, groupId);
-      const existing = group.items.find((item) => item.id === tabId);
-      if (existing) {
-        existing.disabled = disabled;
-      } else {
-        group.items.push({ id: tabId, disabled });
-      }
-
-      if (!(group.activeTabId || disabled)) {
-        group.activeTabId = tabId;
-      }
-    },
-
-    unregisterTab(groupId, tabId) {
-      const group = this.groups[groupId];
-      if (!group) {
-        return;
-      }
-
-      group.items = group.items.filter((item) => item.id !== tabId);
-      if (group.activeTabId === tabId) {
-        group.activeTabId = enabledTabs(group)[0]?.id ?? null;
-      }
-    },
-
-    select(groupId, tabId) {
-      const group = this.groups[groupId];
-      if (!group) {
-        return;
-      }
-      selectInternal(group, tabId);
-    },
-
-    active(groupId) {
-      return this.groups[groupId]?.activeTabId ?? null;
-    },
-
-    isActive(groupId, tabId) {
-      return this.groups[groupId]?.activeTabId === tabId;
-    },
-
-    next(groupId) {
-      const group = this.groups[groupId];
-      if (!group) {
-        return;
-      }
-
-      const nextTab = moveTab(group, 1);
-      if (nextTab) {
-        selectInternal(group, nextTab);
-      }
-    },
-
-    previous(groupId) {
-      const group = this.groups[groupId];
-      if (!group) {
-        return;
-      }
-
-      const prevTab = moveTab(group, -1);
-      if (prevTab) {
-        selectInternal(group, prevTab);
-      }
-    },
-
-    handleKeydown(groupId, event) {
-      const group = this.groups[groupId];
-      if (group) {
-        handleTabsKeydown(group, event, selectInternal);
-      }
-    },
-
-    tabProps(groupId, tabId) {
-      const active = this.isActive(groupId, tabId);
-      return {
-        role: "tab",
-        id: `${groupId}-tab-${tabId}`,
-        "aria-selected": active,
-        "aria-controls": `${groupId}-panel-${tabId}`,
-        tabindex: active ? 0 : -1,
-      };
-    },
-
-    panelProps(groupId, tabId) {
-      const active = this.isActive(groupId, tabId);
-      return {
-        role: "tabpanel",
-        id: `${groupId}-panel-${tabId}`,
-        "aria-labelledby": `${groupId}-tab-${tabId}`,
-        hidden: !active,
-      };
-    },
-
-    tablistProps(groupId) {
-      const group = this.groups[groupId];
-      return {
-        role: "tablist",
-        "aria-orientation": group?.orientation,
-      };
-    },
-
-    destroy() {
-      this.groups = {};
-    },
-  };
-
-  return store;
 }
 
-export type TabsController = TabsStore;
+/** Creates a TabsController. */
+export function createTabsController(id?: string): TabsController {
+  return new TabsController(id);
+}
 
-/** Alias matching the controller-based architecture naming. */
-export function createTabsController(): TabsController {
-  return createTabsStore();
+/** Creates a TabsStore (backward-compatible). */
+export function createTabsStore(): TabsStore {
+  return new TabsController().toStore();
 }

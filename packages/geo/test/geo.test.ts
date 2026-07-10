@@ -58,7 +58,7 @@ describe("@ailuracode/alpine-geo", () => {
       },
     });
 
-    const Alpine = startAlpine(geoPlugin);
+    const Alpine = startAlpine(geoPlugin());
     store = Alpine.store("geo") as GeoStore;
   });
 
@@ -203,7 +203,7 @@ describe("@ailuracode/alpine-geo", () => {
       },
     };
 
-    geoPlugin(Alpine as unknown as AlpineType.Alpine);
+    geoPlugin()(Alpine as unknown as AlpineType.Alpine);
     const unsupported = stores.geo as GeoStore;
 
     expect(unsupported.watch()).toBe(false);
@@ -256,7 +256,7 @@ describe("@ailuracode/alpine-geo", () => {
       },
     };
 
-    geoPlugin(Alpine as unknown as AlpineType.Alpine);
+    geoPlugin()(Alpine as unknown as AlpineType.Alpine);
     const unsupported = stores.geo as GeoStore;
 
     expect(unsupported.isSupported).toBe(false);

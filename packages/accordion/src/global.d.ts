@@ -1,10 +1,12 @@
 /// <reference types="@types/alpinejs" />
 
-export type AccordionMode = "single" | "multiple";
+import type { AccordionGroup, AccordionGroupOptions } from "./types";
+
+export type { AccordionGroup, AccordionGroupOptions, AccordionMode } from "./types";
 
 export interface AccordionStore {
-  groups: Record<string, import("./controller.js").AccordionGroup>;
-  register(accordionId: string, options?: import("./controller.js").AccordionGroupOptions): void;
+  readonly groups: Record<string, AccordionGroup>;
+  register(accordionId: string, options?: AccordionGroupOptions): void;
   unregister(accordionId: string): void;
   registerItem(accordionId: string, itemId: string, disabled?: boolean): void;
   unregisterItem(accordionId: string, itemId: string): void;
@@ -24,7 +26,7 @@ export interface AccordionStore {
   destroy(): void;
 }
 
-export function createAccordionStore(): AccordionStore;
+export function createAccordionController(id?: string): import("./types").AccordionController;
 
 export default function accordionPlugin(): import("alpinejs").PluginCallback;
 

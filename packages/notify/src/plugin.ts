@@ -1,10 +1,10 @@
 import type AlpineType from "alpinejs";
 import {
   createNotifyMagic,
-  type NotifyPluginOptions,
   registerNotifyServiceWorker,
   resolveNotifyConfig,
 } from "./controller.js";
+import type { NotifyPluginOptions } from "./types.js";
 
 export {
   closeNotification,
@@ -13,8 +13,6 @@ export {
   isIosDevice,
   isNotifySupported,
   isStandaloneDisplayMode,
-  type NotifyMagic,
-  type NotifyPluginOptions,
   registerNotifyServiceWorker,
   requestNotifyPermission,
   requiresHomeScreenInstall,
@@ -25,6 +23,7 @@ export {
   sendNotificationAsync,
   supportsDirectNotifications,
 } from "./controller.js";
+export type { NotifyMagic, NotifyPluginOptions } from "./types.js";
 
 function registerNotifyPlugin(Alpine: AlpineType.Alpine, options: NotifyPluginOptions): void {
   const config = resolveNotifyConfig(options);
@@ -37,7 +36,7 @@ function registerNotifyPlugin(Alpine: AlpineType.Alpine, options: NotifyPluginOp
 }
 
 /** Alpine.js notify plugin. Registers magic `$notify`. */
-export default function notifyPlugin(
+export function notifyPlugin(
   optionsOrAlpine?: NotifyPluginOptions | AlpineType.Alpine
 ): undefined | ((Alpine: AlpineType.Alpine) => void) {
   if (optionsOrAlpine && typeof (optionsOrAlpine as AlpineType.Alpine).magic === "function") {
@@ -51,3 +50,5 @@ export default function notifyPlugin(
     registerNotifyPlugin(Alpine, options);
   };
 }
+
+export default notifyPlugin;

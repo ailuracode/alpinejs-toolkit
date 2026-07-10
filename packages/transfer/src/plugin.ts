@@ -1,71 +1,11 @@
 import type AlpineType from "alpinejs";
-import {
-  CLIPBOARD_COPY_MODES,
-  type ClipboardCopyMode,
-  type ClipboardCopyOptions,
-  type ClipboardCopyText,
-  type ClipboardMagic,
-  type CopyToClipboard,
-  clipboardOptions,
-  copyToClipboard,
-  registerClipboardMagic,
-} from "./clipboard.js";
-import {
-  createExportMagic,
-  type ExportMagic,
-  type ExportOptions,
-  type ExportSource,
-  exportData,
-  isExportSupported,
-  registerExportMagic,
-} from "./export.js";
-import {
-  canShareData,
-  createShareMagic,
-  isShareSupported,
-  registerShareMagic,
-  type ShareMagic,
-  shareData,
-} from "./share.js";
-
-export {
-  CLIPBOARD_COPY_MODES,
-  type ClipboardCopyMode,
-  type ClipboardCopyOptions,
-  type ClipboardCopyText,
-  type ClipboardMagic,
-  type CopyToClipboard,
-  canShareData,
-  clipboardOptions,
-  copyToClipboard,
-  createExportMagic,
-  createShareMagic,
-  type ExportMagic,
-  type ExportOptions,
-  type ExportSource,
-  exportData,
-  isExportSupported,
-  isShareSupported,
-  registerClipboardMagic,
-  registerExportMagic,
-  registerShareMagic,
-  type ShareMagic,
-  shareData,
-};
-
-export type TransferPluginOptions = {
-  /** Register `$clipboard`. Default: `true`. */
-  clipboard?: boolean;
-  /** Register `$share`. Default: `true`. */
-  share?: boolean;
-  /** Register `$export`. Default: `true`. */
-  export?: boolean;
-};
+import { registerClipboardMagic } from "./clipboard.js";
+import { registerExportMagic } from "./export.js";
+import { registerShareMagic } from "./share.js";
+import type { TransferPluginOptions } from "./types.js";
 
 /** Registers outbound transfer magics: `$clipboard`, `$share`, `$export`. */
-export default function transferPlugin(
-  options: TransferPluginOptions = {}
-): AlpineType.PluginCallback {
+export function transferPlugin(options: TransferPluginOptions = {}): AlpineType.PluginCallback {
   const {
     clipboard: enableClipboard = true,
     share: enableShare = true,
@@ -85,6 +25,7 @@ export default function transferPlugin(
   };
 }
 
+/** Individual plugin factories for selective registration. */
 export {
   registerClipboardMagic as clipboardPlugin,
   registerExportMagic as exportPlugin,

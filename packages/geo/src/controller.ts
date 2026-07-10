@@ -1,193 +1,320 @@
-export interface GeoPositionOptions {
-  enableHighAccuracy?: boolean;
-  timeout?: number;
-  maximumAge?: number;
-}
+/**
+ * Geo controller — the framework-agnostic core of
+ * `@ailuracode/alpine-geo`. Manages geolocation state with
+ * request/watch/unwatch/reset methods.
+ *
+ * Emits typed events on position change, error, and watch lifecycle
+ * so consumers can react programmatically.
+ */
 
-export interface GeoStore {
-  latitude: number | null;
-  longitude: number | null;
-  accuracy: number | null;
-  altitude: number | null;
-  altitudeAccuracy: number | null;
-  heading: number | null;
-  speed: number | null;
-  timestamp: number | null;
-  error: string | null;
-  errorCode: number | null;
-  loading: boolean;
-  watching: boolean;
-  request(options?: GeoPositionOptions): Promise<boolean>;
-  watch(options?: GeoPositionOptions): boolean;
-  unwatch(): boolean;
-  reset(): boolean;
-  readonly hasPosition: boolean;
-  readonly isSupported: boolean;
-  readonly isWatching: boolean;
-  readonly isLoading: boolean;
-  readonly hasError: boolean;
-}
+import { BaseController, generateId } from "@ailuracode/alpine-core";
+import type { GeoErrorDetail, GeoEvents, GeoPositionDetail } from "./events";
+import type { GeoPositionOptions, GeoStore } from "./types";
 
-function applyPosition(store: GeoStore, position: GeolocationPosition): void {
-  store.latitude = position.coords.latitude;
-  store.longitude = position.coords.longitude;
-  store.accuracy = position.coords.accuracy;
-  store.altitude = position.coords.altitude;
-  store.altitudeAccuracy = position.coords.altitudeAccuracy;
-  store.heading = position.coords.heading;
-  store.speed = position.coords.speed;
-  store.timestamp = position.timestamp;
-  store.error = null;
-  store.errorCode = null;
-}
+/**
+ * Headless geolocation controller. Manages a single geolocation
+ * instance with request/watch/unwatch/reset lifecycle.
+ */
+export class GeoController extends BaseController<GeoEvents> {
+  #latitude: number | null = null;
+  #longitude: number | null = null;
+  #accuracy: number | null = null;
+  #altitude: number | null = null;
+  #altitudeAccuracy: number | null = null;
+  #heading: number | null = null;
+  #speed: number | null = null;
+  #timestamp: number | null = null;
+  #error: string | null = null;
+  #errorCode: number | null = null;
+  #loading = false;
+  #watching = false;
+  #watchId: number | null = null;
+  #requestGeneration = 0;
+  readonly #supported: boolean;
 
-function applyError(store: GeoStore, error: GeolocationPositionError): void {
-  store.error = error.message;
-  store.errorCode = error.code;
-}
+  constructor(id?: string) {
+    super(id ?? generateId("geo"));
+    this.#supported =
+      typeof navigator !== "undefined" &&
+      typeof navigator.geolocation?.getCurrentPosition === "function";
+  }
 
-function clearCoords(store: GeoStore): void {
-  store.latitude = null;
-  store.longitude = null;
-  store.accuracy = null;
-  store.altitude = null;
-  store.altitudeAccuracy = null;
-  store.heading = null;
-  store.speed = null;
-  store.timestamp = null;
-}
+  // --- Read-only state ----------------------------------------------------
 
-function clearPosition(store: GeoStore): void {
-  clearCoords(store);
-  store.error = null;
-  store.errorCode = null;
-}
+  get latitude(): number | null {
+    return this.#latitude;
+  }
 
-/** Creates headless geolocation controller/store. */
-export function createGeoStore(): GeoStore {
-  const supported = typeof navigator.geolocation?.getCurrentPosition === "function";
-  let watchId: number | null = null;
-  let requestGeneration = 0;
+  get longitude(): number | null {
+    return this.#longitude;
+  }
 
-  return {
-    latitude: null,
-    longitude: null,
-    accuracy: null,
-    altitude: null,
-    altitudeAccuracy: null,
-    heading: null,
-    speed: null,
-    timestamp: null,
-    error: null,
-    errorCode: null,
-    loading: false,
-    watching: false,
+  get accuracy(): number | null {
+    return this.#accuracy;
+  }
 
-    get hasPosition() {
-      return this.latitude !== null && this.longitude !== null;
-    },
+  get altitude(): number | null {
+    return this.#altitude;
+  }
 
-    get isSupported() {
-      return supported;
-    },
+  get altitudeAccuracy(): number | null {
+    return this.#altitudeAccuracy;
+  }
 
-    get isWatching() {
-      return this.watching;
-    },
+  get heading(): number | null {
+    return this.#heading;
+  }
 
-    get isLoading() {
-      return this.loading;
-    },
+  get speed(): number | null {
+    return this.#speed;
+  }
 
-    get hasError() {
-      return this.error !== null;
-    },
+  get timestamp(): number | null {
+    return this.#timestamp;
+  }
 
-    request(options?: GeoPositionOptions) {
-      if (!supported) {
-        this.error = "Geolocation is not supported";
-        this.errorCode = null;
-        return Promise.resolve(false);
-      }
+  get error(): string | null {
+    return this.#error;
+  }
 
-      this.loading = true;
-      this.error = null;
-      this.errorCode = null;
+  get errorCode(): number | null {
+    return this.#errorCode;
+  }
 
-      const generation = ++requestGeneration;
+  get loading(): boolean {
+    return this.#loading;
+  }
 
-      return new Promise((resolve) => {
-        navigator.geolocation.getCurrentPosition(
-          (position) => {
-            if (generation !== requestGeneration) {
-              resolve(false);
-              return;
-            }
+  get watching(): boolean {
+    return this.#watching;
+  }
 
-            applyPosition(this, position);
-            this.loading = false;
-            resolve(true);
-          },
-          (error) => {
-            if (generation !== requestGeneration) {
-              resolve(false);
-              return;
-            }
+  // --- Derived state ------------------------------------------------------
 
-            clearCoords(this);
-            applyError(this, error);
-            this.loading = false;
-            resolve(false);
-          },
-          options
-        );
-      });
-    },
+  get hasPosition(): boolean {
+    return this.#latitude !== null && this.#longitude !== null;
+  }
 
-    watch(options?: GeoPositionOptions) {
-      if (!supported || this.watching) {
-        return false;
-      }
+  get isSupported(): boolean {
+    return this.#supported;
+  }
 
-      this.error = null;
-      this.errorCode = null;
+  get isWatching(): boolean {
+    return this.#watching;
+  }
 
-      watchId = navigator.geolocation.watchPosition(
+  get isLoading(): boolean {
+    return this.#loading;
+  }
+
+  get hasError(): boolean {
+    return this.#error !== null;
+  }
+
+  // --- Internal helpers ---------------------------------------------------
+
+  #applyPosition(position: GeolocationPosition): void {
+    this.#latitude = position.coords.latitude;
+    this.#longitude = position.coords.longitude;
+    this.#accuracy = position.coords.accuracy;
+    this.#altitude = position.coords.altitude;
+    this.#altitudeAccuracy = position.coords.altitudeAccuracy;
+    this.#heading = position.coords.heading;
+    this.#speed = position.coords.speed;
+    this.#timestamp = position.timestamp;
+    this.#error = null;
+    this.#errorCode = null;
+
+    const detail: GeoPositionDetail = {
+      latitude: position.coords.latitude,
+      longitude: position.coords.longitude,
+      accuracy: position.coords.accuracy,
+      altitude: position.coords.altitude,
+      altitudeAccuracy: position.coords.altitudeAccuracy,
+      heading: position.coords.heading,
+      speed: position.coords.speed,
+      timestamp: position.timestamp,
+    };
+    this.emit("position", detail);
+  }
+
+  #applyError(error: GeolocationPositionError): void {
+    this.#error = error.message;
+    this.#errorCode = error.code;
+
+    const detail: GeoErrorDetail = { message: error.message, code: error.code };
+    this.emit("error", detail);
+  }
+
+  #clearCoords(): void {
+    this.#latitude = null;
+    this.#longitude = null;
+    this.#accuracy = null;
+    this.#altitude = null;
+    this.#altitudeAccuracy = null;
+    this.#heading = null;
+    this.#speed = null;
+    this.#timestamp = null;
+  }
+
+  #clearPosition(): void {
+    this.#clearCoords();
+    this.#error = null;
+    this.#errorCode = null;
+  }
+
+  // --- Public methods -----------------------------------------------------
+
+  request(options?: GeoPositionOptions): Promise<boolean> {
+    if (!this.#supported) {
+      this.#error = "Geolocation is not supported";
+      this.#errorCode = null;
+      this.emit("error", { message: "Geolocation is not supported", code: 0 });
+      return Promise.resolve(false);
+    }
+
+    this.#loading = true;
+    this.#error = null;
+    this.#errorCode = null;
+
+    const generation = ++this.#requestGeneration;
+
+    return new Promise((resolve) => {
+      navigator.geolocation.getCurrentPosition(
         (position) => {
-          applyPosition(this, position);
+          if (generation !== this.#requestGeneration) {
+            resolve(false);
+            return;
+          }
+
+          this.#loading = false;
+          this.#applyPosition(position);
+          resolve(true);
         },
         (error) => {
-          clearCoords(this);
-          applyError(this, error);
+          if (generation !== this.#requestGeneration) {
+            resolve(false);
+            return;
+          }
+
+          this.#loading = false;
+          this.#clearCoords();
+          this.#applyError(error);
+          resolve(false);
         },
         options
       );
+    });
+  }
 
-      this.watching = true;
-      return true;
-    },
+  watch(options?: GeoPositionOptions): boolean {
+    if (!this.#supported || this.#watching) {
+      return false;
+    }
 
-    unwatch() {
-      if (watchId === null) {
-        return false;
+    this.#error = null;
+    this.#errorCode = null;
+
+    this.#watchId = navigator.geolocation.watchPosition(
+      (position) => {
+        this.#applyPosition(position);
+      },
+      (error) => {
+        this.#clearCoords();
+        this.#applyError(error);
+      },
+      options
+    );
+
+    this.#watching = true;
+
+    this.registerCleanup(() => {
+      if (this.#watchId !== null) {
+        navigator.geolocation.clearWatch(this.#watchId);
+        this.#watchId = null;
+        this.#watching = false;
       }
+    });
 
-      navigator.geolocation.clearWatch(watchId);
-      watchId = null;
-      this.watching = false;
-      return true;
-    },
+    this.emit("watchStart", undefined as undefined);
+    return true;
+  }
 
-    reset() {
-      clearPosition(this);
-      return true;
-    },
-  };
+  unwatch(): boolean {
+    if (this.#watchId === null) {
+      return false;
+    }
+
+    navigator.geolocation.clearWatch(this.#watchId);
+    this.#watchId = null;
+    this.#watching = false;
+    this.emit("watchStop", undefined as undefined);
+    return true;
+  }
+
+  reset(): boolean {
+    this.#clearPosition();
+    this.emit("update", undefined as undefined);
+    return true;
+  }
+
+  /**
+   * Returns a store-shaped object for Alpine's `$store.geo`.
+   * The store delegates to this controller.
+   */
+  toStore(): GeoStore {
+    const self = this;
+    const store: GeoStore = {
+      latitude: null,
+      longitude: null,
+      accuracy: null,
+      altitude: null,
+      altitudeAccuracy: null,
+      heading: null,
+      speed: null,
+      timestamp: null,
+      error: null,
+      errorCode: null,
+      loading: false,
+      watching: false,
+
+      get hasPosition() {
+        return this.latitude !== null && this.longitude !== null;
+      },
+      get isSupported() {
+        return self.isSupported;
+      },
+      get isWatching() {
+        return this.watching;
+      },
+      get isLoading() {
+        return this.loading;
+      },
+      get hasError() {
+        return this.error !== null;
+      },
+
+      request: (options) => self.request(options),
+      watch: (options) => self.watch(options),
+      unwatch: () => self.unwatch(),
+      reset: () => self.reset(),
+    };
+    return store;
+  }
 }
 
-export type GeoController = GeoStore;
+/**
+ * Creates a GeoController instance.
+ * Convenience for non-Alpine consumers.
+ */
+export function createGeoController(id?: string): GeoController {
+  return new GeoController(id);
+}
 
-/** Alias matching controller-based architecture naming. */
-export function createGeoController(): GeoController {
-  return createGeoStore();
+/**
+ * Creates a GeoStore (store-shaped object) directly.
+ * Backward-compatible alias.
+ */
+export function createGeoStore(): GeoStore {
+  return new GeoController().toStore();
 }

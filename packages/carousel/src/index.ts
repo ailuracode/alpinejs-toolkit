@@ -1,9 +1,34 @@
 /**
  * Public entrypoint for `@ailuracode/alpine-carousel`.
  *
- * Re-exports only. Implementation lives in `./plugin.ts` and
- * `./store.ts`.
+ * Per public-api instructions, this file MUST only contain re-exports.
+ * The framework-agnostic controller lives in `./controller.ts`, the
+ * Alpine integration in `./plugin.ts`, and the supporting types in
+ * `./types.ts` and `./events.ts`.
+ *
+ * Two ways to consume the package:
+ *
+ * 1. Standalone — `createCarouselController()` returns a
+ *    framework-agnostic controller.
+ * 2. Alpine — `carouselPlugin()` returns an `Alpine.plugin()` callback
+ *    that wires the controller into `$store.carousel` and `$carousel`.
  */
 
-export * from "./plugin.js";
-export { default } from "./plugin.js";
+// --- Re-export core types ------------------------------------------------
+export type { Unsubscribe } from "@ailuracode/alpine-core";
+// --- Controller (framework-agnostic) -------------------------------------
+export { CarouselController, createCarouselController, createCarouselStore } from "./controller";
+// --- Event surface -------------------------------------------------------
+export type { CarouselEvents, CarouselSlideChangeDetail } from "./events";
+// --- Alpine integration --------------------------------------------------
+export { carouselOptions, carouselPlugin, carouselPlugin as default } from "./plugin";
+// --- Public types ---------------------------------------------------------
+export type {
+  CarouselAlpine,
+  CarouselAutoplayOptions,
+  CarouselInstance,
+  CarouselOptions,
+  CarouselPluginCallback,
+  CarouselStore,
+  CreateCarouselOptions,
+} from "./types";

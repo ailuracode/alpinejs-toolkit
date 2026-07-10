@@ -35,7 +35,7 @@ describe("alpine-overlay soft-peer contract", () => {
   });
 
   it("alpine-dialog source MUST NOT import @ailuracode/alpine-overlay", () => {
-    const files = ["index.ts", "store.ts", "focus.ts"];
+    const files = ["index.ts", "controller.ts", "focus.ts"];
     for (const file of files) {
       const source = readSrc(file);
       expect(source).not.toMatch(/@ailuracode\/alpine-overlay/);

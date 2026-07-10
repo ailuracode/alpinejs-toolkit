@@ -1,56 +1,23 @@
+/**
+ * Dialog controller — the framework-agnostic core of
+ * `@ailuracode/alpine-dialog`. Manages dialog instances with
+ * open/close state, focus trap, scroll lock, and keyboard handling.
+ *
+ * Emits typed `open` and `close` events so consumers can react
+ * programmatically.
+ */
+
+import { BaseController, generateId } from "@ailuracode/alpine-core";
+import type { DialogEvents } from "./events";
 import { createFocusTrap, type FocusTrap } from "./focus.js";
-
-export type DialogOpenOptions = {
-  trigger?: HTMLElement | null;
-  labelledBy?: string;
-  describedBy?: string;
-};
-
-export type DialogInstanceOptions = {
-  closeOnEscape?: boolean;
-  closeOnOutsideClick?: boolean;
-  scrollLock?: boolean;
-  labelledBy?: string;
-  describedBy?: string;
-  onOpen?: () => void;
-  onClose?: () => void;
-};
-
-export type DialogInstance = {
-  open: boolean;
-  closeOnEscape: boolean;
-  closeOnOutsideClick: boolean;
-  scrollLock: boolean;
-  labelledBy?: string;
-  describedBy?: string;
-  trigger: HTMLElement | null;
-  container: HTMLElement | null;
-  onOpen?: () => void;
-  onClose?: () => void;
-};
-
-export type DialogStore = {
-  /** Reactive registry — bind templates to `instances[id].open` when needed. */
-  instances: Record<string, DialogInstance>;
-  open(id: string, options?: DialogOpenOptions): void;
-  close(id: string): void;
-  toggle(id: string, options?: DialogOpenOptions): void;
-  isOpen(id: string): boolean;
-  register(id: string, options?: DialogInstanceOptions): void;
-  unregister(id: string): void;
-  bindContainer(id: string, container: HTMLElement | null): void;
-  handleKeydown(id: string, event: KeyboardEvent): void;
-  handleOutsideClick(id: string, event: MouseEvent): void;
-  dialogProps(id: string): Record<string, string | boolean | undefined>;
-  destroy(): void;
-};
-
-type DialogStoreConfig = {
-  onLockChange?: (locked: boolean) => void;
-  defaultCloseOnEscape?: boolean;
-  defaultCloseOnOutsideClick?: boolean;
-  defaultScrollLock?: boolean;
-};
+import type {
+  DialogChangeSource,
+  DialogInstance,
+  DialogInstanceOptions,
+  DialogOpenOptions,
+  DialogStore,
+  DialogStoreConfig,
+} from "./types";
 
 function createInstance(options: DialogInstanceOptions = {}): DialogInstance {
   return {
@@ -67,186 +34,252 @@ function createInstance(options: DialogInstanceOptions = {}): DialogInstance {
   };
 }
 
-/** Creates the headless dialog controller. */
-export function createDialogStore(config: DialogStoreConfig = {}): DialogStore {
-  const traps = new Map<string, FocusTrap>();
-  let lockCount = 0;
+/**
+ * Headless dialog controller. Manages multiple dialog instances with
+ * open/close state, focus trap management, scroll lock, and keyboard
+ * handling.
+ */
+export class DialogController extends BaseController<DialogEvents> {
+  #instances: Record<string, DialogInstance> = {};
+  #traps = new Map<string, FocusTrap>();
+  #lockCount = 0;
+  #defaultCloseOnEscape: boolean;
+  #defaultCloseOnOutsideClick: boolean;
+  #defaultScrollLock: boolean;
+  #onLockChange?: (locked: boolean) => void;
 
-  const defaultCloseOnEscape = config.defaultCloseOnEscape ?? true;
-  const defaultCloseOnOutsideClick = config.defaultCloseOnOutsideClick ?? true;
-  const defaultScrollLock = config.defaultScrollLock ?? true;
+  constructor(config: DialogStoreConfig = {}, id?: string) {
+    super(id ?? generateId("dialog"));
+    this.#defaultCloseOnEscape = config.defaultCloseOnEscape ?? true;
+    this.#defaultCloseOnOutsideClick = config.defaultCloseOnOutsideClick ?? true;
+    this.#defaultScrollLock = config.defaultScrollLock ?? true;
+    this.#onLockChange = config.onLockChange;
+  }
 
-  function setLock(locked: boolean): void {
+  get instances(): Readonly<Record<string, DialogInstance>> {
+    return this.#instances;
+  }
+
+  register(id: string, options: DialogInstanceOptions = {}): void {
+    if (this.isDestroyed) {
+      return;
+    }
+    this.#instances[id] = createInstance(options);
+  }
+
+  unregister(id: string): void {
+    if (this.isDestroyed) {
+      return;
+    }
+    if (this.isOpen(id)) {
+      this.close(id);
+    }
+    delete this.#instances[id];
+    this.#deactivateTrap(id);
+  }
+
+  open(id: string, options: DialogOpenOptions = {}, source: DialogChangeSource = "user"): void {
+    if (this.isDestroyed) {
+      return;
+    }
+    const instance = this.#getOrCreate(id);
+    if (instance.open) {
+      return;
+    }
+
+    instance.open = true;
+    if (options.trigger !== undefined) {
+      instance.trigger = options.trigger;
+    }
+    if (options.labelledBy !== undefined) {
+      instance.labelledBy = options.labelledBy;
+    }
+    if (options.describedBy !== undefined) {
+      instance.describedBy = options.describedBy;
+    }
+
+    if (instance.scrollLock) {
+      this.#setLock(true);
+    }
+
+    this.#activateTrap(id, instance);
+    instance.onOpen?.();
+
+    this.emit("open", { instanceId: id, source });
+  }
+
+  close(id: string, source: DialogChangeSource = "user"): void {
+    if (this.isDestroyed) {
+      return;
+    }
+    const instance = this.#instances[id];
+    if (!instance?.open) {
+      return;
+    }
+
+    instance.open = false;
+    this.#deactivateTrap(id);
+
+    if (instance.scrollLock) {
+      this.#setLock(false);
+    }
+
+    instance.onClose?.();
+
+    this.emit("close", { instanceId: id, source });
+  }
+
+  toggle(id: string, options: DialogOpenOptions = {}): void {
+    if (this.isOpen(id)) {
+      this.close(id);
+    } else {
+      this.open(id, options);
+    }
+  }
+
+  isOpen(id: string): boolean {
+    return this.#instances[id]?.open ?? false;
+  }
+
+  bindContainer(id: string, container: HTMLElement | null): void {
+    if (this.isDestroyed) {
+      return;
+    }
+    const instance = this.#getOrCreate(id);
+    instance.container = container;
+
+    if (instance.open && container) {
+      this.#activateTrap(id, instance);
+    }
+  }
+
+  handleKeydown(id: string, event: KeyboardEvent): void {
+    const instance = this.#instances[id];
+    if (!(instance?.open && instance.closeOnEscape)) {
+      return;
+    }
+
+    if (event.key === "Escape") {
+      event.preventDefault();
+      this.close(id);
+    }
+  }
+
+  handleOutsideClick(id: string, event: MouseEvent): void {
+    const instance = this.#instances[id];
+    if (!(instance?.open && instance.closeOnOutsideClick && instance.container)) {
+      return;
+    }
+
+    const target = event.target;
+    if (target instanceof Node && !instance.container.contains(target)) {
+      this.close(id);
+    }
+  }
+
+  dialogProps(id: string): Record<string, string | boolean | undefined> {
+    const instance = this.#instances[id];
+    return {
+      role: "dialog",
+      "aria-modal": true,
+      "aria-labelledby": instance?.labelledBy,
+      "aria-describedby": instance?.describedBy,
+    };
+  }
+
+  override destroy(): void {
+    if (this.isDestroyed) {
+      return;
+    }
+    for (const id of Object.keys(this.#instances)) {
+      this.close(id);
+      delete this.#instances[id];
+      this.#deactivateTrap(id);
+    }
+    this.#lockCount = 0;
+    this.#onLockChange?.(false);
+    super.destroy();
+  }
+
+  /**
+   * Returns a store-shaped object for Alpine's `$store.dialog`.
+   * The store delegates to this controller.
+   */
+  toStore(): DialogStore {
+    return {
+      instances: this.#instances as Record<string, DialogInstance>,
+      register: (id, opts) => this.register(id, opts),
+      unregister: (id) => this.unregister(id),
+      open: (id, opts) => this.open(id, opts),
+      close: (id) => this.close(id),
+      toggle: (id, opts) => this.toggle(id, opts),
+      isOpen: (id) => this.isOpen(id),
+      bindContainer: (id, container) => this.bindContainer(id, container),
+      handleKeydown: (id, event) => this.handleKeydown(id, event),
+      handleOutsideClick: (id, event) => this.handleOutsideClick(id, event),
+      dialogProps: (id) => this.dialogProps(id),
+      destroy: () => this.destroy(),
+    };
+  }
+
+  #getOrCreate(id: string): DialogInstance {
+    this.#instances[id] ??= createInstance({
+      closeOnEscape: this.#defaultCloseOnEscape,
+      closeOnOutsideClick: this.#defaultCloseOnOutsideClick,
+      scrollLock: this.#defaultScrollLock,
+    });
+    return this.#instances[id];
+  }
+
+  #setLock(locked: boolean): void {
     if (locked) {
-      if (lockCount === 0) {
-        config.onLockChange?.(true);
+      if (this.#lockCount === 0) {
+        this.#onLockChange?.(true);
       }
-      lockCount++;
+      this.#lockCount++;
       return;
     }
 
-    if (lockCount === 0) {
+    if (this.#lockCount === 0) {
       return;
     }
 
-    lockCount--;
-    if (lockCount === 0) {
-      config.onLockChange?.(false);
+    this.#lockCount--;
+    if (this.#lockCount === 0) {
+      this.#onLockChange?.(false);
     }
   }
 
-  function deactivateTrap(id: string): void {
-    const trap = traps.get(id);
+  #deactivateTrap(id: string): void {
+    const trap = this.#traps.get(id);
     trap?.deactivate();
-    traps.delete(id);
+    this.#traps.delete(id);
   }
 
-  function activateTrap(id: string, instance: DialogInstance): void {
+  #activateTrap(id: string, instance: DialogInstance): void {
     if (!instance.container) {
       return;
     }
 
-    deactivateTrap(id);
+    this.#deactivateTrap(id);
     const trap = createFocusTrap(instance.container);
-    traps.set(id, trap);
+    this.#traps.set(id, trap);
     trap.activate();
   }
-
-  function getOrCreate(store: DialogStore, id: string): DialogInstance {
-    store.instances[id] ??= createInstance({
-      closeOnEscape: defaultCloseOnEscape,
-      closeOnOutsideClick: defaultCloseOnOutsideClick,
-      scrollLock: defaultScrollLock,
-    });
-    return store.instances[id];
-  }
-
-  const store: DialogStore = {
-    instances: {},
-
-    register(id, options = {}) {
-      this.instances[id] = createInstance(options);
-    },
-
-    unregister(id) {
-      if (this.isOpen(id)) {
-        this.close(id);
-      }
-      delete this.instances[id];
-      deactivateTrap(id);
-    },
-
-    open(id, options = {}) {
-      const instance = getOrCreate(this, id);
-      if (instance.open) {
-        return;
-      }
-
-      instance.open = true;
-      if (options.trigger !== undefined) {
-        instance.trigger = options.trigger;
-      }
-      if (options.labelledBy !== undefined) {
-        instance.labelledBy = options.labelledBy;
-      }
-      if (options.describedBy !== undefined) {
-        instance.describedBy = options.describedBy;
-      }
-
-      if (instance.scrollLock) {
-        setLock(true);
-      }
-
-      activateTrap(id, instance);
-      instance.onOpen?.();
-    },
-
-    close(id) {
-      const instance = this.instances[id];
-      if (!instance?.open) {
-        return;
-      }
-
-      instance.open = false;
-      deactivateTrap(id);
-
-      if (instance.scrollLock) {
-        setLock(false);
-      }
-
-      instance.onClose?.();
-    },
-
-    toggle(id, options = {}) {
-      if (this.isOpen(id)) {
-        this.close(id);
-      } else {
-        this.open(id, options);
-      }
-    },
-
-    isOpen(id) {
-      return this.instances[id]?.open ?? false;
-    },
-
-    bindContainer(id, container) {
-      const instance = getOrCreate(this, id);
-      instance.container = container;
-
-      if (instance.open && container) {
-        activateTrap(id, instance);
-      }
-    },
-
-    handleKeydown(id, event) {
-      const instance = this.instances[id];
-      if (!(instance?.open && instance.closeOnEscape)) {
-        return;
-      }
-
-      if (event.key === "Escape") {
-        event.preventDefault();
-        this.close(id);
-      }
-    },
-
-    handleOutsideClick(id, event) {
-      const instance = this.instances[id];
-      if (!(instance?.open && instance.closeOnOutsideClick && instance.container)) {
-        return;
-      }
-
-      const target = event.target;
-      if (target instanceof Node && !instance.container.contains(target)) {
-        this.close(id);
-      }
-    },
-
-    dialogProps(id) {
-      const instance = this.instances[id];
-      return {
-        role: "dialog",
-        "aria-modal": true,
-        "aria-labelledby": instance?.labelledBy,
-        "aria-describedby": instance?.describedBy,
-      };
-    },
-
-    destroy() {
-      for (const id of Object.keys(this.instances)) {
-        this.unregister(id);
-      }
-      lockCount = 0;
-      config.onLockChange?.(false);
-    },
-  };
-
-  return store;
 }
 
-export type DialogController = DialogStore;
-
-/** Alias matching the controller-based architecture naming. */
+/**
+ * Creates a DialogController.
+ * Convenience for non-Alpine consumers.
+ */
 export function createDialogController(config: DialogStoreConfig = {}): DialogController {
-  return createDialogStore(config);
+  return new DialogController(config);
+}
+
+/**
+ * Creates a DialogStore (store-shaped object) directly.
+ * Backward-compatible alias.
+ */
+export function createDialogStore(config: DialogStoreConfig = {}): DialogStore {
+  return new DialogController(config).toStore();
 }

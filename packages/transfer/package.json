@@ -33,12 +33,16 @@
   "types": "./dist/global.d.ts",
   "peerDependencies": {
     "alpinejs": "^3.0.0",
-    "@types/alpinejs": "^3.13.11"
+    "@types/alpinejs": "^3.13.11",
+    "@ailuracode/alpine-core": "^0.1.0"
   },
   "peerDependenciesMeta": {
     "@types/alpinejs": {
       "optional": true
     }
+  },
+  "devDependencies": {
+    "@ailuracode/alpine-core": "workspace:*"
   },
   "scripts": {
     "build": "tsup src/index.ts --format esm --dts --clean --out-dir dist && cp src/global.d.ts dist/global.d.ts",

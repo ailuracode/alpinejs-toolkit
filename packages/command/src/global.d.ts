@@ -1,16 +1,8 @@
 /// <reference types="@types/alpinejs" />
 
-export type CommandAction = () => void | Promise<void>;
+import type { CommandItem } from "./types";
 
-export type CommandItem = {
-  id: string;
-  label: string;
-  group?: string;
-  shortcut?: string;
-  keywords?: string[];
-  disabled?: boolean;
-  action: CommandAction;
-};
+export type { CommandAction, CommandItem, CommandStoreConfig } from "./types";
 
 export interface CommandStore {
   search: string;
@@ -30,18 +22,12 @@ export interface CommandStore {
   destroy(): void;
 }
 
-export interface CommandPluginOptions {
-  onOpen?: () => void;
-  onClose?: () => void;
-  onRun?: (item: CommandItem) => void;
-  filter?: (item: CommandItem, search: string) => boolean;
-}
-
-export function commandOptions<const T extends CommandPluginOptions>(options: T): T;
-export function createCommandStore(options?: CommandPluginOptions): CommandStore;
+export function createCommandController(
+  config?: import("./types").CommandStoreConfig
+): import("./types").CommandController;
 
 export default function commandPlugin(
-  options?: CommandPluginOptions
+  options?: import("./types").CommandPluginOptions
 ): import("alpinejs").PluginCallback;
 
 declare global {

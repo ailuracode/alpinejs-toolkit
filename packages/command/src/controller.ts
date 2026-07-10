@@ -1,41 +1,16 @@
-export type CommandAction = () => void | Promise<void>;
+/**
+ * Command palette controller — the framework-agnostic core of
+ * `@ailuracode/alpine-command`. Manages a singleton command palette
+ * with search, item registry, open/close/toggle, keyboard navigation,
+ * and filtered/grouped item views.
+ *
+ * Emits typed `open`, `close`, and `run` events so consumers can
+ * react programmatically.
+ */
 
-export type CommandItem = {
-  id: string;
-  label: string;
-  group?: string;
-  shortcut?: string;
-  keywords?: string[];
-  disabled?: boolean;
-  action: CommandAction;
-};
-
-export type CommandStore = {
-  search: string;
-  activeIndex: number;
-  /** Whether the palette is visible. */
-  visible: boolean;
-  /** Registered command items. */
-  items: Record<string, CommandItem>;
-  readonly isOpen: boolean;
-  open(): void;
-  close(): void;
-  toggle(): void;
-  register(item: CommandItem): void;
-  unregister(id: string): void;
-  run(id: string): Promise<void>;
-  handleKeydown(event: KeyboardEvent): void;
-  readonly filteredItems: CommandItem[];
-  readonly groupedItems: Record<string, CommandItem[]>;
-  destroy(): void;
-};
-
-export type CommandStoreConfig = {
-  onOpen?: () => void;
-  onClose?: () => void;
-  onRun?: (item: CommandItem) => void;
-  filter?: (item: CommandItem, search: string) => boolean;
-};
+import { BaseController, generateId } from "@ailuracode/alpine-core";
+import type { CommandEvents } from "./events";
+import type { CommandItem, CommandStore, CommandStoreConfig } from "./types";
 
 function defaultFilter(item: CommandItem, search: string): boolean {
   if (!search.trim()) {
@@ -69,172 +44,249 @@ function isTypingKey(event: KeyboardEvent): boolean {
   );
 }
 
-function handlePaletteTyping(
-  store: Pick<CommandStore, "search" | "activeIndex">,
-  event: KeyboardEvent
-): boolean {
-  if (isEditableTarget(event.target)) {
-    return false;
+/**
+ * Headless command palette controller. Manages a singleton command palette
+ * with search, item registry, open/close/toggle, keyboard navigation,
+ * and filtered/grouped item views.
+ */
+export class CommandController extends BaseController<CommandEvents> {
+  #items: Record<string, CommandItem> = {};
+  #search = "";
+  #activeIndex = 0;
+  #visible = false;
+  readonly #filter: (item: CommandItem, search: string) => boolean;
+  readonly #config: CommandStoreConfig;
+
+  constructor(id?: string, config: CommandStoreConfig = {}) {
+    super(id ?? generateId("command"));
+    this.#filter = config.filter ?? defaultFilter;
+    this.#config = config;
   }
 
-  if (event.key === "Backspace") {
-    event.preventDefault();
-    store.search = store.search.slice(0, -1);
-    store.activeIndex = 0;
-    return true;
+  get items(): Readonly<Record<string, CommandItem>> {
+    return this.#items;
   }
 
-  if (isTypingKey(event)) {
-    event.preventDefault();
-    store.search += event.key;
-    store.activeIndex = 0;
-    return true;
+  get search(): string {
+    return this.#search;
   }
 
-  return false;
-}
+  set search(value: string) {
+    this.#search = value;
+  }
 
-/** Creates the headless command palette controller. */
-export function createCommandStore(config: CommandStoreConfig = {}): CommandStore {
-  const filter = config.filter ?? defaultFilter;
+  get activeIndex(): number {
+    return this.#activeIndex;
+  }
 
-  const store: CommandStore = {
-    search: "",
-    activeIndex: 0,
-    visible: false,
-    items: {},
+  set activeIndex(value: number) {
+    this.#activeIndex = value;
+  }
 
-    get isOpen() {
-      return this.visible;
-    },
+  get visible(): boolean {
+    return this.#visible;
+  }
 
-    get filteredItems() {
-      const list = Object.values(this.items).filter(
-        (item) => !item.disabled && filter(item, this.search)
-      );
-      if (this.activeIndex >= list.length) {
-        this.activeIndex = Math.max(list.length - 1, 0);
-      }
-      return list;
-    },
+  get isOpen(): boolean {
+    return this.#visible;
+  }
 
-    get groupedItems() {
-      const groups: Record<string, CommandItem[]> = {};
-      for (const item of this.filteredItems) {
-        const group = item.group ?? "General";
-        groups[group] ??= [];
-        groups[group].push(item);
-      }
-      return groups;
-    },
+  get filteredItems(): CommandItem[] {
+    const list = Object.values(this.#items).filter(
+      (item) => !item.disabled && this.#filter(item, this.#search)
+    );
+    if (this.#activeIndex >= list.length) {
+      this.#activeIndex = Math.max(list.length - 1, 0);
+    }
+    return list;
+  }
 
-    open() {
-      if (this.visible) {
-        return;
-      }
-      this.visible = true;
-      this.search = "";
-      this.activeIndex = 0;
-      config.onOpen?.();
-    },
+  get groupedItems(): Record<string, CommandItem[]> {
+    const groups: Record<string, CommandItem[]> = {};
+    for (const item of this.filteredItems) {
+      const group = item.group ?? "General";
+      groups[group] ??= [];
+      groups[group].push(item);
+    }
+    return groups;
+  }
 
-    close() {
-      if (!this.visible) {
-        return;
-      }
-      this.visible = false;
-      this.search = "";
-      this.activeIndex = 0;
-      config.onClose?.();
-    },
+  open(): void {
+    if (this.isDestroyed || this.#visible) {
+      return;
+    }
+    this.#visible = true;
+    this.#search = "";
+    this.#activeIndex = 0;
+    this.#config.onOpen?.();
+    this.emit("open", undefined);
+  }
 
-    toggle() {
-      if (this.visible) {
-        this.close();
-      } else {
-        this.open();
-      }
-    },
+  close(): void {
+    if (this.isDestroyed || !this.#visible) {
+      return;
+    }
+    this.#visible = false;
+    this.#search = "";
+    this.#activeIndex = 0;
+    this.#config.onClose?.();
+    this.emit("close", undefined);
+  }
 
-    register(item) {
-      this.items[item.id] = item;
-    },
-
-    unregister(id) {
-      delete this.items[id];
-    },
-
-    async run(id) {
-      const item = this.items[id];
-      if (!item || item.disabled) {
-        return;
-      }
-
-      await item.action();
-      config.onRun?.(item);
+  toggle(): void {
+    if (this.#visible) {
       this.close();
-    },
+    } else {
+      this.open();
+    }
+  }
 
-    handleKeydown(event) {
-      if (!this.visible) {
-        return;
-      }
+  register(item: CommandItem): void {
+    if (this.isDestroyed) {
+      return;
+    }
+    this.#items[item.id] = item;
+  }
 
-      const list = this.filteredItems;
+  unregister(id: string): void {
+    if (this.isDestroyed) {
+      return;
+    }
+    delete this.#items[id];
+  }
 
-      if (handlePaletteTyping(this, event)) {
-        return;
-      }
+  async run(id: string): Promise<void> {
+    if (this.isDestroyed) {
+      return;
+    }
+    const item = this.#items[id];
+    if (!item || item.disabled) {
+      return;
+    }
 
-      switch (event.key) {
-        case "ArrowDown":
-          event.preventDefault();
-          this.activeIndex = list.length === 0 ? 0 : (this.activeIndex + 1) % list.length;
-          break;
-        case "ArrowUp":
-          event.preventDefault();
-          this.activeIndex =
-            list.length === 0 ? 0 : (this.activeIndex - 1 + list.length) % list.length;
-          break;
-        case "Home":
-          event.preventDefault();
-          this.activeIndex = 0;
-          break;
-        case "End":
-          event.preventDefault();
-          this.activeIndex = Math.max(list.length - 1, 0);
-          break;
-        case "Enter": {
-          event.preventDefault();
-          const active = list[this.activeIndex];
-          if (active) {
-            void this.run(active.id);
-          }
-          break;
+    await item.action();
+    this.#config.onRun?.(item);
+    this.emit("run", item);
+    this.close();
+  }
+
+  handleKeydown(event: KeyboardEvent): void {
+    if (this.isDestroyed || !this.#visible) {
+      return;
+    }
+
+    const list = this.filteredItems;
+
+    if (isEditableTarget(event.target)) {
+      // Don't capture typing when an input is focused
+    } else if (event.key === "Backspace") {
+      event.preventDefault();
+      this.#search = this.#search.slice(0, -1);
+      this.#activeIndex = 0;
+      return;
+    } else if (isTypingKey(event)) {
+      event.preventDefault();
+      this.#search += event.key;
+      this.#activeIndex = 0;
+      return;
+    }
+
+    switch (event.key) {
+      case "ArrowDown":
+        event.preventDefault();
+        this.#activeIndex = list.length === 0 ? 0 : (this.#activeIndex + 1) % list.length;
+        break;
+      case "ArrowUp":
+        event.preventDefault();
+        this.#activeIndex =
+          list.length === 0 ? 0 : (this.#activeIndex - 1 + list.length) % list.length;
+        break;
+      case "Home":
+        event.preventDefault();
+        this.#activeIndex = 0;
+        break;
+      case "End":
+        event.preventDefault();
+        this.#activeIndex = Math.max(list.length - 1, 0);
+        break;
+      case "Enter": {
+        event.preventDefault();
+        const active = list[this.#activeIndex];
+        if (active) {
+          void this.run(active.id);
         }
-        case "Escape":
-          event.preventDefault();
-          this.close();
-          break;
-        default:
-          break;
+        break;
       }
-    },
+      case "Escape":
+        event.preventDefault();
+        this.close();
+        break;
+      default:
+        break;
+    }
+  }
 
-    destroy() {
-      this.items = {};
-      this.visible = false;
-      this.search = "";
-      this.activeIndex = 0;
-    },
-  };
-
-  return store;
+  /**
+   * Returns a store-shaped object for Alpine's `$store.command`.
+   * The store delegates to this controller.
+   */
+  toStore(): CommandStore {
+    const controller = this;
+    return {
+      get search() {
+        return controller.search;
+      },
+      set search(value) {
+        controller.search = value;
+      },
+      get activeIndex() {
+        return controller.activeIndex;
+      },
+      set activeIndex(value) {
+        controller.activeIndex = value;
+      },
+      get visible() {
+        return controller.visible;
+      },
+      get items() {
+        return controller.items as Record<string, CommandItem>;
+      },
+      get isOpen() {
+        return controller.isOpen;
+      },
+      open: () => controller.open(),
+      close: () => controller.close(),
+      toggle: () => controller.toggle(),
+      register: (item) => controller.register(item),
+      unregister: (id) => controller.unregister(id),
+      run: (id) => controller.run(id),
+      handleKeydown: (event) => controller.handleKeydown(event),
+      get filteredItems() {
+        return controller.filteredItems;
+      },
+      get groupedItems() {
+        return controller.groupedItems;
+      },
+      destroy: () => controller.destroy(),
+    };
+  }
 }
 
-export type CommandController = CommandStore;
-
-/** Alias matching the controller-based architecture naming. */
+/**
+ * Creates a CommandController instance.
+ * Convenience for non-Alpine consumers.
+ */
 export function createCommandController(config: CommandStoreConfig = {}): CommandController {
-  return createCommandStore(config);
+  return new CommandController(undefined, config);
 }
+
+/**
+ * Creates a CommandStore (store-shaped object) directly.
+ * Backward-compatible alias.
+ */
+export function createCommandStore(config: CommandStoreConfig = {}): CommandStore {
+  return new CommandController(undefined, config).toStore();
+}
+
+// Re-export types for backward compatibility
+export type { CommandAction, CommandItem, CommandStore, CommandStoreConfig } from "./types";
