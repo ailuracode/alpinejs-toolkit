@@ -38,6 +38,7 @@ pnpm run typecheck
 pnpm run lint
 pnpm test
 pnpm run pack:check
+pnpm run repo:check
 ```
 
 Cross-check the diff against `architecture.mdc` and `new-package.mdc`.

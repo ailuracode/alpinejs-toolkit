@@ -14,6 +14,8 @@
     "test:coverage": "vitest run --coverage",
     "test:watch": "vitest",
     "pack:check": "pnpm run build && node scripts/pack-check.mjs",
+    "repo:check": "node scripts/repo-check.mjs",
+    "repo:check:built": "node scripts/repo-check.mjs --built",
     "changeset:check": "node scripts/changeset-check.mjs",
     "test:packages": "pnpm -r --if-present test",
     "changeset": "changeset",

@@ -26,6 +26,7 @@ export default defineConfig({
     include: [
       path.join(root, "packages/*/test/**/*.{test,spec}.ts"),
       path.join(root, "apps/demo/test/**/*.test.ts"),
+      path.join(root, "test/**/*.test.ts"),
     ],
     coverage: {
       provider: "v8",

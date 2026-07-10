@@ -4,7 +4,7 @@ Guidance for AI agents and contributors working on **@ailuracode/alpinejs-toolki
 
 ## Project
 
-Alpine.js plugin monorepo by **ailuracode**. Twenty-six independent npm packages under `packages/`, plus shared tests and docs. The root package `@ailuracode/alpinejs-toolkit` is **private** and never published.
+Alpine.js plugin monorepo by **ailuracode**. 28 independent npm packages under `packages/`, plus shared tests and docs. The root package `@ailuracode/alpinejs-toolkit` is **private** and never published.
 
 | Package | Type | Store / Magic |
 |---------|------|---------------|
@@ -14,6 +14,7 @@ Alpine.js plugin monorepo by **ailuracode**. Twenty-six independent npm packages
 | `@ailuracode/alpine-scroll` | Store | `$store.scroll` |
 | `@ailuracode/alpine-sidebar` | Store | `$store.sidebar` |
 | `@ailuracode/alpine-lang` | Store | `$store.lang` — headless `LangController` (singleton) + typed `change` event; `langPlugin` named export |
+| `@ailuracode/alpine-overlay` | Store | `$store.overlay` — portal root, z-index stack, overlay registry |
 | `@ailuracode/alpine-dialog` | Store | `$store.dialog` |
 | `@ailuracode/alpine-menu` | Store | `$store.menu` |
 | `@ailuracode/alpine-tooltip` | Store | `$store.tooltip` |
@@ -62,7 +63,9 @@ pnpm run lint         # biome check (strict)
 pnpm run lint:fix     # biome check --write
 pnpm run format       # biome format --write
 pnpm run test:coverage # vitest with coverage thresholds
-pnpm run pack:check   # pnpm pack dry-run for all workspaces
+pnpm run pack:check   # pnpm pack dry-run for all publishable packages
+pnpm run repo:check   # validate monorepo package catalog and wiring consistency
+pnpm run repo:check:built # repo:check plus built export artifact validation
 pnpm run changeset:check # verify pending changesets
 pnpm run test:watch   # vitest watch mode
 pnpm run changeset    # create a changeset after user-facing changes
