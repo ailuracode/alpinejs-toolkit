@@ -84,4 +84,22 @@ describe("@ailuracode/alpine-toast alpine integration", () => {
     expect(document.getElementById("variant")?.textContent).toBe("success");
     expect(document.getElementById("title")?.textContent).toBe("Saved!");
   });
+
+  it("updates the dom when template uses itemsAt helper", async () => {
+    document.body.innerHTML = `
+      <div x-data>
+        <button id="btn" @click="$toast({ title: 'top', position: 'bottom-right' })">toast</button>
+        <span id="title" x-text="$store.toast.itemsAt('bottom-right')[0]?.title ?? ''"></span>
+        <div id="visible" x-show="$store.toast.itemsAt('bottom-right')[0]?.title === 'top'">shown</div>
+      </div>
+    `;
+    await Alpine.nextTick();
+
+    document.getElementById("btn")?.click();
+    await Promise.resolve();
+    await Alpine.nextTick();
+
+    expect(document.getElementById("title")?.textContent).toBe("top");
+    expect(document.getElementById("visible")?.style.display).not.toBe("none");
+  });
 });

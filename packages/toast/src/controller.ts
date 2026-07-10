@@ -583,22 +583,64 @@ export function wrapToastStore<
     maxToasts: controller.maxToasts,
     maxVisible: controller.maxVisible,
     items: [...controller.items],
-    push: (payload) => controller.push(payload),
-    pushUnique: (key, payload) => controller.pushUnique(key, payload ?? {}),
-    update: (id, payload) => controller.update(id, payload),
-    dismiss: (id) => controller.dismiss(id),
-    dismissAt: (position) => controller.dismissAt(position),
-    dismissAll: () => controller.dismissAll(),
-    destroy: () => {
+    push(payload) {
+      return controller.push(payload);
+    },
+    pushUnique(key, payload) {
+      return controller.pushUnique(key, payload ?? {});
+    },
+    update(id, payload) {
+      controller.update(id, payload);
+    },
+    dismiss(id) {
+      controller.dismiss(id);
+    },
+    dismissAt(position) {
+      controller.dismissAt(position);
+    },
+    dismissAll() {
+      controller.dismissAll();
+    },
+    destroy() {
       unsubscribe();
       controller.destroy();
     },
-    itemsAt: (position) => controller.itemsAt(position),
-    timedItemsAt: (position) => controller.timedItemsAt(position),
-    persistentItemsAt: (position) => controller.persistentItemsAt(position),
-    activeTimedItemsAt: (position) => controller.activeTimedItemsAt(position),
-    activePersistentItemsAt: (position) => controller.activePersistentItemsAt(position),
-    isVisibleAt: (position, index) => controller.isVisibleAt(position, index),
+    itemsAt(position) {
+      return this.items.filter((item) => item.position === position);
+    },
+    timedItemsAt(position) {
+      return this.itemsAt(position).filter((item) => shouldAutoDismiss(item.duration));
+    },
+    persistentItemsAt(position) {
+      return this.itemsAt(position).filter((item) => isPersistentDuration(item.duration));
+    },
+    activeTimedItemsAt(position) {
+      return this.timedItemsAt(position).filter((item) => !item.removed);
+    },
+    activePersistentItemsAt(position) {
+      return this.persistentItemsAt(position).filter((item) => !item.removed);
+    },
+    isVisibleAt(position, index) {
+      const stack = this.timedItemsAt(position);
+      const item = stack[index];
+
+      if (!item || item.removed) {
+        return false;
+      }
+
+      if (this.maxVisible <= 0) {
+        return true;
+      }
+
+      let rank = 0;
+      for (let i = 0; i <= index; i++) {
+        if (stack[i] && !stack[i].removed) {
+          rank++;
+        }
+      }
+
+      return rank <= this.maxVisible;
+    },
   };
 
   // Internal subscription keeps `store.items` aligned with the
