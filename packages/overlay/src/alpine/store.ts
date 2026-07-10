@@ -52,7 +52,7 @@ export function createOverlayStore(controller: OverlayController): OverlayStore 
       controller.unregister(plugin, id);
     },
 
-    zIndexOf(plugin: string, id: string): number | null {
+    zIndexOf(plugin: string, id: string): number {
       return controller.zIndexOf(plugin, id);
     },
 

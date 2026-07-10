@@ -7,40 +7,7 @@ const plugin = getPluginNavItem("command")!;
 ---
 
 <DemoSection id={plugin.id} title={plugin.title} api={plugin.api} description={plugin.description}>
-	<div
-		class="grid gap-6"
-		x-data
-		x-init="
-			$store.command.register({
-				id: 'toggle-theme',
-				label: 'Toggle theme',
-				group: 'Appearance',
-				shortcut: '⌘K',
-				action: () => $store.theme.toggle(),
-			});
-			$store.command.register({
-				id: 'toast-demo',
-				label: 'Show toast',
-				group: 'Actions',
-				keywords: ['notify'],
-				action: () => $toast.success('Command executed'),
-			});
-			$store.command.register({
-				id: 'disabled-demo',
-				label: 'Disabled action',
-				group: 'Actions',
-				disabled: true,
-				action: () => {},
-			});
-		"
-		@keydown.window="
-			if (($event.metaKey || $event.ctrlKey) && $event.key.toLowerCase() === 'k') {
-				$event.preventDefault();
-				$store.command.toggle();
-			}
-			if ($store.command.isOpen) $store.command.handleKeydown($event);
-		"
-	>
+	<div class="grid gap-6" x-data="commandDemo" @keydown.window="handleGlobalKey($event)">
 		<div>
 			<h3 class="text-sm font-medium mb-2">Command palette</h3>
 			<p class="text-xs text-muted-foreground mb-3">
@@ -48,6 +15,7 @@ const plugin = getPluginNavItem("command")!;
 				<kbd class="px-1 rounded border">⌘K</kbd> or use the button
 			</p>
 			<DemoButton @click="$store.command.open()">Open command palette</DemoButton>
+			<DemoButton variant="destructive" @click="$store.command.close()">Close</DemoButton>
 		</div>
 
 		<template x-teleport="#overlay-root">
@@ -55,7 +23,7 @@ const plugin = getPluginNavItem("command")!;
 				x-show="$store.command.isOpen"
 				x-transition
 				class="fixed inset-0 flex items-start justify-center p-6 pt-[12vh]"
-				:style="{ zIndex: $store.overlay.zIndexOf('command') ?? 1000 }"
+				:style="{ zIndex: $store.overlay.zIndexOf('command', 'palette') }"
 			>
 				<div class="absolute inset-0 bg-black/50" aria-hidden="true" @click="$store.command.close()"></div>
 				<div
@@ -64,34 +32,34 @@ const plugin = getPluginNavItem("command")!;
 					aria-label="Command palette"
 					x-effect="$store.command.isOpen && $nextTick(() => $el.querySelector('[data-command-search]')?.focus())"
 				>
-				<input
-					type="search"
-					data-command-search
-					class="w-full border-b bg-transparent px-4 py-3 text-sm outline-none"
-					placeholder="Search commands…"
-					x-model="$store.command.search"
-					aria-label="Search commands"
-				/>
-				<ul class="max-h-64 overflow-auto p-2">
-					<template x-for="(item, index) in $store.command.filteredItems" :key="item.id">
-						<li>
-							<button
-								type="button"
-								class="flex w-full items-center justify-between rounded-md px-3 py-2 text-left text-sm"
-								:class="index === $store.command.activeIndex ? 'bg-accent' : 'hover:bg-accent/60'"
-								@click="$store.command.run(item.id)"
-							>
-								<span>
-									<span x-text="item.label"></span>
-									<span class="text-xs text-muted-foreground ml-2" x-text="item.group"></span>
-								</span>
-								<span class="text-xs text-muted-foreground" x-text="item.shortcut"></span>
-							</button>
-						</li>
-					</template>
-				</ul>
+					<input
+						type="search"
+						data-command-search
+						class="w-full border-b bg-transparent px-4 py-3 text-sm outline-none"
+						placeholder="Search commands…"
+						x-model="$store.command.search"
+						aria-label="Search commands"
+					/>
+					<ul class="max-h-64 overflow-auto p-2">
+						<template x-for="(item, index) in $store.command.filteredItems" :key="item.id">
+							<li>
+								<button
+									type="button"
+									class="flex w-full items-center justify-between rounded-md px-3 py-2 text-left text-sm"
+									:class="index === $store.command.activeIndex ? 'bg-accent' : 'hover:bg-accent/60'"
+									@click="$store.command.run(item.id)"
+								>
+									<span>
+										<span x-text="item.label"></span>
+										<span class="text-xs text-muted-foreground ml-2" x-text="item.group"></span>
+									</span>
+									<span class="text-xs text-muted-foreground" x-text="item.shortcut"></span>
+								</button>
+							</li>
+						</template>
+					</ul>
+				</div>
 			</div>
-		</div>
 		</template>
 
 		<div>

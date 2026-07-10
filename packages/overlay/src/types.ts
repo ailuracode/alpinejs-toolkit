@@ -114,7 +114,7 @@ export interface OverlayStore
   register(plugin: string, id: string): number;
   /** Release a slot. Silent no-op when the pair is unknown. */
   unregister(plugin: string, id: string): void;
-  zIndexOf(plugin: string, id: string): number | null;
+  zIndexOf(plugin: string, id: string): number;
   isOpen(plugin: string, id: string): boolean;
   on(event: "change", listener: OverlayChangeListener): Unsubscribe;
 }
@@ -132,7 +132,7 @@ export interface OverlayMagicFacade {
   configure(options: OverlayOptions): void;
   register(plugin: string, id: string): number;
   unregister(plugin: string, id: string): void;
-  zIndexOf(plugin: string, id: string): number | null;
+  zIndexOf(plugin: string, id: string): number;
   isOpen(plugin: string, id: string): boolean;
   on(event: "change", listener: OverlayChangeListener): Unsubscribe;
 }

@@ -158,12 +158,25 @@ export class OverlayController extends BaseController<OverlayEvents> {
     });
   }
 
-  /** Returns `null` when the pair is unknown. */
-  zIndexOf(plugin: string, id: string): number | null {
+  /**
+   * Returns the z-index for `(plugin, id)`. Auto-registers the
+   * slot if it doesn't exist yet — this makes `zIndexOf` safe to
+   * use directly in `:style` bindings without an explicit
+   * `register()` call. Pair with `unregister()` when the
+   * consumer closes the corresponding overlay.
+   *
+   * Returns `0` when the controller has been destroyed (e.g. SSR).
+   */
+  zIndexOf(plugin: string, id: string): number {
     if (this.isDestroyed) {
-      return null;
+      return 0;
     }
-    return this.#slots.slots.get(slotKeyOf(plugin, id)) ?? null;
+    const key = slotKeyOf(plugin, id);
+    const existing = this.#slots.slots.get(key);
+    if (existing !== undefined) {
+      return existing;
+    }
+    return this.register(plugin, id);
   }
 
   isOpen(plugin: string, id: string): boolean {

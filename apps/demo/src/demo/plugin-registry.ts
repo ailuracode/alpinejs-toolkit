@@ -13,6 +13,7 @@ import { langPlugin as lang } from "@ailuracode/alpine-lang";
 import { mediaPlugin } from "@ailuracode/alpine-media";
 import menu from "@ailuracode/alpine-menu";
 import notify from "@ailuracode/alpine-notify";
+import { overlayPlugin } from "@ailuracode/alpine-overlay";
 import query from "@ailuracode/alpine-query";
 import {
   createAlpineNanostoresAdapter,
@@ -30,6 +31,7 @@ import tooltip from "@ailuracode/alpine-tooltip";
 import transfer from "@ailuracode/alpine-transfer";
 import type { AlpineInstance } from "../types/alpine.js";
 import { registerCalendarDemo } from "./calendar-demo.js";
+import { registerCommandDemo } from "./command-demo.js";
 import { registerDemoShell, registerToastDemoHandlers } from "./demo-shell.js";
 import { jsonApiDemoOptions, registerJsonApiDemo } from "./json-api-demo.js";
 import { registerQueryAdvancedDemo, registerQueryDemos } from "./query-demos.js";
@@ -123,22 +125,6 @@ export function registerDemoPlugins(): void {
     definePlugin(["directive"], {
       names: ["child"],
       plugin: child(),
-    })
-  );
-
-  // INSERTION-ORDER INVARIANT — overlay-plugin/design §9.
-  // `overlayPlugin()` MUST register before any plugin whose templates
-  // use `x-teleport="#overlay-root"` (dialog, menu, tooltip, command).
-  // The overlay plugin calls `configure()` synchronously on registration,
-  // which eagerly appends `<div id="overlay-root">` to `document.body`.
-  // Without this, `x-teleport="#overlay-root"` silently no-ops and Alpine
-  // logs "Unable to find element with selector #overlay-root".
-  registerPlugin(
-    "overlay",
-    defineHybridPlugin({
-      stores: ["overlay"],
-      magics: ["overlay"],
-      plugin: overlayPlugin(),
     })
   );
 
@@ -300,6 +286,7 @@ export function setupDemoExtensions(Alpine: AlpineInstance): void {
       reserveScrollbarGap: true,
       target: document.body,
     }),
+    overlayPlugin(),
   ]);
 
   Alpine.plugin(
@@ -318,6 +305,7 @@ export function setupDemoExtensions(Alpine: AlpineInstance): void {
   registerJsonApiDemo(Alpine);
   registerToggleDemos(Alpine);
   registerCalendarDemo(Alpine);
+  registerCommandDemo(Alpine);
   registerDemoShell(Alpine);
   registerToastDemoHandlers(Alpine);
   registerToastSonner(Alpine);

@@ -34,7 +34,7 @@ describe("overlayPlugin", () => {
     const Alpine = startAlpine(overlayPlugin());
     const store = Alpine.store("overlay") as unknown as {
       register: (plugin: string, id: string) => number;
-      zIndexOf: (plugin: string, id: string) => number | null;
+      zIndexOf: (plugin: string, id: string) => number;
     };
     const zIndex = store.register("dialog", "a");
     expect(zIndex).toBe(1000);

@@ -13,6 +13,7 @@ import LangDemo from "../components/demos/LangDemo.astro";
 import MediaDemo from "../components/demos/MediaDemo.astro";
 import MenuDemo from "../components/demos/MenuDemo.astro";
 import NotifyDemo from "../components/demos/NotifyDemo.astro";
+import OverlayDemo from "../components/demos/OverlayDemo.astro";
 import QueryDemo from "../components/demos/QueryDemo.astro";
 import QueryKitDemo from "../components/demos/QueryKitDemo.astro";
 import ScrollDemo from "../components/demos/ScrollDemo.astro";
@@ -34,6 +35,7 @@ export const PLAYGROUND_DEMOS: Record<string, AstroComponentFactory> = {
   lang: LangDemo,
   toggle: ToggleDemo,
   child: ChildDemo,
+  overlay: OverlayDemo,
   dialog: DialogDemo,
   menu: MenuDemo,
   tooltip: TooltipDemo,

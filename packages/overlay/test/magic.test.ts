@@ -74,13 +74,13 @@ describe("overlay $overlay magic", () => {
     expect(facade.count).toBe(0);
   });
 
-  it("zIndexOf returns null for unknown pairs", async () => {
+  it("zIndexOf auto-registers an unknown pair and returns the allocated number", async () => {
     document.body.innerHTML = `
       <div x-data="{ init() { window.__facade = $overlay; } }"></div>
     `;
     setupOverlayAlpine();
     await Alpine.nextTick();
     const facade = (window as unknown as { __facade?: OverlayMagicFacade }).__facade ?? null;
-    expect(facade?.zIndexOf("dialog", "missing")).toBeNull();
+    expect(facade?.zIndexOf("dialog", "missing")).toBe(1000);
   });
 });
