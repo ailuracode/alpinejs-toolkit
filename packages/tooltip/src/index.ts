@@ -1,27 +1,9 @@
-import type AlpineType from "alpinejs";
-import { createTooltipStore, type TooltipStore } from "./store.js";
+/**
+ * Public entrypoint for `@ailuracode/alpine-tooltip`.
+ *
+ * Re-exports only. Implementation lives in `./plugin.ts` and
+ * `./store.ts`.
+ */
 
-export {
-  createTooltipStore,
-  type TooltipInstanceOptions,
-  type TooltipStore,
-} from "./store.js";
-
-/** Alpine.js tooltip plugin. Registers `$store.tooltip`. */
-export default function tooltipPlugin(): AlpineType.PluginCallback {
-  return function registerTooltip(Alpine) {
-    Alpine.store("tooltip", createTooltipStore());
-    Alpine.magic("tooltip", () => Alpine.store("tooltip"));
-  };
-}
-
-declare global {
-  namespace Alpine {
-    interface Stores {
-      tooltip: TooltipStore;
-    }
-    interface Magics<T> {
-      $tooltip: TooltipStore;
-    }
-  }
-}
+export * from "./plugin.js";
+export { default } from "./plugin.js";

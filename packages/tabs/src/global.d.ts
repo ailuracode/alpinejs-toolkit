@@ -3,8 +3,8 @@
 export type TabsOrientation = "horizontal" | "vertical";
 
 export interface TabsStore {
-  groups: Record<string, import("./store.js").TabsGroup>;
-  register(groupId: string, options?: import("./store.js").TabsGroupOptions): void;
+  groups: Record<string, import("./controller.js").TabsGroup>;
+  register(groupId: string, options?: import("./controller.js").TabsGroupOptions): void;
   unregister(groupId: string): void;
   registerTab(groupId: string, tabId: string, disabled?: boolean): void;
   unregisterTab(groupId: string, tabId: string): void;

@@ -5,7 +5,7 @@ export type {
   MenuItemOptions,
   MenuOrientation,
   MenuStore,
-} from "./store.js";
+} from "./controller.js";
 
 export interface MenuPluginOptions {
   exclusive?: boolean;
@@ -13,17 +13,17 @@ export interface MenuPluginOptions {
 }
 
 export function menuOptions<const T extends MenuPluginOptions>(options: T): T;
-export function createMenuStore(config?: MenuPluginOptions): import("./store.js").MenuStore;
+export function createMenuStore(config?: MenuPluginOptions): import("./controller.js").MenuStore;
 
 export default function menuPlugin(options?: MenuPluginOptions): import("alpinejs").PluginCallback;
 
 declare global {
   namespace Alpine {
     interface Stores {
-      menu: import("./store.js").MenuStore;
+      menu: import("./controller.js").MenuStore;
     }
     interface Magics<T> {
-      $menu: import("./store.js").MenuStore;
+      $menu: import("./controller.js").MenuStore;
     }
   }
 }

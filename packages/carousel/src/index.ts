@@ -1,30 +1,9 @@
-import type AlpineType from "alpinejs";
-import { type CarouselStore, createCarouselStore } from "./store.js";
+/**
+ * Public entrypoint for `@ailuracode/alpine-carousel`.
+ *
+ * Re-exports only. Implementation lives in `./plugin.ts` and
+ * `./store.ts`.
+ */
 
-export {
-  type CarouselAutoplayOptions,
-  type CarouselInstance,
-  type CarouselOptions,
-  type CarouselStore,
-  createCarouselStore,
-} from "./store.js";
-
-/** Alpine.js carousel plugin. Registers `$store.carousel`. */
-export default function carouselPlugin(): AlpineType.PluginCallback {
-  return function registerCarousel(Alpine) {
-    const store = createCarouselStore();
-    Alpine.store("carousel", store);
-    Alpine.magic("carousel", () => Alpine.store("carousel"));
-  };
-}
-
-declare global {
-  namespace Alpine {
-    interface Stores {
-      carousel: CarouselStore;
-    }
-    interface Magics<T> {
-      $carousel: CarouselStore;
-    }
-  }
-}
+export * from "./plugin.js";
+export { default } from "./plugin.js";

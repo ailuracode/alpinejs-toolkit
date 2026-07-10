@@ -22,7 +22,7 @@ export type CarouselOptions = {
 };
 
 export interface CarouselStore {
-  instances: Record<string, import("./store.js").CarouselInstance>;
+  instances: Record<string, import("./controller.js").CarouselInstance>;
   create(id: string, options?: CarouselOptions): void;
   destroy(id: string): void;
   bindViewport(id: string, viewport: HTMLElement | null): void;

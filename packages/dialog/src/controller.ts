@@ -67,7 +67,7 @@ function createInstance(options: DialogInstanceOptions = {}): DialogInstance {
   };
 }
 
-/** Creates the headless dialog store. */
+/** Creates the headless dialog controller. */
 export function createDialogStore(config: DialogStoreConfig = {}): DialogStore {
   const traps = new Map<string, FocusTrap>();
   let lockCount = 0;
@@ -242,4 +242,11 @@ export function createDialogStore(config: DialogStoreConfig = {}): DialogStore {
   };
 
   return store;
+}
+
+export type DialogController = DialogStore;
+
+/** Alias matching the controller-based architecture naming. */
+export function createDialogController(config: DialogStoreConfig = {}): DialogController {
+  return createDialogStore(config);
 }

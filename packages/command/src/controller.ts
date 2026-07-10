@@ -94,7 +94,7 @@ function handlePaletteTyping(
   return false;
 }
 
-/** Creates the headless command palette store. */
+/** Creates the headless command palette controller. */
 export function createCommandStore(config: CommandStoreConfig = {}): CommandStore {
   const filter = config.filter ?? defaultFilter;
 
@@ -230,4 +230,11 @@ export function createCommandStore(config: CommandStoreConfig = {}): CommandStor
   };
 
   return store;
+}
+
+export type CommandController = CommandStore;
+
+/** Alias matching the controller-based architecture naming. */
+export function createCommandController(config: CommandStoreConfig = {}): CommandController {
+  return createCommandStore(config);
 }

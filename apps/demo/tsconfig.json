@@ -3,6 +3,7 @@
     "target": "ESNext",
     "module": "ESNext",
     "moduleResolution": "Bundler",
+    "types": ["astro/client", "alpinejs"],
     "paths": {
       "@/*": ["./src/*"],
       "@ailuracode/alpine-env": ["../../packages/env/src/index.ts"],

@@ -3,8 +3,8 @@
 export type AccordionMode = "single" | "multiple";
 
 export interface AccordionStore {
-  groups: Record<string, import("./store.js").AccordionGroup>;
-  register(accordionId: string, options?: import("./store.js").AccordionGroupOptions): void;
+  groups: Record<string, import("./controller.js").AccordionGroup>;
+  register(accordionId: string, options?: import("./controller.js").AccordionGroupOptions): void;
   unregister(accordionId: string): void;
   registerItem(accordionId: string, itemId: string, disabled?: boolean): void;
   unregisterItem(accordionId: string, itemId: string): void;

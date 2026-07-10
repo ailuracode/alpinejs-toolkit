@@ -260,7 +260,7 @@ function initEmbla(
   }
 }
 
-/** Creates the headless carousel store powered by Embla Carousel. */
+/** Creates the headless carousel controller powered by Embla Carousel. */
 export function createCarouselStore(): CarouselStore {
   const cleanups = new Map<string, () => void>();
 
@@ -433,4 +433,11 @@ export function createCarouselStore(): CarouselStore {
   };
 
   return store;
+}
+
+export type CarouselController = CarouselStore;
+
+/** Alias matching the controller-based architecture naming. */
+export function createCarouselController(): CarouselController {
+  return createCarouselStore();
 }

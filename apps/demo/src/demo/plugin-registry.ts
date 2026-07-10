@@ -4,7 +4,6 @@ import calendar from "@ailuracode/alpine-calendar";
 import carousel from "@ailuracode/alpine-carousel";
 import { childPlugin as child } from "@ailuracode/alpine-child";
 import command from "@ailuracode/alpine-command";
-import { definePlugin, registerPlugin } from "@ailuracode/alpine-core";
 import dialog from "@ailuracode/alpine-dialog";
 import env from "@ailuracode/alpine-env";
 import geo from "@ailuracode/alpine-geo";
@@ -76,205 +75,49 @@ function scrollLockHandler(Alpine: AlpineInstance) {
 
 let pluginsRegistered = false;
 
-/** Register all demo plugins with @ailuracode/alpine-core (no Alpine side effects yet). */
-export function registerDemoPlugins(): void {
+/** Register all demo plugins directly with `Alpine.plugin(...)`. */
+export function registerDemoPlugins(Alpine: AlpineInstance): void {
   if (pluginsRegistered) {
     return;
   }
 
-  registerPlugin(
-    "toast",
-    definePlugin(["store", "magic"], {
-      names: { store: ["toast"], magic: ["toast"] },
-      allowNameCrossKind: true,
-      plugin: (Alpine) => {
-        toast({
-          variants: toastDemoVariants,
-          positions: toastDemoPositions,
-          promise: {
-            loadingVariant: "loading",
-            successVariant: "success",
-            errorVariant: "error",
-          },
-          maxToasts: 5,
-          maxVisible: 3,
-        })?.(Alpine);
+  Alpine.plugin([
+    toast({
+      variants: toastDemoVariants,
+      positions: toastDemoPositions,
+      promise: {
+        loadingVariant: "loading",
+        successVariant: "success",
+        errorVariant: "error",
       },
-    })
-  );
-
-  // Extended — eager imports (no dynamic code splitting)
-  registerPlugin(
-    "env",
-    definePlugin(["magic"], {
-      names: ["network", "visibility", "battery", "platform"],
-      plugin: env(),
-    })
-  );
-
-  registerPlugin(
-    "transfer",
-    definePlugin(["magic"], {
-      names: ["clipboard", "share", "export"],
-      plugin: transfer(),
-    })
-  );
-
-  registerPlugin(
-    "child",
-    definePlugin(["directive"], {
-      names: ["child"],
-      plugin: child(),
-    })
-  );
-
-  registerPlugin(
-    "dialog",
-    definePlugin(["store", "magic"], {
-      names: { store: ["dialog"], magic: ["dialog"] },
-      allowNameCrossKind: true,
-      plugin: (Alpine) => {
-        dialog({ onLockChange: scrollLockHandler(Alpine) })(Alpine);
-      },
-    })
-  );
-
-  registerPlugin(
-    "menu",
-    definePlugin(["store", "magic"], {
-      names: { store: ["menu"], magic: ["menu"] },
-      allowNameCrossKind: true,
-      plugin: (Alpine) => {
-        menu({ onLockChange: scrollLockHandler(Alpine) })(Alpine);
-      },
-    })
-  );
-
-  registerPlugin(
-    "tooltip",
-    definePlugin(["store", "magic"], {
-      names: { store: ["tooltip"], magic: ["tooltip"] },
-      allowNameCrossKind: true,
-      plugin: tooltip(),
-    })
-  );
-
-  registerPlugin(
-    "tabs",
-    definePlugin(["store", "magic"], {
-      names: { store: ["tabs"], magic: ["tabs"] },
-      allowNameCrossKind: true,
-      plugin: tabs(),
-    })
-  );
-
-  registerPlugin(
-    "accordion",
-    definePlugin(["store", "magic"], {
-      names: { store: ["accordion"], magic: ["accordion"] },
-      allowNameCrossKind: true,
-      plugin: accordion(),
-    })
-  );
-
-  registerPlugin(
-    "command",
-    definePlugin(["store", "magic"], {
-      names: { store: ["command"], magic: ["command"] },
-      allowNameCrossKind: true,
-      plugin: command(),
-    })
-  );
-
-  registerPlugin(
-    "carousel",
-    definePlugin(["store", "magic"], {
-      names: { store: ["carousel"], magic: ["carousel"] },
-      allowNameCrossKind: true,
-      plugin: carousel(),
-    })
-  );
-
-  registerPlugin(
-    "calendar",
-    definePlugin(["magic"], {
-      names: ["calendar"],
-      plugin: calendar,
-    })
-  );
-
-  registerPlugin(
-    "attention",
-    definePlugin(["magic"], {
-      names: ["wakelock", "idle"],
-      plugin: attention,
-    })
-  );
-
-  registerPlugin(
-    "geo",
-    definePlugin(["store", "magic"], {
-      names: { store: ["geo"], magic: ["geo"] },
-      allowNameCrossKind: true,
-      plugin: geo,
-    })
-  );
-
-  registerPlugin(
-    "lang",
-    definePlugin(["store", "magic"], {
-      names: { store: ["lang"], magic: ["lang"] },
-      allowNameCrossKind: true,
-      plugin: lang(),
-    })
-  );
-
-  registerPlugin(
-    "notify",
-    definePlugin(["magic"], {
-      names: ["notify"],
-      plugin: (Alpine) => {
-        notify()?.(Alpine);
-      },
-    })
-  );
-
-  registerPlugin(
-    "nanostores",
-    definePlugin(["magic"], {
-      names: ["nano"],
-      plugin: NanoStores,
-    })
-  );
-
-  registerPlugin(
-    "query",
-    definePlugin(["store"], {
-      names: ["query"],
-      plugin: query({ adapter: createAlpineNanostoresAdapter }),
-    })
-  );
-
-  registerPlugin(
-    "query-kit",
-    definePlugin(["store"], {
-      names: ["query"],
-      plugin: queryKit,
-    })
-  );
-
-  registerPlugin(
-    "json-api",
-    definePlugin(["magic"], {
-      names: ["jsonapi"],
-      plugin: jsonApi(jsonApiDemoOptions),
-    })
-  );
+      maxToasts: 5,
+      maxVisible: 3,
+    }),
+    env(),
+    transfer(),
+    child(),
+    dialog({ onLockChange: scrollLockHandler(Alpine) }),
+    menu({ onLockChange: scrollLockHandler(Alpine) }),
+    tooltip(),
+    tabs(),
+    accordion(),
+    command(),
+    carousel(),
+    calendar,
+    attention,
+    geo,
+    lang(),
+    notify(),
+    NanoStores,
+    query({ adapter: createAlpineNanostoresAdapter }),
+    queryKit(),
+    jsonApi(jsonApiDemoOptions),
+  ]);
 
   pluginsRegistered = true;
 }
 
-/** Demo-specific Alpine.data handlers and devtools — run after initPlugins(). */
+/** Demo-specific Alpine.data handlers and devtools — run after plugin registration. */
 export function setupDemoExtensions(Alpine: AlpineInstance): void {
   Alpine.plugin([
     togglePlugin(),

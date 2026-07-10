@@ -50,7 +50,7 @@ function clearTimer(timer: ReturnType<typeof setTimeout> | null): void {
   }
 }
 
-/** Creates the headless tooltip store. */
+/** Creates the headless tooltip controller. */
 export function createTooltipStore(): TooltipStore {
   function getOrCreate(store: TooltipStore, id: string): TooltipInstance {
     store.instances[id] ??= createInstance();
@@ -162,4 +162,11 @@ export function createTooltipStore(): TooltipStore {
   };
 
   return store;
+}
+
+export type TooltipController = TooltipStore;
+
+/** Alias matching the controller-based architecture naming. */
+export function createTooltipController(): TooltipController {
+  return createTooltipStore();
 }

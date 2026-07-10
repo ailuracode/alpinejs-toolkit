@@ -167,7 +167,7 @@ function handleTabsKeydown(
   }
 }
 
-/** Creates the headless tabs store. */
+/** Creates the headless tabs controller. */
 export function createTabsStore(): TabsStore {
   function getOrCreate(store: TabsStore, groupId: string): TabsGroup {
     store.groups[groupId] ??= createGroup();
@@ -313,4 +313,11 @@ export function createTabsStore(): TabsStore {
   };
 
   return store;
+}
+
+export type TabsController = TabsStore;
+
+/** Alias matching the controller-based architecture naming. */
+export function createTabsController(): TabsController {
+  return createTabsStore();
 }

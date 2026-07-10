@@ -1,12 +1,12 @@
 /// <reference types="@types/alpinejs" />
 
 export interface TooltipStore {
-  instances: Record<string, import("./store.js").TooltipInstance>;
+  instances: Record<string, import("./controller.js").TooltipInstance>;
   open(id: string): void;
   close(id: string): void;
   toggle(id: string): void;
   isOpen(id: string): boolean;
-  register(id: string, options?: import("./store.js").TooltipInstanceOptions): void;
+  register(id: string, options?: import("./controller.js").TooltipInstanceOptions): void;
   unregister(id: string): void;
   showOnHover(id: string): void;
   hideOnHover(id: string): void;

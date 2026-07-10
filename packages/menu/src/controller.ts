@@ -183,7 +183,7 @@ function handleMenuKeydown(
   }
 }
 
-/** Creates the headless menu store. */
+/** Creates the headless menu controller. */
 export function createMenuStore(config: MenuStoreConfig = {}): MenuStore {
   const exclusive = config.exclusive ?? true;
   let lockCount = 0;
@@ -454,4 +454,11 @@ export function createMenuStore(config: MenuStoreConfig = {}): MenuStore {
   };
 
   return store;
+}
+
+export type MenuController = MenuStore;
+
+/** Alias matching the controller-based architecture naming. */
+export function createMenuController(config: MenuStoreConfig = {}): MenuController {
+  return createMenuStore(config);
 }

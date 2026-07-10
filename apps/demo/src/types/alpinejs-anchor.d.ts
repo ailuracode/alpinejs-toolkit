@@ -1,4 +1,4 @@
-/// <reference types="@types/alpinejs" />
+/// <reference types="alpinejs" />
 
 declare module "@alpinejs/anchor" {
   const anchor: Alpine.PluginCallback;

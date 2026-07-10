@@ -17,7 +17,7 @@ export type DialogInstanceOptions = {
 };
 
 export interface DialogStore {
-  instances: Record<string, import("./store.js").DialogInstance>;
+  instances: Record<string, import("./controller.js").DialogInstance>;
   open(id: string, options?: DialogOpenOptions): void;
   close(id: string): void;
   toggle(id: string, options?: DialogOpenOptions): void;

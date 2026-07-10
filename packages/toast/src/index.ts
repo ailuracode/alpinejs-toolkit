@@ -21,8 +21,6 @@
  * public types.
  */
 
-import { toastPlugin } from "./plugin";
-
 // --- Headless controller --------------------------------------------------
 export {
   type CreateToastControllerOptions,
@@ -46,6 +44,7 @@ export {
   RESERVED_TOAST_MAGIC_KEYS,
   resolveToastPluginConfig,
   toastOptions,
+  toastPlugin as default,
   toastPlugin,
   toastPositions,
   toastVariants,
@@ -82,12 +81,3 @@ export type {
 } from "./types";
 // --- Public constants ----------------------------------------------------
 export { TOAST_STORE_KEY } from "./types";
-
-// --- Default export ------------------------------------------------------
-/**
- * Default export is the `toastPlugin` factory. Consumers that prefer
- * `import toastPlugin from "@ailuracode/alpine-toast"` get the same
- * function as `Alpine.plugin(toastPlugin({ ... }))`. The named
- * export above is equivalent.
- */
-export default toastPlugin;

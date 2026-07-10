@@ -1,5 +1,5 @@
 /// <reference types="astro/client" />
-/// <reference types="@types/alpinejs" />
+/// <reference types="alpinejs" />
 
 // ── Type imports for Alpine augmentation ──────────────────────────────
 type ThemeStore = import("@ailuracode/alpine-theme").ThemeStore;

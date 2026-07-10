@@ -81,7 +81,7 @@ function createGroup(options: AccordionGroupOptions = {}): AccordionGroup {
   };
 }
 
-/** Creates the headless accordion store. */
+/** Creates the headless accordion controller. */
 export function createAccordionStore(): AccordionStore {
   function getOrCreate(store: AccordionStore, accordionId: string): AccordionGroup {
     store.groups[accordionId] ??= createGroup();
@@ -261,4 +261,11 @@ export function createAccordionStore(): AccordionStore {
   };
 
   return store;
+}
+
+export type AccordionController = AccordionStore;
+
+/** Alias matching the controller-based architecture naming. */
+export function createAccordionController(): AccordionController {
+  return createAccordionStore();
 }
