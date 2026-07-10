@@ -1,0 +1,71 @@
+---
+description: Alpine integration patterns, SSR safety, and browser API usage
+alwaysApply: true
+---
+
+## SSR and browser safety
+
+Browser APIs MUST NOT be accessed:
+- During import
+- In top-level constants
+- In the constructor
+- Before plugin registration or mount
+
+Use core helpers:
+
+```typescript
+isBrowser();
+safeWindow();
+safeDocument();
+safeMatchMedia();
+```
+
+Importing any package MUST work in an SSR environment without DOM.
+
+## Store registration
+
+```typescript
+// Inside register function
+Alpine.store("my", {
+  value: 0,
+  increment() { this.value++; },
+});
+
+// Magic access
+Alpine.magic("my", () => Alpine.store("my"));
+```
+
+## Directive registration
+
+```typescript
+Alpine.directive("my", (el, { expression, effect, cleanup }, { evaluateLater }) => {
+  const evaluate = evaluateLater(expression);
+  effect(() => { /* react to changes */ });
+  cleanup(() => { /* teardown listeners */ });
+});
+```
+
+## Directives MUST defer DOM mutations
+
+Use `Alpine.nextTick` + `Alpine.mutateDom` when mutating DOM during `initTree`:
+
+```typescript
+Alpine.nextTick(() => {
+  Alpine.mutateDom(() => { el.style.display = "none"; });
+});
+```
+
+## Type augmentation
+
+```typescript
+declare global {
+  namespace Alpine {
+    interface Stores {
+      my: ReturnType<typeof createMyStore>;
+    }
+    interface Magics<T> {
+      $my: MyMagic;
+    }
+  }
+}
+```

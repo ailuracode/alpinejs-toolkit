@@ -1,0 +1,52 @@
+---
+description: Deprecation policy, semver implications, and migration patterns
+alwaysApply: false
+globs: ["packages/*/src/**/*.ts"]
+---
+
+# Deprecation policy
+
+## Types
+
+| Type | Semver | Example |
+|------|--------|---------|
+| **Deprecation warning** | Minor — existing API still works, emit console.warn | Rename `$scroll.locked()` → `$scroll.isLocked` |
+| **Removal** | Major — API no longer available | Remove `$scroll.locked()` entirely |
+| **Renaming** | Major — old name removed | `$jsonapi` magic renamed |
+
+## Rules
+
+1. Deprecations MUST be announced in CHANGELOG.md with migration path.
+2. Deprecated APIs MUST emit `console.warn` at first use.
+3. Deprecated APIs MUST include `@deprecated` JSDoc tag.
+4. Deprecated APIs MUST be removed in a `major` bump, never `patch`.
+5. Documentation MUST NOT be removed for deprecated APIs until removal.
+
+## Migration pattern
+
+```typescript
+// Deprecated API
+export function legacyMethod(): void {
+  console.warn(
+    "[alpine-toolkit] legacyMethod() is deprecated. Use newMethod() instead.",
+  );
+  return newMethod();
+}
+
+// New API
+export function newMethod(): void {
+  // actual implementation
+}
+```
+
+## Changelog entry format
+
+```markdown
+### Deprecated
+
+- `$scroll.locked()` → use `$scroll.isLocked` (getter, no parentheses) — [#1234](link)
+
+### Removed (Major only)
+
+- `$scroll.locked()` — use `$scroll.isLocked` instead — [#1234](link)
+```

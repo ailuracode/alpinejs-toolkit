@@ -24,6 +24,20 @@ alwaysApply: false
 - Separate `describe("… type inference", …)` blocks with `expectTypeOf` when generics matter.
 - Controller logic (combobox): test without full Alpine when possible.
 
+## Layer split
+
+Tests MUST be split by layer:
+
+- **Controller tests**: initial state, transitions, invariants, events, options, errors, idempotency, cleanup. Alpine MUST NOT be initialized unless strictly required.
+- **Alpine integration tests**: plugin registration, stores, magics, directives, reactivity, `$dispatch`, expression evaluation, cleanup, multiple instances.
+- **Accessibility tests**: ARIA props, focus, keyboard navigation, disabled elements, dynamic elements, restore focus, roving tabindex, `aria-activedescendant`.
+- **Integration tests**: real external dependencies (Embla initialization/destruction, Floating UI cleanup, browser observers).
+- **Contract tests**: core MUST provide reusable tests for controller lifecycle, idempotent destroy, event subscription cleanup, SSR-safe imports, plugin registration, multiple independent instances, no leaked global listeners. Packages MUST run applicable contract tests.
+
+## Thresholds
+
+Every behavior change MUST include tests. Global thresholds MUST NOT be lowered.
+
 ## Common mistakes
 
 | Mistake | Fix |
@@ -35,5 +49,4 @@ alwaysApply: false
 | Import test helpers without `.js` | `import { startAlpine } from "../../../test/helpers.js"` |
 | Assert Alpine reactivity without real Alpine | Magic harness uses plain objects — no reactivity there |
 
-Every change to plugin behavior must include or update tests.
 Run `pnpm test` and `pnpm run lint` before finishing.

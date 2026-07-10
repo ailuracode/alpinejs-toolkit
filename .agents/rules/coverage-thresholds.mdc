@@ -1,0 +1,38 @@
+---
+description: Test coverage thresholds and enforcement
+alwaysApply: false
+globs: ["vitest.config.ts", "packages/*/test/**/*.test.ts"]
+---
+
+# Coverage thresholds
+
+## Global thresholds
+
+| Metric | Threshold | Enforcement |
+|--------|-----------|-------------|
+| Branches | 80% | Hard fail in CI |
+| Functions | 80% | Hard fail in CI |
+| Lines | 80% | Hard fail in CI |
+| Statements | 80% | Hard fail in CI |
+
+## Per-package expectations
+
+| Package type | Key coverage area |
+|-------------|-------------------|
+| Store plugins | Store initialization, state mutations, method calls, cross-store interactions |
+| Magic plugins | Return value correctness, SSR safety, option normalization |
+| Headless controllers | State machine transitions, event emission, cleanup |
+| Query adapters | Reactivity bridge, stale handling, GC |
+
+## Enforcement
+
+```bash
+pnpm run test:coverage      # vitest with coverage thresholds
+```
+
+## Rules
+
+- Every behavior change MUST include tests.
+- Global thresholds MUST NOT be lowered.
+- New packages MUST meet 80% minimum before first publish.
+- Coverage exclusions MUST be documented in `vitest.config.ts` with rationale.

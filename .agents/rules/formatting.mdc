@@ -1,5 +1,5 @@
 ---
-description: Biome formatting and linting rules for alpinejs-toolkit
+description: TypeScript, Biome formatting, and linting rules for alpinejs-toolkit
 alwaysApply: true
 ---
 
@@ -9,6 +9,47 @@ alwaysApply: true
 - `const` over `let`; `for…of` over `.forEach`.
 - No `any`, no `!`, no `==`, no `delete obj.key` (use destructuring omit).
 - Default exports allowed for plugins (`noDefaultExport: off`).
+
+## TypeScript
+
+- Target ES2022, `strict`, `verbatimModuleSyntax`.
+- Relative imports MUST use `.js` extension: `from "./store.js"`.
+- `import type` for type-only imports.
+- Prefer `interface` for public API shapes; export types from `index.ts`.
+- Augment Alpine via `declare global { namespace Alpine { … } }`.
+- Publish types: `global.d.ts` copied to `dist/` in build script when needed.
+
+### Prohibited
+
+- `any`.
+- `@ts-ignore`.
+- Unjustified assertions.
+- Repeated casts that hide design problems.
+- Public APIs that depend on internal types.
+
+### Preferred
+
+- `unknown` + type guards.
+- Generics.
+- Discriminated unions.
+- Readonly types.
+- Literal unions.
+- `satisfies`.
+
+Casts at external API boundaries MUST remain localized.
+
+### SSR and browser safety
+
+Browser APIs MUST NOT be accessed during import, in top-level constants, in the constructor, or before the plugin is registered or mounted. Use core helpers:
+
+```typescript
+isBrowser();
+safeWindow();
+safeDocument();
+safeMatchMedia();
+```
+
+Importing any package MUST work in an environment without a DOM.
 
 ## Common mistakes
 

@@ -1,0 +1,33 @@
+---
+description: Branch naming convention for issue-driven work
+alwaysApply: true
+---
+
+## Branch naming
+
+New working branches MUST follow this format:
+
+```text
+<coder>/<issue-id>-<short-description>
+```
+
+## Rules
+
+- Use lowercase only.
+- Use kebab-case for description.
+- Keep description short and intent-focused.
+- `coder` should identify person or team namespace owning branch.
+- `issue-id` should match tracker identifier for work item linked to branch.
+- Reference exactly one issue per branch when branch is issue-driven.
+
+## Examples
+
+- `ailuracodedev/alp-13-add-mcp-server-configuration`
+- `pabloguerra/alp-21-fix-theme-storage-event`
+- `frontend/team-144-improve-dialog-focus-handling`
+
+## Do not
+
+- Do not use spaces, uppercase letters, or underscores.
+- Do not create generic names like `fix/bug`, `feature/test`, or `wip`.
+- Do not mix multiple issues in one branch.
