@@ -1,6 +1,12 @@
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import {
+  BUNDLE_BUDGET_CATEGORIES,
+  BUNDLE_BUDGET_POLICY,
+  bundleBudgetRuleFor,
+  expectedSizeLimitConfig,
+} from "./bundle-budget-policy.mjs";
 import { REPO_CHECK_POLICY } from "./repo-check-policy.mjs";
 
 const SCOPE = "@ailuracode/alpine-";
@@ -158,33 +164,86 @@ function readDocumentedPackageCount(filePath) {
 
 /**
  * @param {DiscoveredPackage[]} packages
+ * @returns {string[]}
+ */
+function validateSizeBudgetPolicyEntry(pkg) {
+  const errors = [];
+  const rule = bundleBudgetRuleFor(pkg.folder);
+
+  if (!rule) {
+    return [`${pkg.name}: missing bundle budget policy entry`];
+  }
+
+  if (!BUNDLE_BUDGET_CATEGORIES.has(rule.category)) {
+    errors.push(`${pkg.name}: bundle budget category must be recognized`);
+  }
+
+  const configPath = path.join(pkg.dir, ".size-limit.json");
+  const relativeConfigPath = `packages/${pkg.folder}/.size-limit.json`;
+
+  if (rule.exclude) {
+    if (existsSync(configPath)) {
+      errors.push(`${pkg.name}: ${relativeConfigPath} must not exist for excluded packages`);
+    }
+
+    return errors;
+  }
+
+  if (!Array.isArray(rule.entries) || rule.entries.length === 0) {
+    errors.push(`${pkg.name}: bundle budget policy must define at least one budget or exclusion`);
+    return errors;
+  }
+
+  if (!existsSync(configPath)) {
+    errors.push(`${pkg.name}: missing ${relativeConfigPath}`);
+    return errors;
+  }
+
+  const entries = JSON.parse(readFileSync(configPath, "utf8"));
+  if (!Array.isArray(entries) || entries.length === 0) {
+    errors.push(`${pkg.name}: ${relativeConfigPath} must include at least one budget`);
+    return errors;
+  }
+
+  const expected = expectedSizeLimitConfig(pkg.folder);
+  if (JSON.stringify(entries) !== JSON.stringify(expected)) {
+    errors.push(
+      `${pkg.name}: ${relativeConfigPath} is out of sync with scripts/bundle-budget-policy.mjs`
+    );
+  }
+
+  const scripts = pkg.manifest.scripts;
+  if (!scripts || typeof scripts !== "object" || typeof scripts.size !== "string") {
+    errors.push(`${pkg.name}: package.json must include a "size" script`);
+  }
+
+  return errors;
+}
+
+/**
+ * @param {DiscoveredPackage[]} packages
  * @param {string} root
  * @returns {string[]}
  */
 function validateSizeBudgets(packages, root) {
   const errors = [];
+  const publicFolders = new Set(packages.filter((pkg) => !pkg.isPrivate).map((pkg) => pkg.folder));
 
   if (existsSync(path.join(root, ".size-limit.json"))) {
     errors.push("Root .size-limit.json is deprecated; use packages/<name>/.size-limit.json");
   }
 
   for (const pkg of packages) {
-    const configPath = path.join(pkg.dir, ".size-limit.json");
-    if (!existsSync(configPath)) {
-      errors.push(`${pkg.name}: missing packages/${pkg.folder}/.size-limit.json`);
+    if (pkg.isPrivate) {
       continue;
     }
 
-    const entries = JSON.parse(readFileSync(configPath, "utf8"));
-    if (!Array.isArray(entries) || entries.length === 0) {
-      errors.push(
-        `${pkg.name}: packages/${pkg.folder}/.size-limit.json must include at least one budget`
-      );
-    }
+    errors.push(...validateSizeBudgetPolicyEntry(pkg));
+  }
 
-    const scripts = pkg.manifest.scripts;
-    if (!scripts || typeof scripts !== "object" || typeof scripts.size !== "string") {
-      errors.push(`${pkg.name}: package.json must include a "size" script`);
+  for (const folder of Object.keys(BUNDLE_BUDGET_POLICY).sort()) {
+    if (!publicFolders.has(folder)) {
+      errors.push(`scripts/bundle-budget-policy.mjs: unexpected package entry "${folder}"`);
     }
   }
 

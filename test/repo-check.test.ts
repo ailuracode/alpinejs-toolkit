@@ -1,11 +1,13 @@
-import { existsSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
+import { BUNDLE_BUDGET_POLICY, expectedSizeLimitConfig } from "../scripts/bundle-budget-policy.mjs";
 import {
   catalogPackages,
   diffSurface,
   discoverPackages,
+  publishablePackages,
   readMarkdownPackageNames,
   runRepoCheck,
 } from "../scripts/repo-check.mjs";
@@ -41,9 +43,29 @@ describe("repo:check", () => {
     expect(readmeNames.has("@ailuracode/alpine-fixture-drift")).toBe(false);
   });
 
-  it("requires every package to own a .size-limit.json budget", () => {
-    const packages = discoverPackages(path.join(root, "packages"));
+  it("requires every public package to own a .size-limit.json budget", () => {
+    const packages = publishablePackages(discoverPackages(path.join(root, "packages")));
     const missing = packages.filter((pkg) => !existsSync(path.join(pkg.dir, ".size-limit.json")));
     expect(missing.map((pkg) => pkg.folder)).toEqual([]);
+  });
+
+  it("keeps bundle budget policy aligned with public packages", () => {
+    const packages = publishablePackages(discoverPackages(path.join(root, "packages")));
+
+    expect(Object.keys(BUNDLE_BUDGET_POLICY).sort()).toEqual(
+      packages.map((pkg) => pkg.folder).sort()
+    );
+  });
+
+  it("keeps checked-in size-limit configs synced with bundle budget policy", () => {
+    const packages = publishablePackages(discoverPackages(path.join(root, "packages")));
+
+    for (const pkg of packages) {
+      const expected = expectedSizeLimitConfig(pkg.folder);
+      expect(expected).not.toBeNull();
+
+      const actual = JSON.parse(readFileSync(path.join(pkg.dir, ".size-limit.json"), "utf8"));
+      expect(actual).toEqual(expected);
+    }
   });
 });
