@@ -6,8 +6,8 @@ globs: ["packages/*/package.json", ".changeset/**"]
 
 ## Version rules
 
-- New packages start at `"version": "0.0.0"`.
-- A `minor` changeset on `0.0.0` produces `0.1.0` (first publish).
+- New packages start at `"version": "0.0.1"`.
+- A `minor` changeset on `0.0.1` produces `0.1.0` (first publish).
 - NEVER manually bump `version` — use Changesets only.
 - `"private": true` for non-npm packages (demo, test harnesses).
 
