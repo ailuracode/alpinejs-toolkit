@@ -49,6 +49,22 @@ alwaysApply: true
 | `.github/workflows/vercel-preview-cleanup.yml` | Vercel preview cleanup |
 | `.github/ISSUE_TEMPLATE/*.yml` | Bug report + feature request templates |
 
+### CI trigger policy
+
+`.github/workflows/ci.yml` runs on push/PR to **`master` only**, with an explicit `paths` allowlist. CI triggers when changes touch:
+
+| Category | Paths |
+|----------|-------|
+| Packages & demo | `packages/**`, `apps/demo/**` |
+| Shared test harness | `test/**` |
+| Dependencies | `package.json`, `pnpm-lock.yaml`, `pnpm-workspace.yaml`, `patches/**` |
+| Shared tooling | `tsconfig.json`, `vitest.config.ts`, `biome.json`, `.size-limit.json`, `scripts/**` |
+| GitHub automation | `.github/actions/**`, `.github/workflows/ci.yml` |
+
+**Does not trigger CI:** `docs/**`, root/package READMEs, `AGENTS.md`, `.cursor/**`, `.changeset/**`, issue templates, `dependabot.yml`, and other metadata-only edits.
+
+When adding a new top-level directory or config file that CI jobs consume, **add it to the allowlist** in `.github/workflows/ci.yml` (both `push` and `pull_request` blocks).
+
 ## Common mistakes
 
 | Mistake | Fix |

@@ -1,14 +1,46 @@
 name: CI
 
+# Trigger policy: CI runs only for dependency/manifest, shared tooling, scripts,
+# GitHub Actions setup, packages, demo app, and shared test harness changes.
+# Docs-only, Cursor rules, and other metadata edits do not trigger CI.
+# Maintenance: extend this allowlist when adding new repo-level inputs CI consumes
+# (see .cursor/rules/tooling-configs.mdc).
+
 on:
   push:
-    branches: [main, master]
+    branches: [master]
     paths:
       - "packages/**"
+      - "apps/demo/**"
+      - "test/**"
+      - "scripts/**"
+      - "patches/**"
+      - ".github/actions/**"
+      - ".github/workflows/ci.yml"
+      - "package.json"
+      - "pnpm-lock.yaml"
+      - "pnpm-workspace.yaml"
+      - "tsconfig.json"
+      - "vitest.config.ts"
+      - "biome.json"
+      - ".size-limit.json"
   pull_request:
-    branches: [main, master]
+    branches: [master]
     paths:
       - "packages/**"
+      - "apps/demo/**"
+      - "test/**"
+      - "scripts/**"
+      - "patches/**"
+      - ".github/actions/**"
+      - ".github/workflows/ci.yml"
+      - "package.json"
+      - "pnpm-lock.yaml"
+      - "pnpm-workspace.yaml"
+      - "tsconfig.json"
+      - "vitest.config.ts"
+      - "biome.json"
+      - ".size-limit.json"
 
 jobs:
   lint:
