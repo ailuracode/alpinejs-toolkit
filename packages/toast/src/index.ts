@@ -1,7 +1,7 @@
 /**
  * Public entrypoint for `@ailuracode/alpine-toast`.
  *
- * Per `.agents/instructions/public-api.instructions.md`, this file
+ * Per `.cursor/rules/new-package.mdc`, this file
  * MUST only contain re-exports. The framework-agnostic controller
  * lives in `./controller.ts`, the Alpine integration in
  * `./plugin.ts`, the event map in `./events.ts`, and the public

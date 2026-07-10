@@ -1,0 +1,19 @@
+---
+description: Git commit and pull request conventions for alpinejs-toolkit
+alwaysApply: true
+---
+
+## Git commit message
+
+- Use **Conventional Commits**: `type(scope): description`.
+- Valid types: `feat`, `fix`, `refactor`, `docs`, `test`, `chore`, `style`, `perf`, `build`, `ci`.
+- Scope: package name without `alpine-` prefix (e.g. `theme`, `sidebar`, `overlay`).
+- Keep the first line under ~72 characters; use the body for extra detail if needed.
+
+## Before finishing any change
+
+```bash
+pnpm test
+pnpm run lint
+pnpm run typecheck   # when types changed
+```

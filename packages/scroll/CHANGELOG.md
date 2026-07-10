@@ -17,7 +17,7 @@
 - New `--ailura-scrollbar-gap` compensation on lock (configurable via `reserveScrollbarGap: false`).
 - Reduced-motion gate honors `prefers-reduced-motion` by default.
 
-See `.agents/adr/0002-scroll-bundle-exception.md` for the bundle-size exception.
+See `docs/adr/0002-scroll-bundle-exception.md` for the bundle-size exception.
 
 ## 0.3.1
 

@@ -14,7 +14,7 @@
  *    listener.
  *
  * Construction rules (per
- * `.agents/instructions/controllers.instructions.md`):
+ * `.cursor/rules/new-package.mdc`):
  *
  * - The constructor MUST NOT access `window` / `document` /
  *   `localStorage`. The controller is pure logic — no browser APIs.

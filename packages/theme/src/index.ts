@@ -1,7 +1,7 @@
 /**
  * Public entrypoint for `@ailuracode/alpine-theme`.
  *
- * Per `.agents/instructions/public-api.instructions.md`, this file MUST
+ * Per `.cursor/rules/new-package.mdc`, this file MUST
  * only contain re-exports. The framework-agnostic controller lives in
  * `./controller.ts`, the Alpine integration in `./plugin.ts`, and the
  * supporting pure helpers and types live in `./types.ts` and

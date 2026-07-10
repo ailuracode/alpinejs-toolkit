@@ -87,7 +87,7 @@ Construct directly with `new ScrollController(options?)` for advanced consumers;
 
 ## Bundle
 
-See `.agents/adr/0002-scroll-bundle-exception.md` for the measured gzipped size + fallback split plan.
+See `docs/adr/0002-scroll-bundle-exception.md` for the measured gzipped size + fallback split plan.
 
 ## License
 

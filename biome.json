@@ -18,7 +18,7 @@
       "!**/node_modules",
       "!apps/demo/dist",
       "!apps/demo/.astro",
-      "!**/.agents"
+      "!**/.cursor"
     ]
   },
   "formatter": {

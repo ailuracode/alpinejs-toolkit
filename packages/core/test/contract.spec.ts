@@ -1,6 +1,6 @@
 /**
  * Contract tests — per
- * [testing.instructions.md](../../../../.agents/instructions/testing.instructions.md),
+ * [.cursor/rules/testing.mdc](../../../../.cursor/rules/testing.mdc),
  * core provides reusable tests to validate: SSR-safe imports, plugin
  * registration, multiple independent instances, no leaked global listeners.
  *

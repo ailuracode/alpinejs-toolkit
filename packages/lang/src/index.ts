@@ -1,7 +1,7 @@
 /**
  * Public entrypoint for `@ailuracode/alpine-lang`.
  *
- * Per `.agents/instructions/public-api.instructions.md`, this file
+ * Per `.cursor/rules/new-package.mdc`, this file
  * MUST only contain re-exports. Implementations live under
  * `./controller`, `./plugin`, `./events`, and `./internal/` so the
  * public surface is easy to audit and the package stays

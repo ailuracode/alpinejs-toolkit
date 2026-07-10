@@ -12,7 +12,7 @@
  * (`PluginDefinition`, `PluginKind`, …) live in `./types.ts` and are
  * consumed here unchanged.
  *
- * Per [public-api.instructions.md](../../../.agents/instructions/public-api.instructions.md),
+ * Per [.cursor/rules/new-package.mdc](../../../.cursor/rules/new-package.mdc),
  * this file MUST only contain type re-exports.
  */
 

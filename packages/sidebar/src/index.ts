@@ -1,7 +1,7 @@
 /**
  * Public entrypoint for `@ailuracode/alpine-sidebar` v2.1.0.
  *
- * Per `.agents/instructions/public-api.instructions.md`, this file
+ * Per `.cursor/rules/new-package.mdc`, this file
  * MUST only contain re-exports. The framework-agnostic controller
  * lives in `./controller.ts`; the supporting pure helpers and
  * types live in `./types.ts`, `./events.ts`, and `./internal/*`.

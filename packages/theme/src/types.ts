@@ -1,7 +1,7 @@
 /**
  * Public type contracts for `@ailuracode/alpine-theme`.
  *
- * Per `.agents/instructions/typescript.instructions.md`, every public type
+ * Per `.cursor/rules/formatting.mdc`, every public type
  * lives in a `types.ts` module so consumers can import them without pulling
  * the implementation. The shape IS the contract — changes to a field name
  * or type are breaking changes.

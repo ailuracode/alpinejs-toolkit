@@ -6,7 +6,7 @@
  * small — every helper here is consumed by the controller facade.
  *
  * Construction rules (per
- * `.agents/instructions/controllers.instructions.md`):
+ * `.cursor/rules/new-package.mdc`):
  *
  * - No `window` / `document` access — these run on whatever `Element`
  *   instances the controller hands them.

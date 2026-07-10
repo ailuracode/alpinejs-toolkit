@@ -3,7 +3,7 @@
  * subscriptions to meet R13 thresholds (lines ≥90%, stmts ≥90%,
  * branches ≥85%, funcs ≥90%).
  *
- * Per `.agents/instructions/packages/testing.md`, alongside-changes
+ * Per `.cursor/rules/testing.mdc`, alongside-changes
  * tests (not strict TDD) — every gap-fill test pairs with the
  * surface it covers, no red-green-refactor cycle.
  */

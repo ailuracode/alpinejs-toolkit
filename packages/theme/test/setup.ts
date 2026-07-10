@@ -13,7 +13,7 @@
  *
  * Resets `localStorage` between tests so persisted values do not leak.
  *
- * Per `.agents/instructions/tooling.instructions.md`, `setupFiles` MUST
+ * Per `.cursor/rules/tooling-configs.mdc`, `setupFiles` MUST
  * point to `test/setup.ts` when global stubs are needed.
  */
 

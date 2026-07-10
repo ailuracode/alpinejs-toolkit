@@ -1,7 +1,7 @@
 /**
  * Manager-layer tests for `@ailuracode/alpine-sidebar`.
  *
- * Per `.agents/instructions/testing.instructions.md`, manager tests
+ * Per `.cursor/rules/testing.mdc`, manager tests
  * cover: initial state, transitions, invariants, events, options,
  * errors, idempotency, and cleanup. The sidebar composes a
  * {@link ToggleController} for the boolean `visible` state machine,

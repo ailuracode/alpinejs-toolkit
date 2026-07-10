@@ -40,7 +40,7 @@ bundle is gone; `$scroll` returns the controller only.
 - `--ailura-scrollbar-gap` compensation on lock (configurable via
   `reserveScrollbarGap: false`).
 - Reduced-motion gate honors `prefers-reduced-motion` by default.
-- Bundle exception documented in `.agents/adr/0002-scroll-bundle-exception.md`.
+- Bundle exception documented in `docs/adr/0002-scroll-bundle-exception.md`.
 
 ## Migration
 

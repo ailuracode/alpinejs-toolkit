@@ -9,7 +9,7 @@
  * from `./controller` will never see the registry, `definePlugin`,
  * `safeMatchMedia`, etc.
  *
- * Per [public-api.instructions.md](../../../.agents/instructions/public-api.instructions.md),
+ * Per [.cursor/rules/new-package.mdc](../../../.cursor/rules/new-package.mdc),
  * this file MUST only contain re-exports.
  */
 

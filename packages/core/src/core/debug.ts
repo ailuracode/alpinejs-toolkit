@@ -10,7 +10,7 @@
  * ## Why a shim and not a direct import
  *
  * The architectural rules in
- * [`.agents/instructions/architecture.instructions.md`](../../../.agents/instructions/architecture.instructions.md)
+ * [`.cursor/rules/architecture.mdc`](../../../.cursor/rules/architecture.mdc)
  * say core MUST NOT become a container of feature-specific helpers.
  * Diagnostic logging is exactly that kind of helper: useful, but
  * not part of the plugin / controller contract that core owns.

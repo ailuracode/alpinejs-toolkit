@@ -1,7 +1,7 @@
 /**
  * Controller-layer tests — verifies that {@link BaseController} honors the
  * lifecycle, cleanup, and event contracts from
- * [controllers.instructions.md](../../../../.agents/instructions/controllers.instructions.md).
+ * [.cursor/rules/new-package.mdc](../../../../.cursor/rules/new-package.mdc).
  *
  * Subclass is intentionally tiny: the goal is to assert that the base class
  * enforces the rules, not to test feature-specific behavior.

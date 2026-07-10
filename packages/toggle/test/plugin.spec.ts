@@ -1,7 +1,7 @@
 /**
  * Alpine integration tests for `@ailuracode/alpine-toggle`.
  *
- * Per `.agents/instructions/testing.instructions.md`, plugin tests
+ * Per `.cursor/rules/testing.mdc`, plugin tests
  * cover magic registration, reactive wrapping, factory uniqueness,
  * and cleanup. A minimal mock Alpine exercises the contract without
  * booting the real runtime.

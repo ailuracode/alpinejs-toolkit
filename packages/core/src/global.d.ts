@@ -6,7 +6,7 @@
  * `/// <reference types="@types/alpinejs" />` without forcing them to
  * add the triple-slash directive.
  *
- * Per `.agents/instructions/typescript.instructions.md`, the package
+ * Per `.cursor/rules/formatting.mdc`, the package
  * MUST NOT augment external modules — consumers type the Alpine
  * runtime with the `Alpine<Stores>` generic from
  * `@ailuracode/alpine-core` directly.

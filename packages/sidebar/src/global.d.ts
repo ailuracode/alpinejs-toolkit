@@ -5,7 +5,7 @@
  * file via the triple-slash directive and typecheck `$store.sidebar`
  * / `$sidebar` references without pulling the runtime entrypoint.
  *
- * Per `.agents/instructions/typescript.instructions.md`, this file
+ * Per `.cursor/rules/formatting.mdc`, this file
  * preserves the existing `Alpine.Stores` + `Alpine.Magics<T>`
  * augmentation from the v1 package so consumers that consumed the
  * augmentation via the bundled `dist/global.d.ts` continue to

@@ -1,8 +1,8 @@
 /**
  * SSR-safe import tests for `@ailuracode/alpine-theme`.
  *
- * Per `.agents/instructions/typescript.instructions.md` and
- * `.agents/instructions/testing.instructions.md`, importing the package
+ * Per `.cursor/rules/formatting.mdc` and
+ * `.cursor/rules/testing.mdc`, importing the package
  * MUST work in a runtime without `window` / `document`. These tests
  * shadow the globals with `undefined` and assert the public surface
  * stays usable.

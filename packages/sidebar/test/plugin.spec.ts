@@ -1,7 +1,7 @@
 /**
  * Alpine integration tests for `@ailuracode/alpine-sidebar`.
  *
- * Per `.agents/instructions/testing.instructions.md`, plugin tests
+ * Per `.cursor/rules/testing.mdc`, plugin tests
  * cover store registration, magic exposure, reactivity, cleanup,
  * SSR-safety, and config-driven listener toggling. A minimal mock
  * Alpine exercises the contract without booting the real runtime.

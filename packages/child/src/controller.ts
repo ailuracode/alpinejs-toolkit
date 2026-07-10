@@ -8,7 +8,7 @@
  * surface, and `index.ts` re-exports them via this file.
  *
  * Construction rules (per
- * `.agents/instructions/controllers.instructions.md`):
+ * `.cursor/rules/new-package.mdc`):
  *
  * - Functions MUST NOT touch `window` / `document` / `Alpine.*`. They
  *   are pure logic — no browser APIs, no Alpine APIs. Alpine-only glue

@@ -14,7 +14,7 @@
  * Resets `documentElement` attributes between tests so persisted
  * `data-sidebar` markers from a previous case do not leak.
  *
- * Per `.agents/instructions/tooling.instructions.md`, `setupFiles` MUST
+ * Per `.cursor/rules/tooling-configs.mdc`, `setupFiles` MUST
  * point to `test/setup.ts` when global stubs are needed.
  */
 

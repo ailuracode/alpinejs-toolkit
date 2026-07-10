@@ -154,9 +154,13 @@ Do not couple `QueryCache` directly to Nanostores, Zustand, or Alpine.reactive â
 - Manually edit version numbers for releases (use Changesets)
 - Run commands not explicitly requested (e.g. `git log` when only `git push` was asked)
 
-## Rules (`.agents/rules/`)
+## Cursor configuration
 
-Canonical rules live in `.agents/rules/` as `.mdc` files with YAML frontmatter. Each file is scoped by `globs` and `alwaysApply`:
+Project rules and skills follow the [Cursor](https://cursor.com) layout. This repo also follows the portable [AGENTS.md](https://agents.md) format for cross-agent compatibility.
+
+### Rules (`.cursor/rules/`)
+
+Rules are `.mdc` files with YAML frontmatter (`description`, `globs`, `alwaysApply`):
 
 | Rule file | Scope | Key content |
 |-----------|-------|-------------|
@@ -177,7 +181,9 @@ Canonical rules live in `.agents/rules/` as `.mdc` files with YAML frontmatter. 
 | `i18n-messages.mdc` | Docs, demo, README | Message keys, locale files, multi-language docs |
 | `readme-standardization.mdc` | Package README | Install commands, imports, API documentation tiers, verification checklist |
 
-`.cursor/rules/` provides Cursor-specific overrides (`testing.mdc` globs-scoped, `git-commit-message.mdc` + `new-package.mdc` always-apply).
+### Skills (`.cursor/skills/`)
+
+Project skills live in `.cursor/skills/<name>/SKILL.md`. Each skill has YAML frontmatter (`name`, `description`) and is loaded on demand for specialized workflows (scaffolding packages, changesets, Vitest, Astro, accessibility audits, etc.).
 
 ## References
 

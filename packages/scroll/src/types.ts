@@ -1,7 +1,7 @@
 /**
  * Public type contracts for `@ailuracode/alpine-scroll` v1.0.0.
  *
- * Per `.agents/instructions/packages/public-api.md`, every public type
+ * Per `.cursor/rules/new-package.mdc`, every public type
  * lives in a `types.ts` module so consumers can import them without
  * pulling the implementation. The shape IS the contract — renaming a
  * field or changing a variant is a breaking change.

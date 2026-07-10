@@ -1,7 +1,7 @@
 /**
  * Public type contracts for `@ailuracode/alpine-media`.
  *
- * Per `.agents/instructions/typescript.instructions.md`, every public type
+ * Per `.cursor/rules/formatting.mdc`, every public type
  * lives in a `types.ts` module so consumers can import them without pulling
  * the implementation. The shape IS the contract — renaming a field or
  * changing a variant is a breaking change.

@@ -1,7 +1,7 @@
 /**
  * Per-package Vitest configuration for `@ailuracode/alpine-theme`.
  *
- * Per `.agents/instructions/tooling.instructions.md` the package owns its
+ * Per `.cursor/rules/tooling-configs.mdc` the package owns its
  * own `vitest.config.ts`. We override the root defaults:
  *
  * - `environment: 'jsdom'` — `localStorage`, `matchMedia`, `window`, and

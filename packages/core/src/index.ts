@@ -1,7 +1,7 @@
 /**
  * Public entrypoint for `@ailuracode/alpine-core`.
  *
- * Per [public-api.instructions.md](../../../.agents/instructions/public-api.instructions.md),
+ * Per [.cursor/rules/new-package.mdc](../../../.cursor/rules/new-package.mdc),
  * this file MUST only contain re-exports. Implementations live under
  * `./internal/` and `./core/` so the public surface is easy to audit and
  * the package stays tree-shakeable (each export resolves to a single named

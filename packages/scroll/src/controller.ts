@@ -14,7 +14,7 @@
  *    {@link toBottom} / {@link toElement} / {@link scrollIntoView}
  *    with reduced-motion gate.
  *
- * Construction rules (per `.agents/instructions/packages/controllers.md`):
+ * Construction rules (per `.cursor/rules/new-package.mdc`):
  *
  * - The constructor MUST NOT touch `window` / `document` / timers.
  *   Every side effect lives in `mount()`.

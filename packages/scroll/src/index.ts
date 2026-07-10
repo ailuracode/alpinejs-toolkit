@@ -1,7 +1,7 @@
 /**
  * Public entrypoint for `@ailuracode/alpine-scroll` v1.0.0.
  *
- * Per `.agents/instructions/packages/public-api.md`, this file MUST
+ * Per `.cursor/rules/new-package.mdc`, this file MUST
  * only contain re-exports. The framework-agnostic controller lives
  * in `./controller.ts`; the Alpine plugin adapter lives in
  * `./plugin.ts`; pure helpers and types live under `./internal/*`,

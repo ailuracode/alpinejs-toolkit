@@ -1,7 +1,7 @@
 /**
  * Alpine integration tests for `@ailuracode/alpine-theme`.
  *
- * Per `.agents/instructions/testing.instructions.md`, plugin tests cover
+ * Per `.cursor/rules/testing.mdc`, plugin tests cover
  * store registration, magic exposure, reactivity, and cleanup. A
  * minimal mock Alpine exercises the contract without booting the real
  * runtime.

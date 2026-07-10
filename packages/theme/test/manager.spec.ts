@@ -1,7 +1,7 @@
 /**
  * Manager-layer tests for `@ailuracode/alpine-theme`.
  *
- * Per `.agents/instructions/testing.instructions.md`, manager tests
+ * Per `.cursor/rules/testing.mdc`, manager tests
  * cover: initial state, transitions, invariants, events, options,
  * errors, idempotency, and cleanup.
  */
@@ -471,7 +471,7 @@ describe("createTheme — type inference", () => {
 
 describe("createTheme — constructor purity", () => {
   /**
-   * Per `.agents/instructions/controllers.instructions.md`, the
+   * Per `.cursor/rules/new-package.mdc`, the
    * constructor MUST NOT register global listeners, access `window`,
    * `document`, `localStorage`, start timers, or initialize external
    * libraries. Side effects MUST start in `mount()`.

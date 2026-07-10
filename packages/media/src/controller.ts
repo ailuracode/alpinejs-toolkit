@@ -25,7 +25,7 @@
  *    `BaseController` parent guards the lifecycle phase.
  *
  * Construction rules (per
- * `.agents/instructions/controllers.instructions.md`):
+ * `.cursor/rules/new-package.mdc`):
  *
  * - The constructor MUST NOT access `window` / `document` /
  *   `matchMedia`. The controller seeds itself with

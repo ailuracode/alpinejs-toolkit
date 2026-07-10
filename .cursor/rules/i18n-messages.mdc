@@ -1,0 +1,51 @@
+---
+description: Internationalization patterns, message keys, and multi-language docs
+alwaysApply: false
+globs: docs/**,apps/demo/src/**,packages/*/README.md
+---
+
+# i18n messages
+
+## Rules
+
+- User-facing messages MUST use `$t('key.path')` pattern — never hardcoded strings in templates.
+- Keys MUST be lowercase dot-separated: `dialog.open`, `toast.close`, `combobox.noResults`.
+- Default locale MUST be `en` (English).
+- Translation files MUST live in `src/locales/` within each package.
+- Keys MUST be namespaced per package: `alpine-toast.success`, `alpine-dialog.close`.
+- Missing translation keys MUST fall back to English, never show raw key.
+
+## Multi-language documentation
+
+- Docs in `docs/` are English (source of truth).
+- `docs/es/` — Spanish. `docs/pt/` — Portuguese.
+- README in `packages/*/README.md` — English only (npm requirement).
+- Demo app (`apps/demo/`) supports both `es` and `pt` via `i18n` config.
+
+## Adding a new message key
+
+1. Add key to `src/locales/en.json` (English, source of truth).
+2. Add corresponding key to `es.json`, `pt.json`, etc.
+3. Use `useI18n()` composable or `$t('key')` in templates.
+4. NEVER hardcode translated strings in source code.
+
+## Translation file format
+
+```json
+{
+  "alpine-toast": {
+    "success": "Success",
+    "error": "Error",
+    "close": "Close"
+  }
+}
+```
+
+## Common mistakes
+
+| Mistake | Fix |
+|---------|-----|
+| `<button>Close</button>` | `<button>{{ $t('dialog.close') }}</button>` |
+| Hardcoded `"Éxito"` in source | Use `$t('toast.success')` |
+| Missing key in `es.json` | Add key or remove from `es.json` if not translated |
+| Raw key shown: `dialog.open` | Check key exists in locale file |

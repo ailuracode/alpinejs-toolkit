@@ -1,7 +1,7 @@
 /**
  * Type-level tests for `@ailuracode/alpine-sidebar` v2.0.
  *
- * Per `.agents/instructions/testing.instructions.md`, type tests
+ * Per `.cursor/rules/testing.mdc`, type tests
  * catch regressions in the public contract without booting the
  * runtime. We use Vitest's `expectTypeOf` for shape assertions
  * and `@ts-expect-error` for the negative case that proves the
