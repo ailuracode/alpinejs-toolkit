@@ -1,0 +1,581 @@
+import { existsSync, readdirSync, readFileSync } from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { REPO_CHECK_POLICY } from "./repo-check-policy.mjs";
+
+const SCOPE = "@ailuracode/alpine-";
+const TEST_FILE_PATTERN = /\.(test|spec)\.[cm]?[jt]sx?$/;
+const REQUIRED_MANIFEST_FIELDS = ["license", "homepage", "exports", "files"];
+const REQUIRED_REPO_FIELDS = ["type", "url", "directory"];
+const REQUIRED_PACKAGE_FILES = ["README.md", "CHANGELOG.md"];
+const REQUIRED_PUBLISH_FILES = ["dist", "README.md"];
+
+/**
+ * @typedef {object} DiscoveredPackage
+ * @property {string} folder
+ * @property {string} name
+ * @property {string} dir
+ * @property {Record<string, unknown>} manifest
+ * @property {boolean} isPrivate
+ */
+
+/**
+ * @typedef {object} RepoCheckOptions
+ * @property {string} [root]
+ * @property {string} [packagesDir]
+ * @property {boolean} [requireBuilt]
+ */
+
+/**
+ * @typedef {object} RepoCheckResult
+ * @property {boolean} ok
+ * @property {string[]} errors
+ * @property {DiscoveredPackage[]} packages
+ * @property {number} catalogCount
+ */
+
+const defaultRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+
+/**
+ * @param {DiscoveredPackage[]} packages
+ * @param {string[]} excluded
+ */
+function filterPublicPackages(packages, excluded) {
+  const excludedSet = new Set(excluded);
+  return packages.filter((pkg) => !(pkg.isPrivate || excludedSet.has(pkg.folder)));
+}
+
+/**
+ * @param {string} packagesDir
+ * @returns {DiscoveredPackage[]}
+ */
+export function discoverPackages(packagesDir) {
+  return readdirSync(packagesDir, { withFileTypes: true })
+    .filter((entry) => entry.isDirectory())
+    .map((entry) => {
+      const dir = path.join(packagesDir, entry.name);
+      const manifestPath = path.join(dir, "package.json");
+
+      if (!existsSync(manifestPath)) {
+        return null;
+      }
+
+      const manifest = JSON.parse(readFileSync(manifestPath, "utf8"));
+      const expectedName = `${SCOPE}${entry.name}`;
+
+      return {
+        folder: entry.name,
+        name: typeof manifest.name === "string" ? manifest.name : expectedName,
+        dir,
+        manifest,
+        isPrivate: manifest.private === true,
+      };
+    })
+    .filter((pkg) => pkg !== null)
+    .sort((a, b) => a.folder.localeCompare(b.folder));
+}
+
+/**
+ * @param {DiscoveredPackage[]} packages
+ * @returns {DiscoveredPackage[]}
+ */
+export function catalogPackages(packages) {
+  return filterPublicPackages(packages, REPO_CHECK_POLICY.catalogExcluded);
+}
+
+/**
+ * @param {DiscoveredPackage[]} packages
+ * @returns {DiscoveredPackage[]}
+ */
+export function demoPackages(packages) {
+  return filterPublicPackages(packages, REPO_CHECK_POLICY.demoExcluded);
+}
+
+/**
+ * @param {DiscoveredPackage[]} packages
+ * @returns {DiscoveredPackage[]}
+ */
+export function publishablePackages(packages) {
+  return packages.filter((pkg) => !pkg.isPrivate);
+}
+
+/**
+ * @param {string} root
+ * @returns {Set<string>}
+ */
+function readTsconfigPaths(root) {
+  const tsconfig = JSON.parse(readFileSync(path.join(root, "tsconfig.json"), "utf8"));
+  return new Set(Object.keys(tsconfig.compilerOptions?.paths ?? {}));
+}
+
+/**
+ * @param {string} demoRoot
+ * @returns {Set<string>}
+ */
+function readDemoTsconfigPaths(demoRoot) {
+  const tsconfig = JSON.parse(readFileSync(path.join(demoRoot, "tsconfig.json"), "utf8"));
+  return new Set(
+    Object.keys(tsconfig.compilerOptions?.paths ?? {}).filter((key) => key.startsWith(SCOPE))
+  );
+}
+
+/**
+ * @param {string} demoRoot
+ * @returns {Set<string>}
+ */
+function readDemoPackageDeps(demoRoot) {
+  const manifest = JSON.parse(readFileSync(path.join(demoRoot, "package.json"), "utf8"));
+  const deps = { ...manifest.dependencies, ...manifest.devDependencies };
+  return new Set(Object.keys(deps).filter((key) => key.startsWith(SCOPE)));
+}
+
+/**
+ * @param {string} astroConfigPath
+ * @returns {Set<string>}
+ */
+function readAstroAliases(astroConfigPath) {
+  const source = readFileSync(astroConfigPath, "utf8");
+  return new Set(source.match(/@ailuracode\/alpine-[a-z0-9-]+/g) ?? []);
+}
+
+/**
+ * @param {string} filePath
+ * @returns {Set<string>}
+ */
+export function readMarkdownPackageNames(filePath) {
+  const source = readFileSync(filePath, "utf8");
+  return new Set(source.match(/@ailuracode\/alpine-[a-z0-9-]+/g) ?? []);
+}
+
+/**
+ * @param {string} filePath
+ * @returns {number | null}
+ */
+function readDocumentedPackageCount(filePath) {
+  const match = readFileSync(filePath, "utf8").match(/(\d+)\s+independent npm packages/i);
+  return match ? Number(match[1]) : null;
+}
+
+/**
+ * @param {DiscoveredPackage[]} packages
+ * @param {string} root
+ * @returns {string[]}
+ */
+function validateSizeBudgets(packages, root) {
+  const errors = [];
+
+  if (existsSync(path.join(root, ".size-limit.json"))) {
+    errors.push("Root .size-limit.json is deprecated; use packages/<name>/.size-limit.json");
+  }
+
+  for (const pkg of packages) {
+    const configPath = path.join(pkg.dir, ".size-limit.json");
+    if (!existsSync(configPath)) {
+      errors.push(`${pkg.name}: missing packages/${pkg.folder}/.size-limit.json`);
+      continue;
+    }
+
+    const entries = JSON.parse(readFileSync(configPath, "utf8"));
+    if (!Array.isArray(entries) || entries.length === 0) {
+      errors.push(
+        `${pkg.name}: packages/${pkg.folder}/.size-limit.json must include at least one budget`
+      );
+    }
+
+    const scripts = pkg.manifest.scripts;
+    if (!scripts || typeof scripts !== "object" || typeof scripts.size !== "string") {
+      errors.push(`${pkg.name}: package.json must include a "size" script`);
+    }
+  }
+
+  return errors;
+}
+
+/**
+ * @param {string} packCheckPath
+ * @returns {boolean}
+ */
+function packCheckUsesDynamicDiscovery(packCheckPath) {
+  const source = readFileSync(packCheckPath, "utf8");
+  return source.includes("discoverPackages") || source.includes("discoverPublishablePackages");
+}
+
+/**
+ * @param {string} dir
+ * @returns {boolean}
+ */
+function packageHasTests(dir) {
+  const testDir = path.join(dir, "test");
+  if (!existsSync(testDir)) {
+    return false;
+  }
+
+  const stack = [testDir];
+  while (stack.length > 0) {
+    const current = stack.pop();
+    if (!current) {
+      continue;
+    }
+
+    for (const entry of readdirSync(current, { withFileTypes: true })) {
+      const entryPath = path.join(current, entry.name);
+      if (entry.isDirectory()) {
+        stack.push(entryPath);
+        continue;
+      }
+
+      if (TEST_FILE_PATTERN.test(entry.name)) {
+        return true;
+      }
+    }
+  }
+
+  return false;
+}
+
+/**
+ * @param {unknown} value
+ * @returns {string[]}
+ */
+function collectExportTargets(value) {
+  if (typeof value === "string") {
+    return [value];
+  }
+
+  if (!value || typeof value !== "object") {
+    return [];
+  }
+
+  const record = /** @type {Record<string, unknown>} */ (value);
+  const targets = [];
+
+  for (const key of ["types", "import", "require", "default"]) {
+    if (typeof record[key] === "string") {
+      targets.push(record[key]);
+    }
+  }
+
+  for (const nested of Object.values(record)) {
+    if (nested && typeof nested === "object") {
+      targets.push(...collectExportTargets(nested));
+    }
+  }
+
+  return targets;
+}
+
+/**
+ * @param {DiscoveredPackage} pkg
+ * @returns {string[]}
+ */
+function validateRequiredPackageFiles(pkg) {
+  const errors = [];
+
+  for (const fileName of REQUIRED_PACKAGE_FILES) {
+    if (!existsSync(path.join(pkg.dir, fileName))) {
+      errors.push(`${pkg.name}: missing ${fileName}`);
+    }
+  }
+
+  return errors;
+}
+
+/**
+ * @param {DiscoveredPackage} pkg
+ * @returns {string[]}
+ */
+function validateManifestFields(pkg) {
+  const errors = [];
+  const { manifest, name } = pkg;
+
+  for (const field of REQUIRED_MANIFEST_FIELDS) {
+    if (!(field in manifest)) {
+      errors.push(`${name}: package.json missing "${field}"`);
+    }
+  }
+
+  return errors;
+}
+
+/**
+ * @param {DiscoveredPackage} pkg
+ * @returns {string[]}
+ */
+function validateRepositoryMetadata(pkg) {
+  const errors = [];
+  const repository = pkg.manifest.repository;
+
+  if (!repository || typeof repository !== "object") {
+    errors.push(`${pkg.name}: package.json missing "repository" object`);
+    return errors;
+  }
+
+  const repo = /** @type {Record<string, unknown>} */ (repository);
+  for (const field of REQUIRED_REPO_FIELDS) {
+    if (typeof repo[field] !== "string" || repo[field].length === 0) {
+      errors.push(`${pkg.name}: repository.${field} is required`);
+    }
+  }
+
+  return errors;
+}
+
+/**
+ * @param {DiscoveredPackage} pkg
+ * @returns {string[]}
+ */
+function validatePublishMetadata(pkg) {
+  const errors = [];
+  const files = pkg.manifest.files;
+
+  if (!pkg.isPrivate && pkg.manifest.publishConfig?.access !== "public") {
+    errors.push(`${pkg.name}: publishConfig.access must be "public"`);
+  }
+
+  if (!Array.isArray(files)) {
+    return errors;
+  }
+
+  for (const entry of REQUIRED_PUBLISH_FILES) {
+    if (!files.includes(entry)) {
+      errors.push(`${pkg.name}: files must include "${entry}"`);
+    }
+  }
+
+  return errors;
+}
+
+/**
+ * @param {DiscoveredPackage} pkg
+ * @returns {string[]}
+ */
+function validateBuiltExports(pkg) {
+  const errors = [];
+  const exportTargets = collectExportTargets(pkg.manifest.exports);
+  const typesField = typeof pkg.manifest.types === "string" ? pkg.manifest.types : null;
+
+  if (typesField) {
+    exportTargets.push(typesField);
+  }
+
+  for (const target of new Set(exportTargets)) {
+    if (!target.startsWith("./")) {
+      continue;
+    }
+
+    if (!existsSync(path.join(pkg.dir, target))) {
+      errors.push(`${pkg.name}: missing built artifact ${target}`);
+    }
+  }
+
+  return errors;
+}
+
+/**
+ * @param {DiscoveredPackage} pkg
+ * @param {boolean} requireBuilt
+ * @returns {string[]}
+ */
+function validatePackageMetadata(pkg, requireBuilt) {
+  const expectedName = `${SCOPE}${pkg.folder}`;
+  const errors = [];
+
+  if (pkg.name !== expectedName) {
+    errors.push(`${pkg.name}: package name must be ${expectedName}`);
+  }
+
+  errors.push(
+    ...validateRequiredPackageFiles(pkg),
+    ...validateManifestFields(pkg),
+    ...validateRepositoryMetadata(pkg),
+    ...validatePublishMetadata(pkg)
+  );
+
+  if (requireBuilt) {
+    errors.push(...validateBuiltExports(pkg));
+  }
+
+  return errors;
+}
+
+/**
+ * @param {Set<string>} actual
+ * @param {Iterable<DiscoveredPackage>} expected
+ * @param {string} surface
+ * @returns {string[]}
+ */
+export function diffSurface(actual, expected, surface) {
+  const errors = [];
+  const expectedNames = new Set([...expected].map((pkg) => pkg.name));
+
+  for (const pkg of expected) {
+    if (!actual.has(pkg.name)) {
+      errors.push(`${surface}: missing ${pkg.name}`);
+    }
+  }
+
+  for (const name of actual) {
+    if (!name.startsWith(SCOPE) || expectedNames.has(name)) {
+      continue;
+    }
+
+    errors.push(`${surface}: unexpected ${name}`);
+  }
+
+  return errors;
+}
+
+/**
+ * @param {string} root
+ * @param {DiscoveredPackage[]} packages
+ * @param {DiscoveredPackage[]} catalog
+ * @param {DiscoveredPackage[]} demo
+ * @returns {string[]}
+ */
+function validateRepositorySurfaces(root, packages, catalog, demo) {
+  const demoRoot = path.join(root, "apps/demo");
+
+  return [
+    ...diffSurface(readTsconfigPaths(root), packages, "tsconfig.json paths"),
+    ...diffSurface(readDemoTsconfigPaths(demoRoot), demo, "apps/demo/tsconfig.json paths"),
+    ...diffSurface(readDemoPackageDeps(demoRoot), demo, "apps/demo/package.json dependencies"),
+    ...diffSurface(
+      readAstroAliases(path.join(demoRoot, "astro.config.ts")),
+      demo,
+      "apps/demo/astro.config.ts aliases"
+    ),
+    ...diffSurface(
+      readMarkdownPackageNames(path.join(root, "README.md")),
+      catalog,
+      "README.md package catalog"
+    ),
+    ...diffSurface(
+      readMarkdownPackageNames(path.join(root, "AGENTS.md")),
+      catalog,
+      "AGENTS.md package catalog"
+    ),
+  ];
+}
+
+/**
+ * @param {string} root
+ * @param {number} catalogCount
+ * @returns {string[]}
+ */
+function validateDocumentedCounts(root, catalogCount) {
+  const errors = [];
+
+  for (const [file, label] of [
+    [path.join(root, "README.md"), "README.md"],
+    [path.join(root, "AGENTS.md"), "AGENTS.md"],
+  ]) {
+    const documented = readDocumentedPackageCount(file);
+    if (documented === null) {
+      errors.push(`${label}: could not find documented package count`);
+      continue;
+    }
+
+    if (documented !== catalogCount) {
+      errors.push(`${label}: documents ${documented} packages but catalog has ${catalogCount}`);
+    }
+  }
+
+  return errors;
+}
+
+/**
+ * @param {DiscoveredPackage[]} packages
+ * @returns {string[]}
+ */
+function validatePackageTests(packages) {
+  const errors = [];
+  const testExcluded = new Set(REPO_CHECK_POLICY.testExcluded);
+
+  for (const pkg of packages) {
+    if (testExcluded.has(pkg.folder) || packageHasTests(pkg.dir)) {
+      continue;
+    }
+
+    errors.push(`${pkg.name}: missing tests in packages/${pkg.folder}/test/`);
+  }
+
+  return errors;
+}
+
+/**
+ * @param {string} root
+ * @param {DiscoveredPackage[]} publishable
+ * @returns {string[]}
+ */
+function validateTooling(root, publishable) {
+  const errors = [];
+
+  if (!packCheckUsesDynamicDiscovery(path.join(root, "scripts/pack-check.mjs"))) {
+    errors.push("scripts/pack-check.mjs: must discover publishable packages dynamically");
+  }
+
+  if (publishable.length === 0) {
+    errors.push("packages/: no publishable packages discovered");
+  }
+
+  return errors;
+}
+
+/**
+ * @param {RepoCheckOptions} [options]
+ * @returns {RepoCheckResult}
+ */
+export function runRepoCheck(options = {}) {
+  const root = options.root ?? defaultRoot;
+  const packagesDir = options.packagesDir ?? path.join(root, "packages");
+  const requireBuilt = options.requireBuilt ?? false;
+  const packages = discoverPackages(packagesDir);
+  const catalog = catalogPackages(packages);
+  const demo = demoPackages(packages);
+  const publishable = publishablePackages(packages);
+  const errors = [];
+
+  for (const pkg of packages) {
+    errors.push(...validatePackageMetadata(pkg, requireBuilt));
+  }
+
+  errors.push(
+    ...validateRepositorySurfaces(root, packages, catalog, demo),
+    ...validateDocumentedCounts(root, catalog.length),
+    ...validateSizeBudgets(packages, root),
+    ...validatePackageTests(packages),
+    ...validateTooling(root, publishable)
+  );
+
+  return {
+    ok: errors.length === 0,
+    errors,
+    packages,
+    catalogCount: catalog.length,
+  };
+}
+
+function main() {
+  const args = new Set(process.argv.slice(2));
+  const result = runRepoCheck({ requireBuilt: args.has("--built") });
+
+  if (result.ok) {
+    console.log(
+      `repo:check passed (${result.packages.length} packages, ${result.catalogCount} catalog entries)`
+    );
+    process.exit(0);
+  }
+
+  console.error("repo:check failed:\n");
+  for (const error of result.errors) {
+    console.error(`  - ${error}`);
+  }
+  process.exit(1);
+}
+
+const entryPath = process.argv[1] ? path.resolve(process.argv[1]) : "";
+const modulePath = fileURLToPath(import.meta.url);
+
+if (entryPath === modulePath) {
+  main();
+}

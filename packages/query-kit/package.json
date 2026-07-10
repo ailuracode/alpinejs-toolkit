@@ -50,6 +50,7 @@
   "scripts": {
     "build": "tsup src/index.ts --format esm --dts --clean --out-dir dist --tsconfig tsconfig.build.json --external @ailuracode/alpine-query --external @nanostores/alpine --external nanostores && cp src/global.d.ts dist/global.d.ts",
     "prepublishOnly": "pnpm run build",
+    "size": "size-limit",
     "test": "vitest run --config ../../vitest.config.ts test"
   },
   "keywords": [

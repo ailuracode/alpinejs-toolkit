@@ -1,26 +1,34 @@
 ---
 description: Bundle size budgets and build quality gates
 alwaysApply: false
-globs: packages/*/package.json,.size-limit.json
+globs: packages/*/package.json,packages/*/.size-limit.json
 ---
 
 # Bundle budget
 
 ## Thresholds
 
-Enforced via `.size-limit.json` and `pnpm run size` (not Vitest).
+Enforced via per-package `packages/<name>/.size-limit.json` and `pnpm run size` (not Vitest).
 
 | Metric | Budget | Rationale |
 |--------|--------|-----------|
-| **Per-package import surface** | Limits in `.size-limit.json` (hundreds of bytes to a few kB gzipped) | Alpine.js itself is ~17 kB gzipped |
+| **Per-package import surface** | Limits in each package `.size-limit.json` (hundreds of bytes to a few kB gzipped) | Alpine.js itself is ~17 kB gzipped |
 | **CSS output** | 0 bytes | Plugins are headless, CSS-framework agnostic |
 
 ## Enforcement
 
 ```bash
-pnpm run size:check         # build + size-limit
+pnpm run size:check         # build + size-limit across all packages
 pnpm run build              # verify dist output
+pnpm --filter @ailuracode/alpine-theme run size  # single package
 ```
+
+Every package under `packages/` MUST include:
+
+- `packages/<name>/.size-limit.json` — bundle budgets for that package
+- `"size": "size-limit"` script in `package.json`
+
+`repo:check` fails when a package is missing either surface.
 
 ## Size-sensitive patterns
 

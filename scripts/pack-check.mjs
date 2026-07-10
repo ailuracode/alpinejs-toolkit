@@ -1,19 +1,13 @@
 import { execSync } from "node:child_process";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { discoverPackages } from "./repo-check.mjs";
 
-const workspaces = [
-  "@ailuracode/alpine-theme",
-  "@ailuracode/alpine-media",
-  "@ailuracode/alpine-env",
-  "@ailuracode/alpine-transfer",
-  "@ailuracode/alpine-attention",
-  "@ailuracode/alpine-scroll",
-  "@ailuracode/alpine-notify",
-  "@ailuracode/alpine-geo",
-  "@ailuracode/alpine-lang",
-];
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const packages = discoverPackages(path.join(root, "packages")).filter((pkg) => !pkg.isPrivate);
 
-for (const workspace of workspaces) {
-  execSync(`pnpm --filter ${workspace} pack --dry-run`, { stdio: "inherit" });
+for (const pkg of packages) {
+  execSync(`pnpm --filter ${pkg.name} pack --dry-run`, { stdio: "inherit" });
 }
 
-console.log(`Packed ${workspaces.length} workspaces successfully.`);
+console.log(`Packed ${packages.length} workspaces successfully.`);
