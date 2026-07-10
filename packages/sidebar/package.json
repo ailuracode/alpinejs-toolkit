@@ -1,6 +1,6 @@
 {
   "name": "@ailuracode/alpine-sidebar",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "description": "Alpine.js sidebar store for visibility state, overlay, keyboard navigation, and responsive breakpoints",
   "type": "module",
   "license": "MIT",
@@ -34,9 +34,9 @@
   },
   "peerDependencies": {
     "alpinejs": "^3.0.0",
-    "@ailuracode/alpine-core": "^0.1.0",
-    "@ailuracode/alpine-toggle": "^0.3.0",
-    "@ailuracode/alpine-scroll": "^1.0.0"
+    "@ailuracode/alpine-core": "^0.2.0",
+    "@ailuracode/alpine-toggle": "^1.0.0",
+    "@ailuracode/alpine-scroll": "^2.0.0"
   },
   "peerDependenciesMeta": {
     "@types/alpinejs": {

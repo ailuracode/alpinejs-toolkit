@@ -1,6 +1,6 @@
 {
   "name": "@ailuracode/alpine-toast",
-  "version": "0.1.1",
+  "version": "1.0.0",
   "description": "Alpine.js in-app toast queue magic",
   "type": "module",
   "license": "MIT",
@@ -33,7 +33,7 @@
     }
   },
   "peerDependencies": {
-    "@ailuracode/alpine-core": "^0.1.0",
+    "@ailuracode/alpine-core": "^0.2.0",
     "alpinejs": "^3.0.0"
   },
   "peerDependenciesMeta": {

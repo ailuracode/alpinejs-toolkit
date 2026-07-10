@@ -1,0 +1,7 @@
+# @ailuracode/alpine-core
+
+## 0.2.0
+
+### Minor Changes
+
+- 7a9418a: Remove `corePlugin()` and the `/head` subpath export. Drop the optional `@ailuracode/alpine-debug` peer dependency. Remove `defineMagicPlugin`, `defineStorePlugin`, `defineDirectivePlugin`, and `defineHybridPlugin` — `definePlugin(kinds, options)` is the only definition entry. Unify the registry's debug sink with `DebugLogger<TDetail>` from `core/debug`. Fix `PluginLoaderError` so `cause` is unwrapped from the options object. `ToolkitError.name` now matches the stable `code` (was inconsistent across tests). `BaseController.cleanupSize` removed (unused). Build migrated from `tsc` to `tsup`. Test runner now picks up `*.spec.ts` alongside `*.test.ts`.

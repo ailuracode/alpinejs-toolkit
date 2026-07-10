@@ -1,6 +1,6 @@
 {
   "name": "@ailuracode/alpine-child",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Alpine.js x-child directive — asChild-style attribute transfer to the first child element",
   "type": "module",
   "license": "MIT",
@@ -33,7 +33,7 @@
   },
   "types": "./dist/global.d.ts",
   "peerDependencies": {
-    "@ailuracode/alpine-core": "^0.1.0",
+    "@ailuracode/alpine-core": "^0.2.0",
     "@alpinejs/morph": "^3.0.0",
     "alpinejs": "^3.0.0"
   },
