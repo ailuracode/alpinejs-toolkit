@@ -15,7 +15,7 @@ Five concerns under one headless controller:
 ## Install
 
 ```sh
-pnpm add @ailuracode/alpine-scroll @ailuracode/alpine-core
+pnpm add @ailuracode/alpine-scroll @ailuracode/alpine-core alpinejs
 ```
 
 ## Quick start

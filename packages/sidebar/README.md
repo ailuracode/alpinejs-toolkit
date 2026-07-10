@@ -204,6 +204,8 @@ import { sidebarPlugin, createSidebar } from "@ailuracode/alpine-sidebar";
 Alpine.plugin(scrollPlugin());
 Alpine.plugin(sidebarPlugin());
 
+let scrollLockHandle: string | undefined;
+
 createSidebar().on("change", (detail) => {
   // Only react to direct user actions — let programmatic close
   // (Escape, breakpoint auto-hide) flow through naturally.
@@ -213,11 +215,14 @@ createSidebar().on("change", (detail) => {
   if (detail.visible) {
     document.documentElement.setAttribute("data-sidebar", "");
     document.documentElement.style.scrollbarGutter = "stable";
-    scroll.lock();
+    scrollLockHandle = scroll.lock("sidebar");
   } else {
     document.documentElement.removeAttribute("data-sidebar");
     document.documentElement.style.scrollbarGutter = "";
-    scroll.unlock();
+    if (scrollLockHandle) {
+      scroll.unlock(scrollLockHandle);
+      scrollLockHandle = undefined;
+    }
   }
 });
 ```
@@ -388,7 +393,7 @@ v2.0 is a major rewrite. The breaking changes:
 1. `onShow` and `onHide` plugin options removed — use `controller.on('change', ...)` instead.
 2. `breakpoint` is now `{ query, onMismatch }` (an object) instead of a raw string.
 3. `onOverlayClick` plugin option removed.
-4. The default export is gone — import the named `sidebarPlugin` factory.
+4. Prefer the named `sidebarPlugin` factory — the default re-export is retained for compatibility.
 
 The `$store.sidebar` surface (`.visible`, `.isVisible`, `.hasOverlay`, `.matchesBreakpoint`, `.show()`, `.hide()`, `.toggle()`) is **unchanged**. Templates that read `$store.sidebar.*` keep working without edits.
 

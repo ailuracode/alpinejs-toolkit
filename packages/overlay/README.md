@@ -9,7 +9,7 @@ portal root itself.
 ## Install
 
 ```bash
-pnpm add @ailuracode/alpine-overlay
+pnpm add @ailuracode/alpine-overlay alpinejs @ailuracode/alpine-core
 ```
 
 ## Usage
@@ -47,7 +47,7 @@ Template:
 | `configure(opts)` | `void` | Idempotent setup. `root`, `baseZIndex`, `step`. |
 | `register(plugin, id)` | `number` | Allocate slot, returns zIndex |
 | `unregister(plugin, id)` | `void` | Release slot (silent if unknown) |
-| `zIndexOf(plugin, id)` | `number \| null` | Lookup allocated zIndex |
+| `zIndexOf(plugin, id)` | `number` | Lookup allocated zIndex (`0` after destroy) |
 | `isOpen(plugin, id)` | `boolean` | Whether `(plugin, id)` is on the stack |
 | `on('change', cb)` | `Unsubscribe` | Subscribe to stack transitions |
 

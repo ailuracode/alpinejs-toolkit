@@ -26,7 +26,7 @@ Alpine.plugin(menuPlugin({ scroll: Alpine.store("scroll") }));
 Opening a menu closes all others by default (`exclusive: true`). Pass `exclusive: false` to allow multiple open menus, or use per-menu `group` for menubar-style exclusivity:
 
 ```ts
-menu({ exclusive: false });
+Alpine.plugin(menuPlugin({ exclusive: false }));
 $store.menu.register("file", { group: "menubar-1" });
 $store.menu.register("edit", { group: "menubar-1" });
 ```
