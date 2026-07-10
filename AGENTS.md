@@ -2,6 +2,24 @@
 
 Guidance for AI agents and contributors working on **@ailuracode/alpinejs-toolkit**.
 
+## ⛔ MANDATORY: Tool Selection (HARD RULE)
+
+**BEFORE typing ANY terminal command, you MUST do this:**
+
+1. Check if `rtk` supports the command you need
+2. If yes → use `rtk <command>` — **NO EXCEPTIONS**
+3. If no → THEN you may use raw commands
+
+**BANNED patterns** (never write these):
+- `git ...` → use `rtk git ...`
+- `gh ...` → use `rtk gh ...`
+- `pnpm ...` → use `rtk pnpm ...`
+- `npm ...` → use `rtk pnpm ...`
+
+**Self-check before every bash call:** "Am I about to type a raw CLI command? STOP. Use rtk."
+
+Fallback is ONLY for behaviors `rtk` doesn't support. When unsure, try `rtk` first.
+
 ## Project
 
 Alpine.js plugin monorepo by **ailuracode**. Twenty-six independent npm packages under `packages/`, plus shared tests and docs. The root package `@ailuracode/alpinejs-toolkit` is **private** and never published.
@@ -72,6 +90,8 @@ pnpm run release      # test + publish changed packages to npm
 
 Do **not** bump `version` in `package.json` manually for releases — use Changesets.
 
+Do **not** bump `version` in `package.json` manually for releases — use Changesets.
+
 ## Quick reference
 
 ### Stores vs magics
@@ -131,6 +151,7 @@ Do not couple `QueryCache` directly to Nanostores, Zustand, or Alpine.reactive �
 - Skip tests for plugin logic changes
 - Ship a new plugin without adding it to the Astro demo app
 - Manually edit version numbers for releases (use Changesets)
+- Run commands not explicitly requested (e.g. `git log` when only `git push` was asked)
 
 ## Rules (`.agents/rules/`)
 
