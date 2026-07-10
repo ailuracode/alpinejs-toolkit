@@ -1,0 +1,72 @@
+---
+description: TypeScript, Biome formatting, and linting rules for alpinejs-toolkit
+alwaysApply: true
+---
+
+## Formatting (Biome)
+
+- 2 spaces, line width 100, double quotes, semicolons, trailing commas ES5.
+- `const` over `let`; `for…of` over `.forEach`.
+- No `any`, no `!`, no `==`, no `delete obj.key` (use destructuring omit).
+- Default exports allowed for plugins (`noDefaultExport: off`).
+
+## TypeScript
+
+- Target ES2022, `strict`, `verbatimModuleSyntax`.
+- Relative imports MUST use `.js` extension: `from "./store.js"`.
+- `import type` for type-only imports.
+- Prefer `interface` for public API shapes; export types from `index.ts`.
+- Augment Alpine via `declare global { namespace Alpine { … } }`.
+- Publish types: `global.d.ts` copied to `dist/` in build script when needed.
+
+### Prohibited
+
+- `any`.
+- `@ts-ignore`.
+- Unjustified assertions.
+- Repeated casts that hide design problems.
+- Public APIs that depend on internal types.
+
+### Preferred
+
+- `unknown` + type guards.
+- Generics.
+- Discriminated unions.
+- Readonly types.
+- Literal unions.
+- `satisfies`.
+
+Casts at external API boundaries MUST remain localized.
+
+### SSR and browser safety
+
+Browser APIs MUST NOT be accessed during import, in top-level constants, in the constructor, or before the plugin is registered or mounted. Use core helpers:
+
+```typescript
+isBrowser();
+safeWindow();
+safeDocument();
+safeMatchMedia();
+```
+
+Importing any package MUST work in an environment without a DOM.
+
+## Common mistakes
+
+| Mistake | Fix |
+|---------|-----|
+| `import { foo } from "./foo"` (no extension) | Use `from "./foo.js"` — `verbatimModuleSyntax` + ESM |
+| `any` or implicit `let x` | Biome errors — type explicitly |
+| `value!` non-null assertion | Forbidden — narrow or guard instead |
+| `array.forEach(...)` | Use `for…of` — `noForEach` is an error |
+| `==` comparison | Use `===` — `noDoubleEquals` |
+
+## Common CI blockers
+
+Run `pnpm run lint:fix` then `pnpm run format`. Frequent blockers:
+
+- `noExcessiveCognitiveComplexity` — extract helpers.
+- `useBlockStatements` — always `{ }` on `if`/`else`.
+- `noUnusedImports` / `noUnusedVariables`.
+- `useAwait` — don't mark async functions without `await`.
+- `noConsole` — warn in source; use `oxlint-disable` only for intentional dev warnings.
