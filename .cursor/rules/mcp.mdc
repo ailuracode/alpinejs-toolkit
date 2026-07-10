@@ -19,6 +19,34 @@ alwaysApply: true
 - Search and update issues in the AiluraCode workspace.
 - Authenticate on first use (OAuth in browser).
 
+### This repository → Linear mapping
+
+Issues for **this repo** (`alpinejs-toolkit`) MUST always be created with:
+
+| Field | Value |
+|-------|-------|
+| `team` | `Alpine` |
+| `project` | `Alpine Toolkit` |
+| Repo link | `https://github.com/ailuracode/alpinejs-toolkit` |
+
+`mcp.json` only configures the MCP connection — it cannot set a default project. Agents MUST pass `project` explicitly on every `save_issue` call.
+
+Example:
+
+```ts
+save_issue({
+  team: "Alpine",
+  project: "Alpine Toolkit",
+  title: "Short issue title",
+  description: "## Summary\n\n…",
+  links: [
+    { url: "https://github.com/ailuracode/alpinejs-toolkit", title: "Repo" },
+  ],
+});
+```
+
+Branch names for issue-driven work follow `.cursor/rules/branches.mdc` (`<coder>/alp-<n>-<description>`).
+
 ### Rules
 
 - Never put Linear issue identifiers in commit messages — link from PR description only.
