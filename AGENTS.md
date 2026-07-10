@@ -51,7 +51,7 @@ test/                            # shared test setup (setup.ts, helpers.ts, mock
 
 ## Commands
 
-For terminal workflows, prefer `rtk` over raw `git`, `gh`, `pnpm`, test, and log commands when supported. Keep using structured tools like `Read`, `Grep`, and `Glob` for file/context access.
+For terminal workflows, USE `rtk` instead of raw `git`, `gh`, `pnpm`, test, and log commands whenever `rtk` supports that command. Fall back to raw commands only when `rtk` does not support needed behavior. Keep using structured tools like `Read`, `Grep`, and `Glob` for file/context access.
 
 ```bash
 pnpm install          # install all workspaces
