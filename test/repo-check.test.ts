@@ -2,12 +2,13 @@ import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
-import { BUNDLE_BUDGET_POLICY, expectedSizeLimitConfig } from "../scripts/bundle-budget-policy.mjs";
 import {
   catalogPackages,
   diffSurface,
   discoverPackages,
+  expectedSizeLimitConfig,
   publishablePackages,
+  readBundleBudgetMetadata,
   readMarkdownPackageNames,
   runRepoCheck,
 } from "../scripts/repo-check.mjs";
@@ -49,19 +50,19 @@ describe("repo:check", () => {
     expect(missing.map((pkg) => pkg.folder)).toEqual([]);
   });
 
-  it("keeps bundle budget policy aligned with public packages", () => {
-    const packages = publishablePackages(discoverPackages(path.join(root, "packages")));
-
-    expect(Object.keys(BUNDLE_BUDGET_POLICY).sort()).toEqual(
-      packages.map((pkg) => pkg.folder).sort()
-    );
-  });
-
-  it("keeps checked-in size-limit configs synced with bundle budget policy", () => {
+  it("requires bundle budget metadata on every public package", () => {
     const packages = publishablePackages(discoverPackages(path.join(root, "packages")));
 
     for (const pkg of packages) {
-      const expected = expectedSizeLimitConfig(pkg.folder);
+      expect(readBundleBudgetMetadata(pkg)).not.toBeNull();
+    }
+  });
+
+  it("keeps checked-in size-limit configs synced with package metadata", () => {
+    const packages = publishablePackages(discoverPackages(path.join(root, "packages")));
+
+    for (const pkg of packages) {
+      const expected = expectedSizeLimitConfig(pkg);
       expect(expected).not.toBeNull();
 
       const actual = JSON.parse(readFileSync(path.join(pkg.dir, ".size-limit.json"), "utf8"));

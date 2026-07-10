@@ -51,5 +51,26 @@
     "query",
     "zustand",
     "adapter"
-  ]
+  ],
+  "toolkit": {
+    "bundleBudget": {
+      "category": "adapter",
+      "entries": [
+        {
+          "name": "full surface",
+          "path": "dist/index.js",
+          "import": "*",
+          "ignore": [
+            "alpinejs",
+            "@ailuracode/alpine-query",
+            "@types/alpinejs",
+            "zustand"
+          ],
+          "gzip": true,
+          "brotli": true,
+          "limit": "600 B"
+        }
+      ]
+    }
+  }
 }

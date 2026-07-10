@@ -1,8 +1,7 @@
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { expectedSizeLimitConfig } from "./bundle-budget-policy.mjs";
-import { discoverPackages, publishablePackages } from "./repo-check.mjs";
+import { discoverPackages, expectedSizeLimitConfig, publishablePackages } from "./repo-check.mjs";
 
 const defaultRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -15,7 +14,7 @@ export function syncSizeLimitConfigs(root = defaultRoot) {
   const changed = [];
 
   for (const pkg of packages) {
-    const expected = expectedSizeLimitConfig(pkg.folder);
+    const expected = expectedSizeLimitConfig(pkg);
     if (!expected) {
       continue;
     }

@@ -58,5 +58,25 @@
     "palette",
     "spotlight",
     "headless"
-  ]
+  ],
+  "toolkit": {
+    "bundleBudget": {
+      "category": "complex-feature",
+      "entries": [
+        {
+          "name": "full surface",
+          "path": "dist/index.js",
+          "import": "*",
+          "ignore": [
+            "alpinejs",
+            "@ailuracode/alpine-core",
+            "@types/alpinejs"
+          ],
+          "gzip": true,
+          "brotli": true,
+          "limit": "1.8 kB"
+        }
+      ]
+    }
+  }
 }

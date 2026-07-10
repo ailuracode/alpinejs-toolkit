@@ -1,12 +1,6 @@
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import {
-  BUNDLE_BUDGET_CATEGORIES,
-  BUNDLE_BUDGET_POLICY,
-  bundleBudgetRuleFor,
-  expectedSizeLimitConfig,
-} from "./bundle-budget-policy.mjs";
 import { REPO_CHECK_POLICY } from "./repo-check-policy.mjs";
 
 const SCOPE = "@ailuracode/alpine-";
@@ -15,6 +9,13 @@ const REQUIRED_MANIFEST_FIELDS = ["license", "homepage", "exports", "files"];
 const REQUIRED_REPO_FIELDS = ["type", "url", "directory"];
 const REQUIRED_PACKAGE_FILES = ["README.md", "CHANGELOG.md"];
 const REQUIRED_PUBLISH_FILES = ["dist", "README.md"];
+const BUNDLE_BUDGET_CATEGORIES = new Set([
+  "primitive",
+  "infrastructure",
+  "small-feature",
+  "complex-feature",
+  "adapter",
+]);
 
 /**
  * @typedef {object} DiscoveredPackage
@@ -106,6 +107,38 @@ export function publishablePackages(packages) {
 }
 
 /**
+ * @param {DiscoveredPackage} pkg
+ * @returns {Record<string, unknown> | null}
+ */
+function readToolkitMetadata(pkg) {
+  const toolkit = pkg.manifest.toolkit;
+  return toolkit && typeof toolkit === "object" ? toolkit : null;
+}
+
+/**
+ * @param {DiscoveredPackage} pkg
+ * @returns {Record<string, unknown> | null}
+ */
+export function readBundleBudgetMetadata(pkg) {
+  const toolkit = readToolkitMetadata(pkg);
+  const bundleBudget = toolkit?.bundleBudget;
+  return bundleBudget && typeof bundleBudget === "object" ? bundleBudget : null;
+}
+
+/**
+ * @param {DiscoveredPackage} pkg
+ * @returns {unknown[] | null}
+ */
+export function expectedSizeLimitConfig(pkg) {
+  const metadata = readBundleBudgetMetadata(pkg);
+  if (!metadata || typeof metadata.exclude === "string") {
+    return null;
+  }
+
+  return Array.isArray(metadata.entries) ? JSON.parse(JSON.stringify(metadata.entries)) : null;
+}
+
+/**
  * @param {string} root
  * @returns {Set<string>}
  */
@@ -168,13 +201,13 @@ function readDocumentedPackageCount(filePath) {
  */
 function validateSizeBudgetPolicyEntry(pkg) {
   const errors = [];
-  const rule = bundleBudgetRuleFor(pkg.folder);
+  const rule = readBundleBudgetMetadata(pkg);
 
   if (!rule) {
-    return [`${pkg.name}: missing bundle budget policy entry`];
+    return [`${pkg.name}: package.json missing toolkit.bundleBudget metadata`];
   }
 
-  if (!BUNDLE_BUDGET_CATEGORIES.has(rule.category)) {
+  if (typeof rule.category !== "string" || !BUNDLE_BUDGET_CATEGORIES.has(rule.category)) {
     errors.push(`${pkg.name}: bundle budget category must be recognized`);
   }
 
@@ -190,7 +223,7 @@ function validateSizeBudgetPolicyEntry(pkg) {
   }
 
   if (!Array.isArray(rule.entries) || rule.entries.length === 0) {
-    errors.push(`${pkg.name}: bundle budget policy must define at least one budget or exclusion`);
+    errors.push(`${pkg.name}: toolkit.bundleBudget must define at least one budget or exclusion`);
     return errors;
   }
 
@@ -205,10 +238,10 @@ function validateSizeBudgetPolicyEntry(pkg) {
     return errors;
   }
 
-  const expected = expectedSizeLimitConfig(pkg.folder);
+  const expected = expectedSizeLimitConfig(pkg);
   if (JSON.stringify(entries) !== JSON.stringify(expected)) {
     errors.push(
-      `${pkg.name}: ${relativeConfigPath} is out of sync with scripts/bundle-budget-policy.mjs`
+      `${pkg.name}: ${relativeConfigPath} is out of sync with package.json toolkit.bundleBudget`
     );
   }
 
@@ -227,7 +260,6 @@ function validateSizeBudgetPolicyEntry(pkg) {
  */
 function validateSizeBudgets(packages, root) {
   const errors = [];
-  const publicFolders = new Set(packages.filter((pkg) => !pkg.isPrivate).map((pkg) => pkg.folder));
 
   if (existsSync(path.join(root, ".size-limit.json"))) {
     errors.push("Root .size-limit.json is deprecated; use packages/<name>/.size-limit.json");
@@ -239,12 +271,6 @@ function validateSizeBudgets(packages, root) {
     }
 
     errors.push(...validateSizeBudgetPolicyEntry(pkg));
-  }
-
-  for (const folder of Object.keys(BUNDLE_BUDGET_POLICY).sort()) {
-    if (!publicFolders.has(folder)) {
-      errors.push(`scripts/bundle-budget-policy.mjs: unexpected package entry "${folder}"`);
-    }
   }
 
   return errors;

@@ -55,5 +55,24 @@
     "visibility",
     "battery",
     "platform"
-  ]
+  ],
+  "toolkit": {
+    "bundleBudget": {
+      "category": "small-feature",
+      "entries": [
+        {
+          "name": "full surface",
+          "path": "dist/index.js",
+          "import": "*",
+          "ignore": [
+            "alpinejs",
+            "@types/alpinejs"
+          ],
+          "gzip": true,
+          "brotli": true,
+          "limit": "1.6 kB"
+        }
+      ]
+    }
+  }
 }

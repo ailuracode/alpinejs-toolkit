@@ -59,5 +59,25 @@
     "popover",
     "accessibility",
     "headless"
-  ]
+  ],
+  "toolkit": {
+    "bundleBudget": {
+      "category": "small-feature",
+      "entries": [
+        {
+          "name": "full surface",
+          "path": "dist/index.js",
+          "import": "*",
+          "ignore": [
+            "alpinejs",
+            "@ailuracode/alpine-core",
+            "@types/alpinejs"
+          ],
+          "gzip": true,
+          "brotli": true,
+          "limit": "1.2 kB"
+        }
+      ]
+    }
+  }
 }
