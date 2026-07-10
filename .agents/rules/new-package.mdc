@@ -1,0 +1,167 @@
+---
+description: Checklist and patterns for adding new packages to the monorepo
+alwaysApply: true
+---
+
+## Package layout
+
+```
+packages/<name>/
+  src/
+    index.ts          # public entry — default export = plugin
+    global.d.ts       # optional — published Alpine type augmentation
+    *.ts              # implementation modules
+  test/
+    <name>.test.ts
+  dist/               # build output (gitignored in dev, published to npm)
+  README.md           # npm readme (English)
+  package.json
+  CHANGELOG.md        # maintained by Changesets
+```
+
+Complex plugins may split `src/` into subfolders (`directives/`, `adapter.ts`, etc.) — see `packages/combobox/`.
+
+## Plugin categories
+
+| Category | Registers | Example | Test harness |
+|----------|-----------|---------|--------------|
+| **Store** | `Alpine.store("name", …)` | theme, menu, scroll | `startAlpine()` |
+| **Magic** | `Alpine.magic("name", …)` | env, toast, calendar | `createMagicHarness()` |
+| **Directive** | `Alpine.directive(…)` | child, combobox | `startAlpine()` + DOM or controller unit tests |
+| **Factory** | Returns `PluginCallback` | `themePlugin(opts)` | Same as inner type |
+
+## Store plugin (factory pattern)
+
+```ts
+import type AlpineType from "alpinejs";
+
+export interface MyPluginOptions {
+  onChange?: (value: string) => void;
+}
+
+export default function myPlugin(options: MyPluginOptions = {}): AlpineType.PluginCallback {
+  return function registerMy(Alpine) {
+    Alpine.store("my", { /* state + methods */ });
+    Alpine.magic("my", () => Alpine.store("my"));
+  };
+}
+
+declare global {
+  namespace Alpine {
+    interface Stores {
+      my: MyStore;
+    }
+    interface Magics<T> {
+      $my: MyStore;
+    }
+  }
+}
+```
+
+## Options helper (literal inference)
+
+```ts
+export function myOptions<const T extends MyPluginOptions>(options: T): T {
+  return options;
+}
+```
+
+Used by menu, combobox, etc. for `as const` mode arrays.
+
+## Magic-only plugin
+
+```ts
+export default function envPlugin(Alpine: AlpineType.Alpine): void {
+  Alpine.magic("network", () => ({ isOnline: navigator.onLine }));
+}
+```
+
+## API naming
+
+- **Getters** for booleans: `isLight`, `isOnline`, `isOpen` — no `()` in templates.
+- **Methods** for actions: `set()`, `lock()`, `open()`, `cycle()`.
+- **Events**: `CustomEvent` with typed `detail`; export event name constants (e.g. `COMBOBOX_EVENTS`).
+- **Callbacks** for side effects: `onChange`, `onLockChange` — never apply CSS inside the plugin.
+
+## Common mistakes
+
+| Mistake | Fix |
+|---------|-----|
+| `@airluracode` (typo) | Always `@ailuracode` |
+| `useThemeStore`, `useScroll()` | React-style hooks — use `$store.theme`, getters, methods |
+| Boolean as method: `$store.theme.isLight()` | Getters have **no** `()` — `$store.theme.isLight` |
+| Hardcode `data-theme`, `.dark`, Tailwind classes in plugin source | Stay CSS-framework agnostic; expose `onChange` / callbacks |
+| Couple `QueryCache` to Nanostores/Zustand/Alpine.reactive | Use `@ailuracode/alpine-query` + adapter package |
+| Register plugin without `declare global { namespace Alpine { … } }` | Add store/magic types in `index.ts` or `global.d.ts` |
+| Directive plugin mutates DOM during `initTree` synchronously | Defer with `Alpine.nextTick` + `Alpine.mutateDom` (see `x-child`) |
+| Factory plugin registers immediately | Return inner `function register(Alpine) { … }` from factory |
+| Import query client from wrong package | Alpine apps: `@ailuracode/alpine-query-kit` (recommended) |
+| Skip adapter in `query({ adapter })` | Pass `createAlpineNanostoresAdapter` or another adapter |
+| Test cache logic through Alpine DOM | Unit-test with `createQueryClient()` + `vanillaQueryAdapter` |
+
+## Build (`package.json` scripts)
+
+Standard store/magic package:
+
+```json
+"build": "tsup src/index.ts --format esm --dts --clean --sourcemap --out-dir dist",
+"test": "vitest run --config ../../vitest.config.ts test"
+```
+
+With published global types (theme pattern):
+
+```json
+"build": "tsup src/index.ts --format esm --dts --clean --sourcemap --out-dir dist && cp src/global.d.ts dist/global.d.ts"
+```
+
+Peer deps: `alpinejs` ^3, optional `@types/alpinejs`.
+
+## Versioning
+
+- Manually bump `package.json` version — run `pnpm run changeset` then `pnpm run version`.
+- New package starts at `"0.0.0"` — `minor` → first publish `0.1.0`.
+- User-facing change without changeset — create changeset before merge.
+- Publish without build/test — `pnpm run build && pnpm test` before `pnpm run release`.
+
+## Documentation (user-facing changes)
+
+1. `docs/plugins/<name>.md` — YAML frontmatter with `title`, no duplicate `#` in body.
+2. `packages/<name>/README.md`
+3. Demo playground (required for new plugins)
+4. `pnpm run changeset`
+
+## Demo app
+
+| Mistake | Fix |
+|---------|-----|
+| Plugin works in tests but not in docs/playground | Wire all 9 demo steps (see AGENTS.md § Demo app) |
+| Repeat `# Title` in doc body | Starlight uses YAML `title` in frontmatter only |
+| Missing Vite alias in `astro.config.ts` | Add alias alongside `tsconfig.json` paths |
+
+## Reference implementations
+
+| Pattern | Package |
+|---------|---------|
+| Store + factory + `global.d.ts` | `packages/theme/` |
+| Store + options helper | `packages/menu/` |
+| Magic-only | `packages/env/`, `packages/attention/` |
+| Directive + init intercept | `packages/child/` |
+| Headless controller + directives | `packages/combobox/` |
+| Query adapter | `packages/query-adapter-alpine/` |
+
+## Scaffolding checklist
+
+1. `packages/<name>/src/index.ts` — plugin source (default export).
+2. `packages/<name>/test/<name>.test.ts` — tests with correct harness.
+3. `packages/<name>/package.json` — version `0.0.0`, build/test scripts, peer deps.
+4. `packages/<name>/README.md` — npm readme (English).
+5. Root `README.md` — add to package table.
+6. `docs/plugins/<name>.md` — API reference with YAML frontmatter.
+7. `apps/demo/package.json` — add `"@ailuracode/alpine-<name>": "workspace:*"`.
+8. `apps/demo/tsconfig.json` — add `paths` entry to `../../packages/<name>/src/index.ts`.
+9. `apps/demo/astro.config.ts` — add Vite alias.
+10. `apps/demo/src/entrypoint.ts` — import plugin + `Alpine.plugin(...)`.
+11. `apps/demo/src/plugin-nav.ts` — sidebar nav entry.
+12. `apps/demo/src/components/demos/<Name>Demo.astro` — demo section.
+13. `apps/demo/src/demo/playground-demos.ts` — register demo.
+14. Run `pnpm run changeset` with `minor` bump.
