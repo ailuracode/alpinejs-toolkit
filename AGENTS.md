@@ -213,3 +213,4 @@ Also update the package table in this file and root `README.md`.
 ## References
 
 - [Changesets](https://github.com/changesets/changesets)
+- [AGENTS.md standard](https://agents.md)
