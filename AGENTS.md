@@ -70,7 +70,7 @@ pnpm run release      # test + publish changed packages to npm
 
 Do **not** bump `version` in `package.json` manually for releases — use Changesets.
 
-## Code conventions
+## Quick reference
 
 ### Stores vs magics
 
@@ -84,10 +84,6 @@ Do **not** bump `version` in `package.json` manually for releases — use Change
 - Boolean derived state: **getters** — `$store.theme.isLight`, `$network.isOnline` (no `()` in templates)
 - Actions: **methods** — `$store.theme.set('dark')`, `$store.scroll.lock()`
 - Avoid React patterns: no `use*Store`, no hooks naming
-
-### CSS
-
-Plugins must stay **CSS-framework agnostic**. Do not hardcode `data-theme`, Tailwind `.dark`, or similar in plugin source. The consumer applies styles via callbacks (e.g. `theme({ onChange })`, `scroll({ onLockChange })`).
 
 ### Plugin shape
 
@@ -107,6 +103,10 @@ export default function themePlugin(options = {}) {
 }
 ```
 
+### CSS policy
+
+Plugins must stay **CSS-framework agnostic**. Do not hardcode `data-theme`, Tailwind `.dark`, or similar in plugin source. The consumer applies styles via callbacks (e.g. `theme({ onChange })`, `scroll({ onLockChange })`).
+
 ### Query cache (store-agnostic core)
 
 The query engine is **agnostic to any store library**. Reactivity is injected via `QueryStateAdapter`:
@@ -120,86 +120,6 @@ The query engine is **agnostic to any store library**. Reactivity is injected vi
 
 Do not couple `QueryCache` directly to Nanostores, Zustand, or Alpine.reactive — use adapter packages.
 
-## Testing
-
-- Framework: Vitest + happy-dom
-- Include pattern: `packages/*/test/**/*.test.ts`
-- Store plugins: use `startAlpine()` from `test/helpers.ts`
-- Magic plugins: use `createMagicHarness()` from `test/mock-alpine.ts`
-- Query cache logic: use `createQueryClient()` with `vanillaQueryAdapter` (default) or an adapter from `@ailuracode/alpine-query-adapter-*`; use `startAlpine(query({ adapter: createAlpineNanostoresAdapter }))` for Alpine integration tests
-- `matchMedia`: use `setMatchMedia()` from `test/setup.ts`
-
-Every change to plugin behavior must include or update tests. Run `pnpm test` and `pnpm run lint` before finishing.
-
-## Linting & formatting
-
-[Biome](https://biomejs.dev/) with strict rules (`biome.json`):
-
-```bash
-pnpm run lint       # check only (CI)
-pnpm run lint:fix   # auto-fix safe issues
-pnpm run format     # format all files
-```
-
-## Versioning & Publishing (manual)
-
-1. After a user-facing change, run `pnpm run changeset`.
-2. Select affected package(s) and semver bump (`patch`, `minor`, `major`).
-3. Write a short changelog summary (English).
-
-When ready to release:
-
-```bash
-pnpm run version        # apply changesets → bump versions + CHANGELOGs
-pnpm run build          # compile all packages
-pnpm test               # verify everything
-npm login               # one-time: authenticate with npm
-pnpm run release        # publishes changed packages to npm
-```
-
-Packages are versioned **independently**. One changeset can touch multiple packages.
-
-**New packages:** set `"version": "0.0.0"` in `package.json`. A `minor` changeset then produces the first publishable version (`0.1.0`). Do **not** start at `0.1.0` with a `minor` changeset — Changesets will bump to `0.2.0` before the first npm release.
-
-### Requirements
-
-- Registry: npm, scope `@ailuracode`, public access
-- Requires npm 2FA or granular token with publish permission
-- Authenticate: `npm login` (manual, not CI)
-
-## Documentation
-
-When changing public API or behavior, update:
-
-1. `docs/<package>.md`
-2. `packages/<name>/README.md`
-3. Root `README.md` if the package list or workflow changes
-
-All docs in **English**.
-
-## Demo app
-
-`apps/demo/` is the Astro **documentation site** (Starlight) and **playground** in the pnpm workspace. It is **private** and excluded from publish and changesets. Run it with `pnpm run dev:demo` from the repo root.
-
-- **Docs** — `docs/` at repo root is the Starlight source of truth (YAML frontmatter + Markdown, no sync step). Guides at the locale root (`getting-started.md`, `core.md`, `query.md`, …); plugin reference under `docs/plugins/` (and `docs/es/plugins/`, `docs/pt/plugins/`). Do not repeat the page `# title` in the body — Starlight renders `title` from frontmatter. `apps/demo/src/content/docs` is a symlink to `../../../../docs`.
-- **Playground** — interactive demos at `/playground/` (`src/pages/playground/`).
-
-**Every new plugin must be wired into the demo app.** The playground is the canonical integration reference; plugin reference pages come from `docs/plugins/<name>.md`.
-
-When adding a new package, update:
-
-1. `docs/plugins/<name>.md` — API reference (Starlight page with YAML frontmatter)
-2. `apps/demo/package.json` — add `"@ailuracode/alpine-<name>": "workspace:*"` to `dependencies`
-3. `apps/demo/tsconfig.json` — add a `paths` entry pointing to `../../packages/<name>/src/index.ts`
-4. `apps/demo/astro.config.ts` — add Vite alias for the package
-5. `apps/demo/src/entrypoint.ts` — import the plugin and call `Alpine.plugin(...)`
-6. `apps/demo/src/plugin-nav.ts` — add sidebar nav entry for the playground
-7. `apps/demo/src/components/demos/<Name>Demo.astro` — interactive demo section
-8. `apps/demo/src/demo/playground-demos.ts` — register demo component for dynamic route
-9. `apps/demo/src/pages/playground/[plugin].astro` — auto-generated subpage (no manual edit if demo is in registry)
-
-Also update the package table in this file and root `README.md`.
-
 ## Do not
 
 - Add more demo apps or Vite entry points unless requested
@@ -209,6 +129,30 @@ Also update the package table in this file and root `README.md`.
 - Skip tests for plugin logic changes
 - Ship a new plugin without adding it to the Astro demo app
 - Manually edit version numbers for releases (use Changesets)
+
+## Rules (`.agents/rules/`)
+
+Canonical rules live in `.agents/rules/` as `.mdc` files with YAML frontmatter. Each file is scoped by `globs` and `alwaysApply`:
+
+| Rule file | Scope | Key content |
+|-----------|-------|-------------|
+| `git.mdc` | Always | PR descriptions, commit messages, Linear conventions |
+| `branches.mdc` | Always | Branch naming convention for issue-driven work |
+| `testing.mdc` | Test files | Harness selection, layer split, contract tests, common mistakes |
+| `new-package.mdc` | Always | Package layout, plugin shape, public API, headless UI, CSS policy, errors, demo wiring |
+| `formatting.mdc` | Always | Biome rules, TypeScript strict, SSR safety, prohibited/preferred patterns |
+| `architecture.mdc` | Always | Import rules, structure, invariants, anti-patterns, reference packages |
+| `alpine-integration.mdc` | Always | Store/directive registration, SSR safety, type augmentation |
+| `mcp.mdc` | Always | Linear MCP usage |
+| `bundle-budget.mdc` | Package JSON, vitest config | Size thresholds, enforcement, breaking rules |
+| `coverage-thresholds.mdc` | Test files | 80% thresholds, per-package expectations |
+| `tooling.mdc` | Package JSON, changeset | Version rules, changesets, CI checks |
+| `tooling-configs.mdc` | Always | Config file locations, per-package files, CI files |
+| `deprecation-policy.mdc` | Source files | Deprecation types, semver rules, migration pattern |
+| `secrets-security.mdc` | Always | Hard rules, .gitignore, token handling |
+| `i18n-messages.mdc` | Docs, demo, README | Message keys, locale files, multi-language docs |
+
+`.cursor/rules/` provides Cursor-specific overrides (`testing.mdc` globs-scoped, `git.mdc` + `new-package.mdc` always-apply).
 
 ## References
 

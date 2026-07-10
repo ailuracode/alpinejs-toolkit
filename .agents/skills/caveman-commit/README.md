@@ -25,8 +25,6 @@ feat(api): add GET /users/:id/profile
 
 Mobile client needs profile data without the full user payload
 to reduce LTE bandwidth on cold-launch screens.
-
-Closes #128
 ```
 
 Diff: breaking API rename.
