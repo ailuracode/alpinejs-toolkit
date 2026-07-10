@@ -4,5 +4,5 @@
   "installCommand": "cd ../.. && corepack enable && pnpm install --frozen-lockfile",
   "buildCommand": "pnpm run build",
   "outputDirectory": "dist",
-  "ignoreCommand": "git diff --quiet \"$(git merge-base HEAD origin/main)\" HEAD -- packages/ apps/demo/ 2>/dev/null || exit 1"
+  "ignoreCommand": "bash scripts/vercel-should-build.sh"
 }
