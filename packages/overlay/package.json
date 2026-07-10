@@ -1,0 +1,67 @@
+{
+  "name": "@ailuracode/alpine-overlay",
+  "version": "0.0.0",
+  "description": "Alpine.js overlay plugin — centralized portal root, z-index slot allocation, and open-stack registry.",
+  "type": "module",
+  "license": "MIT",
+  "author": "ailuracode",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ailuracode/alpinejs-toolkit.git",
+    "directory": "packages/overlay"
+  },
+  "bugs": {
+    "url": "https://github.com/ailuracode/alpinejs-toolkit/issues"
+  },
+  "homepage": "https://github.com/ailuracode/alpinejs-toolkit/tree/master/packages/overlay#readme",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "sideEffects": false,
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./global": {
+      "types": "./dist/global.d.ts"
+    }
+  },
+  "dependencies": {
+    "@ailuracode/alpine-ui": "workspace:*"
+  },
+  "peerDependencies": {
+    "alpinejs": "^3.0.0",
+    "@ailuracode/alpine-core": "^0.1.0",
+    "@types/alpinejs": "^3.13.11"
+  },
+  "peerDependenciesMeta": {
+    "@types/alpinejs": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@ailuracode/alpine-core": "workspace:*",
+    "@ailuracode/alpine-ui": "workspace:*"
+  },
+  "scripts": {
+    "build": "tsup src/index.ts --format esm --dts --clean --out-dir dist && cp src/global.d.ts dist/global.d.ts",
+    "prepublishOnly": "pnpm run build",
+    "test": "vitest run --config ../../vitest.config.ts test"
+  },
+  "keywords": [
+    "alpine",
+    "alpinejs",
+    "plugin",
+    "overlay",
+    "z-index",
+    "portal",
+    "stack",
+    "headless"
+  ]
+}

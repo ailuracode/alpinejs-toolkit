@@ -1,0 +1,58 @@
+{
+  "name": "@ailuracode/alpine-ui",
+  "version": "0.0.0",
+  "description": "Shared UI primitives for @ailuracode/alpinejs-toolkit — generic storage adapters and headless patterns layered on @ailuracode/alpine-core.",
+  "keywords": [
+    "alpine",
+    "alpinejs",
+    "headless",
+    "plugin",
+    "primitives",
+    "storage"
+  ],
+  "homepage": "https://github.com/ailuracode/alpinejs-toolkit/tree/main/packages/ui#readme",
+  "bugs": {
+    "url": "https://github.com/ailuracode/alpinejs-toolkit/issues"
+  },
+  "license": "MIT",
+  "author": "ailuracode",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ailuracode/alpinejs-toolkit.git",
+    "directory": "packages/ui"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "type": "module",
+  "sideEffects": false,
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "clean": "rm -rf dist",
+    "build": "tsup --config tsup.config.ts",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.test.json",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
+  },
+  "devDependencies": {
+    "@ailuracode/alpine-core": "workspace:*",
+    "@types/node": "^26.1.0",
+    "@vitest/coverage-v8": "^4.1.9",
+    "jsdom": "^29.1.1",
+    "tsup": "^8.5.0"
+  },
+  "peerDependencies": {
+    "@ailuracode/alpine-core": "^0.1.0"
+  }
+}

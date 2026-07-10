@@ -9,19 +9,25 @@ This plugin **does not translate content**. It only owns the current language ta
 ## Install
 
 ```bash
-npm install @ailuracode/alpine-lang alpinejs
+pnpm add @ailuracode/alpine-lang alpinejs
 ```
 
 ## Quick example
 
-```js
+```ts
 import Alpine from "alpinejs";
-import lang from "@ailuracode/alpine-lang";
+import { langPlugin, createLang } from "@ailuracode/alpine-lang";
 
-Alpine.plugin(lang({
+Alpine.plugin(langPlugin({
   fallback: "en",
   normalize: true,
 }));
+
+// Optionally react to changes (load translations, sync <html lang>, persist…)
+const lang = createLang({ fallback: "en" });
+lang.on("change", (detail) => {
+  document.documentElement.lang = detail.current;
+});
 
 Alpine.start();
 ```
@@ -39,10 +45,46 @@ Alpine.start();
 | | |
 |-|-|
 | **Store** | `$store.lang` |
-| **State** | `current`, `base`, `region`, `languages`, `fallback` |
-| **Getter** | `isDetected` |
+| **Magic** | `$lang` |
+| **State** | `current`, `base`, `region`, `languages`, `fallback`, `isDetected` |
 | **Methods** | `is(value)`, `includes(value)`, `set(language)`, `reset()` |
-| **Options** | `fallback`, `normalize`, `onChange(language)` |
+| **Options** | `fallback`, `normalize` |
+| **Events** | `manager.on("change", detail)` → `LangChangeDetail` (`source`, `previous`, snapshot fields) |
+| **Headless** | `createLang(options)` → `LangController` (singleton per document) |
+
+## Plugin options
+
+```ts
+langPlugin({
+  fallback?: string,       // default: "en"
+  normalize?: boolean,     // default: true — normalize language tags
+});
+```
+
+## Helpers
+
+| Export | Description |
+|--------|-------------|
+| `normalizeLanguageTag(tag)` | BCP 47 normalization (lowercase base, uppercase region) |
+| `parseLanguageTag(tag)` | Parse `{ base, region }` from a BCP 47 tag |
+| `DEFAULT_LANG_FALLBACK` | Default fallback language (`"en"`) |
+
+## Standalone usage (no Alpine)
+
+```ts
+import { createLang } from "@ailuracode/alpine-lang";
+
+const lang = createLang({ fallback: "en", normalize: true });
+lang.set("es-AR");
+lang.current; // "es-AR"
+lang.base;    // "es"
+lang.region;  // "AR"
+lang.is("es"); // true (base match)
+lang.on("change", (detail) => {
+  console.log(detail.current, detail.source);
+});
+lang.destroy();
+```
 
 ## License
 

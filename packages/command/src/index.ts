@@ -1,39 +1,34 @@
-import type AlpineType from "alpinejs";
-import { type CommandStore, type CommandStoreConfig, createCommandStore } from "./store.js";
+/**
+ * Public entrypoint for `@ailuracode/alpine-command`.
+ *
+ * Per public-api instructions, this file MUST only contain re-exports.
+ * The framework-agnostic controller lives in `./controller.ts`, the
+ * Alpine integration in `./plugin.ts`, and the supporting types in
+ * `./types.ts` and `./events.ts`.
+ *
+ * Two ways to consume the package:
+ *
+ * 1. Standalone — `createCommandController()` returns a
+ *    framework-agnostic controller.
+ * 2. Alpine — `commandPlugin()` returns an `Alpine.plugin()` callback
+ *    that wires the controller into `$store.command` and `$command`.
+ */
 
-export {
-  type CommandAction,
-  type CommandItem,
-  type CommandStore,
-  type CommandStoreConfig,
-  createCommandStore,
-} from "./store.js";
-
-export interface CommandPluginOptions extends CommandStoreConfig {}
-
-/** Builds typed command plugin options. */
-export function commandOptions<const T extends CommandPluginOptions>(options: T): T {
-  return options;
-}
-
-/** Alpine.js command palette plugin. Registers `$store.command`. */
-export default function commandPlugin(
-  options: CommandPluginOptions = {}
-): AlpineType.PluginCallback {
-  return function registerCommand(Alpine) {
-    const store = createCommandStore(options);
-    Alpine.store("command", store);
-    Alpine.magic("command", () => Alpine.store("command"));
-  };
-}
-
-declare global {
-  namespace Alpine {
-    interface Stores {
-      command: CommandStore;
-    }
-    interface Magics<T> {
-      $command: CommandStore;
-    }
-  }
-}
+// --- Re-export core types ------------------------------------------------
+export type { Unsubscribe } from "@ailuracode/alpine-core";
+// --- Controller (framework-agnostic) -------------------------------------
+export { CommandController, createCommandController, createCommandStore } from "./controller";
+// --- Event surface -------------------------------------------------------
+export type { CommandEvents } from "./events";
+// --- Alpine integration --------------------------------------------------
+export { commandOptions, commandPlugin, commandPlugin as default } from "./plugin";
+// --- Public types ---------------------------------------------------------
+export type {
+  CommandAction,
+  CommandAlpine,
+  CommandItem,
+  CommandPluginCallback,
+  CommandPluginOptions,
+  CommandStore,
+  CommandStoreConfig,
+} from "./types";

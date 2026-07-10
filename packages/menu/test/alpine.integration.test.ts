@@ -1,9 +1,20 @@
 import Alpine from "alpinejs";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { startAlpine } from "../../../test/helpers.js";
 import menuPlugin from "../src/index.js";
 
 describe("@ailuracode/alpine-menu alpine integration", () => {
   beforeEach(() => {
+    // `startAlpine` registers the plugin AND calls `Alpine.start()` only on
+    // the first call (gated by a module-level `alpineStarted` flag). Calling
+    // `Alpine.start()` again on every test makes Alpine emit the
+    // "already been initialized" warning and can leak state between tests.
+    // Must run BEFORE the test HTML is mounted: the helper overwrites
+    // `document.body.innerHTML` with a placeholder on every call, and
+    // `Alpine.start()` arms the mutation observer that processes the
+    // markup we set right after.
+    startAlpine(menuPlugin());
+
     document.body.innerHTML = `
       <div
         x-data="{ ids: ['profile', 'settings'] }"
@@ -31,9 +42,6 @@ describe("@ailuracode/alpine-menu alpine integration", () => {
         <strong id="open-state" x-text="$store.menu.isOpen('user-menu')"></strong>
       </div>
     `;
-
-    Alpine.plugin(menuPlugin());
-    Alpine.start();
   });
 
   afterEach(() => {

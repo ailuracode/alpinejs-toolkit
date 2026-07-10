@@ -9,7 +9,7 @@ Three plugins answer different “what device is this?” questions. Use the rig
 
 | Question | Plugin | API |
 |----------|--------|-----|
-| Viewport width, height, breakpoint? | [`@ailuracode/alpine-media`](./plugins/media.md) | `$store.media.width`, `.breakpoint`, `.isMobile` |
+| Viewport width, height, breakpoint? | [`@ailuracode/alpine-media`](./plugins/media.md) | `$store.media.width`, `.breakpoint` |
 | Touch, pointer, hover, orientation, reduced motion? | [`@ailuracode/alpine-media`](./plugins/media.md) | `$store.media.isTouch`, `.pointer`, `.hover`, … |
 | macOS, Windows, iOS, Android? | [`@ailuracode/alpine-env`](./plugins/env.md) | `$platform.isMac`, `.isIos`, `.name` |
 
@@ -51,16 +51,16 @@ Use for OS-specific copy, shortcuts, or install flows — not for layout width.
 
 ```html
 <!-- Responsive layout + touch-friendly controls -->
-<div x-show="$store.media.isDesktop" class="grid grid-cols-3">...</div>
-<div x-show="$store.media.isMobile" class="flex flex-col gap-4">...</div>
+<div x-show="$store.media.breakpoint === 'desktop'" class="grid grid-cols-3">...</div>
+<div x-show="$store.media.breakpoint === 'mobile'" class="flex flex-col gap-4">...</div>
 
 <!-- OS-specific shortcut hint on desktop -->
-<p x-show="$store.media.isDesktop && $platform.isMac">Press ⌘S to save</p>
-<p x-show="$store.media.isDesktop && $platform.isWindows">Press Ctrl+S to save</p>
+<p x-show="$store.media.breakpoint === 'desktop' && $platform.isMac">Press ⌘S to save</p>
+<p x-show="$store.media.breakpoint === 'desktop' && $platform.isWindows">Press Ctrl+S to save</p>
 ```
 
 ## Related
 
 - [Theme](./plugins/theme.md) — user-controlled light/dark (`$store.theme.resolved`), not device detection
 - [`resolved` vs `prefersColorScheme`](./plugins/theme.md#resolved-vs-preferscolorscheme) — styling vs OS color signal
-- [`@ailuracode/alpine-core`](./core.md) — `createMatchMediaWatcher`, `readTouchCapabilities` for custom plugins
+- [`@ailuracode/alpine-core`](./core.md) — helpers SSR-safe del navegador (`isBrowser`, `safeWindow`, `safeMatchMedia`) para plugins custom

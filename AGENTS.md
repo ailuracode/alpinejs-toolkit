@@ -2,24 +2,6 @@
 
 Guidance for AI agents and contributors working on **@ailuracode/alpinejs-toolkit**.
 
-## ⛔ MANDATORY: Tool Selection (HARD RULE)
-
-**BEFORE typing ANY terminal command, you MUST do this:**
-
-1. Check if `rtk` supports the command you need
-2. If yes → use `rtk <command>` — **NO EXCEPTIONS**
-3. If no → THEN you may use raw commands
-
-**BANNED patterns** (never write these):
-- `git ...` → use `rtk git ...`
-- `gh ...` → use `rtk gh ...`
-- `pnpm ...` → use `rtk pnpm ...`
-- `npm ...` → use `rtk pnpm ...`
-
-**Self-check before every bash call:** "Am I about to type a raw CLI command? STOP. Use rtk."
-
-Fallback is ONLY for behaviors `rtk` doesn't support. When unsure, try `rtk` first.
-
 ## Project
 
 Alpine.js plugin monorepo by **ailuracode**. Twenty-six independent npm packages under `packages/`, plus shared tests and docs. The root package `@ailuracode/alpinejs-toolkit` is **private** and never published.
@@ -31,7 +13,7 @@ Alpine.js plugin monorepo by **ailuracode**. Twenty-six independent npm packages
 | `@ailuracode/alpine-media` | Store | `$store.media` |
 | `@ailuracode/alpine-scroll` | Store | `$store.scroll` |
 | `@ailuracode/alpine-sidebar` | Store | `$store.sidebar` |
-| `@ailuracode/alpine-lang` | Store | `$store.lang` |
+| `@ailuracode/alpine-lang` | Store | `$store.lang` — headless `LangController` (singleton) + typed `change` event; `langPlugin` named export |
 | `@ailuracode/alpine-dialog` | Store | `$store.dialog` |
 | `@ailuracode/alpine-menu` | Store | `$store.menu` |
 | `@ailuracode/alpine-tooltip` | Store | `$store.tooltip` |
@@ -107,6 +89,7 @@ Do **not** bump `version` in `package.json` manually for releases — use Change
 - Actions: **methods** — `$store.theme.set('dark')`, `$store.scroll.lock()`
 - Avoid React patterns: no `use*Store`, no hooks naming
 
+
 ### Plugin shape
 
 ```js
@@ -153,12 +136,17 @@ Do not couple `QueryCache` directly to Nanostores, Zustand, or Alpine.reactive �
 - Manually edit version numbers for releases (use Changesets)
 - Run commands not explicitly requested (e.g. `git log` when only `git push` was asked)
 
-## Rules (`.agents/rules/`)
+## Cursor configuration
 
-Canonical rules live in `.agents/rules/` as `.mdc` files with YAML frontmatter. Each file is scoped by `globs` and `alwaysApply`:
+Project rules and skills follow the [Cursor](https://cursor.com) layout. This repo also follows the portable [AGENTS.md](https://agents.md) format for cross-agent compatibility.
+
+### Rules (`.cursor/rules/`)
+
+Rules are `.mdc` files with YAML frontmatter (`description`, `globs`, `alwaysApply`):
 
 | Rule file | Scope | Key content |
 |-----------|-------|-------------|
+| `rtk.mdc` | Always | Require `rtk` wrapper for terminal commands (`rtk git`, `rtk pnpm`, etc.) |
 | `git-commit-message.mdc` | Always | PR descriptions, commit messages, Linear conventions |
 | `branches.mdc` | Always | Branch naming convention for issue-driven work |
 | `testing.mdc` | Test files | Harness selection, layer split, contract tests, common mistakes |
@@ -174,8 +162,11 @@ Canonical rules live in `.agents/rules/` as `.mdc` files with YAML frontmatter. 
 | `deprecation-policy.mdc` | Source files | Deprecation types, semver rules, migration pattern |
 | `secrets-security.mdc` | Always | Hard rules, .gitignore, token handling |
 | `i18n-messages.mdc` | Docs, demo, README | Message keys, locale files, multi-language docs |
+| `readme-standardization.mdc` | Package README | Install commands, imports, API documentation tiers, verification checklist |
 
-`.cursor/rules/` provides Cursor-specific overrides (`testing.mdc` globs-scoped, `git-commit-message.mdc` + `new-package.mdc` always-apply).
+### Skills (`.cursor/skills/`)
+
+Project skills live in `.cursor/skills/<name>/SKILL.md`. Each skill has YAML frontmatter (`name`, `description`) and is loaded on demand for specialized workflows (scaffolding packages, changesets, Vitest, Astro, accessibility audits, etc.).
 
 ## References
 

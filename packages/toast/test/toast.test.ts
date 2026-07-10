@@ -1,3 +1,4 @@
+import { clearAllSingletons } from "@ailuracode/alpine-core";
 import type AlpineType from "alpinejs";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import toastPlugin, {
@@ -66,6 +67,12 @@ function createToastHarness<
 
 describe("@ailuracode/alpine-toast", () => {
   beforeEach(() => {
+    // `toastPlugin` registers the singleton controller via
+    // `createToastController`. Each test needs a clean queue, so we
+    // clear the singleton slot before each case — the harness calls
+    // `toastPlugin(options)` and would otherwise inherit the
+    // previous test's items + timers.
+    clearAllSingletons();
     vi.useFakeTimers();
   });
 

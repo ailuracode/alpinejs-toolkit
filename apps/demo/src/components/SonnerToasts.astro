@@ -3,8 +3,9 @@
 ---
 
 <div
-	class="z-[100] pointer-events-none fixed inset-0"
+	class="pointer-events-none fixed inset-0"
 	data-slot="sonner"
+	:style="{ zIndex: $store.overlay.zIndexOf('toast', 'sonner') }"
 	x-data="toastSonner({ richColors: true })"
 >
 	<template x-for="position in activePositions()" :key="position">

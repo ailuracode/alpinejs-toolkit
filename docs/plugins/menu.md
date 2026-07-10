@@ -27,9 +27,7 @@ Compose scroll locking with `@ailuracode/alpine-scroll` (active while at least o
 
 ```js
 menu({
-  onLockChange(locked) {
-    locked ? Alpine.store("scroll").lock() : Alpine.store("scroll").unlock();
-  },
+  scroll: Alpine.store("scroll"),
 });
 ```
 
@@ -45,7 +43,7 @@ Alpine.plugin(anchor);
 | Option | Default | Description |
 |--------|---------|-------------|
 | `exclusive` | `true` | When opening a menu, close all other open menus |
-| `onLockChange` | — | `(locked: boolean) => void` while menus are open |
+| `scroll` | — | Optional `@ailuracode/alpine-scroll` store locked while at least one menu is open |
 
 ## Exclusive mode
 
@@ -56,7 +54,7 @@ By default (`exclusive: true`), `open(id)` and `toggle(id)` close every other op
 Alpine.plugin(menu());
 ```
 
-When a second menu opens, the first closes automatically. Scroll lock (`onLockChange`) stays in sync: replacing one open menu with another does not briefly unlock the page.
+When a second menu opens, the first closes automatically. Scroll lock stays in sync: replacing one open menu with another does not briefly unlock the page.
 
 ### Multiple menus open
 

@@ -1,55 +1,75 @@
 {
   "name": "@ailuracode/alpine-theme",
-  "version": "0.2.2",
-  "description": "Alpine.js theme store with light, dark and system modes",
-  "type": "module",
+  "version": "0.2.0",
+  "description": "Light, dark, and system theme store for Alpine.js — exposed as a single $store.theme store and $theme magic.",
+  "keywords": [
+    "alpine",
+    "alpinejs",
+    "color-scheme",
+    "dark-mode",
+    "plugin",
+    "prefers-color-scheme",
+    "theme"
+  ],
+  "homepage": "https://github.com/ailuracode/alpinejs-toolkit/tree/main/packages/theme#readme",
+  "bugs": {
+    "url": "https://github.com/ailuracode/alpinejs-toolkit/issues"
+  },
   "license": "MIT",
   "author": "ailuracode",
-  "publishConfig": {
-    "access": "public"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ailuracode/alpinejs-toolkit.git",
     "directory": "packages/theme"
   },
-  "bugs": {
-    "url": "https://github.com/ailuracode/alpinejs-toolkit/issues"
-  },
-  "homepage": "https://github.com/ailuracode/alpinejs-toolkit/tree/master/packages/theme#readme",
   "files": [
     "dist",
     "README.md"
   ],
+  "type": "module",
+  "sideEffects": false,
+  "types": "./dist/global.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
     },
+    "./register": {
+      "types": "./dist/internal/register.d.ts",
+      "default": "./dist/internal/register.js"
+    },
     "./global": {
       "types": "./dist/global.d.ts"
     }
   },
-  "types": "./dist/global.d.ts",
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "clean": "rm -rf dist",
+    "build": "tsup --config tsup.config.ts && cp src/global.d.ts dist/global.d.ts",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.test.json",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
+  },
+  "devDependencies": {
+    "@ailuracode/alpine-core": "workspace:*",
+    "@ailuracode/alpine-toggle": "workspace:*",
+    "@types/alpinejs": "^3.13.10",
+    "@types/node": "^26.1.0",
+    "@vitest/coverage-v8": "^4.1.9",
+    "jsdom": "^29.1.1",
+    "tsup": "^8.5.0"
+  },
   "peerDependencies": {
-    "alpinejs": "^3.0.0",
-    "@types/alpinejs": "^3.13.11"
+    "@ailuracode/alpine-core": "^0.1.0",
+    "@ailuracode/alpine-toggle": "^0.3.0",
+    "alpinejs": "^3.0.0"
   },
   "peerDependenciesMeta": {
     "@types/alpinejs": {
       "optional": true
     }
-  },
-  "scripts": {
-    "build": "tsup src/index.ts --format esm --dts --clean --out-dir dist && cp src/global.d.ts dist/global.d.ts",
-    "prepublishOnly": "pnpm run build",
-    "test": "vitest run --config ../../vitest.config.ts test"
-  },
-  "keywords": [
-    "alpinejs",
-    "alpine",
-    "plugin",
-    "theme",
-    "dark-mode"
-  ]
+  }
 }

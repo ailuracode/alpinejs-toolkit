@@ -5,14 +5,14 @@ Headless accessible carousel store for Alpine.js, powered by [Embla Carousel](ht
 ## Install
 
 ```bash
-npm install @ailuracode/alpine-carousel alpinejs
+pnpm add @ailuracode/alpine-carousel alpinejs
 ```
 
 Peer dependencies: `embla-carousel` and `embla-carousel-autoplay` are bundled as direct dependencies.
 
 ## Setup
 
-```js
+```ts
 import Alpine from "alpinejs";
 import carousel from "@ailuracode/alpine-carousel";
 
@@ -34,8 +34,8 @@ Alpine.start();
   <section x-bind="$store.carousel.carouselProps('gallery', { label: 'Featured gallery' })">
     <div x-ref="viewport" x-bind="$store.carousel.viewportProps('gallery')" class="min-w-0 w-full overflow-hidden">
       <div class="flex touch-pan-y pinch-zoom">
-        <div class="min-w-0 shrink-0 grow-0 [flex:0_0_var(--slide-size,100%)]" x-bind="$store.carousel.slideProps('gallery', 0)">Slide 1</div>
-        <div class="min-w-0 shrink-0 grow-0 [flex:0_0_var(--slide-size,100%)]" x-bind="$store.carousel.slideProps('gallery', 1)">Slide 2</div>
+        <div class="min-w-0 shrink-0 grow-0 flex-[0_0_var(--slide-size,100%)]" x-bind="$store.carousel.slideProps('gallery', 0)">Slide 1</div>
+        <div class="min-w-0 shrink-0 grow-0 flex-[0_0_var(--slide-size,100%)]" x-bind="$store.carousel.slideProps('gallery', 1)">Slide 2</div>
       </div>
     </div>
 

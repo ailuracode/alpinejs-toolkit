@@ -1,8 +1,8 @@
 /// <reference types="@types/alpinejs" />
 
-import type { IdleMagic, WakeLockMagic } from "./index.js";
+import type { IdleMagic, WakeLockMagic } from "./types.js";
 
-export type { IdleMagic, IdleScreenState, IdleUserState, WakeLockMagic } from "./index.js";
+export type { IdleMagic, IdleScreenState, IdleUserState, WakeLockMagic } from "./types.js";
 
 declare global {
   namespace Alpine {

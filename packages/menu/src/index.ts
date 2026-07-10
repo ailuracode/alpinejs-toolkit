@@ -1,44 +1,37 @@
-import type AlpineType from "alpinejs";
-import { createMenuStore, type MenuStore } from "./store.js";
+/**
+ * Public entrypoint for `@ailuracode/alpine-menu`.
+ *
+ * Per public-api instructions, this file MUST only contain re-exports.
+ * The framework-agnostic controller lives in `./controller.ts`, the
+ * Alpine integration in `./plugin.ts`, and the supporting types in
+ * `./types.ts` and `./events.ts`.
+ *
+ * Two ways to consume the package:
+ *
+ * 1. Standalone — `createMenuController()` returns a
+ *    framework-agnostic controller.
+ * 2. Alpine — `menuPlugin()` returns an `Alpine.plugin()` callback
+ *    that wires the controller into `$store.menu` and `$menu`.
+ */
 
-export {
-  createMenuStore,
-  type MenuInstanceOptions,
-  type MenuItemOptions,
-  type MenuOrientation,
-  type MenuStore,
-} from "./store.js";
-
-export interface MenuPluginOptions {
-  /** When true (default), opening a menu closes all other open menus. */
-  exclusive?: boolean;
-  onLockChange?: (locked: boolean) => void;
-}
-
-/** Builds typed menu plugin options. */
-export function menuOptions<const T extends MenuPluginOptions>(options: T): T {
-  return options;
-}
-
-/** Alpine.js menu plugin. Registers `$store.menu`. */
-export default function menuPlugin(options: MenuPluginOptions = {}): AlpineType.PluginCallback {
-  return function registerMenu(Alpine) {
-    const store = createMenuStore({
-      exclusive: options.exclusive,
-      onLockChange: options.onLockChange,
-    });
-    Alpine.store("menu", store);
-    Alpine.magic("menu", () => Alpine.store("menu"));
-  };
-}
-
-declare global {
-  namespace Alpine {
-    interface Stores {
-      menu: MenuStore;
-    }
-    interface Magics<T> {
-      $menu: MenuStore;
-    }
-  }
-}
+// --- Re-export core types ------------------------------------------------
+export type { Unsubscribe } from "@ailuracode/alpine-core";
+// --- Controller (framework-agnostic) -------------------------------------
+export { createMenuController, createMenuStore, MenuController } from "./controller";
+// --- Event surface -------------------------------------------------------
+export type { MenuCloseDetail, MenuEvents, MenuOpenDetail, MenuSelectDetail } from "./events";
+// --- Alpine integration --------------------------------------------------
+export { menuOptions, menuPlugin, menuPlugin as default } from "./plugin";
+// --- Public types ---------------------------------------------------------
+export type {
+  CreateMenuOptions,
+  MenuAlpine,
+  MenuControllerConfig,
+  MenuInstance,
+  MenuInstanceOptions,
+  MenuItemOptions,
+  MenuItemState,
+  MenuOrientation,
+  MenuPluginCallback,
+  MenuStore,
+} from "./types";

@@ -21,6 +21,22 @@ export type PluginNavGroup = {
 /** Single source of truth for sidebar navigation and demo section anchors. */
 export const PLUGIN_NAV_GROUPS: PluginNavGroup[] = [
   {
+    id: "foundations",
+    label: "Foundations",
+    items: [
+      {
+        id: "overlay",
+        title: "Overlay",
+        package: "@ailuracode/alpine-overlay",
+        api: "$store.overlay / $overlay",
+        kind: "store",
+        tier: "essential",
+        description:
+          "Centralized portal root + z-index slot allocator + open-stack registry. Used internally by dialog, menu, tooltip, and command to teleport into `#overlay-root` and stack without z-fight. Headless — no DOM outside the portal container.",
+      },
+    ],
+  },
+  {
     id: "essentials",
     label: "Essentials",
     items: [
@@ -48,11 +64,11 @@ export const PLUGIN_NAV_GROUPS: PluginNavGroup[] = [
         id: "scroll",
         title: "Scroll",
         package: "@ailuracode/alpine-scroll",
-        api: "$store.scroll",
+        api: "$store.scroll / $scroll",
         kind: "store",
         tier: "essential",
         description:
-          "Scroll position, direction, progress, and body scroll lock. The sticky header progress bar and sidebar overlay lock both use this store.",
+          "Headless scroll controller — position tracking, section observer, handle-based body lock, and reduced-motion-aware navigation. v1.0.0 ships `ScrollController` + `scrollPlugin(options)` factory; the `$scroll` magic returns the same reactive store proxy as `$store.scroll`.",
       },
       {
         id: "sidebar",
@@ -327,10 +343,44 @@ export function pluginDocsPath(id: string): string {
   return `/plugins/${id}/`;
 }
 
-/** Starlight sidebar entries for plugin doc pages, grouped by tier. */
+/** Plugin ids that have a Starlight doc page under `docs/plugins/<id>.md`.
+ *  Keep this set in sync with the existing doc files. Items in the playground
+ *  nav without a doc page (e.g. `@ailuracode/alpine-overlay` — playground-only
+ *  until docs land) still render their demo but skip the Starlight sidebar. */
+const PLUGIN_DOCS: ReadonlySet<string> = new Set([
+  "theme",
+  "media",
+  "scroll",
+  "sidebar",
+  "env",
+  "transfer",
+  "attention",
+  "notify",
+  "toggle",
+  "child",
+  "dialog",
+  "menu",
+  "tooltip",
+  "toast",
+  "tabs",
+  "accordion",
+  "command",
+  "carousel",
+  "geo",
+  "lang",
+  "calendar",
+  "query",
+  "query-kit",
+  "json-api",
+]);
+
+/** Starlight sidebar entries for plugin doc pages, grouped by tier.
+ *  Items without a corresponding `docs/plugins/<id>.md` page are filtered out. */
 export function pluginDocsSidebarItems(tier: PluginTier): { label: string; link: string }[] {
-  return getPluginsByTier(tier).map((item) => ({
-    label: item.title,
-    link: `/plugins/${item.id}/`,
-  }));
+  return getPluginsByTier(tier)
+    .filter((item) => PLUGIN_DOCS.has(item.id))
+    .map((item) => ({
+      label: item.title,
+      link: `/plugins/${item.id}/`,
+    }));
 }

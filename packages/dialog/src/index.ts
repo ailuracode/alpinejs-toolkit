@@ -1,48 +1,45 @@
-import type AlpineType from "alpinejs";
-import { createDialogStore, type DialogStore } from "./store.js";
+/**
+ * Public entrypoint for `@ailuracode/alpine-dialog`.
+ *
+ * Per public-api instructions, this file MUST only contain re-exports.
+ * The framework-agnostic controller lives in `./controller.ts`, the
+ * Alpine integration in `./plugin.ts`, and the supporting types in
+ * `./types.ts` and `./events.ts`.
+ *
+ * Two ways to consume the package:
+ *
+ * 1. Standalone — `createDialogController()` returns a
+ *    framework-agnostic controller.
+ * 2. Alpine — `dialogPlugin()` returns an `Alpine.plugin()` callback
+ *    that wires the controller into `$store.dialog` and `$dialog`.
+ */
 
+// --- Re-export core types ------------------------------------------------
+export type { Unsubscribe } from "@ailuracode/alpine-core";
+// --- Controller (framework-agnostic) -------------------------------------
+export { createDialogController, createDialogStore, DialogController } from "./controller";
+// --- Event surface -------------------------------------------------------
+export type { DialogEvents } from "./events";
+// --- Focus utilities (internal, re-exported for advanced use) ------------
 export { createFocusTrap, getFocusableElements, restoreFocus } from "./focus.js";
+// --- Alpine integration --------------------------------------------------
 export {
-  createDialogStore,
-  type DialogInstanceOptions,
-  type DialogOpenOptions,
-  type DialogStore,
-} from "./store.js";
-
-export interface DialogPluginOptions {
-  onLockChange?: (locked: boolean) => void;
-  closeOnEscape?: boolean;
-  closeOnOutsideClick?: boolean;
-  scrollLock?: boolean;
-}
-
-/** Builds typed dialog plugin options. */
-export function dialogOptions<const T extends DialogPluginOptions>(options: T): T {
-  return options;
-}
-
-/** Alpine.js dialog plugin. Registers `$store.dialog`. */
-export default function dialogPlugin(options: DialogPluginOptions = {}): AlpineType.PluginCallback {
-  return function registerDialog(Alpine) {
-    const store = createDialogStore({
-      onLockChange: options.onLockChange,
-      defaultCloseOnEscape: options.closeOnEscape,
-      defaultCloseOnOutsideClick: options.closeOnOutsideClick,
-      defaultScrollLock: options.scrollLock,
-    });
-
-    Alpine.store("dialog", store);
-    Alpine.magic("dialog", () => Alpine.store("dialog"));
-  };
-}
-
-declare global {
-  namespace Alpine {
-    interface Stores {
-      dialog: DialogStore;
-    }
-    interface Magics<T> {
-      $dialog: DialogStore;
-    }
-  }
-}
+  type DialogPluginOptions,
+  dialogOptions,
+  dialogPlugin,
+  dialogPlugin as default,
+} from "./plugin";
+// --- Public types ---------------------------------------------------------
+export type {
+  CreateDialogOptions,
+  DialogAlpine,
+  DialogChangeSource,
+  DialogCloseDetail,
+  DialogInstance,
+  DialogInstanceOptions,
+  DialogOpenDetail,
+  DialogOpenOptions,
+  DialogPluginCallback,
+  DialogStore,
+  DialogStoreConfig,
+} from "./types";

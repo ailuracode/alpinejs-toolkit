@@ -12,19 +12,40 @@ const plugin = getPluginNavItem("scroll")!;
 		<li>Direction: <strong x-text="$store.scroll.direction || '—'"></strong></li>
 		<li>Progress: <strong x-text="Math.round($store.scroll.progress)"></strong>%</li>
 		<li>At top: <strong x-text="$store.scroll.atTop"></strong> · At bottom: <strong x-text="$store.scroll.atBottom"></strong></li>
-		<li>Locked: <strong x-text="$store.scroll.isLocked"></strong></li>
+		<li>Locked: <strong x-text="$store.scroll.locked"></strong></li>
 	</ul>
-	<div class="flex flex-wrap gap-2 mt-3">
-		<DemoButton @click="$store.scroll.lock()">lock()</DemoButton>
-		<DemoButton @click="$store.scroll.lock({ axis: 'both' })">lock(both)</DemoButton>
-		<DemoButton @click="$store.scroll.unlock()">unlock()</DemoButton>
-		<DemoButton @click="$store.scroll.toggleLock()">toggleLock()</DemoButton>
-		<DemoButton x-show="$store.scroll.showToTop" x-cloak @click="$store.scroll.toTop()">toTop()</DemoButton>
+	<div
+		class="flex flex-wrap gap-2 mt-3"
+		x-data="{
+			handle: null,
+			lock() {
+				this.handle = $store.scroll.lock('demo')
+			},
+			unlock() {
+				if (!this.handle) {
+					return;
+				}
+				$store.scroll.unlock(this.handle);
+				this.handle = null
+			},
+			toggle() {
+				if (this.handle) {
+					this.unlock();
+				} else {
+					this.lock();
+				}
+			},
+		}"
+	>
+		<DemoButton @click="lock()">lock()</DemoButton>
+		<DemoButton @click="unlock()">unlock()</DemoButton>
+		<DemoButton @click="toggle()">lock-toggle</DemoButton>
+		<DemoButton @click="$store.scroll.toTop()">toTop()</DemoButton>
 		<DemoButton @click="$store.scroll.toBottom()">toBottom()</DemoButton>
-		<DemoButton @click="$store.scroll.refresh()">refresh()</DemoButton>
+		<DemoButton @click="$store.scroll.unlockAll()">unlockAll()</DemoButton>
 	</div>
 	<p class="text-sm text-muted-foreground mt-3">
-		Sticky progress bar in the header uses <code>$store.scroll.progress</code>. Mobile sidebar open also locks scroll via <code>onOpen</code> in <code>plugin-registry.ts</code>.
+		Sticky progress bar in the header uses <code>$store.scroll.progress</code>. Mobile sidebar open also locks scroll via the shared <code>scroll</code> store wiring in <code>alpine-boot.ts</code>.
 	</p>
 	<p class="text-xs text-muted-foreground mt-3">
 		Package: <code>{plugin.package}</code>

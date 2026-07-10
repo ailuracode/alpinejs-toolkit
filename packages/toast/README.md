@@ -9,17 +9,17 @@ Headless in-app toast queue for Alpine.js via the `$toast` magic.
 ## Install
 
 ```bash
-npm install @ailuracode/alpine-toast alpinejs
+pnpm add @ailuracode/alpine-toast alpinejs
 ```
 
 ## Quick example
 
-```js
+```ts
 import Alpine from "alpinejs";
-import toast, { toastPositions, toastVariants } from "@ailuracode/alpine-toast";
+import { toastPlugin, toastVariants, toastPositions } from "@ailuracode/alpine-toast";
 
 Alpine.plugin(
-  toast({
+  toastPlugin({
     variants: toastVariants(["success", "error", "loading"] as const),
     positions: toastPositions(["top-center", "bottom-right"] as const),
     defaultPosition: "bottom-right",
@@ -61,6 +61,53 @@ Also available on the store: `$store.toast.dismiss(id)`.
 | **Positions** | `positions: toastPositions([...])` → one stack per position |
 | **Queue** | `maxToasts` / `maxVisible` per timed or persistent stack |
 | **UI** | Bring your own markup and CSS |
+
+## Standalone usage (no Alpine)
+
+```ts
+import { createToastController } from "@ailuracode/alpine-toast";
+
+const controller = createToastController({
+  maxToasts: 5,
+  maxVisible: 3,
+});
+
+controller.push({ content: "Hello!", variant: "default", position: "bottom-right" });
+controller.dismissAll();
+controller.destroy();
+```
+
+## Plugin options
+
+```ts
+toastPlugin({
+  variants?: string[],           // toastVariants([...])
+  positions?: string[],          // toastPositions([...])
+  defaultPosition?: string,      // default: "bottom-right"
+  defaultDuration?: number,      // default: 5000 (ms), false for persistent
+  maxToasts?: number,            // max toasts per position
+  maxVisible?: number,            // max visible per position
+  promise?: {
+    loadingVariant?: string,
+    successVariant?: string,
+    errorVariant?: string,
+    loadingMessages?: string[],
+  },
+  onDismiss?: (id: string) => void,
+  onChange?: (detail: ToastChangeDetail) => void,
+});
+```
+
+## Store API
+
+```ts
+$store.toast.items           // active toast items
+$store.toast.length          // total count
+$store.toast.push(payload)   // add a toast, returns id
+$store.toast.dismiss(id)     // remove by id
+$store.toast.dismissAt(position) // remove all at position
+$store.toast.dismissAll()    // remove all
+```
 
 ## License
 

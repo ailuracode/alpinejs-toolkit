@@ -17,9 +17,9 @@ const plugin = getPluginNavItem("media")!;
 				<li>Breakpoint: <strong x-text="$store.media.breakpoint"></strong></li>
 			</ul>
 			<div class="flex flex-wrap gap-2 mt-2">
-				<Badge x-bind:class="{ 'bg-primary text-primary-foreground': $store.media.isMobile }">Mobile</Badge>
-				<Badge x-bind:class="{ 'bg-primary text-primary-foreground': $store.media.isTablet }">Tablet</Badge>
-				<Badge x-bind:class="{ 'bg-primary text-primary-foreground': $store.media.isDesktop }">Desktop</Badge>
+				<Badge x-bind:class="{ 'bg-primary text-primary-foreground': $store.media.breakpoint === 'mobile' }">Mobile</Badge>
+				<Badge x-bind:class="{ 'bg-primary text-primary-foreground': $store.media.breakpoint === 'tablet' }">Tablet</Badge>
+				<Badge x-bind:class="{ 'bg-primary text-primary-foreground': $store.media.breakpoint === 'desktop' }">Desktop</Badge>
 			</div>
 		</div>
 		<div>

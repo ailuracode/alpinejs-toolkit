@@ -7,7 +7,7 @@ Package: `@ailuracode/alpine-lang`
 
 Reactive current-language store for Alpine.js. Detects the browser language, exposes `current` / `base` / `region` plus the full `navigator.languages` list, and lets you change the language dynamically so every Alpine expression reacts in real time.
 
-The plugin **only manages the current language** — it does not translate content. Pair it with any i18n library (i18next, vue-i18n-style helpers, plain dictionaries, etc.) and use the `onChange` callback to load the appropriate messages.
+The plugin **only manages the current language** — it does not translate content. Pair it with any i18n library (i18next, vue-i18n-style helpers, plain dictionaries, etc.) and react to language changes through the manager's typed `change` event.
 
 ## Install
 
@@ -19,21 +19,17 @@ npm install @ailuracode/alpine-lang alpinejs
 
 ```js
 import Alpine from "alpinejs";
-import lang from "@ailuracode/alpine-lang";
+import { langPlugin, createLang } from "@ailuracode/alpine-lang";
 
-Alpine.plugin(lang({
+Alpine.plugin(langPlugin({
   fallback: "en",    // used when navigator.language / navigator.languages are unavailable
   normalize: true,   // lower-case + normalize "_" to "-"
-  onChange(language) {
-    // re-load your i18n bundle, update <html lang>, persist to storage, …
-    document.documentElement.lang = language;
-  },
 }));
 
 Alpine.start();
 ```
 
-`onChange` fires on every successful change of `current` (including `reset()`).
+The plugin registers `$store.lang` and the `$lang` magic. Both expose the same six reactive fields plus the four commands (`is` / `includes` / `set` / `reset`).
 
 ## Store API
 
@@ -54,7 +50,7 @@ Alpine.start();
 |--------|-------------|
 | `is(value)` | `true` when `value` matches `current` exactly or by base subtag |
 | `includes(value)` | `true` when any tag in `navigator.languages` matches `value` (exact or by base) |
-| `set(language)` | Update the current language; recalculates `base` / `region` and triggers `onChange` |
+| `set(language)` | Update the current language; recalculates `base` / `region` |
 | `reset()` | Re-detect from `navigator.language` / `navigator.languages` (or `fallback`) |
 
 `set()` is a no-op when the value is empty or unchanged, so Alpine bindings do not re-fire needlessly.
@@ -103,26 +99,36 @@ When `set()` is called, every `<p>` whose visibility depends on `$store.lang.is(
 |--------|------|---------|-------------|
 | `fallback` | `string` | `"en"` | Used when neither `navigator.language` nor `navigator.languages` is available. Normalized when `normalize: true`. |
 | `normalize` | `boolean` | `true` | Lower-case the language tag and convert underscores to dashes (`pt_BR` → `pt-br`). |
-| `onChange` | `(language: string) => void` | — | Called after every successful `set()` / `reset()` with the normalized full tag. |
 
-## Dynamic language switching
+## Reacting to language changes
 
-`$store.lang` is a reactive Alpine store. Any Alpine expression that reads it (`x-show`, `x-text`, `:class`, computed getters, etc.) re-evaluates on change. The plugin does not persist anything by itself — combine it with `localStorage`, a cookie, or your backend:
+`$store.lang` re-renders every binding on change. For side effects — load translations, persist the tag, sync `<html lang>` — wire them through the headless manager's typed `change` event:
 
 ```js
-Alpine.plugin(lang({
-  fallback: "en",
-  onChange(language) {
-    localStorage.setItem("lang", language);
-    document.documentElement.lang = language;
-    loadMessages(language); // your i18n loader
-  },
-}));
+import { createLang } from "@ailuracode/alpine-lang";
 
-// later, on bootstrap, hydrate from storage
+const lang = createLang({
+  fallback: "en",
+});
+
+// Multiple subscribers, runtime subscription, returns Unsubscribe.
+const stop = lang.on("change", (detail) => {
+  // detail: { current, base, region, languages, fallback, isDetected, source, previous }
+  // source is "initialization" | "user" | "reset".
+  localStorage.setItem("lang", detail.current);
+  document.documentElement.lang = detail.current;
+  loadMessages(detail.current); // your i18n loader
+});
+
+// Bootstrap a saved language without firing a synthetic event (set() emits only on real transitions).
 const saved = localStorage.getItem("lang");
-if (saved) Alpine.store("lang").set(saved);
+if (saved) lang.set(saved);
+
+// later, on teardown
+stop();
 ```
+
+The manager is a singleton per document (matching theme, scroll, etc.). `Alpine.plugin(langPlugin(...))` and `createLang(...)` both reach the same instance, so you can subscribe from any module without coordinating with the Alpine startup sequence.
 
 ## Pairing with i18n libraries
 
@@ -130,15 +136,14 @@ Use the plugin as a **single source of truth** for the current language. Hand th
 
 ```js
 import { createI18n } from "vue-i18n"; // or i18next, etc.
+import { createLang } from "@ailuracode/alpine-lang";
 
 const i18n = createI18n({ legacy: false });
+const lang = createLang({ fallback: "en" });
 
-Alpine.plugin(lang({
-  fallback: "en",
-  onChange(language) {
-    i18n.global.locale.value = language;
-  },
-}));
+lang.on("change", (detail) => {
+  i18n.global.locale.value = detail.current;
+});
 ```
 
 The plugin never touches translation tables — it only owns the *current* language tag.
@@ -147,12 +152,12 @@ The plugin never touches translation tables — it only owns the *current* langu
 
 - The plugin never throws when `window` / `navigator` are unavailable.
 - On the server it uses `fallback` until the client hydrates.
-- The store is registered on `Alpine.plugin(...)` and `onChange` is **not** called until the client hydrates (unless you call `set()` explicitly during SSR).
+- The store is registered on `Alpine.plugin(...)` and the `change` event is **not** fired until the client hydrates (unless you call `set()` explicitly during SSR).
 - For deterministic HTML output during SSR, render only `lang.fallback` / `lang.base` (they are stable across server and client) and let `region` / `languages` populate after hydration.
 
 ## Helpers
 
-`normalizeLanguageTag(value)` and `parseLanguageTag(value)` are exported alongside the default plugin for advanced use cases (custom adapters, custom stores, etc.).
+`normalizeLanguageTag(value)` and `parseLanguageTag(value)` are exported alongside `langPlugin` for advanced use cases (custom adapters, custom stores, etc.).
 
 ```ts
 import { normalizeLanguageTag, parseLanguageTag } from "@ailuracode/alpine-lang";

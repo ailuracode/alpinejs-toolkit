@@ -1,9 +1,20 @@
-node_modules
-dist
-.DS_Store
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build outputs
+dist/
+coverage/
+
+# Logs
 *.log
-coverage
-.pnpm-store
-apps/demo/node_modules
-apps/demo/dist
-apps/demo/.astro
+
+# Editors
+.vscode/
+
+# Operating system
+.DS_Store
+
+# Development tools
+.atl/
+.codegraph/

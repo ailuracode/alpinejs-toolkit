@@ -1,93 +1,112 @@
 ---
 title: "Toggle"
-description: "Alternar valores booleanos con el magic $toggle."
+description: "Alternar estados binarios y ternarios con el magic $toggle."
 ---
 
 Package: `@ailuracode/alpine-toggle`
 
-Magic invocable `$toggle()` para máquinas de estado **binarias** y **ternarias** con unions TypeScript inferidas.
+Máquina de estados framework-agnostic para Alpine.js. Magic invocable `$toggle()` para máquinas de estado **binarias** y **ternarias** con eventos `change` tipados.
 
 ## Instalación
 
 ```bash
-npm install @ailuracode/alpine-toggle alpinejs
+pnpm add @ailuracode/alpine-toggle @ailuracode/alpine-core alpinejs
 ```
 
 ## Configuración
 
-```js
+```ts
 import Alpine from "alpinejs";
-import toggle from "@ailuracode/alpine-toggle";
+import { togglePlugin } from "@ailuracode/alpine-toggle";
 
-Alpine.plugin(toggle);
+Alpine.plugin(togglePlugin());
 Alpine.start();
 ```
 
-## Magic API
+## API del magic
 
-`$toggle(options)` devuelve una instancia reactiva por llamada (como `$calendar()`).
+`$toggle(options)` devuelve un `ToggleController` reactivo por llamada. Cada comando se reenvía al controller — consulta el [README del paquete](https://github.com/ailuracode/alpinejs-toolkit/tree/main/packages/toggle#readme) para la arquitectura completa.
 
 ### Opciones
 
-| Opción | Tipo | Descripción |
-|--------|------|-------------|
-| `states.truly` | `A` | Primer estado opuesto (requerido) |
-| `states.falsely` | `B` | Segundo estado opuesto (requerido) |
-| `states.ternary` | `N` | Tercer estado independiente opcional |
-| `initial` | value | Valor inicial |
+| Opción                  | Tipo     | Descripción                                                              |
+|-------------------------|----------|--------------------------------------------------------------------------|
+| `states.on`             | `A`      | Primer estado opuesto (requerido)                                        |
+| `states.off`            | `B`      | Segundo estado opuesto (requerido)                                       |
+| `states.indeterminate`  | `N`      | Tercer estado independiente opcional                                     |
+| `initial`               | valor    | Valor inicial (por defecto `on` en binario, `indeterminate` en ternario) |
 
 ### Instancia
 
-| Miembro | Descripción |
-|--------|-------------|
-| `value` | Estado actual |
-| `states` | Objeto `{ truly, falsely, ternary }` |
-| `toggle()` | Alterna entre opuestos; desde ternary → `truly` |
-| `cycle()` | Avanza por todos los estados activos |
-| `set(value)` / `reset()` / `is(value)` | Helpers de estado |
-| `truly` / `falsely` / `ternary` | Accesores abreviados |
+| Miembro                  | Descripción                                                                  |
+|--------------------------|------------------------------------------------------------------------------|
+| `value`                  | Estado actual                                                                |
+| `states`                 | Vista `{ on, off, indeterminate }`                                           |
+| `is(value)`              | Si `value` es el estado actual                                               |
+| `set(value)`             | Establece el estado — no-op si el valor no cambia o es inválido             |
+| `setSilently(value)`     | Establece el estado sin emitir `change` (para hidratación)                   |
+| `toggle()`               | Alterna entre `on` y `off`; desde `indeterminate` salta a `on`               |
+| `next()`                 | Avanza por todos los estados en orden de declaración                         |
+| `reset()`                | Restaura `initial`                                                          |
+| `on('change', listener)` | Se suscribe a las transiciones; detail = `{ current, previous, source }`     |
+| `destroy()`              | Idempotente — libera todos los listeners                                     |
 
 ## Ejemplos
 
 ### Binario
 
 ```html
-<div x-data="{ t: $toggle({ states: { truly: 'visible', falsely: 'hidden' } }) }">
-  <p x-show="t.is(t.truly)">Shown</p>
-  <button type="button" @click="t.toggle()">Toggle</button>
+<div x-data="{ power: $toggle({ states: { on: 'visible', off: 'hidden' } }) }">
+  <p x-show="power.is(power.states.on)">Shown</p>
+  <button type="button" @click="power.toggle()">Toggle</button>
 </div>
 ```
 
-### Ternario
+### Ternario — cuando necesitás un tercer estado
 
 ```html
-<div x-data="{ t: $toggle({
-  states: { truly: 'yes', falsely: 'no', ternary: 'unknown' },
+<div x-data="{ answer: $toggle({
+  states: { on: 'yes', off: 'no', indeterminate: 'unknown' },
   initial: 'unknown',
 }) }">
-  <span x-show="t.is(t.truly)">Yes</span>
-  <span x-show="t.is(t.falsely)">No</span>
-  <span x-show="t.is(t.ternary)">Unknown</span>
-  <button type="button" @click="t.toggle()">Yes / No</button>
-  <button type="button" @click="t.cycle()">Cycle</button>
+  <span x-show="answer.is(answer.states.on)">Yes</span>
+  <span x-show="answer.is(answer.states.off)">No</span>
+  <span x-show="answer.is(answer.states.indeterminate)">Unknown</span>
+  <button type="button" @click="answer.toggle()">Yes / No</button>
+  <button type="button" @click="answer.next()">Cycle</button>
 </div>
+```
+
+### Eventos `change`
+
+```ts
+import { createToggle, type ToggleChangeDetail } from "@ailuracode/alpine-toggle";
+
+const answer = createToggle({
+  states: { on: "yes", off: "no", indeterminate: "unknown" },
+});
+
+answer.on("change", (detail: ToggleChangeDetail<"yes", "no", "unknown">) => {
+  console.log(detail.current, detail.previous, detail.source);
+});
 ```
 
 ## TypeScript
 
 ```ts
-import { createToggle, type ToggleValue } from "@ailuracode/alpine-toggle";
+import { createToggle, type ToggleInstance } from "@ailuracode/alpine-toggle";
 
-const binary = createToggle({ states: { truly: "on", falsely: "off" } });
-binary.ternary; // undefined
+const binary = createToggle({ states: { on: "on", off: "off" } });
+binary.states.indeterminate; // undefined
 
 const ternary = createToggle({
-  states: { truly: "yes", falsely: "no", ternary: "unknown" },
+  states: { on: "yes", off: "no", indeterminate: "unknown" },
 });
-type Answer = ToggleValue<"yes", "no", "unknown">;
+
+const instance: ToggleInstance<"yes", "no", "unknown", "yes" | "no" | "unknown"> = ternary;
 ```
 
 ## Ver también
 
 - [Primeros pasos](../getting-started.md)
-- [Calendar](./calendar.md) — patrón de magic invocable similar
+- [Theme](./theme.md) — store compañero con la misma arquitectura basada en controllers

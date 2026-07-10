@@ -1,30 +1,34 @@
-import type AlpineType from "alpinejs";
-import { type CarouselStore, createCarouselStore } from "./store.js";
+/**
+ * Public entrypoint for `@ailuracode/alpine-carousel`.
+ *
+ * Per public-api instructions, this file MUST only contain re-exports.
+ * The framework-agnostic controller lives in `./controller.ts`, the
+ * Alpine integration in `./plugin.ts`, and the supporting types in
+ * `./types.ts` and `./events.ts`.
+ *
+ * Two ways to consume the package:
+ *
+ * 1. Standalone — `createCarouselController()` returns a
+ *    framework-agnostic controller.
+ * 2. Alpine — `carouselPlugin()` returns an `Alpine.plugin()` callback
+ *    that wires the controller into `$store.carousel` and `$carousel`.
+ */
 
-export {
-  type CarouselAutoplayOptions,
-  type CarouselInstance,
-  type CarouselOptions,
-  type CarouselStore,
-  createCarouselStore,
-} from "./store.js";
-
-/** Alpine.js carousel plugin. Registers `$store.carousel`. */
-export default function carouselPlugin(): AlpineType.PluginCallback {
-  return function registerCarousel(Alpine) {
-    const store = createCarouselStore();
-    Alpine.store("carousel", store);
-    Alpine.magic("carousel", () => Alpine.store("carousel"));
-  };
-}
-
-declare global {
-  namespace Alpine {
-    interface Stores {
-      carousel: CarouselStore;
-    }
-    interface Magics<T> {
-      $carousel: CarouselStore;
-    }
-  }
-}
+// --- Re-export core types ------------------------------------------------
+export type { Unsubscribe } from "@ailuracode/alpine-core";
+// --- Controller (framework-agnostic) -------------------------------------
+export { CarouselController, createCarouselController, createCarouselStore } from "./controller";
+// --- Event surface -------------------------------------------------------
+export type { CarouselEvents, CarouselSlideChangeDetail } from "./events";
+// --- Alpine integration --------------------------------------------------
+export { carouselOptions, carouselPlugin, carouselPlugin as default } from "./plugin";
+// --- Public types ---------------------------------------------------------
+export type {
+  CarouselAlpine,
+  CarouselAutoplayOptions,
+  CarouselInstance,
+  CarouselOptions,
+  CarouselPluginCallback,
+  CarouselStore,
+  CreateCarouselOptions,
+} from "./types";

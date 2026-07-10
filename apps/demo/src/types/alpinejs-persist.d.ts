@@ -1,4 +1,4 @@
-/// <reference types="@types/alpinejs" />
+/// <reference types="alpinejs" />
 
 declare module "@alpinejs/persist" {
   const persist: Alpine.PluginCallback;

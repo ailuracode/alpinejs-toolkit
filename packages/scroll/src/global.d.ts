@@ -1,67 +1,28 @@
+/**
+ * Ambient type surface for `@ailuracode/alpine-scroll`.
+ *
+ * Augments `Alpine.Stores` / `Alpine.Magics<T>` with the `scroll`
+ * store / magic so consumers that include this file via the
+ * triple-slash directive typecheck `$store.scroll` and `$scroll`
+ * references without pulling the runtime entrypoint.
+ *
+ * The `$scroll` magic and `$store.scroll` are interchangeable: the
+ * magic returns the same reactive store proxy that `Alpine.store(
+ * 'scroll' )` returns, so `x-text="$scroll.locked"` and
+ * `x-text="$store.scroll.locked"` resolve to the same reactive
+ * read. Mirrors the `theme` and `sidebar` convention.
+ */
+
 /// <reference types="@types/alpinejs" />
 
-export declare const SCROLL_DIRECTIONS: readonly ["up", "down", "none"];
+import type { ScrollStore } from "./types.js";
 
-export type ScrollDirection = (typeof SCROLL_DIRECTIONS)[number];
-
-export declare const SCROLL_BEHAVIORS: readonly ["auto", "instant", "smooth"];
-
-export type ScrollBehaviorOption = (typeof SCROLL_BEHAVIORS)[number];
-
-export declare const SCROLL_LOCK_AXES: readonly ["y", "both"];
-
-export type ScrollLockAxis = (typeof SCROLL_LOCK_AXES)[number];
-
-export type ScrollLockOptions = {
-  axis?: ScrollLockAxis;
-};
-
-export type ScrollSnapshot = {
-  readonly x: number;
-  readonly y: number;
-  readonly direction: ScrollDirection;
-  readonly atTop: boolean;
-  readonly atBottom: boolean;
-  readonly progress: number;
-};
-
-export interface ScrollStore extends ScrollSnapshot {
-  locked: boolean;
-  refresh(): boolean;
-  lock(options?: ScrollLockOptions): boolean;
-  unlock(): boolean;
-  toggleLock(options?: ScrollLockOptions): boolean;
-  isDirection(direction: ScrollDirection): boolean;
-  readonly isLocked: boolean;
-  readonly isAtTop: boolean;
-  readonly isAtBottom: boolean;
-  readonly isScrollingDown: boolean;
-  readonly isScrollingUp: boolean;
-  readonly showToTop: boolean;
-  toTop(behavior?: ScrollBehavior): void;
-  toBottom(behavior?: ScrollBehavior): void;
-}
-
-export interface ScrollPluginOptions {
-  onLockChange?: (locked: boolean) => void;
-}
-
-export type ScrollMetricsInput = {
-  x: number;
-  y: number;
-  previousY: number;
-  scrollHeight: number;
-  innerHeight: number;
-};
-
-export function scrollOptions<const T extends ScrollPluginOptions>(options: T): T;
-export function computeScrollDirection(previousY: number, currentY: number): ScrollDirection;
-export function computeScrollMetrics(input: ScrollMetricsInput): ScrollSnapshot;
-export function readScrollSnapshot(previousY?: number): ScrollSnapshot;
-
-export default function scrollPlugin(
-  options?: ScrollPluginOptions
-): import("alpinejs").PluginCallback;
+export type { Unsubscribe } from "@ailuracode/alpine-core";
+export type {
+  ScrollAlpine,
+  ScrollPluginCallback,
+  ScrollStore,
+} from "./types.js";
 
 declare global {
   namespace Alpine {

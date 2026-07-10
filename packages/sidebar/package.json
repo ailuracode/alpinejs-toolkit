@@ -1,6 +1,6 @@
 {
   "name": "@ailuracode/alpine-sidebar",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Alpine.js sidebar store for visibility state, overlay, keyboard navigation, and responsive breakpoints",
   "type": "module",
   "license": "MIT",
@@ -21,6 +21,8 @@
     "dist",
     "README.md"
   ],
+  "sideEffects": false,
+  "types": "./dist/global.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -30,20 +32,38 @@
       "types": "./dist/global.d.ts"
     }
   },
-  "types": "./dist/global.d.ts",
   "peerDependencies": {
     "alpinejs": "^3.0.0",
-    "@types/alpinejs": "^3.13.11"
+    "@ailuracode/alpine-core": "^0.1.0",
+    "@ailuracode/alpine-toggle": "^0.3.0",
+    "@ailuracode/alpine-scroll": "^1.0.0"
   },
   "peerDependenciesMeta": {
     "@types/alpinejs": {
       "optional": true
+    },
+    "@ailuracode/alpine-scroll": {
+      "optional": true
     }
   },
   "scripts": {
-    "build": "tsup src/index.ts --format esm --dts --clean --out-dir dist && cp src/global.d.ts dist/global.d.ts",
-    "prepublishOnly": "pnpm run build",
-    "test": "vitest run --config ../../vitest.config.ts test"
+    "clean": "rm -rf dist",
+    "build": "tsup --config tsup.config.ts && cp src/global.d.ts dist/global.d.ts",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.test.json",
+    "test": "vitest run --config ../../vitest.config.ts packages/sidebar",
+    "test:watch": "vitest --config ../../vitest.config.ts packages/sidebar",
+    "test:coverage": "vitest run --coverage --config ../../vitest.config.ts packages/sidebar",
+    "prepublishOnly": "pnpm run build"
+  },
+  "devDependencies": {
+    "@ailuracode/alpine-core": "workspace:*",
+    "@ailuracode/alpine-scroll": "workspace:*",
+    "@ailuracode/alpine-toggle": "workspace:*",
+    "@types/alpinejs": "^3.13.10",
+    "@types/node": "^26.1.0",
+    "@vitest/coverage-v8": "^4.1.9",
+    "jsdom": "^29.1.1",
+    "tsup": "^8.5.0"
   },
   "keywords": [
     "alpinejs",
@@ -51,6 +71,8 @@
     "plugin",
     "sidebar",
     "navigation",
-    "drawer"
+    "drawer",
+    "controller",
+    "headless"
   ]
 }

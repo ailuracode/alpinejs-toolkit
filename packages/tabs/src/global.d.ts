@@ -1,10 +1,12 @@
 /// <reference types="@types/alpinejs" />
 
-export type TabsOrientation = "horizontal" | "vertical";
+import type { TabsGroup, TabsGroupOptions } from "./types";
+
+export type { TabsGroup, TabsGroupOptions, TabsOrientation } from "./types";
 
 export interface TabsStore {
-  groups: Record<string, import("./store.js").TabsGroup>;
-  register(groupId: string, options?: import("./store.js").TabsGroupOptions): void;
+  readonly groups: Record<string, TabsGroup>;
+  register(groupId: string, options?: TabsGroupOptions): void;
   unregister(groupId: string): void;
   registerTab(groupId: string, tabId: string, disabled?: boolean): void;
   unregisterTab(groupId: string, tabId: string): void;
@@ -20,7 +22,7 @@ export interface TabsStore {
   destroy(): void;
 }
 
-export function createTabsStore(): TabsStore;
+export function createTabsController(id?: string): import("./types").TabsController;
 
 export default function tabsPlugin(): import("alpinejs").PluginCallback;
 

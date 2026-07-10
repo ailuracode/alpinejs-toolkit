@@ -9,10 +9,42 @@ const buttonClasses =
 ---
 
 <DemoSection id={plugin.id} title={plugin.title} api={plugin.api} description={plugin.description}>
+	<!--
+		The dialog registers `onClose` to defer the scroll unlock until the
+		`x-transition` leave animation finishes. Without this delay,
+		`$store.scroll.unlock()` runs synchronously inside `close()` and the
+		scroll re-appears before the modal finish fading out — the body width
+		shifts mid-animation, pushing the modal upward.
+
+		The leave transition is 150ms here, so we wait one frame longer to
+		cover the last paint. This is the simplest reliable fix without
+		adding a `transitionend` listener or `scrollLock: false`.
+	-->
 	<div
 		class="grid gap-6"
-		x-data
-		x-init="$store.dialog.register('settings', { labelledBy: 'dialog-title', describedBy: 'dialog-desc' })"
+		x-data="{
+			scrollHandle: null,
+			registerDemo() {
+				$store.dialog.register('settings', {
+					labelledBy: 'dialog-title',
+					describedBy: 'dialog-desc',
+					scrollLock: false,
+					onOpen: () => {
+						if (!this.scrollHandle) {
+							this.scrollHandle = $store.scroll.lock('dialog-demo');
+						}
+					},
+					onClose: () => {
+						const handle = this.scrollHandle;
+						if (!handle) return;
+						this.scrollHandle = null;
+						// Defer unlock past the x-transition leave (150ms).
+						setTimeout(() => $store.scroll.unlock(handle), 200);
+					},
+				});
+			},
+		}"
+		x-init="registerDemo()"
 		@keydown.window="$store.dialog.handleKeydown('settings', $event)"
 	>
 		<div>
@@ -24,11 +56,12 @@ const buttonClasses =
 				Open settings
 			</button>
 
-			<template x-teleport="body">
+			<template x-teleport="#overlay-root">
 				<div
 					x-show="$store.dialog.isOpen('settings')"
-					x-transition
-					class="fixed inset-0 z-[60] flex items-center justify-center p-4"
+					x-transition.duration.150ms
+					class="fixed inset-0 flex items-center justify-center p-4"
+					:style="{ zIndex: $store.overlay.zIndexOf('dialog', 'settings') }"
 				>
 					<div
 						class="absolute inset-0 bg-black/50"
@@ -57,7 +90,8 @@ const buttonClasses =
 			<h3 class="text-sm font-medium mb-2">Keyboard &amp; accessibility</h3>
 			<ul class="text-xs text-muted-foreground list-disc pl-5 space-y-1">
 				<li><kbd class="px-1 rounded border">Escape</kbd> closes when <code>closeOnEscape</code> is enabled</li>
-				<li>Scroll lock wired in the demo via <code>onLockChange</code> + <code>$store.scroll</code></li>
+				<li>Scroll lock wired in the demo via <code>onOpen</code>/<code>onClose</code> + <code>$store.scroll</code></li>
+				<li>The unlock is deferred 200ms to wait for the leave transition</li>
 				<li><code>dialogProps()</code> sets <code>role="dialog"</code>, <code>aria-modal</code>, labelled/describedby</li>
 			</ul>
 		</div>

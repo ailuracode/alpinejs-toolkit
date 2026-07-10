@@ -1,23 +1,18 @@
 /// <reference types="@types/alpinejs" />
 
-export type DialogOpenOptions = {
-  trigger?: HTMLElement | null;
-  labelledBy?: string;
-  describedBy?: string;
-};
+import type { DialogInstance, DialogInstanceOptions, DialogOpenOptions } from "./types";
 
-export type DialogInstanceOptions = {
-  closeOnEscape?: boolean;
-  closeOnOutsideClick?: boolean;
-  scrollLock?: boolean;
-  labelledBy?: string;
-  describedBy?: string;
-  onOpen?: () => void;
-  onClose?: () => void;
-};
+export type {
+  DialogChangeSource,
+  DialogCloseDetail,
+  DialogInstance,
+  DialogInstanceOptions,
+  DialogOpenDetail,
+  DialogOpenOptions,
+} from "./types";
 
 export interface DialogStore {
-  instances: Record<string, import("./store.js").DialogInstance>;
+  readonly instances: Record<string, DialogInstance>;
   open(id: string, options?: DialogOpenOptions): void;
   close(id: string): void;
   toggle(id: string, options?: DialogOpenOptions): void;
@@ -31,24 +26,12 @@ export interface DialogStore {
   destroy(): void;
 }
 
-export interface DialogPluginOptions {
-  onLockChange?: (locked: boolean) => void;
-  closeOnEscape?: boolean;
-  closeOnOutsideClick?: boolean;
-  scrollLock?: boolean;
-}
-
-export function dialogOptions<const T extends DialogPluginOptions>(options: T): T;
-export function createDialogStore(options?: DialogPluginOptions): DialogStore;
-export function createFocusTrap(container: HTMLElement): {
-  activate(): void;
-  deactivate(): void;
-};
-export function getFocusableElements(container: HTMLElement): HTMLElement[];
-export function restoreFocus(element: HTMLElement | null): void;
+export function createDialogController(
+  config?: import("./types").DialogStoreConfig
+): import("./types").DialogController;
 
 export default function dialogPlugin(
-  options?: DialogPluginOptions
+  options?: import("./types").CreateDialogOptions
 ): import("alpinejs").PluginCallback;
 
 declare global {

@@ -1,29 +1,37 @@
-import type AlpineType from "alpinejs";
-import { type AccordionStore, createAccordionStore } from "./store.js";
+/**
+ * Public entrypoint for `@ailuracode/alpine-accordion`.
+ *
+ * Per public-api instructions, this file MUST only contain re-exports.
+ * The framework-agnostic controller lives in `./controller.ts`, the
+ * Alpine integration in `./plugin.ts`, and the supporting types in
+ * `./types.ts` and `./events.ts`.
+ *
+ * Two ways to consume the package:
+ *
+ * 1. Standalone — `createAccordionController()` returns a
+ *    framework-agnostic controller.
+ * 2. Alpine — `accordionPlugin()` returns an `Alpine.plugin()` callback
+ *    that wires the controller into `$store.accordion` and `$accordion`.
+ */
 
-export {
-  type AccordionGroupOptions,
-  type AccordionMode,
-  type AccordionStore,
-  createAccordionStore,
-} from "./store.js";
-
-/** Alpine.js accordion plugin. Registers `$store.accordion`. */
-export default function accordionPlugin(): AlpineType.PluginCallback {
-  return function registerAccordion(Alpine) {
-    const store = createAccordionStore();
-    Alpine.store("accordion", store);
-    Alpine.magic("accordion", () => Alpine.store("accordion"));
-  };
-}
-
-declare global {
-  namespace Alpine {
-    interface Stores {
-      accordion: AccordionStore;
-    }
-    interface Magics<T> {
-      $accordion: AccordionStore;
-    }
-  }
-}
+// --- Re-export core types ------------------------------------------------
+export type { Unsubscribe } from "@ailuracode/alpine-core";
+// --- Controller (framework-agnostic) -------------------------------------
+export { AccordionController, createAccordionController, createAccordionStore } from "./controller";
+// --- Event surface -------------------------------------------------------
+export type { AccordionEvents } from "./events";
+// --- Alpine integration --------------------------------------------------
+export { accordionOptions, accordionPlugin, accordionPlugin as default } from "./plugin";
+// --- Public types ---------------------------------------------------------
+export type {
+  AccordionAlpine,
+  AccordionChangeDetail,
+  AccordionChangeSource,
+  AccordionGroup,
+  AccordionGroupOptions,
+  AccordionItem,
+  AccordionMode,
+  AccordionPluginCallback,
+  AccordionStore,
+  CreateAccordionOptions,
+} from "./types";

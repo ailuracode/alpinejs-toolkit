@@ -45,9 +45,13 @@ describe("@ailuracode/alpine-query type inference", () => {
       return typedFetch<Todo[]>("/api/todos");
     }
 
-    const query = client.observe(["todos"], () => fetchTodos());
+    const definition = queryOptions({
+      queryKey: ["todos"] as const,
+      queryFn: fetchTodos,
+    });
 
-    expectTypeOf(query.data).toEqualTypeOf<Todo[] | undefined>();
+    expectTypeOf(definition.queryFn).returns.resolves.toEqualTypeOf<Todo[]>();
+    expectTypeOf<Awaited<ReturnType<typeof definition.queryFn>>>().toEqualTypeOf<Todo[]>();
   });
 
   it("infers literal query keys via queryKey()", () => {

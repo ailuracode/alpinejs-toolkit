@@ -7,12 +7,12 @@ Headless accessible accordion store for Alpine.js — single or multiple open pa
 ## Install
 
 ```bash
-npm install @ailuracode/alpine-accordion alpinejs
+pnpm add @ailuracode/alpine-accordion alpinejs
 ```
 
 ## Store API
 
-```js
+```ts
 $store.accordion.register("faq", { mode: "single", defaultOpen: "item-1" });
 $store.accordion.open("faq", "item-1");
 $store.accordion.toggle("faq", "item-1");

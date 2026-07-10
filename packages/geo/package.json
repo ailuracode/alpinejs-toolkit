@@ -31,7 +31,11 @@
     }
   },
   "types": "./dist/global.d.ts",
+  "devDependencies": {
+    "@ailuracode/alpine-core": "workspace:*"
+  },
   "peerDependencies": {
+    "@ailuracode/alpine-core": "^0.1.0",
     "alpinejs": "^3.0.0",
     "@types/alpinejs": "^3.13.11"
   },

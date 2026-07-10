@@ -17,7 +17,8 @@
       "!**/.changeset/*.json",
       "!**/node_modules",
       "!apps/demo/dist",
-      "!apps/demo/.astro"
+      "!apps/demo/.astro",
+      "!**/.cursor"
     ]
   },
   "formatter": {

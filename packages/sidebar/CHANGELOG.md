@@ -1,5 +1,80 @@
 # @ailuracode/alpine-sidebar
 
+## 2.1.0
+
+### Minor Changes
+
+- **Opt-in persistence via `SidebarStorage`.** v2.1.0 layers a `SidebarStorage` interface on top of the v2.0 headless `SidebarController`. Three out-of-the-box adapters ship:
+
+  ```js
+  import {
+    sidebarPlugin,
+    createLocalStorageSidebarStorage,
+    createMemorySidebarStorage,
+    persistSidebarVisible,
+    withSidebarVisiblePersist,
+  } from "@ailuracode/alpine-sidebar";
+
+  // Persist to localStorage and sync across tabs.
+  Alpine.plugin(
+    sidebarPlugin({ storage: createLocalStorageSidebarStorage({ key: "app-sidebar" }) }),
+  );
+
+  // ...or use the persistKey shortcut:
+  Alpine.plugin(sidebarPlugin({ persistKey: "app-sidebar" }));
+  ```
+
+  `storage` and `persistKey` are both additive — consumers who do not pass them see no behavioral change.
+
+- **New `CreateSidebarOptions` fields.** `initial?: boolean` (renamed from `initialVisible`, see Breaking), `storage?: SidebarStorage`, `persistKey?: string`. The `initial` option is the SSR / cookie-injection seam; `storage` always wins over `initial` when both are present because the persisted value reflects the user's intent.
+
+- **Cross-tab sync via the `storage` event.** When the storage adapter exposes a `subscribe` hook (the default `localStorage` adapter does), the controller reacts to cross-tab writes with `source: 'storage'`. Echo detection (`#lastWritten`) prevents same-tab feedback loops. `newValue: null` (key cleared in another tab) falls back to the configured `initial`. Last-writer-wins per tab — documented limitation.
+
+- **New `SidebarChangeSource` value: `'storage'`.** Additive; no existing consumer code breaks. The discriminator is now a 6-value union: `'user' | 'breakpoint' | 'escape' | 'reset' | 'initialization' | 'storage'`.
+
+- **Persistence is opt-in.** Consumers who do not pass `storage` / `persistKey` see byte-identical behavior to v2.0.
+
+- **Behavior note (not API break).** `initialVisible` renamed to `initial` to align with the inner `ToggleController` constructor option. Consumers passing `initialVisible` MUST rename to `initial` — TypeScript will report a compile error otherwise.
+
+- **Behavior note.** Consumers passing `storage` for the first time will observe their first `change` event after `mount()` reflect the persisted value rather than `false`. Pass no `storage` (default behavior) to preserve v2.0 semantics.
+
+- **Test coverage expanded.** 79 specs total (38 v2.0 preserved + 21 storage adapter + 9 `$persist` helper + 9 manager integration + 2 type assertions). Covers hydration, write-on-user-only discipline, cross-tab echo detection, `persistKey` shortcut, `storage`-over-`persistKey` precedence, and the new `SidebarChangeSource` union.
+
+- **Cookie-bridge pattern documented.** The package does NOT implement httpOnly cookie support itself — the README + Starlight page document a custom `SidebarStorage` adapter pattern (`fetch('/api/sidebar', { credentials: 'include' })`) for SSR consumers.
+
+## 2.0.0
+
+### Major Changes
+
+- **`onShow` and `onHide` plugin options removed.** Subscribe to the typed `change` event on the controller instead:
+
+  ```js
+  import { sidebarPlugin, createSidebar } from "@ailuracode/alpine-sidebar";
+
+  Alpine.plugin(sidebarPlugin());
+  createSidebar().on("change", (detail) => {
+    if (detail.source !== "user") return;
+    document.documentElement.toggleAttribute("data-sidebar", detail.visible);
+  });
+  ```
+
+  The `change` payload is `SidebarChangeDetail`: `{ visible, matchesBreakpoint, source, previous, event? }`. `previous` is `null` only on the first emit (`source: 'initialization'`); `event` is present only when `source` is `'escape'` (`KeyboardEvent`) or `'breakpoint'` (`MediaQueryListEvent`).
+
+- **`breakpoint` option shape changed.** The v1 `breakpoint: string` is replaced by `breakpoint: { query: string; onMismatch: 'hide' | 'keep' }`. The v1 auto-hide behaviour is preserved by `onMismatch: 'hide'`; use `'keep'` to only update `matchesBreakpoint` and react via the `change` event.
+
+- **`onOverlayClick` option removed.** No public surface — call `$store.sidebar.hide()` from your template's `@click` handler on the overlay element.
+
+- **Headless controller architecture.** The package is now a thin `sidebarPlugin` Alpine adapter on top of a framework-agnostic `SidebarController extends BaseController<SidebarEvents>`. The controller composes `ToggleController<true, false>` from `@ailuracode/alpine-toggle` for the boolean `visible` state machine and adds two browser side-effects (`Escape` keydown listener via `attachEscapeListener`, responsive breakpoint observer via `observeBreakpoint` wrapping `safeMatchMedia`). All listeners are wired through `BaseController.registerCleanup` so `destroy()` is idempotent and tear-down safe.
+
+- **`SidebarChangeSource` is now a 5-value union:** `'user' | 'breakpoint' | 'escape' | 'reset' | 'initialization'`. `'initialization'` is emitted once on the microtask after `mount()`. `'escape'` fires when the sidebar is closed via the `Escape` key (gated by `closeOnEscape`, default `true`). `'breakpoint'` fires on every `matchMedia` flip with `onMismatch: 'hide'` auto-hiding and `'keep'` only flipping `matchesBreakpoint`. `'reset'` fires when `controller.reset()` is called.
+
+- **Test coverage expanded.** 38 specs added across `manager.spec.ts` (26 controller specs), `plugin.spec.ts` (6 Alpine integration specs), and `types.test.ts` (6 compile-time `expectTypeOf` assertions) — covering every `SidebarChangeSource` value, the `$store.sidebar` reactive-proxy re-target pattern, the `Alpine.cleanup` integration, SSR safety, and listener leak detection via `addEventListener` / `removeEventListener` spies.
+
+### Not breaking
+
+- The `$store.sidebar` surface (`.visible`, `.isVisible`, `.hasOverlay`, `.matchesBreakpoint`, `.show()`, `.hide()`, `.toggle()`) is unchanged. Templates that read `$store.sidebar.*` continue to work without edits.
+- The default export is removed but the package now exposes a named `sidebarPlugin` factory (plus `createSidebar`, `SidebarController`, `createSidebarStore`, and the type contracts from `./types`).
+
 ## 1.0.0
 
 ### Major Changes

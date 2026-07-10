@@ -1,10 +1,11 @@
 {
   "name": "@ailuracode/alpine-scroll",
-  "version": "0.3.1",
-  "description": "Alpine.js scroll position and body lock store",
+  "version": "1.0.0",
+  "description": "Alpine.js scroll controller — headless position tracking, body lock, section observer, navigation",
   "type": "module",
   "license": "MIT",
   "author": "ailuracode",
+  "sideEffects": false,
   "publishConfig": {
     "access": "public"
   },
@@ -33,7 +34,7 @@
   "types": "./dist/global.d.ts",
   "peerDependencies": {
     "alpinejs": "^3.0.0",
-    "@types/alpinejs": "^3.13.11"
+    "@ailuracode/alpine-core": "^0.1.0"
   },
   "peerDependenciesMeta": {
     "@types/alpinejs": {
@@ -41,15 +42,31 @@
     }
   },
   "scripts": {
-    "build": "tsup src/index.ts --format esm --dts --clean --out-dir dist && cp src/global.d.ts dist/global.d.ts",
-    "prepublishOnly": "pnpm run build",
-    "test": "vitest run --config ../../vitest.config.ts test"
+    "clean": "rm -rf dist",
+    "build": "tsup --config tsup.config.ts && cp src/global.d.ts dist/global.d.ts",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.test.json",
+    "lint": "biome check --assist-enabled=true .",
+    "lint:fix": "biome check --write --assist-enabled=true .",
+    "test": "vitest run --config ../../vitest.config.ts packages/scroll",
+    "test:watch": "vitest --config ../../vitest.config.ts packages/scroll",
+    "test:coverage": "vitest run --coverage --coverage.include=packages/scroll/src/**/*.ts --coverage.exclude=packages/scroll/src/index.ts --coverage.exclude=packages/scroll/src/global.d.ts --coverage.exclude=packages/scroll/src/types.ts --coverage.exclude=packages/scroll/src/events.ts --coverage.thresholds.lines=80 --coverage.thresholds.functions=70 --coverage.thresholds.statements=80 --coverage.thresholds.branches=73 --config ../../vitest.config.ts packages/scroll",
+    "prepublishOnly": "pnpm run build"
+  },
+  "devDependencies": {
+    "@ailuracode/alpine-core": "workspace:*",
+    "@types/alpinejs": "^3.13.10",
+    "@types/node": "^26.1.0",
+    "@vitest/coverage-v8": "^4.1.9",
+    "jsdom": "^29.1.1",
+    "tsup": "^8.5.0"
   },
   "keywords": [
     "alpinejs",
     "alpine",
     "plugin",
     "scroll",
-    "scroll-lock"
+    "scroll-lock",
+    "controller",
+    "headless"
   ]
 }

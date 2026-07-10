@@ -7,12 +7,12 @@ There is **no official zustand-alpine integration**. This package uses Zustand's
 ## Install
 
 ```bash
-npm install @ailuracode/alpine-query @ailuracode/alpine-query-adapter-zustand alpinejs zustand
+pnpm add @ailuracode/alpine-query @ailuracode/alpine-query-adapter-zustand alpinejs zustand
 ```
 
 ## Setup
 
-```js
+```ts
 import Alpine from "alpinejs";
 import query from "@ailuracode/alpine-query";
 import { createAlpineZustandAdapter } from "@ailuracode/alpine-query-adapter-zustand";

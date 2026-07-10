@@ -7,12 +7,12 @@ Outbound transfer magics: `$clipboard`, `$share`, and `$export`.
 ## Install
 
 ```bash
-npm install @ailuracode/alpine-transfer alpinejs
+pnpm add @ailuracode/alpine-transfer @ailuracode/alpine-core alpinejs
 ```
 
 ## Quick example
 
-```js
+```ts
 import Alpine from "alpinejs";
 import transfer from "@ailuracode/alpine-transfer";
 
@@ -22,7 +22,7 @@ Alpine.start();
 
 ## Selective registration
 
-```js
+```ts
 Alpine.plugin(transfer({ share: false }));
 ```
 

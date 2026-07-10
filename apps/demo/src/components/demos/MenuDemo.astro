@@ -67,14 +67,15 @@ const menuData = `{
 				</div>
 			</div>
 
-			<template x-teleport="body">
+			<template x-teleport="#overlay-root">
 				<ul
 					x-show="$store.menu.isOpen('user-menu')"
 					x-transition
 					x-anchor.bottom-start.offset.8.fixed="$refs.userMenuTrigger"
 					x-bind="$store.menu.menuProps('user-menu')"
 					x-init="$store.menu.bindMenu('user-menu', $el)"
-					class="z-[60] min-w-48 rounded-md border bg-popover p-1 shadow-md"
+					class="min-w-48 rounded-md border bg-popover p-1 shadow-md"
+					:style="{ zIndex: $store.overlay.zIndexOf('menu', 'user-menu') }"
 				>
 					<template x-for="id in userIds" :key="id">
 						<li>
@@ -91,14 +92,15 @@ const menuData = `{
 				</ul>
 			</template>
 
-			<template x-teleport="body">
+			<template x-teleport="#overlay-root">
 				<ul
 					x-show="$store.menu.isOpen('actions-menu')"
 					x-transition
 					x-anchor.bottom-start.offset.8.fixed="$refs.actionsMenuTrigger"
 					x-bind="$store.menu.menuProps('actions-menu')"
 					x-init="$store.menu.bindMenu('actions-menu', $el)"
-					class="z-[60] min-w-48 rounded-md border bg-popover p-1 shadow-md"
+					class="min-w-48 rounded-md border bg-popover p-1 shadow-md"
+					:style="{ zIndex: $store.overlay.zIndexOf('menu', 'actions-menu') }"
 				>
 					<template x-for="id in actionIds" :key="id">
 						<li>

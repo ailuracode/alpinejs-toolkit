@@ -1,0 +1,183 @@
+---
+description: Package patterns, controllers, public API, headless UI, CSS policy, and error handling
+alwaysApply: true
+---
+
+## Plugin categories
+
+| Category | Registers | Example | Test harness |
+|----------|-----------|---------|--------------|
+| **Store** | `Alpine.store("name", …)` | theme, menu, scroll | `startAlpine()` |
+| **Magic** | `Alpine.magic("name", …)` | env, toast, calendar | `createMagicHarness()` |
+| **Directive** | `Alpine.directive(…)` | child | `startAlpine()` + DOM or controller unit tests |
+| **Factory** | Returns `PluginCallback` | `themePlugin(opts)` | Same as inner type |
+
+## Store plugin (factory pattern)
+
+```ts
+import type AlpineType from "alpinejs";
+
+export interface MyPluginOptions {
+  onChange?: (value: string) => void;
+}
+
+export default function myPlugin(options: MyPluginOptions = {}): AlpineType.PluginCallback {
+  return function registerMy(Alpine) {
+    Alpine.store("my", { /* state + methods */ });
+    Alpine.magic("my", () => Alpine.store("my"));
+  };
+}
+
+declare global {
+  namespace Alpine {
+    interface Stores {
+      my: MyStore;
+    }
+    interface Magics<T> {
+      $my: MyStore;
+    }
+  }
+}
+```
+
+## Options helper (literal inference)
+
+```ts
+export function myOptions<const T extends MyPluginOptions>(options: T): T {
+  return options;
+}
+```
+
+Used by menu, command, etc. for `as const` mode arrays.
+
+## Magic-only plugin
+
+```ts
+export default function envPlugin(Alpine: AlpineType.Alpine): void {
+  Alpine.magic("network", () => ({ isOnline: navigator.onLine }));
+}
+```
+
+## Controllers
+
+Every package with state, events, or a lifecycle MUST expose a public controller class:
+
+```text
+<Feature>Controller
+<Feature>Plugin
+<Feature>Options
+<Feature>State
+<Feature>Events
+<Feature>Error
+```
+
+- Mutable state MUST be private (JavaScript private fields: `#field`).
+- Public state via getters, readonly snapshots, or query methods.
+- Mutations via semantic commands: `open()`, `close()`, `select(value)`.
+- Derived booleans MUST be getters: `controller.isOpen`, never `controller.isOpen()`.
+
+### Headless controllers
+
+- Controllers MUST NOT import Alpine.
+- Constructor MUST NOT register global listeners, access `window`/`document`/`localStorage`, start timers, or mutate DOM.
+- Side effects MUST start in `mount()`, `start()`, or `connect()`.
+
+### Lifecycle
+
+- `mount()` and `destroy()` MUST be idempotent.
+- `destroy()` MUST clean up: event listeners, timers, observers, subscriptions, focus traps, Embla instances, Floating UI auto-update, abort controllers, registries, DOM references.
+- Prefer `AbortController`, `CleanupStack`, Alpine's `cleanup` callback for removable listeners.
+
+### Events
+
+- Strongly-typed internal events with `on`/`once`/`off` API.
+- Events emitted AFTER state transition is confirmed.
+- `event.detail` shape changes are breaking changes.
+
+## Public API
+
+`src/index.ts` MUST only contain exports and minimal global declarations.
+
+### Required exports
+
+```typescript
+export { FeatureController } from './controller.js';
+export { FeaturePlugin } from './plugin.js';
+export type { FeatureOptions, FeatureState, FeatureEvents } from './types.js';
+```
+
+### Options
+
+- Options MUST be readonly.
+- Defaults MUST be normalized once via `normalizeXOptions(options)`.
+- Invalid options MUST produce descriptive errors, not silently ignored.
+
+### Errors
+
+- Public errors MUST extend `ToolkitError` with stable codes.
+- Empty `catch {}` blocks MUST NOT be used.
+- Browser API errors MAY degrade in a controlled, documented way.
+- Codes are public API. Adding = minor. Renaming/removing = breaking.
+- Async safe degradation: `console.warn` with toolkit prefix, continue.
+- Forbidden: empty `catch {}`, silent failure, string-matched errors.
+- Stack traces MUST pass through `cause` (ES2022).
+
+### Package metadata
+
+```json
+{
+    "type": "module",
+    "sideEffects": false,
+    "publishConfig": { "access": "public" }
+}
+```
+
+Names MUST follow `@ailuracode/alpine-<name>`. Peer dependencies MUST NOT be bundled.
+
+## Headless UI
+
+### Accessibility
+
+Headless components MUST implement the applicable WAI-ARIA pattern. Every component MUST cover: roles, ARIA attributes, keyboard navigation, focus management, disabled states, orientation, direction, ID relationships, dynamic items, cleanup, restore focus.
+
+### CSS and markup
+
+Packages MUST be headless. Prohibited: Tailwind classes, CSS framework assumptions, hardcoded themes, hardcoded `data-theme`, undocumented mandatory markup, generating complete HTML unless Web API requires it.
+
+### External dependencies
+
+An external dependency MUST: solve a complex domain part, be encapsulated behind the controller, not leak into public API, be destroyed correctly, be replaceable.
+
+## CSS Policy
+
+Headless-only. The consumer owns every visual decision.
+
+### Prohibited in `packages/**`
+
+- Tailwind, UnoCSS, Bootstrap, or any utility-first / class-based framework.
+- Hardcoded color values (`#fff`, `rgb(...)`, named colors).
+- Hardcoded themes: `data-theme="dark"`, `.dark` selectors.
+- `!important`.
+- Inline `style="..."` in user-facing output.
+
+### Permitted
+
+- ARIA object literals: `{ role: "dialog", "aria-modal": "true" }`.
+- Semantic tokens (`dark`, `light`, `system`) for consumer to map to CSS variables.
+- CSS class names only if tokens (`"theme-dark"`, not `"bg-gray-900"`).
+
+### Token naming
+
+Namespaced: `--alpine-theme-*`, `data-alpine-theme`, `$store.theme`. Avoid `data-theme`, `data-color-mode`.
+
+## Common mistakes
+
+| Mistake | Fix |
+|---------|-----|
+| `useThemeStore`, `useScroll()` | React-style hooks — use `$store.theme`, getters, methods |
+| Boolean as method: `$store.theme.isLight()` | Getters have **no** `()` — `$store.theme.isLight` |
+| Hardcode `data-theme`, `.dark`, Tailwind in plugin source | Stay CSS agnostic; expose callbacks |
+| Couple `QueryCache` to Nanostores/Zustand/Alpine.reactive | Use adapter packages |
+| Import query client from wrong package | Alpine apps: `@ailuracode/alpine-query-kit` |
+| Skip adapter in `query({ adapter })` | Pass adapter explicitly |
+| Test cache logic through Alpine DOM | Unit-test with `createQueryClient()` + `vanillaQueryAdapter` |

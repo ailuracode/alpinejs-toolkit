@@ -9,12 +9,12 @@ For tab visibility (`$visibility`), use [`@ailuracode/alpine-env`](../env/README
 ## Install
 
 ```bash
-npm install @ailuracode/alpine-attention alpinejs
+pnpm add @ailuracode/alpine-attention alpinejs
 ```
 
 ## Quick example
 
-```js
+```ts
 import Alpine from "alpinejs";
 import attention from "@ailuracode/alpine-attention";
 

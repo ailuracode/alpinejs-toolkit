@@ -15,11 +15,11 @@ npm install @ailuracode/alpine-media alpinejs
 
 ## Configuração
 
-```js
+```ts
 import Alpine from "alpinejs";
-import media from "@ailuracode/alpine-media";
+import { mediaPlugin } from "@ailuracode/alpine-media";
 
-Alpine.plugin(media());
+Alpine.plugin(mediaPlugin());
 Alpine.start();
 ```
 
@@ -32,33 +32,22 @@ Alpine.start();
 
 ## Intervalos personalizados
 
-You can define arbitrary interval names and breakpoints. Intervals are checked **smallest-first** — the first interval whose `maxWidth >= window.innerWidth` wins.
+You can define arbitrary interval names and breakpoints. Intervals are checked **smallest-first** — the first `(max-width: Xpx)` query that matches wins.
 
-```js
+```ts
 import Alpine from "alpinejs";
-import media from "@ailuracode/alpine-media";
+import { mediaPlugin, mediaIntervals } from "@ailuracode/alpine-media";
 
-Alpine.plugin(media({
-  intervals: [
-    { name: "phone", maxWidth: 480 },
-    { name: "tablet", maxWidth: 768 },
-    { name: "desktop", maxWidth: Infinity },
-  ],
-}));
+Alpine.plugin(
+  mediaPlugin({
+    intervals: mediaIntervals([
+      { name: "phone", maxWidth: 480 },
+      { name: "tablet", maxWidth: 768 },
+      { name: "desktop", maxWidth: Number.POSITIVE_INFINITY },
+    ] as const),
+  })
+);
 Alpine.start();
-```
-
-For full TypeScript inference of interval names, use `as const`:
-
-```js
-Alpine.plugin(media({
-  intervals: [
-    { name: "phone", maxWidth: 480 },
-    { name: "tablet", maxWidth: 768 },
-    { name: "desktop", maxWidth: Infinity },
-  ] as const,
-}));
-// $store.media.breakpoint is "phone" | "tablet" | "desktop"
 ```
 
 ## API do store
@@ -67,35 +56,62 @@ Nome do store: `$store.media`
 
 ### Estado do viewport
 
-| Property | Type | Description |
-|----------|------|-------------|
-| `width` | `number` | Current `window.innerWidth` |
-| `height` | `number` | Current `window.innerHeight` |
-| `breakpoint` | `Name` | Current interval name (resolved via `matchMedia`) |
-| `intervals` | `readonly MediaInterval<Name>[]` | The configured intervals array |
-| `isMobile` | `boolean` | Shorthand for `is('mobile')` |
-| `isTablet` | `boolean` | Shorthand for `is('tablet')` |
-| `isDesktop` | `boolean` | Shorthand for `is('desktop')` |
+| Property      | Type                              | Description                                            |
+| ------------- | --------------------------------- | ------------------------------------------------------ |
+| `width`       | `number`                          | Current `window.innerWidth`                            |
+| `height`      | `number`                          | Current `window.innerHeight`                           |
+| `breakpoint`  | `Name`                            | Current interval name (resolved via `matchMedia`)      |
+| `intervals`   | `readonly MediaInterval<Name>[]`  | The configured intervals array                         |
+| `snapshot()`  | `MediaSnapshot`                   | Read-only `{ width, height, breakpoint }`              |
 
 ### Media features
 
-| Property | Type | Description |
-|----------|------|-------------|
-| `prefersReducedMotion` | `boolean` | `(prefers-reduced-motion: reduce)` |
-| `prefersContrast` | `'no-preference' \| 'more' \| 'less' \| 'custom'` | User contrast preference |
-| `prefersColorScheme` | `'light' \| 'dark'` | Esquema de cor do SO via `matchMedia` (somente leitura; ver [Theme](./theme.md#resolved-vs-preferscolorscheme) para `resolved`) |
-| `hover` | `'none' \| 'hover'` | Primary input hover capability |
-| `pointer` | `'none' \| 'coarse' \| 'fine'` | Primary pointing device |
-| `orientation` | `'portrait' \| 'landscape'` | Viewport orientation |
+| Property               | Type                                              | Description                                                                |
+| ---------------------- | ------------------------------------------------- | -------------------------------------------------------------------------- |
+| `prefersReducedMotion` | `boolean`                                         | `(prefers-reduced-motion: reduce)`                                         |
+| `prefersContrast`      | `'no-preference' \| 'more' \| 'less' \| 'custom'` | User contrast preference                                                   |
+| `prefersColorScheme`   | `'light' \| 'dark'`                               | Esquema de cor do SO via `matchMedia` (somente leitura)                    |
+| `hover`                | `'none' \| 'hover'`                               | Primary input hover capability                                             |
+| `pointer`              | `'none' \| 'coarse' \| 'fine'`                    | Primary pointing device                                                    |
+| `orientation`          | `'portrait' \| 'landscape'`                       | Viewport orientation                                                       |
+| `maxTouchPoints`       | `number`                                          | `navigator.maxTouchPoints`                                                 |
+| `isTouch`              | `boolean`                                         | Touch device heuristic                                                     |
+| `isCoarse`             | `boolean`                                         | Shorthand for `pointer === 'coarse'`                                       |
+| `isFine`               | `boolean`                                         | Shorthand for `pointer === 'fine'`                                         |
+| `canHover`             | `boolean`                                         | Shorthand for `hover === 'hover'`                                          |
 
 ### Métodos
 
-| Method | Description |
-|--------|-------------|
-| `is(name)` | Check if current breakpoint matches: `is('mobile')` |
-| `refresh()` | Update all values, returns `true` if changed |
-| `refreshWidth()` | Update width only, returns `true` if changed |
-| `refreshHeight()` | Update height only, returns `true` if changed |
+| Method             | Description                                                |
+| ------------------ | ---------------------------------------------------------- |
+| `is(name)`         | Check if current breakpoint matches: `is('mobile')`        |
+| `snapshot()`       | Read-only `{ width, height, breakpoint }` snapshot          |
+| `refresh()`        | Update all values, returns `true` if changed               |
+| `refreshWidth()`   | Update width only, returns `true` if changed               |
+| `refreshHeight()`  | Update height only, returns `true` if changed              |
+
+### Eventos
+
+```ts
+import { mediaPlugin, createMedia, type MediaChangeDetail } from "@ailuracode/alpine-media";
+
+Alpine.plugin(mediaPlugin());
+// ou standalone:
+const media = createMedia();
+
+media.on("change", (detail: MediaChangeDetail) => {
+  // detail: { current, previous, source: 'initialization' | 'viewport' | 'user' }
+  console.log(detail.current.breakpoint, detail.source);
+});
+```
+
+### Lifecycle
+
+| Property / Method | Description                                              |
+| ----------------- | -------------------------------------------------------- |
+| `id`              | Stable identifier (auto-generated when omitted)          |
+| `isDestroyed`     | Whether `destroy()` has run                              |
+| `destroy()`       | Idempotent — releases every listener                     |
 
 ## Exemplos HTML
 
@@ -133,22 +149,31 @@ Ver [Theme — `resolved` vs `prefersColorScheme`](./theme.md#resolved-vs-prefer
 
 ## Helpers exportados
 
-```js
+```ts
 import {
   DEFAULT_MEDIA_INTERVALS,
+  DEFAULT_MEDIA_DEBOUNCE_MS,
   mediaIntervals,
-  readMediaSnapshot,
   resolveMediaBreakpoint,
   SSR_MEDIA_DEFAULTS,
+  createMedia,
+  createMediaStore,
+  MediaController,
+  mediaPlugin,
 } from "@ailuracode/alpine-media";
 ```
 
-| Helper | Description |
-|--------|-------------|
-| `mediaIntervals(intervals)` | Asserts literal types (`as const`) on an intervals array |
-| `resolveMediaBreakpoint(width, intervals)` | Pure: resolves which interval a width belongs to |
-| `readMediaSnapshot(intervals?)` | Reads a snapshot from current viewport dimensions |
-| `SSR_MEDIA_DEFAULTS` | Safe defaults when `window` is unavailable |
+| Helper                       | Description                                                              |
+| ---------------------------- | ------------------------------------------------------------------------ |
+| `mediaIntervals(intervals)`  | Asserts literal types (`as const`) on an intervals array                 |
+| `resolveMediaBreakpoint(w, i)` | Pure: resolves which interval a width belongs to                        |
+| `DEFAULT_MEDIA_INTERVALS`    | Default `mobile` / `desktop` intervals                                   |
+| `DEFAULT_MEDIA_DEBOUNCE_MS`  | Default resize debounce window (100 ms)                                  |
+| `SSR_MEDIA_DEFAULTS`         | Safe defaults when `window` is unavailable                               |
+| `createMedia(options)`       | Factory: builds + mounts a `MediaController`                             |
+| `createMediaStore(ctrl)`     | Builds a `MediaStore` reactive mirror from a controller                  |
+| `MediaController`            | Headless controller class (extends `BaseController` from core)           |
+| `mediaPlugin(options)`       | Alpine plugin factory — wires the controller into `$store.media` / `$media` |
 
 ## SSR
 
@@ -157,4 +182,4 @@ The plugin does not throw when `window` is undefined. Width and height default t
 ## Desempenho
 
 - Breakpoint and media features update via `matchMedia` `change` events (with `addListener` fallback)
-- **Width** and **height** update on `resize`, debounced to 100 ms
+- **Width** and **height** update on `resize`, debounced (default 100 ms, configurável via `debounceMs`)

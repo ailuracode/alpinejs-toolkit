@@ -9,7 +9,7 @@ Three plugins answer different “what device is this?” questions. Use the rig
 
 | Question | Plugin | API |
 |----------|--------|-----|
-| Viewport width, height, breakpoint? | [`@ailuracode/alpine-media`](./plugins/media.md) | `$store.media.width`, `.breakpoint`, `.isMobile` |
+| Viewport width, height, breakpoint? | [`@ailuracode/alpine-media`](./plugins/media.md) | `$store.media.width`, `.breakpoint` |
 | Touch, pointer, hover, orientation, reduced motion? | [`@ailuracode/alpine-media`](./plugins/media.md) | `$store.media.isTouch`, `.pointer`, `.hover`, … |
 | macOS, Windows, iOS, Android? | [`@ailuracode/alpine-env`](./plugins/env.md) | `$platform.isMac`, `.isIos`, `.name` |
 
@@ -19,7 +19,7 @@ Three plugins answer different “what device is this?” questions. Use the rig
 
 Covers everything that changes with **viewport** or **CSS media queries**:
 
-- Breakpoints (`breakpoint`, `isMobile`, `isTablet`, `isDesktop`)
+- Breakpoints (`breakpoint`)
 - Dimensions (`width`, `height`)
 - Pointer and hover (`pointer`, `hover`, `isTouch`, `isCoarse`, `isFine`, `canHover`, `maxTouchPoints`)
 - User/OS media preferences (`prefersReducedMotion`, `prefersContrast`, `prefersColorScheme`)
@@ -63,4 +63,4 @@ Use for OS-specific copy, shortcuts, or install flows — not for layout width.
 
 - [Theme](./plugins/theme.md) — user-controlled light/dark (`$store.theme.resolved`), not device detection
 - [`resolved` vs `prefersColorScheme`](./plugins/theme.md#resolved-vs-preferscolorscheme) — styling vs OS color signal
-- [`@ailuracode/alpine-core`](./core.md) — `createMatchMediaWatcher`, `readTouchCapabilities` for custom plugins
+- [`@ailuracode/alpine-core`](./core.md) — helpers SSR-safe do navegador (`isBrowser`, `safeWindow`, `safeMatchMedia`) para plugins custom

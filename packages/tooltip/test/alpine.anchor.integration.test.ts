@@ -1,11 +1,24 @@
 import anchor from "@alpinejs/anchor";
 import Alpine from "alpinejs";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { startAlpine } from "../../../test/helpers.js";
 import tooltipPlugin from "../src/index.js";
 
 describe("@ailuracode/alpine-tooltip playground markup", () => {
   beforeEach(() => {
+    // `startAlpine` registers every plugin in order and only calls
+    // `Alpine.start()` on the first invocation (gated by a module-level
+    // `alpineStarted` flag). Calling `Alpine.start()` again on subsequent
+    // tests would make Alpine emit the "already been initialized" warning
+    // and leak observers between tests. Must run BEFORE the test HTML is
+    // mounted: the helper overwrites `document.body.innerHTML` with a
+    // placeholder on every call, and `Alpine.start()` arms the mutation
+    // observer that processes the markup we set right after.
+    window.Alpine = Alpine;
+    startAlpine(anchor, tooltipPlugin());
+
     document.body.innerHTML = `
+      <div id="overlay-root"></div>
       <div
         x-data="{
           demos: [
@@ -39,7 +52,7 @@ describe("@ailuracode/alpine-tooltip playground markup", () => {
         </template>
 
         <template x-if="activeDemo?.placement === 'top'">
-          <template x-teleport="body">
+          <template x-teleport="#overlay-root">
             <div
               id="tooltip-panel"
               x-show="activeDemo && $store.tooltip.isOpen(activeDemo.id)"
@@ -50,7 +63,7 @@ describe("@ailuracode/alpine-tooltip playground markup", () => {
           </template>
         </template>
         <template x-if="activeDemo?.placement === 'bottom'">
-          <template x-teleport="body">
+          <template x-teleport="#overlay-root">
             <div
               id="tooltip-panel-bottom"
               x-show="activeDemo && $store.tooltip.isOpen(activeDemo.id)"
@@ -62,11 +75,6 @@ describe("@ailuracode/alpine-tooltip playground markup", () => {
         </template>
       </div>
     `;
-
-    window.Alpine = Alpine;
-    Alpine.plugin(anchor);
-    Alpine.plugin(tooltipPlugin());
-    Alpine.start();
   });
 
   afterEach(() => {

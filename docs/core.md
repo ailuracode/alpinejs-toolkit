@@ -16,40 +16,35 @@ Each `@ailuracode/alpine-*` package is a standalone Alpine.js plugin. The core a
 
 ## Registration vs initialization
 
-```js
+```ts
 import Alpine from "alpinejs";
 import {
   createAlpinePlugin,
-  defineMagicPlugin,
-  defineStorePlugin,
+  definePlugin,
   initPlugins,
   registerPlugin,
 } from "@ailuracode/alpine-core";
-import { sharePlugin } from "@ailuracode/alpine-transfer";
-import theme from "@ailuracode/alpine-theme";
+import { themePlugin } from "@ailuracode/alpine-theme";
 
-// Register (no side effects)
-registerPlugin("share", defineMagicPlugin(["share"], sharePlugin));
 registerPlugin(
   "theme",
-  defineStorePlugin(["theme"], theme({ onChange: applyTheme }))
+  definePlugin(["store"], { names: ["theme"], plugin: () => themePlugin() })
 );
 
 // Initialize before Alpine.start()
-Alpine.plugin(createAlpinePlugin(["share", "theme"]));
+Alpine.plugin(createAlpinePlugin(["theme"]));
 Alpine.start();
 ```
 
 For dynamic imports:
 
-```js
+```ts
 import { initPlugins, lazyPlugin, registerPlugin } from "@ailuracode/alpine-core";
 
 registerPlugin(
   "share",
-  lazyPlugin({
-    kind: "magic",
-    magics: ["share"],
+  lazyPlugin(["magic"], {
+    names: ["share"],
     import: () => import("@ailuracode/alpine-transfer"),
   })
 );
@@ -64,18 +59,29 @@ Alpine.start();
 |------|-----------|---------|
 | `magic` | `Alpine.magic()` | `$share`, `$calendar` |
 | `store` | `Alpine.store()` | `$store.theme`, `$store.query` |
-| `both` | magics and/or stores | `$wakelock`, `$idle` |
+| `directive` | `Alpine.directive()` | `x-child` |
 
-Use `defineMagicPlugin`, `defineStorePlugin`, or `defineHybridPlugin` to build definitions with strict typing.
+Use `definePlugin(kinds, options)` to build definitions with strict typing. A single plugin can register any combination of the three by passing a list of kinds; when more than one kind is declared, `names` becomes an object keyed by kind:
+
+```ts
+definePlugin(["magic", "store"], {
+  names: { magic: ["wakelock"], store: ["idle"] },
+  plugin: cb,
+});
+```
+
+Pass `{ allowNameCrossKind: true }` to allow the same name under multiple kinds of one plugin.
 
 ## Factory plugins
 
 Plugins such as `theme` and `query` are factories that return an Alpine callback. Resolve the factory **before** registering:
 
-```js
+```ts
+import { themePlugin } from "@ailuracode/alpine-theme";
+
 registerPlugin(
   "theme",
-  defineStorePlugin(["theme"], theme({ onChange: applyTheme }))
+  definePlugin(["store"], { names: ["theme"], plugin: () => themePlugin() })
 );
 ```
 
@@ -92,18 +98,39 @@ Reference the core types in your app:
 ```ts
 /// <reference types="@types/alpinejs" />
 /// <reference types="@ailuracode/alpine-core" />
+/// <reference types="@ailuracode/alpine-core/global" />
 ```
 
-Continue referencing individual plugin `global.d.ts` files for `$store.*` and `$magic` augmentations.
+The `./global` subpath re-exports the named-export surface of `@types/alpinejs` so consumers that augment `Alpine.*` do not have to add a second triple-slash directive. Per the toolkit convention, this package does NOT augment external modules — consumers type the Alpine runtime with the `Alpine<Stores>` generic from `@ailuracode/alpine-core` directly.
 
 ## API summary
 
 | Function | Purpose |
 |----------|---------|
 | `registerPlugin(name, definition)` | Add a plugin to the registry |
+| `unregisterPlugin(name)` | Remove a plugin from the registry |
 | `initPlugins(Alpine, names?)` | Initialize plugins (supports async loaders) |
 | `initPluginsSync(Alpine, names?)` | Initialize sync plugins only |
 | `createAlpinePlugin(names?)` | Bridge into `Alpine.plugin()` |
-| `lazyPlugin(options)` | Build a dynamic-import definition |
+| `definePlugin(kinds, options)` | Build a typed plugin definition |
+| `lazyPlugin(kinds, options)` | Build a dynamic-import definition |
 | `isPluginInitialized(name)` | Check init state |
+| `markPluginInitialized(name)` | Mark a plugin as initialized |
 | `getRegisteredPlugins()` | Inspect the registry |
+| `getRegisteredPlugin(name)` | Look up one plugin |
+| `resolvePluginEntries(names?)` | Resolve names to registry entries |
+| `resetPluginRegistry()` | Clear the registry (tests / storybook) |
+| `setRegistryDebugSink(sink)` | Forward registry events to a `DebugLogger` |
+| `getRegistryDebugSink()` | Retrieve the configured debug sink |
+
+## Controller primitives
+
+| Export | Purpose |
+|--------|---------|
+| `BaseController<EventMap>` | Abstract base for every headless controller |
+| `EventEmitter<EventMap>` | Strongly-typed `on` / `once` / `off` / `emit` bus |
+| `CleanupStack` | LIFO stack of cleanup callbacks with idempotent `dispose()` |
+| `InstanceRegistry<T>` | Map of controller instances keyed by string ID |
+| `ToolkitError` | Base error with stable `code` and optional `cause` |
+| `Alpine<Stores>` | Typed view of `Alpine` whose `store()` overloads narrow to `Stores` |
+| `PluginCallback<T>` | Generic `Alpine.plugin()` callback typed against an `Alpine` view |

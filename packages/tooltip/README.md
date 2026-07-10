@@ -7,13 +7,13 @@ Headless tooltip store for Alpine.js — open/close state, hover/focus delays, E
 ## Install
 
 ```bash
-npm install @ailuracode/alpine-tooltip alpinejs
-npm install @alpinejs/anchor
+pnpm add @ailuracode/alpine-tooltip alpinejs
+pnpm add @alpinejs/anchor
 ```
 
 ## Store API
 
-```js
+```ts
 $store.tooltip.open("help");
 $store.tooltip.close("help");
 $store.tooltip.isOpen("help");

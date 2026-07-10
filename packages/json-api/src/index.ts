@@ -1,38 +1,42 @@
-import type AlpineType from "alpinejs";
-import { createJsonApiClient } from "./client.js";
-import type { JsonApiClient, JsonApiPluginOptions, JsonApiSchema } from "./types.js";
+/**
+ * Public entrypoint for `@ailuracode/alpine-json-api`.
+ *
+ * Re-exports only. Implementation lives in `./client.ts`,
+ * `./plugin.ts`, and supporting JSON:API modules under `./*.ts`.
+ */
 
-/** Alpine.js JSON:API plugin. Registers magic `$jsonapi` with a typed client. */
-export default function jsonApiPlugin<TSchema extends JsonApiSchema>(
-  options: JsonApiPluginOptions<TSchema>
-) {
-  const client = createJsonApiClient(options.schema, options);
-
-  return function registerJsonApi(Alpine: AlpineType.Alpine): void {
-    Alpine.magic("jsonapi", () => client as JsonApiClient<TSchema>);
-  };
-}
-
-export { createJsonApiClient } from "./client.js";
-export { JsonApiHttpError } from "./errors.js";
+// --- Client (framework-agnostic) ------------------------------------------
+export { createJsonApiClient } from "./client";
+export { JsonApiHttpError } from "./errors";
+// --- Event surface -------------------------------------------------------
+export type {
+  JsonApiErrorDetail,
+  JsonApiEvents,
+  JsonApiRequestDetail,
+  JsonApiResponseDetail,
+} from "./events";
+// --- JSON:API helpers ----------------------------------------------------
 export {
   parseCollectionDocument,
   parseJsonApiResponse,
   parseSingleDocument,
   readJsonApiDocument,
-} from "./parse.js";
-export { jsonApiFindOneQueryOptions, jsonApiQueryOptions } from "./query.js";
+} from "./parse";
+// --- Alpine integration --------------------------------------------------
+export { jsonApiPlugin, jsonApiPlugin as default } from "./plugin";
+export { jsonApiFindOneQueryOptions, jsonApiQueryOptions } from "./query";
 export {
   buildJsonApiQuery,
   buildJsonApiUrl,
   createJsonApiHeaders,
   createResourceDocument,
-} from "./request.js";
+} from "./request";
 export {
   indexIncludedResources,
   resolveResourceIncluded,
-} from "./resolve.js";
-export { defineJsonApiSchema } from "./schema.js";
+} from "./resolve";
+export { defineJsonApiSchema } from "./schema";
+// --- Public types --------------------------------------------------------
 export type {
   InferAttributes,
   InferRelationshipNames,
@@ -59,13 +63,6 @@ export type {
   RelationshipSchema,
   ResourceSchema,
   SchemaResourceType,
-} from "./types.js";
-export { JSON_API_MEDIA_TYPE } from "./types.js";
-
-declare global {
-  namespace Alpine {
-    interface Magics<T> {
-      $jsonapi: JsonApiClient<JsonApiSchema>;
-    }
-  }
-}
+} from "./types";
+// --- Public constants ----------------------------------------------------
+export { JSON_API_MEDIA_TYPE } from "./types";

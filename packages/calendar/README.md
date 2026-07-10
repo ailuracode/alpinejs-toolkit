@@ -7,12 +7,12 @@ Lightweight calendar date logic for Alpine.js, powered by [date-fns](https://dat
 ## Install
 
 ```bash
-npm install @ailuracode/alpine-calendar alpinejs
+pnpm add @ailuracode/alpine-calendar alpinejs
 ```
 
 ## Quick example
 
-```js
+```ts
 import Alpine from "alpinejs";
 import calendar from "@ailuracode/alpine-calendar";
 

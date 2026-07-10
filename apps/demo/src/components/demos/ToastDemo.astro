@@ -47,7 +47,7 @@ const plugin = getPluginNavItem("toast")!;
 				<DemoButton @click="$toast.promise(function () { return new Promise(function (r) { setTimeout(function () { r('done') }, 1200) }) }, { loading: 'Saving…', success: 'Saved!', error: 'Failed' })">
 					Resolve
 				</DemoButton>
-				<DemoButton variant="destructive" @click="$toast.promise(function () { return Promise.reject(new Error('nope')) }, { loading: 'Saving…', success: 'Saved!', error: 'Could not save' })">
+				<DemoButton variant="destructive" @click="void $toast.promise(function () { return Promise.reject(new Error('nope')) }, { loading: 'Saving…', success: 'Saved!', error: 'Could not save' }).catch(function () {})">
 					Reject
 				</DemoButton>
 			</div>

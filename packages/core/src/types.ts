@@ -1,7 +1,11 @@
-import type AlpineType from "alpinejs";
+/**
+ * Public type contracts for `@ailuracode/alpine-core`.
+ * Imported by every internal module and by consuming feature packages.
+ */
+import type { Alpine as AlpineBase } from "alpinejs";
 
 /** Alpine.js plugin callback registered with `Alpine.plugin()`. */
-export type AlpinePluginCallback = (Alpine: AlpineType.Alpine) => void;
+export type AlpinePluginCallback = (alpine: AlpineBase) => void;
 
 /**
  * Lazy plugin source. Resolved only when `initPlugins()` runs — never at import time.
@@ -12,46 +16,62 @@ export type PluginLoader =
   | (() => AlpinePluginCallback)
   | (() => Promise<AlpinePluginCallback>);
 
-/** Plugin that registers one or more Alpine magics (`$share`, `$calendar`, …). */
-export interface MagicPluginDefinition {
-  readonly kind: "magic";
-  readonly magics: readonly string[];
+/**
+ * Alpine extension points a plugin can register.
+ * Order-insensitive: `['magic', 'store']` and `['store', 'magic']` are equivalent.
+ */
+export type PluginKind = "magic" | "store" | "directive";
+
+/**
+ * Names the plugin registers per kind.
+ *
+ * - Single-kind plugin → flat array: `names: ['share']`
+ * - Multi-kind plugin  → object keyed by kind: `names: { magic: ['share'], store: ['theme'] }`
+ *
+ * The flat-array form requires that the plugin declares exactly one kind.
+ * The object form requires an entry for every declared kind.
+ */
+export type PluginNames =
+  | readonly string[]
+  | {
+      magic?: readonly string[];
+      store?: readonly string[];
+      directive?: readonly string[];
+    };
+
+/**
+ * Every plugin in the toolkit is a {@link PluginDefinition}: a list of Alpine
+ * extension points it registers, the names it uses, and a loader that runs
+ * against Alpine. Unifies the previous `magic` / `store` / `directive` / `both`
+ * shapes — `kinds: ['magic']` covers what `defineMagicPlugin` did,
+ * `kinds: ['magic', 'store']` covers what `defineHybridPlugin` did.
+ */
+export interface PluginDefinition {
+  readonly kinds: readonly PluginKind[];
+  readonly names: PluginNames;
   readonly plugin: PluginLoader;
+  /**
+   * Allow the same name to appear under multiple kinds of this plugin.
+   * Default `false` — duplicate names raise `PLUGIN_INVALID_DEFINITION`.
+   * Escape hatch for plugins that genuinely expose the same identifier
+   * under several kinds (e.g. a store and a magic sharing one name).
+   */
+  readonly allowNameCrossKind?: boolean;
 }
 
-/** Plugin that registers one or more Alpine stores (`$store.theme`, …). */
-export interface StorePluginDefinition {
-  readonly kind: "store";
-  readonly stores: readonly string[];
-  readonly plugin: PluginLoader;
-}
-
-/** Plugin that registers both magics and stores (`$wakelock` + `$idle`, …). */
-export interface HybridPluginDefinition {
-  readonly kind: "both";
-  readonly magics?: readonly string[];
-  readonly stores?: readonly string[];
-  readonly plugin: PluginLoader;
-}
-
-/** Plugin that registers one or more Alpine directives (`x-child`, …). */
-export interface DirectivePluginDefinition {
-  readonly kind: "directive";
-  readonly directives: readonly string[];
-  readonly plugin: PluginLoader;
-}
-
-export type PluginDefinition =
-  | MagicPluginDefinition
-  | StorePluginDefinition
-  | HybridPluginDefinition
-  | DirectivePluginDefinition;
-
+/** Snapshot returned by the registry — the public, immutable shape. */
 export interface RegisteredPlugin {
   readonly name: string;
   readonly definition: PluginDefinition;
 }
 
+/**
+ * Internal registry entry. `initialized` is mutable so the registry can
+ * record whether each plugin has run (Alpine.plugin() is idempotent).
+ * Kept here (not under `internal/`) so consumers can type their tests
+ * against the same shape. The mutable field is intentionally NOT re-exported
+ * through `index.ts`.
+ */
 export interface PluginRegistryEntry {
   readonly name: string;
   readonly definition: PluginDefinition;

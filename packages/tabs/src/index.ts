@@ -1,29 +1,21 @@
-import type AlpineType from "alpinejs";
-import { createTabsStore, type TabsStore } from "./store.js";
+/**
+ * Public entrypoint for `@ailuracode/alpine-tabs`.
+ *
+ * Per public-api instructions, this file MUST only contain re-exports.
+ */
 
-export {
-  createTabsStore,
-  type TabsGroupOptions,
-  type TabsOrientation,
-  type TabsStore,
-} from "./store.js";
-
-/** Alpine.js tabs plugin. Registers `$store.tabs`. */
-export default function tabsPlugin(): AlpineType.PluginCallback {
-  return function registerTabs(Alpine) {
-    const store = createTabsStore();
-    Alpine.store("tabs", store);
-    Alpine.magic("tabs", () => Alpine.store("tabs"));
-  };
-}
-
-declare global {
-  namespace Alpine {
-    interface Stores {
-      tabs: TabsStore;
-    }
-    interface Magics<T> {
-      $tabs: TabsStore;
-    }
-  }
-}
+export type { Unsubscribe } from "@ailuracode/alpine-core";
+export { createTabsController, createTabsStore, TabsController } from "./controller";
+export type { TabsEvents } from "./events";
+export { tabsOptions, tabsPlugin, tabsPlugin as default } from "./plugin";
+export type {
+  CreateTabsOptions,
+  TabsAlpine,
+  TabsChangeDetail,
+  TabsChangeSource,
+  TabsGroup,
+  TabsGroupOptions,
+  TabsOrientation,
+  TabsPluginCallback,
+  TabsStore,
+} from "./types";

@@ -1,47 +1,19 @@
+/**
+ * Ambient type surface for `@ailuracode/alpine-theme`.
+ *
+ * Re-exports the {@link ThemeStore} shape so consumers can include this
+ * file via the global.d.ts triple-slash directive and typecheck
+ * `$store.theme` / `$theme` references without pulling the runtime
+ * entrypoint.
+ *
+ * Per core's `global.d.ts` convention, this package does NOT augment
+ * external modules. The `Alpine.Stores` / `Alpine.Magics<T>` augmentation
+ * that earlier drafts proposed has been removed — consumers that need
+ * typed `$store.theme` access should declare the augmentation in their
+ * own `*.d.ts` (or use the typed `Alpine<{ theme: ThemeStore }>` view
+ * from `@ailuracode/alpine-core` directly).
+ */
+
 /// <reference types="@types/alpinejs" />
 
-export type ThemeMode = "light" | "dark" | "system";
-export type ThemeResolved = "light" | "dark";
-
-export interface ThemeChangePayload<TMode extends ThemeMode = ThemeMode> {
-  mode: TMode;
-  resolved: ThemeResolved;
-}
-
-export interface ThemePluginOptions<
-  TModes extends readonly ThemeMode[] = readonly ["light", "dark", "system"],
-> {
-  modes?: TModes;
-  storageKey?: string;
-  onChange?: (payload: ThemeChangePayload<TModes[number]>) => void;
-}
-
-export interface ThemeStore<TMode extends ThemeMode = ThemeMode> {
-  mode: TMode;
-  resolved: ThemeResolved;
-  is(name: TMode): boolean;
-  readonly isLight: boolean;
-  readonly isDark: boolean;
-  readonly isSystem: boolean;
-  isResolved(name: ThemeResolved): boolean;
-  readonly isResolvedLight: boolean;
-  readonly isResolvedDark: boolean;
-  set(mode: TMode): void;
-  cycle(): void;
-  refresh(): boolean;
-}
-
-export type ThemeStoreOf<
-  TModes extends readonly ThemeMode[] = readonly ["light", "dark", "system"],
-> = ThemeStore<TModes[number]>;
-
-declare global {
-  namespace Alpine {
-    interface Stores {
-      theme: ThemeStore;
-    }
-    interface Magics<T> {
-      $theme: ThemeStore;
-    }
-  }
-}
+export type { ThemeStore };

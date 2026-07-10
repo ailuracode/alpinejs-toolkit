@@ -1,13 +1,22 @@
 /// <reference types="@types/alpinejs" />
 
+import type { TooltipInstance, TooltipInstanceOptions } from "./types";
+
+export type {
+  TooltipChangeDetail,
+  TooltipChangeSource,
+  TooltipInstance,
+  TooltipInstanceOptions,
+} from "./types";
+
 export interface TooltipStore {
-  instances: Record<string, import("./store.js").TooltipInstance>;
+  readonly instances: Record<string, TooltipInstance>;
+  register(id: string, options?: TooltipInstanceOptions): void;
+  unregister(id: string): void;
   open(id: string): void;
   close(id: string): void;
   toggle(id: string): void;
   isOpen(id: string): boolean;
-  register(id: string, options?: import("./store.js").TooltipInstanceOptions): void;
-  unregister(id: string): void;
   showOnHover(id: string): void;
   hideOnHover(id: string): void;
   showOnFocus(id: string): void;
@@ -16,7 +25,7 @@ export interface TooltipStore {
   destroy(): void;
 }
 
-export function createTooltipStore(): TooltipStore;
+export function createTooltipController(id?: string): import("./types").TooltipController;
 
 export default function tooltipPlugin(): import("alpinejs").PluginCallback;
 

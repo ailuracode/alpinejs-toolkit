@@ -1,0 +1,56 @@
+[
+  {
+    "name": "alpine-core — minimal (registerPlugin + definePlugin)",
+    "path": "packages/core/dist/index.js",
+    "import": "{ registerPlugin, definePlugin }",
+    "ignore": ["alpinejs"],
+    "gzip": true,
+    "brotli": true,
+    "limit": "500 B"
+  },
+  {
+    "name": "alpine-core — typical (registry + browser helpers)",
+    "path": "packages/core/dist/index.js",
+    "import": "{ registerPlugin, definePlugin, initPlugins, isBrowser, safeWindow }",
+    "ignore": ["alpinejs"],
+    "gzip": true,
+    "brotli": true,
+    "limit": "1.1 kB"
+  },
+  {
+    "name": "alpine-core — full surface",
+    "path": "packages/core/dist/index.js",
+    "import": "*",
+    "ignore": ["alpinejs"],
+    "gzip": true,
+    "brotli": true,
+    "limit": "2.8 kB"
+  },
+  {
+    "name": "alpine-theme — full surface",
+    "path": "packages/theme/dist/index.js",
+    "import": "*",
+    "ignore": ["alpinejs", "@ailuracode/alpine-core"],
+    "gzip": true,
+    "brotli": true,
+    "limit": "3.1 kB"
+  },
+  {
+    "name": "alpine-toggle — full surface",
+    "path": "packages/toggle/dist/index.js",
+    "import": "*",
+    "ignore": ["alpinejs"],
+    "gzip": true,
+    "brotli": true,
+    "limit": "1.5 kB"
+  },
+  {
+    "name": "alpine-child — full surface",
+    "path": "packages/child/dist/index.js",
+    "import": "*",
+    "ignore": ["alpinejs"],
+    "gzip": true,
+    "brotli": true,
+    "limit": "3.5 kB"
+  }
+]

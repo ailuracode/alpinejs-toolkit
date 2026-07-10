@@ -1,0 +1,136 @@
+---
+import { getPluginNavItem } from "../../plugin-nav";
+import DemoButton from "../astro/DemoButton.astro";
+import DemoSection from "../DemoSection.astro";
+
+const plugin = getPluginNavItem("overlay")!;
+---
+
+<DemoSection id={plugin.id} title={plugin.title} api={plugin.api} description={plugin.description}>
+	<div
+		class="grid gap-6"
+		x-data="{
+			bannerOpen: false,
+			lastZ: null,
+			noticeCounter: 0,
+			allocateSlot() {
+				const id = 'notice-' + (++this.noticeCounter);
+				const z = $store.overlay.register('demo', id);
+				$toast.info('Allocated z=' + z);
+			},
+			releaseLastSlot() {
+				const stack = $store.overlay.stack;
+				const last = stack[stack.length - 1];
+				if (last) $store.overlay.unregister(last.plugin, last.id);
+			},
+			toggleBanner(value) {
+				this.bannerOpen = value;
+				if (value) $store.overlay.register('overlay-demo', 'banner');
+				else $store.overlay.unregister('overlay-demo', 'banner');
+			},
+			reconfigureAndRegister() {
+				$store.overlay.configure({ baseZIndex: 5000, step: 50 });
+				const z = $store.overlay.register('overlay-demo', 'high-priority');
+				this.lastZ = z;
+				$toast.info('Allocated z=' + z + ' (base=5000 step=50)');
+			},
+		}"
+	>
+		<div>
+			<h3 class="text-sm font-medium mb-2">Stack inspector</h3>
+			<p class="text-xs text-muted-foreground mb-3">
+				Open overlays (top of stack last): <strong x-text="$store.overlay.count"></strong>
+			</p>
+			<ul class="text-xs text-muted-foreground list-disc pl-5 space-y-1">
+				<template x-for="entry in $store.overlay.stack" :key="entry.plugin + ':' + entry.id">
+					<li>
+						<code x-text="entry.plugin + ':' + entry.id"></code>
+						— z-index <span x-text="entry.zIndex"></span>
+						<button
+							type="button"
+							class="ml-2 underline hover:no-underline"
+							@click="$store.overlay.unregister(entry.plugin, entry.id)"
+						>
+							release
+						</button>
+					</li>
+				</template>
+			</ul>
+		</div>
+
+		<div>
+			<h3 class="text-sm font-medium mb-2">Allocate a slot</h3>
+			<p class="text-xs text-muted-foreground mb-3">
+				<code>$store.overlay.register(plugin, id)</code> returns the z-index and adds the entry to the stack. Idempotent —
+				repeat calls return the same value.
+			</p>
+			<div class="flex flex-wrap gap-2">
+				<DemoButton @click="allocateSlot()">Register a new slot</DemoButton>
+				<DemoButton variant="destructive" @click="releaseLastSlot()">Release last slot</DemoButton>
+			</div>
+		</div>
+
+		<div>
+			<h3 class="text-sm font-medium mb-2">Render via the portal root</h3>
+			<p class="text-xs text-muted-foreground mb-3">
+				Anything inside <code>&lt;template x-teleport="#overlay-root"&gt;</code> mounts into the plugin-managed portal
+				container. Bind <code>:style</code> to <code>$store.overlay.zIndexOf(...)</code> for stacking.
+			</p>
+			<div class="flex flex-wrap gap-2">
+				<DemoButton @click="toggleBanner(true)">Show banner</DemoButton>
+				<DemoButton variant="destructive" @click="toggleBanner(false)">Hide banner</DemoButton>
+			</div>
+
+			<template x-teleport="#overlay-root">
+				<div
+					x-show="bannerOpen"
+					x-transition.opacity
+					class="fixed inset-x-0 top-0 flex justify-center p-4"
+					:style="{ zIndex: $store.overlay.zIndexOf('overlay-demo', 'banner') }"
+				>
+					<div class="rounded-md border bg-background px-4 py-2 text-sm shadow-lg">
+						Banner rendered inside <code>#overlay-root</code>
+					</div>
+				</div>
+			</template>
+		</div>
+
+		<div>
+			<h3 class="text-sm font-medium mb-2">configure()</h3>
+			<p class="text-xs text-muted-foreground mb-3">
+				Idempotent — calling it again with new <code>baseZIndex</code> or <code>step</code> updates the allocator for
+				future slots. Existing allocations keep their z-index.
+			</p>
+			<DemoButton @click="reconfigureAndRegister()">Reconfigure and register</DemoButton>
+			<p class="text-xs text-muted-foreground mt-2" x-show="lastZ !== null">
+				Last allocated z: <strong x-text="lastZ"></strong>
+			</p>
+		</div>
+
+		<div>
+			<h3 class="text-sm font-medium mb-2">Snippet</h3>
+			<pre class="text-xs bg-muted p-3 rounded-md overflow-x-auto"><code>$store.overlay.register('dialog', 'confirm')   // → 1000
+$store.overlay.zIndexOf('dialog', 'confirm')  // → 1000
+$store.overlay.unregister('dialog', 'confirm')
+
+// In the template, render through the portal root:
+&lt;template x-teleport="#overlay-root"&gt;
+  &lt;div :style="$store.overlay.zIndexOf('dialog', 'confirm')"&gt;...&lt;/div&gt;
+&lt;/template&gt;</code></pre>
+		</div>
+
+		<div>
+			<h3 class="text-sm font-medium mb-2">How the demo app uses it</h3>
+			<ul class="text-xs text-muted-foreground list-disc pl-5 space-y-1">
+				<li><code>DialogDemo</code>, <code>MenuDemo</code>, <code>TooltipDemo</code>, <code>CommandDemo</code> all teleport to <code>#overlay-root</code></li>
+				<li>The portal container is created lazily on first register, so SSR pages never ship an empty wrapper</li>
+				<li>
+					<code>configure()</code> is idempotent — call it any time after install with <code>root</code>, <code>baseZIndex</code>,
+					and <code>step</code>
+				</li>
+			</ul>
+		</div>
+	</div>
+
+	<p class="text-xs text-muted-foreground mt-6">Package: <code>{plugin.package}</code></p>
+</DemoSection>
