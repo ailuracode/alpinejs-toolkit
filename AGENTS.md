@@ -51,6 +51,8 @@ test/                            # shared test setup (setup.ts, helpers.ts, mock
 
 ## Commands
 
+For terminal workflows, prefer `rtk` over raw `git`, `gh`, `pnpm`, test, and log commands when supported. Keep using structured tools like `Read`, `Grep`, and `Glob` for file/context access.
+
 ```bash
 pnpm install          # install all workspaces
 pnpm run build        # compile all packages to dist/

@@ -47,12 +47,6 @@ alwaysApply: true
 | `.github/workflows/release.yml` | Publish to npm on merge to master |
 | `.github/ISSUE_TEMPLATE/*.yml` | Bug report + feature request templates |
 
-## Terminal tooling
-
-- If `rtk` is installed and command is supported, prefer `rtk` for terminal workflows to reduce noisy output and token usage.
-- Applies to shell commands such as `git`, `gh`, `pnpm`, test runners, search commands, and log inspection.
-- Does not replace built-in structured tools like `Read`, `Grep`, or `Glob`; use `rtk` only for terminal/Bash flows.
-
 ## Common mistakes
 
 | Mistake | Fix |
