@@ -34,10 +34,6 @@
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
     },
-    "./register": {
-      "types": "./dist/internal/register.d.ts",
-      "default": "./dist/internal/register.js"
-    },
     "./global": {
       "types": "./dist/global.d.ts"
     }
