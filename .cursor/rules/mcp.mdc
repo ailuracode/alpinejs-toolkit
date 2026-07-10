@@ -40,7 +40,7 @@ save_issue({
   title: "Short issue title",
   description: "## Summary\n\n…",
   links: [
-    { url: "https://github.com/ailuracode/alpinejs-toolkit", title: "Repo" },
+    { url: "https://github.com/ailuracode/alpinejs-toolkit" },
   ],
 });
 ```
