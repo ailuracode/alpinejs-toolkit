@@ -39,9 +39,6 @@ save_issue({
   project: "Alpine Toolkit",
   title: "Short issue title",
   description: "## Summary\n\n…",
-  links: [
-    { url: "https://github.com/ailuracode/alpinejs-toolkit" },
-  ],
 });
 ```
 
