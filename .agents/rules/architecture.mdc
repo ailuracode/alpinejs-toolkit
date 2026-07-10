@@ -1,0 +1,54 @@
+---
+description: Monorepo architecture patterns, imports, and structural rules
+alwaysApply: true
+---
+
+## Imports
+
+- `index.ts` imports ONLY public API (`controllers`, `directives`, `options`, `types`).
+- `index.ts` MUST NOT import internal adapter, bindings, store, or alpine registration files.
+- Tests MUST NOT import from `index.ts` — import controllers/types/options directly.
+- Internal modules (`internal/`, `adapter.ts`, store logic, bindings) are package-private.
+
+## Invariants
+
+1. `Alpine.store` and `Alpine.magic` do NOT exist on core Alpine type.
+2. `Alpine.reactive` was added in Alpine 3.14.1 (August 2025).
+3. `alpinejs` peer dependency MUST be `^3`, never `^4`.
+4. Alpine MUST be optional for non-directive packages (allow `@types/alpinejs` as optional dev dep).
+5. Controller-level code MUST NOT import Alpine directly.
+6. Package types MUST augment `Alpine.*` using `declare global`.
+7. `cleanup` is NOT part of core Alpine — it's only available if `alpine-cleanup.js` is imported (injected in `packages/core/src/alpine.ts`).
+8. Package versions MUST be `0.0.0` initially.
+9. Tests MUST use real Alpine with `startAlpine()` helper, not mocks.
+
+## Anti-patterns
+
+- Import internal modules from `index.ts`.
+- Use `any` or `@ts-ignore`.
+- Skip `import type` for type-only imports.
+- Hardcode values in `Alpine.store()` that should come from options.
+- Emit events before state is confirmed changed.
+- Import `test/helpers.ts` or `test/setup.ts` outside `test/` directories.
+
+## Reference packages
+
+- `packages/core` — full lifecycle (controller → store → magic → bindings)
+- `packages/tooltip` — floating adapter + lifecycle
+- `packages/combobox` — virtual DOM controller + adapter
+- `packages/theme` — options normalizer + SSR-safe `matchMedia`
+
+## Reference patterns
+
+| Pattern | Package |
+|---------|---------|
+| Store + factory + `global.d.ts` | `packages/theme/` |
+| Store + options helper | `packages/menu/` |
+| Magic-only | `packages/env/`, `packages/attention/` |
+| Directive + init intercept | `packages/child/` |
+| Headless controller + adapter | `packages/combobox/` |
+| Query adapter (no Alpine) | `packages/query-adapter-alpine/` |
+
+## Decision record
+
+In September 2025, a proposed `@ailuracode/alpine-core-v2` was evaluated. The conclusion was to keep `core` as a lightweight orchestrator and avoid controller logic inside it. Packages expose their own state shape via typed `Alpine.store` augmentations.

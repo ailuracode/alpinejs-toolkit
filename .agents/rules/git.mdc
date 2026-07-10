@@ -1,6 +1,7 @@
 ---
 description: Git commit and pull request conventions for alpinejs-toolkit
-alwaysApply: true
+globs: [".changeset/*.md", "packages/*/package.json"]
+alwaysApply: false
 ---
 
 ## Git commits
