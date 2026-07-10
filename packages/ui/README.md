@@ -2,17 +2,17 @@
 
 Shared UI primitives for `@ailuracode/alpinejs-toolkit`.
 
-A thin intermediate layer between `@ailuracode/alpine-core` and the feature
-packages in this monorepo. Ships generic, framework-agnostic primitives that
-multiple feature packages would otherwise re-implement in lock-step:
+A public, framework-agnostic infrastructure package used primarily by Alpine
+Toolkit packages. Ships generic primitives that multiple feature packages would
+otherwise re-implement in lock-step:
 
 - **Storage adapters** — generic `localStorage` and in-memory factories
   (value-polymorphic in `Value`).
 - **Media query helpers** — SSR-safe `matchMedia` subscription.
 - **Portal root** — SSR-safe container factory for teleported content.
 
-This package publishes no Alpine plugin and has no Alpine dependency — it is
-purely a set of primitives that feature packages compose.
+This package publishes no Alpine plugin and has no Alpine or
+`@ailuracode/alpine-core` dependency. Consumers can install it on its own.
 
 ## Install
 

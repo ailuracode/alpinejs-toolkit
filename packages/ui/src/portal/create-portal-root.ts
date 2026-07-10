@@ -13,8 +13,8 @@
  * root, but nothing in this module depends on Alpine.
  */
 
-import { safeDocument } from "@ailuracode/alpine-core";
-import type { PortalRootOptions } from "./types.js";
+import { safeDocument } from "../internal/browser";
+import type { PortalRootOptions } from "./types";
 
 const DEFAULT_ID = "overlay-root";
 const DEFAULT_TAG: keyof HTMLElementTagNameMap = "div";

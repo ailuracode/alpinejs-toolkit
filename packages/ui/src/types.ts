@@ -1,10 +1,9 @@
 /**
  * Public type contracts for `@ailuracode/alpine-ui`.
  *
- * The `ui` package is a thin intermediate layer between
- * `@ailuracode/alpine-core` and the feature packages in this monorepo.
- * It exposes headless primitives — storage adapters, focus helpers,
- * disclosure patterns — that multiple feature packages would otherwise
+ * The `ui` package is a framework-agnostic infrastructure layer used
+ * primarily by Alpine Toolkit packages. It exposes only currently
+ * exported primitives that multiple consumers would otherwise
  * re-implement in lock-step.
  *
  * The public surface is intentionally narrow: a generic
