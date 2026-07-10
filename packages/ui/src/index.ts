@@ -1,11 +1,10 @@
 /**
  * Public entrypoint for `@ailuracode/alpine-ui`.
  *
- * The `ui` package is a thin intermediate layer between
- * `@ailuracode/alpine-core` and the feature packages in this
- * monorepo. It exposes headless primitives — storage adapters,
- * focus helpers, disclosure patterns — that multiple feature
- * packages would otherwise re-implement in lock-step.
+ * The `ui` package is a framework-agnostic infrastructure layer
+ * used primarily by Alpine Toolkit packages. It exposes only
+ * currently shipped primitives that downstream packages would
+ * otherwise re-implement in lock-step.
  *
  * Exports are grouped by domain:
  *
@@ -16,7 +15,7 @@
  * 3. **Portal root** — generic DOM primitive for materialising a
  *    portal container under SSR-safe contracts.
  * 4. **Types** — the {@link StorageAdapter} contract plus
- *    {@link PortalRootOptions} option shapes.
+ *    {@link PortalRootOptions} option shape.
  */
 
 // --- Media query helpers -----------------------------------------------

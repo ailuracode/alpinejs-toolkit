@@ -5,8 +5,8 @@
  * package in `@ailuracode/alpinejs-toolkit` would otherwise
  * re-implement:
  *
- * - Browser-API access goes through `safeMatchMedia` from
- *   `@ailuracode/alpine-core` so the SSR contract stays uniform.
+ * - Browser-API access goes through a local SSR guard so consumers
+ *   do not need any Alpine runtime package installed.
  * - SSR / Node callers (or runtimes where `matchMedia` is missing)
  *   get a no-op `Unsubscribe` so the caller can wire teardown
  *   uniformly through `BaseController.registerCleanup`.
@@ -20,7 +20,7 @@
  * needing a separate callback signature.
  */
 
-import { safeMatchMedia } from "@ailuracode/alpine-core";
+import { safeMatchMedia } from "../internal/browser.js";
 import type { Unsubscribe } from "../types.js";
 
 /**

@@ -13,7 +13,7 @@
  * root, but nothing in this module depends on Alpine.
  */
 
-import { safeDocument } from "@ailuracode/alpine-core";
+import { safeDocument } from "../internal/browser.js";
 import type { PortalRootOptions } from "./types.js";
 
 const DEFAULT_ID = "overlay-root";
