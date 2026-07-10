@@ -4,20 +4,12 @@ globs: [".changeset/*.md", "packages/*/package.json"]
 alwaysApply: false
 ---
 
-## Git commits
+## Git commit message
 
 - Use **Conventional Commits**: `type(scope): description`.
 - Valid types: `feat`, `fix`, `refactor`, `docs`, `test`, `chore`, `style`, `perf`, `build`, `ci`.
 - Scope: package name without `alpine-` prefix (e.g. `theme`, `sidebar`, `overlay`).
 - Keep the first line under ~72 characters; use the body for extra detail if needed.
-
-## Pull requests
-
-- **Title**: Use Conventional Commits format — `type(scope): description`.
-- **Description**:
-  - **Summary** — What changed, 1–3 sentences.
-  - **Test Plan** — `pnpm test`, `pnpm run lint`, `pnpm run typecheck` must pass before requesting review.
-  - **Checklist** — Conventional commits, docs updated, changeset added, no AI attribution.
 
 ## Before finishing any change
 

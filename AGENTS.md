@@ -136,7 +136,7 @@ Canonical rules live in `.agents/rules/` as `.mdc` files with YAML frontmatter. 
 
 | Rule file | Scope | Key content |
 |-----------|-------|-------------|
-| `git.mdc` | Always | PR descriptions, commit messages, Linear conventions |
+| `git-commit-message.mdc` | Always | PR descriptions, commit messages, Linear conventions |
 | `branches.mdc` | Always | Branch naming convention for issue-driven work |
 | `testing.mdc` | Test files | Harness selection, layer split, contract tests, common mistakes |
 | `new-package.mdc` | Always | Package layout, plugin shape, public API, headless UI, CSS policy, errors, demo wiring |
@@ -152,7 +152,7 @@ Canonical rules live in `.agents/rules/` as `.mdc` files with YAML frontmatter. 
 | `secrets-security.mdc` | Always | Hard rules, .gitignore, token handling |
 | `i18n-messages.mdc` | Docs, demo, README | Message keys, locale files, multi-language docs |
 
-`.cursor/rules/` provides Cursor-specific overrides (`testing.mdc` globs-scoped, `git.mdc` + `new-package.mdc` always-apply).
+`.cursor/rules/` provides Cursor-specific overrides (`testing.mdc` globs-scoped, `git-commit-message.mdc` + `new-package.mdc` always-apply).
 
 ## References
 
