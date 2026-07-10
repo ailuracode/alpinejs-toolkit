@@ -1,6 +1,6 @@
 # @ailuracode/alpine-dialog
 
-Headless accessible dialog store for Alpine.js — open/close state, focus trap, scroll lock hooks, and ARIA helpers. No markup or CSS included.
+Headless accessible dialog store for Alpine.js — open/close state, focus trap, scroll lock integration, and ARIA helpers. No markup or CSS included.
 
 **[Full documentation →](../../docs/plugins/dialog.md)**
 
@@ -15,12 +15,12 @@ pnpm add @ailuracode/alpine-dialog alpinejs
 ```ts
 import Alpine from "alpinejs";
 import { dialogPlugin } from "@ailuracode/alpine-dialog";
+import { scrollPlugin } from "@ailuracode/alpine-scroll";
 
+Alpine.plugin(scrollPlugin());
 Alpine.plugin(
   dialogPlugin({
-    onLockChange(locked) {
-      // compose with $store.scroll.lock() / unlock()
-    },
+    scroll: Alpine.store("scroll"),
   })
 );
 Alpine.start();
@@ -58,7 +58,7 @@ dialogPlugin({
   closeOnEscape?: boolean,        // default: true
   closeOnOutsideClick?: boolean,  // default: true
   scrollLock?: boolean,           // default: true
-  onLockChange?: (locked: boolean) => void,  // hook for scroll lock integration
+  scroll?: ScrollStore,           // optional @ailuracode/alpine-scroll store
 });
 ```
 

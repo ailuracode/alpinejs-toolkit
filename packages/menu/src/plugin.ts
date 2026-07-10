@@ -37,7 +37,7 @@ export function menuPlugin(options: CreateMenuOptions = {}): MenuPluginCallback 
 
     const controller = new MenuController(
       instances,
-      { exclusive: options.exclusive, onLockChange: options.onLockChange },
+      { exclusive: options.exclusive, scroll: options.scroll },
       options.id
     );
 

@@ -22,7 +22,7 @@ export type { LangEvents, LangListener } from "./events";
 // --- Pure helpers (re-exported from internal/) --------------------------
 export { normalizeLanguageTag, parseLanguageTag } from "./internal/language-tag";
 // --- Alpine integration --------------------------------------------------
-export { createLangStore, langPlugin } from "./plugin";
+export { createLangStore, langPlugin, langPlugin as default } from "./plugin";
 
 // --- Public types --------------------------------------------------------
 export type {

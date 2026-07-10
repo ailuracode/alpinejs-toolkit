@@ -30,7 +30,7 @@ export { ToggleController } from "./controller";
 export type { ToggleEvents } from "./events";
 // --- Public factory (framework-agnostic) -----------------------------
 // --- Alpine integration ----------------------------------------------
-export { createToggle, togglePlugin } from "./plugin";
+export { createToggle, togglePlugin, togglePlugin as default } from "./plugin";
 // --- Public types (state contracts, options, plugin callback) --------
 export type {
   CreateToggleOptions,

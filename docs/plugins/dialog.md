@@ -5,7 +5,7 @@ description: "Package: @ailuracode/alpine-dialog"
 
 Package: `@ailuracode/alpine-dialog`
 
-Headless accessible dialog store for Alpine.js. Manages open state, focus trap, scroll-lock callbacks, Escape/outside-click dismissal, and ARIA attributes. **No HTML or CSS is shipped.**
+Headless accessible dialog store for Alpine.js. Manages open state, focus trap, scroll locking, Escape/outside-click dismissal, and ARIA attributes. **No HTML or CSS is shipped.**
 
 ## Install
 
@@ -18,12 +18,12 @@ npm install @ailuracode/alpine-dialog alpinejs
 ```js
 import Alpine from "alpinejs";
 import dialog, { dialogOptions } from "@ailuracode/alpine-dialog";
+import { scrollPlugin } from "@ailuracode/alpine-scroll";
 
+Alpine.plugin(scrollPlugin());
 Alpine.plugin(
   dialogOptions({
-    onLockChange(locked) {
-      document.documentElement.toggleAttribute("data-dialog-open", locked);
-    },
+    scroll: Alpine.store("scroll"),
   })
 );
 Alpine.start();
@@ -33,9 +33,7 @@ Compose scroll locking with `@ailuracode/alpine-scroll`:
 
 ```js
 dialog({
-  onLockChange(locked) {
-    locked ? Alpine.store("scroll").lock() : Alpine.store("scroll").unlock();
-  },
+  scroll: Alpine.store("scroll"),
 });
 ```
 
@@ -59,7 +57,7 @@ dialog({
 |--------|---------|-------------|
 | `closeOnEscape` | `true` | Close on Escape |
 | `closeOnOutsideClick` | `true` | Close on outside click |
-| `scrollLock` | `true` | Notify `onLockChange` while open |
+| `scrollLock` | `true` | Lock shared scroll store while open when `scroll` is configured |
 | `onOpen` / `onClose` | — | Lifecycle callbacks |
 
 ## Basic markup
@@ -106,7 +104,7 @@ State is in-memory. Guard DOM bindings (`bindContainer`, focus trap) behind `x-i
 
 ## Integration
 
-- **Scroll** — use `onLockChange` with `$store.scroll`
+- **Scroll** — pass `$store.scroll` as `scroll`
 - **Toast** — show confirmation toasts after dialog actions in your UI layer (not a required dependency)
 
 ## Limitations

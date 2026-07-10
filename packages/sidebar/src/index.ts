@@ -38,7 +38,7 @@ export {
   withSidebarVisiblePersist,
 } from "./internal/storage/persist";
 // --- Alpine plugin adapter -----------------------------------------
-export { createSidebarStore, sidebarPlugin } from "./plugin";
+export { createSidebarStore, sidebarPlugin, sidebarPlugin as default } from "./plugin";
 // --- Public types (state contracts, options, plugin callback) --------
 export type {
   CreateSidebarOptions,

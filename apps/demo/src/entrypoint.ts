@@ -1,7 +1,7 @@
 export {
   registerDemoPlugins,
-  setupDemoExtensions,
   type ToastDemoContent,
   toastDemoPositions,
   toastDemoVariants,
-} from "./demo/plugin-registry.js";
+} from "./alpine-boot.js";
+export { registerDemoDataModules } from "./demo/demo-data-registration.js";

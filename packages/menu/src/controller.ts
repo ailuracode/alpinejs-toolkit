@@ -14,6 +14,7 @@
  */
 
 import { BaseController, generateId } from "@ailuracode/alpine-core";
+import type { ScrollStore } from "@ailuracode/alpine-scroll";
 import type { MenuEvents } from "./events";
 import type {
   MenuControllerConfig,
@@ -150,7 +151,8 @@ export class MenuController extends BaseController<MenuEvents> {
   readonly instances: Record<string, MenuInstance>;
   #exclusive: boolean;
   #lockCount = 0;
-  #onLockChange?: (locked: boolean) => void;
+  #lockHandle: string | null = null;
+  #scroll: ScrollStore | undefined;
 
   constructor(
     instances: Record<string, MenuInstance>,
@@ -160,7 +162,7 @@ export class MenuController extends BaseController<MenuEvents> {
     super(id ?? generateId("menu"));
     this.instances = instances;
     this.#exclusive = config.exclusive ?? true;
-    this.#onLockChange = config.onLockChange;
+    this.#scroll = config.scroll;
   }
 
   register(
@@ -240,7 +242,7 @@ export class MenuController extends BaseController<MenuEvents> {
     }
 
     if (closedCount === 0) {
-      this.#setLock(true);
+      this.#updateScrollLock(true);
     }
 
     instance.onOpen?.();
@@ -472,10 +474,10 @@ export class MenuController extends BaseController<MenuEvents> {
     return instances[id];
   }
 
-  #setLock(locked: boolean): void {
+  #updateScrollLock(locked: boolean): void {
     if (locked) {
-      if (this.#lockCount === 0) {
-        this.#onLockChange?.(true);
+      if (this.#lockCount === 0 && this.#scroll && this.#lockHandle === null) {
+        this.#lockHandle = this.#scroll.lock("menu");
       }
       this.#lockCount++;
       return;
@@ -486,8 +488,9 @@ export class MenuController extends BaseController<MenuEvents> {
     }
 
     this.#lockCount--;
-    if (this.#lockCount === 0) {
-      this.#onLockChange?.(false);
+    if (this.#lockCount === 0 && this.#lockHandle !== null) {
+      this.#scroll?.unlock(this.#lockHandle);
+      this.#lockHandle = null;
     }
   }
 
@@ -500,7 +503,7 @@ export class MenuController extends BaseController<MenuEvents> {
     instance.open = false;
 
     if (!suppressLock) {
-      this.#setLock(false);
+      this.#updateScrollLock(false);
     }
 
     instance.onClose?.();
@@ -542,8 +545,11 @@ export class MenuController extends BaseController<MenuEvents> {
       }
       delete this.instances[id];
     }
+    if (this.#lockHandle !== null) {
+      this.#scroll?.unlock(this.#lockHandle);
+      this.#lockHandle = null;
+    }
     this.#lockCount = 0;
-    this.#onLockChange?.(false);
     super.destroy();
   }
 }

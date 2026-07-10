@@ -59,7 +59,7 @@ export {
   prefersReducedMotion,
 } from "./internal/util.js";
 // --- Alpine plugin adapter -----------------------------------------
-export { createScrollStore, scrollPlugin } from "./plugin.js";
+export { createScrollStore, scrollPlugin, scrollPlugin as default } from "./plugin.js";
 export type {
   ScrollAlpine,
   ScrollBehavior,

@@ -1,6 +1,19 @@
+import type { ScrollStore } from "@ailuracode/alpine-scroll";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { startAlpine } from "../../../test/helpers.js";
 import menuPlugin, { createMenuStore } from "../src/index.js";
+
+function createScrollStoreMock(handle = "menu-lock"): ScrollStore {
+  return {
+    active: false,
+    count: 0,
+    styles: {},
+    locks: [],
+    lock: vi.fn(() => handle),
+    unlock: vi.fn(),
+    clear: vi.fn(),
+  } as unknown as ScrollStore;
+}
 
 describe("@ailuracode/alpine-menu", () => {
   let store: ReturnType<typeof createMenuStore>;
@@ -117,27 +130,27 @@ describe("@ailuracode/alpine-menu", () => {
     expect(menu.isOpen("demo")).toBe(true);
   });
 
-  it("notifies onLockChange while menus are open", () => {
-    const onLockChange = vi.fn();
-    store = createMenuStore({ onLockChange });
+  it("locks scroll while menus are open", () => {
+    const scroll = createScrollStoreMock();
+    store = createMenuStore({ scroll });
     store.register("user-menu");
     store.open("user-menu");
 
-    expect(onLockChange).toHaveBeenLastCalledWith(true);
+    expect(scroll.lock).toHaveBeenCalledWith("menu");
 
     store.close("user-menu");
-    expect(onLockChange).toHaveBeenLastCalledWith(false);
+    expect(scroll.unlock).toHaveBeenLastCalledWith("menu-lock");
   });
 
   it("cleans up scroll lock on destroy", () => {
-    const onLockChange = vi.fn();
-    store = createMenuStore({ onLockChange });
+    const scroll = createScrollStoreMock();
+    store = createMenuStore({ scroll });
     store.register("user-menu");
     store.open("user-menu");
     store.destroy();
 
     expect(store.isOpen("user-menu")).toBe(false);
-    expect(onLockChange).toHaveBeenLastCalledWith(false);
+    expect(scroll.unlock).toHaveBeenLastCalledWith("menu-lock");
   });
 
   it("closes other menus when opening one (exclusive default)", () => {
@@ -224,21 +237,21 @@ describe("@ailuracode/alpine-menu", () => {
   });
 
   it("keeps scroll lock in sync when exclusive closes other menus", () => {
-    const onLockChange = vi.fn();
-    store = createMenuStore({ onLockChange });
+    const scroll = createScrollStoreMock();
+    store = createMenuStore({ scroll });
     store.register("user-menu");
     store.register("actions");
 
     store.open("user-menu");
-    expect(onLockChange).toHaveBeenLastCalledWith(true);
+    expect(scroll.lock).toHaveBeenCalledTimes(1);
 
     store.open("actions");
     expect(store.isOpen("user-menu")).toBe(false);
     expect(store.isOpen("actions")).toBe(true);
-    expect(onLockChange).toHaveBeenLastCalledWith(true);
-    expect(onLockChange).not.toHaveBeenCalledWith(false);
+    expect(scroll.lock).toHaveBeenCalledTimes(1);
+    expect(scroll.unlock).not.toHaveBeenCalled();
 
     store.close("actions");
-    expect(onLockChange).toHaveBeenLastCalledWith(false);
+    expect(scroll.unlock).toHaveBeenLastCalledWith("menu-lock");
   });
 });

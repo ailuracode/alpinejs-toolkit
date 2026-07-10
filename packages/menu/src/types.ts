@@ -6,6 +6,7 @@
  */
 
 import type { Alpine, PluginCallback } from "@ailuracode/alpine-core";
+import type { ScrollStore } from "@ailuracode/alpine-scroll";
 import type { Alpine as AlpineBase } from "alpinejs";
 
 /** Menu orientation. */
@@ -83,13 +84,13 @@ export interface CreateMenuOptions {
   readonly id?: string;
   /** When true (default), opening a menu closes all other open menus. */
   readonly exclusive?: boolean;
-  readonly onLockChange?: (locked: boolean) => void;
+  readonly scroll?: ScrollStore;
 }
 
 /** Controller-level config (no id). */
 export type MenuControllerConfig = {
   exclusive?: boolean;
-  onLockChange?: (locked: boolean) => void;
+  scroll?: ScrollStore;
 };
 
 /** Typed view of `Alpine` the menu plugin uses internally. */

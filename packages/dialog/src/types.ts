@@ -6,6 +6,7 @@
  */
 
 import type { Alpine, PluginCallback } from "@ailuracode/alpine-core";
+import type { ScrollStore } from "@ailuracode/alpine-scroll";
 import type { Alpine as AlpineBase } from "alpinejs";
 
 /** Options passed to `open()` at call site. */
@@ -74,7 +75,7 @@ export interface DialogStore {
 
 /** Internal configuration for the controller factory. */
 export type DialogStoreConfig = {
-  onLockChange?: (locked: boolean) => void;
+  scroll?: ScrollStore;
   defaultCloseOnEscape?: boolean;
   defaultCloseOnOutsideClick?: boolean;
   defaultScrollLock?: boolean;
@@ -83,7 +84,7 @@ export type DialogStoreConfig = {
 /** Options accepted by the dialog plugin factory. */
 export interface CreateDialogOptions {
   readonly id?: string;
-  readonly onLockChange?: (locked: boolean) => void;
+  readonly scroll?: ScrollStore;
   readonly closeOnEscape?: boolean;
   readonly closeOnOutsideClick?: boolean;
   readonly scrollLock?: boolean;

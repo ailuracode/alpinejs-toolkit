@@ -332,6 +332,9 @@ importers:
       '@ailuracode/alpine-core':
         specifier: workspace:*
         version: link:../core
+      '@ailuracode/alpine-scroll':
+        specifier: workspace:*
+        version: link:../scroll
 
   packages/env:
     dependencies:
@@ -415,6 +418,9 @@ importers:
       '@ailuracode/alpine-core':
         specifier: workspace:*
         version: link:../core
+      '@ailuracode/alpine-scroll':
+        specifier: workspace:*
+        version: link:../scroll
 
   packages/notify:
     dependencies:

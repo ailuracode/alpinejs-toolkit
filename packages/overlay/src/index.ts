@@ -14,7 +14,7 @@ export {
 export type { OverlayErrorCode } from "./error.js";
 export { isOverlayErrorCode, OverlayError } from "./error.js";
 export { DEFAULT_OVERLAY_OPTIONS, normalizeOverlayOptions } from "./options.js";
-export { overlayPlugin } from "./plugin.js";
+export { overlayPlugin, overlayPlugin as default } from "./plugin.js";
 export type {
   OverlayAlpine,
   OverlayChangeDetail,

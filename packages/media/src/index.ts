@@ -31,7 +31,13 @@ export type { MediaEvents } from "./events";
 // --- Pure helpers (re-exported for SSR snapshots / userland) ---------
 export { resolveMediaBreakpoint } from "./internal/breakpoint";
 // --- Alpine integration ----------------------------------------------
-export { createMediaStore, MEDIA_STORE_KEY, mediaIntervals, mediaPlugin } from "./plugin";
+export {
+  createMediaStore,
+  MEDIA_STORE_KEY,
+  mediaIntervals,
+  mediaPlugin,
+  mediaPlugin as default,
+} from "./plugin";
 // --- Public types (state contracts, options, plugin callback) --------
 export type {
   CreateMediaOptions,

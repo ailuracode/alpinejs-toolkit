@@ -22,7 +22,7 @@ export function dialogPlugin(options: CreateDialogOptions = {}): DialogPluginCal
     const Alpine = alpine as unknown as DialogAlpine;
     const controller = new DialogController(
       {
-        onLockChange: options.onLockChange,
+        scroll: options.scroll,
         defaultCloseOnEscape: options.closeOnEscape,
         defaultCloseOnOutsideClick: options.closeOnOutsideClick,
         defaultScrollLock: options.scrollLock,
@@ -61,7 +61,9 @@ export function dialogPlugin(options: CreateDialogOptions = {}): DialogPluginCal
     const syncInstances = () => {
       const controllerInstances = controller.instances;
       for (const key of Object.keys(controllerInstances)) {
-        reactiveStore.instances[key] = controllerInstances[key];
+        // Clone each instance so Alpine sees a new object identity on both
+        // open and close transitions; the controller mutates instances in place.
+        reactiveStore.instances[key] = { ...controllerInstances[key] };
       }
       for (const key of Object.keys(reactiveStore.instances)) {
         if (!(key in controllerInstances)) {

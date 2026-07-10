@@ -32,7 +32,7 @@ export { createMemoryThemeStorage } from "./internal/storage/memory";
 // --- System theme helper ---------------------------------------------
 export { readSystemTheme } from "./internal/system-observer";
 // --- Alpine integration ----------------------------------------------
-export { createThemeStore, themePlugin } from "./plugin";
+export { createThemeStore, themePlugin, themePlugin as default } from "./plugin";
 // --- Public types (state, contracts, options) -------------------------
 export type {
   CreateThemeOptions,

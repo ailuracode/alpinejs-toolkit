@@ -8,6 +8,7 @@
  */
 
 import { BaseController, generateId } from "@ailuracode/alpine-core";
+import type { ScrollStore } from "@ailuracode/alpine-scroll";
 import type { DialogEvents } from "./events";
 import { createFocusTrap, type FocusTrap } from "./focus.js";
 import type {
@@ -43,17 +44,18 @@ export class DialogController extends BaseController<DialogEvents> {
   #instances: Record<string, DialogInstance> = {};
   #traps = new Map<string, FocusTrap>();
   #lockCount = 0;
+  #lockHandle: string | null = null;
   #defaultCloseOnEscape: boolean;
   #defaultCloseOnOutsideClick: boolean;
   #defaultScrollLock: boolean;
-  #onLockChange?: (locked: boolean) => void;
+  #scroll: ScrollStore | undefined;
 
   constructor(config: DialogStoreConfig = {}, id?: string) {
     super(id ?? generateId("dialog"));
     this.#defaultCloseOnEscape = config.defaultCloseOnEscape ?? true;
     this.#defaultCloseOnOutsideClick = config.defaultCloseOnOutsideClick ?? true;
     this.#defaultScrollLock = config.defaultScrollLock ?? true;
-    this.#onLockChange = config.onLockChange;
+    this.#scroll = config.scroll;
   }
 
   get instances(): Readonly<Record<string, DialogInstance>> {
@@ -99,7 +101,7 @@ export class DialogController extends BaseController<DialogEvents> {
     }
 
     if (instance.scrollLock) {
-      this.#setLock(true);
+      this.#updateScrollLock(true);
     }
 
     this.#activateTrap(id, instance);
@@ -121,7 +123,7 @@ export class DialogController extends BaseController<DialogEvents> {
     this.#deactivateTrap(id);
 
     if (instance.scrollLock) {
-      this.#setLock(false);
+      this.#updateScrollLock(false);
     }
 
     instance.onClose?.();
@@ -196,8 +198,11 @@ export class DialogController extends BaseController<DialogEvents> {
       delete this.#instances[id];
       this.#deactivateTrap(id);
     }
+    if (this.#lockHandle !== null) {
+      this.#scroll?.unlock(this.#lockHandle);
+      this.#lockHandle = null;
+    }
     this.#lockCount = 0;
-    this.#onLockChange?.(false);
     super.destroy();
   }
 
@@ -231,10 +236,10 @@ export class DialogController extends BaseController<DialogEvents> {
     return this.#instances[id];
   }
 
-  #setLock(locked: boolean): void {
+  #updateScrollLock(locked: boolean): void {
     if (locked) {
-      if (this.#lockCount === 0) {
-        this.#onLockChange?.(true);
+      if (this.#lockCount === 0 && this.#scroll && this.#lockHandle === null) {
+        this.#lockHandle = this.#scroll.lock("dialog");
       }
       this.#lockCount++;
       return;
@@ -245,8 +250,9 @@ export class DialogController extends BaseController<DialogEvents> {
     }
 
     this.#lockCount--;
-    if (this.#lockCount === 0) {
-      this.#onLockChange?.(false);
+    if (this.#lockCount === 0 && this.#lockHandle !== null) {
+      this.#scroll?.unlock(this.#lockHandle);
+      this.#lockHandle = null;
     }
   }
 

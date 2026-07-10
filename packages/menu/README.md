@@ -13,13 +13,12 @@ pnpm add @ailuracode/alpine-menu alpinejs
 ## Setup
 
 ```ts
-Alpine.plugin(
-  menu({
-    onLockChange(locked) {
-      // compose with $store.scroll.lock() / unlock()
-    },
-  })
-);
+import Alpine from "alpinejs";
+import { menuPlugin } from "@ailuracode/alpine-menu";
+import { scrollPlugin } from "@ailuracode/alpine-scroll";
+
+Alpine.plugin(scrollPlugin());
+Alpine.plugin(menuPlugin({ scroll: Alpine.store("scroll") }));
 ```
 
 ## Exclusive mode

@@ -1,7 +1,7 @@
 import type { ToastItem, ToastPosition, ToastStore } from "@ailuracode/alpine-toast";
 import { isPersistentDuration } from "@ailuracode/alpine-toast";
+import type { ToastDemoContent, toastDemoPositions, toastDemoVariants } from "../alpine-boot.js";
 import type { AlpineInstance } from "../types/alpine.js";
-import type { ToastDemoContent, toastDemoPositions, toastDemoVariants } from "./plugin-registry.js";
 
 type DemoVariants = typeof toastDemoVariants;
 type DemoPositions = typeof toastDemoPositions;
@@ -9,8 +9,8 @@ type DemoToastItem = ToastItem<DemoVariants, DemoPositions, ToastDemoContent>;
 type DemoToastStore = ToastStore<DemoVariants, DemoPositions, ToastDemoContent>;
 type DemoToastPosition = ToastPosition<DemoPositions>;
 
-/** Demo toast plugin variants — overrides the generic default on `Alpine.Stores.toast`. */
-type DemoAlpineStores = Omit<Alpine.Stores, "toast"> & {
+/** Demo toast plugin variants — this module only needs the typed `toast` store. */
+type DemoAlpineStores = {
   toast: DemoToastStore;
 };
 

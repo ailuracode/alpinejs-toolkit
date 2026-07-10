@@ -1,12 +1,25 @@
+import type { ScrollStore } from "@ailuracode/alpine-scroll";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { startAlpine } from "../../../test/helpers.js";
 import dialogPlugin, { createDialogStore, createFocusTrap } from "../src/index.js";
+
+function createScrollStoreMock(): ScrollStore {
+  return {
+    active: false,
+    count: 0,
+    styles: {},
+    locks: [],
+    lock: vi.fn(() => "dialog-lock"),
+    unlock: vi.fn(),
+    clear: vi.fn(),
+  } as unknown as ScrollStore;
+}
 
 describe("@ailuracode/alpine-dialog", () => {
   let store: ReturnType<typeof createDialogStore>;
 
   beforeEach(() => {
-    store = createDialogStore({ onLockChange: vi.fn() });
+    store = createDialogStore();
   });
 
   it("starts closed for unknown dialogs", () => {
@@ -100,13 +113,14 @@ describe("@ailuracode/alpine-dialog", () => {
   });
 
   it("cleans up on destroy", () => {
-    const onLockChange = vi.fn();
-    store = createDialogStore({ onLockChange, defaultScrollLock: true });
+    const scroll = createScrollStoreMock();
+    store = createDialogStore({ scroll, defaultScrollLock: true });
     store.register("settings", { scrollLock: true });
     store.open("settings");
     store.destroy();
 
     expect(store.isOpen("settings")).toBe(false);
-    expect(onLockChange).toHaveBeenLastCalledWith(false);
+    expect(scroll.lock).toHaveBeenCalledWith("dialog");
+    expect(scroll.unlock).toHaveBeenLastCalledWith("dialog-lock");
   });
 });

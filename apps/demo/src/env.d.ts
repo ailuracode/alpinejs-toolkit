@@ -9,18 +9,18 @@ type SidebarStore = import("@ailuracode/alpine-sidebar").SidebarStore;
 type GeoStore = import("@ailuracode/alpine-geo").GeoStore;
 type QueryStore = import("@ailuracode/alpine-query").QueryStore;
 type ToastStore = import("@ailuracode/alpine-toast").ToastStore<
-  typeof import("./entrypoint").toastDemoVariants,
-  typeof import("./entrypoint").toastDemoPositions,
-  import("./entrypoint").ToastDemoContent
+  typeof import("./alpine-boot").toastDemoVariants,
+  typeof import("./alpine-boot").toastDemoPositions,
+  import("./alpine-boot").ToastDemoContent
 >;
 type NetworkMagic = import("@ailuracode/alpine-env").NetworkMagic;
 type VisibilityMagic = import("@ailuracode/alpine-env").VisibilityMagic;
 type BatteryMagic = import("@ailuracode/alpine-env").BatteryMagic;
 type ClipboardMagic = import("@ailuracode/alpine-transfer").ClipboardMagic;
 type ToastMagic = import("@ailuracode/alpine-toast").ToastMagic<
-  typeof import("./entrypoint").toastDemoVariants,
-  typeof import("./entrypoint").toastDemoPositions,
-  import("./entrypoint").ToastDemoContent
+  typeof import("./alpine-boot").toastDemoVariants,
+  typeof import("./alpine-boot").toastDemoPositions,
+  import("./alpine-boot").ToastDemoContent
 >;
 type ExportMagic = import("@ailuracode/alpine-transfer").ExportMagic;
 type CalendarMagic = import("@ailuracode/alpine-calendar").CalendarMagic;
