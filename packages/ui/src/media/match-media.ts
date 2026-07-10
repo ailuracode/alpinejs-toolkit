@@ -20,8 +20,8 @@
  * needing a separate callback signature.
  */
 
-import { safeMatchMedia } from "../internal/browser.js";
-import type { Unsubscribe } from "../types.js";
+import { safeMatchMedia } from "../internal/browser";
+import type { Unsubscribe } from "../types";
 
 /**
  * Subscribes to changes of a CSS media query. Returns an
