@@ -68,22 +68,22 @@
   ],
   "toolkit": {
     "bundleBudget": {
-      "category": "small-feature",
-      "entries": [
-        {
-          "name": "full surface",
-          "path": "dist/index.js",
-          "import": "*",
-          "ignore": [
-            "alpinejs",
-            "@ailuracode/alpine-core",
-            "@alpinejs/morph"
-          ],
-          "gzip": true,
-          "brotli": true,
-          "limit": "1.5 kB"
-        }
-      ]
+      "category": "small-feature"
     }
-  }
+  },
+  "size-limit": [
+    {
+      "name": "full surface",
+      "path": "dist/index.js",
+      "import": "*",
+      "ignore": [
+        "alpinejs",
+        "@ailuracode/alpine-core",
+        "@alpinejs/morph"
+      ],
+      "gzip": true,
+      "brotli": true,
+      "limit": "1.5 kB"
+    }
+  ]
 }

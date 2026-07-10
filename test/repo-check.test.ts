@@ -1,4 +1,3 @@
-import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
@@ -44,9 +43,9 @@ describe("repo:check", () => {
     expect(readmeNames.has("@ailuracode/alpine-fixture-drift")).toBe(false);
   });
 
-  it("requires every public package to own a .size-limit.json budget", () => {
+  it('requires every public package to define a "size-limit" budget', () => {
     const packages = publishablePackages(discoverPackages(path.join(root, "packages")));
-    const missing = packages.filter((pkg) => !existsSync(path.join(pkg.dir, ".size-limit.json")));
+    const missing = packages.filter((pkg) => !Array.isArray(pkg.manifest["size-limit"]));
     expect(missing.map((pkg) => pkg.folder)).toEqual([]);
   });
 
@@ -58,15 +57,13 @@ describe("repo:check", () => {
     }
   });
 
-  it("keeps checked-in size-limit configs synced with package metadata", () => {
+  it('keeps package "size-limit" configs synced with package metadata', () => {
     const packages = publishablePackages(discoverPackages(path.join(root, "packages")));
 
     for (const pkg of packages) {
       const expected = expectedSizeLimitConfig(pkg);
       expect(expected).not.toBeNull();
-
-      const actual = JSON.parse(readFileSync(path.join(pkg.dir, ".size-limit.json"), "utf8"));
-      expect(actual).toEqual(expected);
+      expect(pkg.manifest["size-limit"]).toEqual(expected);
     }
   });
 });

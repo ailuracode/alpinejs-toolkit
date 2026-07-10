@@ -130,12 +130,8 @@ export function readBundleBudgetMetadata(pkg) {
  * @returns {unknown[] | null}
  */
 export function expectedSizeLimitConfig(pkg) {
-  const metadata = readBundleBudgetMetadata(pkg);
-  if (!metadata || typeof metadata.exclude === "string") {
-    return null;
-  }
-
-  return Array.isArray(metadata.entries) ? JSON.parse(JSON.stringify(metadata.entries)) : null;
+  const sizeLimit = pkg.manifest["size-limit"];
+  return Array.isArray(sizeLimit) ? JSON.parse(JSON.stringify(sizeLimit)) : null;
 }
 
 /**
@@ -214,35 +210,26 @@ function validateSizeBudgetPolicyEntry(pkg) {
   const configPath = path.join(pkg.dir, ".size-limit.json");
   const relativeConfigPath = `packages/${pkg.folder}/.size-limit.json`;
 
-  if (rule.exclude) {
+  if (typeof rule.exclude === "string") {
     if (existsSync(configPath)) {
       errors.push(`${pkg.name}: ${relativeConfigPath} must not exist for excluded packages`);
+    }
+
+    if (Array.isArray(pkg.manifest["size-limit"])) {
+      errors.push(`${pkg.name}: package.json size-limit must not exist for excluded packages`);
     }
 
     return errors;
   }
 
-  if (!Array.isArray(rule.entries) || rule.entries.length === 0) {
-    errors.push(`${pkg.name}: toolkit.bundleBudget must define at least one budget or exclusion`);
-    return errors;
-  }
-
-  if (!existsSync(configPath)) {
-    errors.push(`${pkg.name}: missing ${relativeConfigPath}`);
-    return errors;
-  }
-
-  const entries = JSON.parse(readFileSync(configPath, "utf8"));
-  if (!Array.isArray(entries) || entries.length === 0) {
-    errors.push(`${pkg.name}: ${relativeConfigPath} must include at least one budget`);
-    return errors;
-  }
-
   const expected = expectedSizeLimitConfig(pkg);
-  if (JSON.stringify(entries) !== JSON.stringify(expected)) {
-    errors.push(
-      `${pkg.name}: ${relativeConfigPath} is out of sync with package.json toolkit.bundleBudget`
-    );
+  if (!Array.isArray(expected) || expected.length === 0) {
+    errors.push(`${pkg.name}: package.json must define a non-empty "size-limit" array`);
+    return errors;
+  }
+
+  if (existsSync(configPath)) {
+    errors.push(`${pkg.name}: ${relativeConfigPath} is deprecated; use package.json "size-limit"`);
   }
 
   const scripts = pkg.manifest.scripts;
@@ -262,7 +249,7 @@ function validateSizeBudgets(packages, root) {
   const errors = [];
 
   if (existsSync(path.join(root, ".size-limit.json"))) {
-    errors.push("Root .size-limit.json is deprecated; use packages/<name>/.size-limit.json");
+    errors.push('Root .size-limit.json is deprecated; use package.json "size-limit"');
   }
 
   for (const pkg of packages) {

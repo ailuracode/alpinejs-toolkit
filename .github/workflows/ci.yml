@@ -148,7 +148,7 @@ jobs:
       - name: Build packages
         run: pnpm run build
 
-      # Each package owns packages/<name>/.size-limit.json; root runs pnpm -r size.
+      # Each package owns its package.json "size-limit" config; root runs pnpm -r size.
       - name: Enforce bundle-size budgets
         run: pnpm run size
 

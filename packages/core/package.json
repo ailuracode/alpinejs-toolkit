@@ -66,42 +66,42 @@
   },
   "toolkit": {
     "bundleBudget": {
-      "category": "primitive",
-      "entries": [
-        {
-          "name": "minimal (registerPlugin + definePlugin)",
-          "path": "dist/index.js",
-          "import": "{ registerPlugin, definePlugin }",
-          "ignore": [
-            "alpinejs"
-          ],
-          "gzip": true,
-          "brotli": true,
-          "limit": "400 B"
-        },
-        {
-          "name": "typical (registry + browser helpers)",
-          "path": "dist/index.js",
-          "import": "{ registerPlugin, definePlugin, initPlugins, isBrowser, safeWindow }",
-          "ignore": [
-            "alpinejs"
-          ],
-          "gzip": true,
-          "brotli": true,
-          "limit": "1.1 kB"
-        },
-        {
-          "name": "full surface",
-          "path": "dist/index.js",
-          "import": "*",
-          "ignore": [
-            "alpinejs"
-          ],
-          "gzip": true,
-          "brotli": true,
-          "limit": "2.9 kB"
-        }
-      ]
+      "category": "primitive"
     }
-  }
+  },
+  "size-limit": [
+    {
+      "name": "minimal (registerPlugin + definePlugin)",
+      "path": "dist/index.js",
+      "import": "{ registerPlugin, definePlugin }",
+      "ignore": [
+        "alpinejs"
+      ],
+      "gzip": true,
+      "brotli": true,
+      "limit": "400 B"
+    },
+    {
+      "name": "typical (registry + browser helpers)",
+      "path": "dist/index.js",
+      "import": "{ registerPlugin, definePlugin, initPlugins, isBrowser, safeWindow }",
+      "ignore": [
+        "alpinejs"
+      ],
+      "gzip": true,
+      "brotli": true,
+      "limit": "1.1 kB"
+    },
+    {
+      "name": "full surface",
+      "path": "dist/index.js",
+      "import": "*",
+      "ignore": [
+        "alpinejs"
+      ],
+      "gzip": true,
+      "brotli": true,
+      "limit": "2.9 kB"
+    }
+  ]
 }

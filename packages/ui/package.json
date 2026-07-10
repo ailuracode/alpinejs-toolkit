@@ -58,21 +58,21 @@
   },
   "toolkit": {
     "bundleBudget": {
-      "category": "primitive",
-      "entries": [
-        {
-          "name": "full surface",
-          "path": "dist/index.js",
-          "import": "*",
-          "ignore": [
-            "alpinejs",
-            "@ailuracode/alpine-core"
-          ],
-          "gzip": true,
-          "brotli": true,
-          "limit": "850 B"
-        }
-      ]
+      "category": "primitive"
     }
-  }
+  },
+  "size-limit": [
+    {
+      "name": "full surface",
+      "path": "dist/index.js",
+      "import": "*",
+      "ignore": [
+        "alpinejs",
+        "@ailuracode/alpine-core"
+      ],
+      "gzip": true,
+      "brotli": true,
+      "limit": "850 B"
+    }
+  ]
 }

@@ -78,23 +78,23 @@
   ],
   "toolkit": {
     "bundleBudget": {
-      "category": "complex-feature",
-      "entries": [
-        {
-          "name": "full surface",
-          "path": "dist/index.js",
-          "import": "*",
-          "ignore": [
-            "alpinejs",
-            "@ailuracode/alpine-core",
-            "@ailuracode/alpine-toggle",
-            "@ailuracode/alpine-scroll"
-          ],
-          "gzip": true,
-          "brotli": true,
-          "limit": "2.6 kB"
-        }
-      ]
+      "category": "complex-feature"
     }
-  }
+  },
+  "size-limit": [
+    {
+      "name": "full surface",
+      "path": "dist/index.js",
+      "import": "*",
+      "ignore": [
+        "alpinejs",
+        "@ailuracode/alpine-core",
+        "@ailuracode/alpine-toggle",
+        "@ailuracode/alpine-scroll"
+      ],
+      "gzip": true,
+      "brotli": true,
+      "limit": "2.6 kB"
+    }
+  ]
 }

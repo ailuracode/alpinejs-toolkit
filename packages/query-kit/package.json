@@ -62,23 +62,23 @@
   ],
   "toolkit": {
     "bundleBudget": {
-      "category": "complex-feature",
-      "entries": [
-        {
-          "name": "full surface",
-          "path": "dist/index.js",
-          "import": "*",
-          "ignore": [
-            "alpinejs",
-            "@nanostores/alpine",
-            "@types/alpinejs",
-            "nanostores"
-          ],
-          "gzip": true,
-          "brotli": true,
-          "limit": "20.9 kB"
-        }
-      ]
+      "category": "complex-feature"
     }
-  }
+  },
+  "size-limit": [
+    {
+      "name": "full surface",
+      "path": "dist/index.js",
+      "import": "*",
+      "ignore": [
+        "alpinejs",
+        "@nanostores/alpine",
+        "@types/alpinejs",
+        "nanostores"
+      ],
+      "gzip": true,
+      "brotli": true,
+      "limit": "20.9 kB"
+    }
+  ]
 }

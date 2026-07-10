@@ -62,21 +62,21 @@
   ],
   "toolkit": {
     "bundleBudget": {
-      "category": "infrastructure",
-      "entries": [
-        {
-          "name": "full surface",
-          "path": "dist/index.js",
-          "import": "*",
-          "ignore": [
-            "alpinejs",
-            "@types/alpinejs"
-          ],
-          "gzip": true,
-          "brotli": true,
-          "limit": "5.2 kB"
-        }
-      ]
+      "category": "infrastructure"
     }
-  }
+  },
+  "size-limit": [
+    {
+      "name": "full surface",
+      "path": "dist/index.js",
+      "import": "*",
+      "ignore": [
+        "alpinejs",
+        "@types/alpinejs"
+      ],
+      "gzip": true,
+      "brotli": true,
+      "limit": "5.2 kB"
+    }
+  ]
 }
