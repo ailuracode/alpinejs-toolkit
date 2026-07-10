@@ -7,12 +7,12 @@ Headless accessible menu store for Alpine.js — dropdowns, context menus, keybo
 ## Install
 
 ```bash
-npm install @ailuracode/alpine-menu alpinejs
+pnpm add @ailuracode/alpine-menu alpinejs
 ```
 
 ## Setup
 
-```js
+```ts
 Alpine.plugin(
   menu({
     onLockChange(locked) {
@@ -26,7 +26,7 @@ Alpine.plugin(
 
 Opening a menu closes all others by default (`exclusive: true`). Pass `exclusive: false` to allow multiple open menus, or use per-menu `group` for menubar-style exclusivity:
 
-```js
+```ts
 menu({ exclusive: false });
 $store.menu.register("file", { group: "menubar-1" });
 $store.menu.register("edit", { group: "menubar-1" });
@@ -34,7 +34,7 @@ $store.menu.register("edit", { group: "menubar-1" });
 
 ## Store API
 
-```js
+```ts
 $store.menu.register("user-menu", { onSelect: (id) => {} });
 $store.menu.open("user-menu");
 $store.menu.close("user-menu");

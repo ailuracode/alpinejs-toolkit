@@ -7,12 +7,12 @@ Headless accessible tabs store for Alpine.js — selection, keyboard navigation,
 ## Install
 
 ```bash
-npm install @ailuracode/alpine-tabs alpinejs
+pnpm add @ailuracode/alpine-tabs @ailuracode/alpine-core alpinejs
 ```
 
 ## Store API
 
-```js
+```ts
 $store.tabs.select("settings-tabs", "profile");
 $store.tabs.active("settings-tabs");
 $store.tabs.isActive("settings-tabs", "profile");

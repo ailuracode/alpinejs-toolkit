@@ -175,6 +175,7 @@ Canonical rules live in `.agents/rules/` as `.mdc` files with YAML frontmatter. 
 | `deprecation-policy.mdc` | Source files | Deprecation types, semver rules, migration pattern |
 | `secrets-security.mdc` | Always | Hard rules, .gitignore, token handling |
 | `i18n-messages.mdc` | Docs, demo, README | Message keys, locale files, multi-language docs |
+| `readme-standardization.mdc` | Package README | Install commands, imports, API documentation tiers, verification checklist |
 
 `.cursor/rules/` provides Cursor-specific overrides (`testing.mdc` globs-scoped, `git-commit-message.mdc` + `new-package.mdc` always-apply).
 

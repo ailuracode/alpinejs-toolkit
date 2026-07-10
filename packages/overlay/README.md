@@ -16,7 +16,7 @@ pnpm add @ailuracode/alpine-overlay
 
 ```ts
 import Alpine from "alpinejs";
-import overlayPlugin from "@ailuracode/alpine-overlay";
+import { overlayPlugin } from "@ailuracode/alpine-overlay";
 
 Alpine.plugin(overlayPlugin({ baseZIndex: 1000, step: 10 }));
 

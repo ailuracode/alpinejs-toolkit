@@ -7,12 +7,12 @@ No external store library. Best when you want the smallest dependency footprint.
 ## Install
 
 ```bash
-npm install @ailuracode/alpine-query @ailuracode/alpine-query-adapter-alpine alpinejs
+pnpm add @ailuracode/alpine-query @ailuracode/alpine-query-adapter-alpine alpinejs
 ```
 
 ## Setup
 
-```js
+```ts
 import Alpine from "alpinejs";
 import query from "@ailuracode/alpine-query";
 import { createAlpineStoreAdapter } from "@ailuracode/alpine-query-adapter-alpine";

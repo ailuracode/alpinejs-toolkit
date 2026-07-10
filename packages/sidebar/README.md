@@ -13,12 +13,12 @@ The plugin is **headless** and knows nothing about the width, mode, or appearanc
 ## Install
 
 ```bash
-npm install @ailuracode/alpine-sidebar alpinejs
+pnpm add @ailuracode/alpine-sidebar alpinejs
 ```
 
 ## Setup
 
-```js
+```ts
 import Alpine from "alpinejs";
 import { sidebarPlugin, createSidebar } from "@ailuracode/alpine-sidebar";
 
@@ -28,7 +28,7 @@ Alpine.start();
 
 For side effects (CSS classes, attributes, scroll lock, telemetry) subscribe to the typed `change` event:
 
-```js
+```ts
 const controller = createSidebar();
 
 controller.on("change", (detail) => {
@@ -71,7 +71,7 @@ Store name: `$store.sidebar`
 
 The headless controller is exposed as a named export for advanced consumers that need typed event subscription outside of Alpine:
 
-```js
+```ts
 import { createSidebar } from "@ailuracode/alpine-sidebar";
 
 const controller = createSidebar({
@@ -196,12 +196,12 @@ The plugin only controls visibility. Define your own width / mode in Alpine:
 
 ### With scroll lock integration
 
-```js
+```ts
 import Alpine from "alpinejs";
-import scroll from "@ailuracode/alpine-scroll";
+import { scrollPlugin } from "@ailuracode/alpine-scroll";
 import { sidebarPlugin, createSidebar } from "@ailuracode/alpine-sidebar";
 
-Alpine.plugin(scroll());
+Alpine.plugin(scrollPlugin());
 Alpine.plugin(sidebarPlugin());
 
 createSidebar().on("change", (detail) => {
@@ -224,7 +224,7 @@ createSidebar().on("change", (detail) => {
 
 ### With breakpoint auto-hide
 
-```js
+```ts
 Alpine.plugin(
   sidebarPlugin({
     breakpoint: {
@@ -241,7 +241,7 @@ When the viewport no longer matches the breakpoint, the sidebar auto-hides and e
 
 When you want to render the sidebar across breakpoints but want to react to the flip:
 
-```js
+```ts
 Alpine.plugin(
   sidebarPlugin({
     breakpoint: {
@@ -267,7 +267,7 @@ v2.1.0 layers opt-in persistence onto the v2.0 headless controller. Three out-of
 
 The most common case — persist `visible` to `window.localStorage` and sync across tabs via the `storage` event:
 
-```js
+```ts
 import {
   sidebarPlugin,
   createLocalStorageSidebarStorage,
@@ -285,7 +285,7 @@ Defaults: `key` is `DEFAULT_SIDEBAR_STORAGE_KEY` (`"sidebar-visible"`); `crossTa
 
 The `persistKey` shortcut builds the same adapter internally:
 
-```js
+```ts
 Alpine.plugin(sidebarPlugin({ persistKey: "app-sidebar" }));
 // equivalent to: { storage: createLocalStorageSidebarStorage({ key: "app-sidebar" }) }
 ```
@@ -296,7 +296,7 @@ When both `storage` and `persistKey` are present, the explicit `storage` wins (s
 
 Hermetic storage for tests and SSR. Each instance is independent; `subscribe` fires in-process only — no `window` access.
 
-```js
+```ts
 import { createMemorySidebarStorage } from "@ailuracode/alpine-sidebar";
 
 Alpine.plugin(
@@ -310,7 +310,7 @@ Alpine.plugin(
 
 For consumers already using `@alpinejs/persist`, the package ships a convenience helper that wires `Alpine.$persist` to the sidebar's `visible` field:
 
-```js
+```ts
 import Alpine from "alpinejs";
 import persist from "@alpinejs/persist";
 import { sidebarPlugin, persistSidebarVisible } from "@ailuracode/alpine-sidebar";
@@ -330,7 +330,7 @@ The helper warns and returns `false` when `@alpinejs/persist` is not detected or
 
 For SSR applications with an httpOnly cookie holding the sidebar state, wire a custom `SidebarStorage` adapter that talks to the server. The package does NOT implement httpOnly cookie support itself — the adapter is the consumer's responsibility.
 
-```js
+```ts
 import { sidebarPlugin, type SidebarStorage } from "@ailuracode/alpine-sidebar";
 
 // Fetch the persisted value from the server. The cookie is httpOnly
@@ -394,7 +394,7 @@ The `$store.sidebar` surface (`.visible`, `.isVisible`, `.hasOverlay`, `.matches
 
 ### Before / after
 
-```js
+```ts
 // v1.0 — default export, string breakpoint, onShow/onHide callbacks
 import sidebar from "@ailuracode/alpine-sidebar";
 
@@ -411,7 +411,7 @@ Alpine.plugin(
 );
 ```
 
-```js
+```ts
 // v2.0 — named exports, object breakpoint, typed change event
 import { sidebarPlugin, createSidebar } from "@ailuracode/alpine-sidebar";
 
@@ -428,7 +428,7 @@ createSidebar().on("change", (detail) => {
 
 ### Body scroll lock migration
 
-```js
+```ts
 // v1.0
 sidebarPlugin({
   onShow: lockScroll,
@@ -468,7 +468,7 @@ TypeScript will report a compile error if you don't update. The semantics are un
 
 `storage` and `persistKey` are additive. Consumers who do not pass them see no behavioral change.
 
-```js
+```ts
 // v2.1.0 — wire a localStorage adapter
 import { sidebarPlugin, createLocalStorageSidebarStorage } from "@ailuracode/alpine-sidebar";
 

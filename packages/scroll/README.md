@@ -22,9 +22,9 @@ pnpm add @ailuracode/alpine-scroll @ailuracode/alpine-core
 
 ```ts
 import Alpine from "alpinejs";
-import { ScrollPlugin } from "@ailuracode/alpine-scroll";
+import { scrollPlugin } from "@ailuracode/alpine-scroll";
 
-Alpine.plugin(ScrollPlugin.init({ id: "scroll" }));
+Alpine.plugin(scrollPlugin({ id: "scroll" }));
 Alpine.start();
 ```
 
@@ -35,24 +35,51 @@ Alpine.start();
 
 ## Public API
 
-### `ScrollPlugin`
+### `scrollPlugin(options?)`
 
-- `ScrollPlugin.init(options?)` — factory returning a `PluginCallback` for `Alpine.plugin()`.
-- `plugin.register(Alpine)` — idempotent. Double-registration is a no-op.
-- `plugin.dispose()` — tears down listeners and destroys the controller.
+Factory returning a `PluginCallback` for `Alpine.plugin()`. Options:
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `id` | `string` | auto-generated | Controller identifier |
+| `reserveScrollbarGap` | `boolean` | `true` | Reserve `--ailura-scrollbar-gap` on lock |
+| `target` | `Element \| string \| null` | `null` | Element for scrollbar-gap compensation |
+
+Registers `$store.scroll` and `$scroll` magic. Multiple registrations share the same singleton controller.
 
 ### `ScrollController`
 
 Construct directly with `new ScrollController(options?)` for advanced consumers; the plugin auto-mounts.
 
-// Lifecycle
-controller.destroy();
-```
+#### Lifecycle
 
-The controller's `state` getter returns a frozen snapshot — external
-code cannot mutate the live state. See
-`.agents/adr/0002-scroll-bundle-exception.md` for the rationale behind
-shipping a separate headless class.
+- `controller.mount()` — attaches scroll listener (idempotent).
+- `controller.destroy()` — detaches listeners, releases singleton slot.
+
+#### State
+
+- `controller.state` — live snapshot: `x`, `y`, `direction`, `atTop`, `atBottom`, `progress`, `locked`, `lockCount`, `activeSection`, `visibleSections`.
+- `controller.isLocked` — `true` when at least one lock is active.
+- `controller.direction` — `'up' | 'down' | 'none'`.
+- `controller.progress` — `0..100` scroll percentage.
+
+#### Navigation
+
+- `controller.scrollIntoView(target, options?)` — scroll element into view.
+- `controller.by(delta, reason?)` — scroll by `{ x?, y? }`.
+- `controller.toTop(reason?)` — scroll to top.
+- `controller.toBottom(reason?)` — scroll to bottom.
+
+#### Lock
+
+- `controller.lockWithHandle(reason)` — acquires a lock, returns a handle string.
+- `controller.unlock(handle)` — releases one lock.
+- `controller.unlockAll()` — releases all locks.
+
+#### Sections
+
+- `controller.registerSection(id, options?)` — register an IntersectionObserver-backed section.
+- `controller.unregisterSection(id)` — remove a section.
 
 ## Reduced motion
 

@@ -5,12 +5,12 @@ Alpine.js directive for **asChild-style** composition: transfer attributes, clas
 ## Install
 
 ```bash
-npm install @ailuracode/alpine-child @alpinejs/morph alpinejs
+pnpm add @ailuracode/alpine-child @alpinejs/morph alpinejs
 ```
 
 ## Setup
 
-```js
+```ts
 import Alpine from "alpinejs";
 import morph from "@alpinejs/morph";
 import { childPlugin } from "@ailuracode/alpine-child";
@@ -89,7 +89,7 @@ Programmatic listeners attached to the wrapper at runtime are **not** transferre
 
 ## Blade components
 
-```blade
+```html
 {{-- resources/views/components/button.blade.php --}}
 <span
     x-child
@@ -99,7 +99,7 @@ Programmatic listeners attached to the wrapper at runtime are **not** transferre
 </span>
 ```
 
-```blade
+```html
 <x-button>
     <a href="{{ route('docs') }}">Docs</a>
 </x-button>

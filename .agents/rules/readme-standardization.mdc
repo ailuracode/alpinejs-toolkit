@@ -1,0 +1,104 @@
+---
+description: README.md standardization for all packages — what to document, what to skip, and how to verify accuracy
+globs: "packages/*/README.md"
+alwaysApply: true
+---
+
+## Install command
+
+Always `pnpm add`. Never `npm install` or `yarn add`.
+
+```bash
+pnpm add @ailuracode/alpine-<name> alpinejs
+```
+
+List peer dependencies after the main package. Only include peers the package actually imports.
+
+## Imports
+
+Use named imports that match `src/index.ts` exports. Default imports are only valid when `index.ts` re-exports `as default`:
+
+```ts
+// Has: export { themePlugin } from "./plugin"
+import { themePlugin } from "@ailuracode/alpine-theme";
+
+// Has: export { toastPlugin as default } from "./plugin"
+import toastPlugin from "@ailuracode/alpine-toast";
+```
+
+Verify before documenting: `grep "export default\|as default" packages/<name>/src/index.ts`.
+
+## Plugin registration
+
+Use the actual factory function name, not a generic placeholder:
+
+```ts
+// Correct
+Alpine.plugin(scrollPlugin({ id: "scroll" }));
+
+// Wrong — ScrollPlugin.init() does not exist
+Alpine.plugin(ScrollPlugin.init({ id: "scroll" }));
+```
+
+## API documentation
+
+Document only what `src/index.ts` exports. Three tiers:
+
+### Must document (user-facing)
+
+- Plugin factory function and its options
+- `$store.*` / `$*` magic API (state, getters, methods)
+- Headless controller class and its public surface
+- Standalone factory (e.g. `createTheme()`, `createScroll()`)
+
+### May document (advanced)
+
+- Internal types if consumers need them for typing
+- Constants with semantic meaning (e.g. `DEFAULT_THEME_PREFERENCE`)
+- Helper functions exported for reuse
+
+### Do NOT document
+
+- Internal types only used inside the package
+- Functions prefixed with `#` or not exported from `index.ts`
+- Test utilities or mock helpers
+
+## Verification checklist
+
+Before merging README changes, verify:
+
+1. **Install**: `pnpm add` (not `npm install`)
+2. **Imports**: Every `import X from` has a matching default export in `index.ts`
+3. **API surface**: Every documented function/type exists in `src/index.ts` exports
+4. **No ghosts**: Nothing documented that was removed from source
+5. **Examples**: Code examples use the actual API (not a hypothetical one)
+
+Quick audit command:
+
+```bash
+# Check for npm install leftovers
+rg "npm install" packages/*/README.md
+
+# Check default imports without matching export
+rg 'import \w+ from "@ailuracode' packages/*/README.md
+rg "export.*as default" packages/*/src/index.ts
+```
+
+## Structure
+
+Recommended README skeleton (adapt per package — skip sections that don't apply):
+
+```markdown
+# @ailuracode/alpine-<name>
+
+One-line description.
+
+## Install
+## Quick example
+## Store API / Magic API / Controller API
+## Plugin options
+## Standalone usage (no Alpine)
+## License
+```
+
+Keep READMEs concise. Full documentation lives in `docs/`. The README is a quick-reference, not a tutorial.

@@ -13,12 +13,12 @@ The **cache engine** has no store dependency. Pick an adapter plugin for Alpine.
 ## Install (recommended)
 
 ```bash
-npm install @ailuracode/alpine-query @ailuracode/alpine-query-kit alpinejs nanostores @nanostores/alpine
+pnpm add @ailuracode/alpine-query @ailuracode/alpine-query-kit alpinejs nanostores @nanostores/alpine
 ```
 
 ## Setup (Alpine + Nanostores)
 
-```js
+```ts
 import Alpine from "alpinejs";
 import query from "@ailuracode/alpine-query";
 import {
@@ -35,7 +35,7 @@ Pass the adapter to `query()`, then it registers `$store.query`.
 
 ## Framework-agnostic client
 
-```js
+```ts
 import { createQueryClient, vanillaQueryAdapter } from "@ailuracode/alpine-query";
 import { nanostoresQueryAdapter } from "@ailuracode/alpine-query-kit";
 
@@ -86,7 +86,7 @@ import type {
 
 ### Store-backed adapter (sketch)
 
-```js
+```ts
 import {
   createMutationStateView,
   createQueryStateView,
@@ -142,7 +142,7 @@ Replace the manual `Set` with your store's `subscribe` / `listen` API when avail
 
 ### Register as an Alpine plugin
 
-```js
+```ts
 import query, { createAlpineBridgedAdapter } from "@ailuracode/alpine-query";
 import { myStoreAdapter } from "./my-store-adapter.js";
 
@@ -156,7 +156,7 @@ Alpine.plugin(query({ adapter: myAlpineNativeAdapter }));
 
 ### Headless usage
 
-```js
+```ts
 import { createQueryClient } from "@ailuracode/alpine-query";
 import { myStoreAdapter } from "./my-store-adapter.js";
 
@@ -177,7 +177,7 @@ Full guide: [docs/query.md — Custom adapter](../docs/query.md#custom-adapter).
 
 ## Custom Alpine plugin (quick)
 
-```js
+```ts
 import query, { vanillaQueryAdapter } from "@ailuracode/alpine-query";
 
 Alpine.plugin(query({ adapter: vanillaQueryAdapter }));
@@ -208,7 +208,7 @@ Do **not** spread the result of `observe()` — boolean getters such as `isLoadi
 
 Import `typedFetch` and pass an explicit generic when you want stronger inference:
 
-```js
+```ts
 import { typedFetch } from "@ailuracode/alpine-query";
 
 /** @type {() => Promise<{ id: number; title: string }[]>} */

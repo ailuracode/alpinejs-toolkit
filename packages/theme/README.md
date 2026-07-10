@@ -97,55 +97,7 @@ theme.toggle();
 theme.reset();
 ```
 
-`theme.subscribe(detail => { … })` receives every transition with `source: 'user' | 'system' | 'storage' | 'reset' | 'initialization'` plus the previous state.
-
-## Debug mode
-
-Pass `debug: true` to pipe every transition through the default logger (`console.debug` with a `[theme:event]` prefix and a labeled group containing the previous + next state, the source, and the timestamp):
-
-```ts
-import { createTheme } from '@ailuracode/alpine-theme';
-
-const theme = createTheme({ defaultTheme: 'system', debug: true });
-```
-
-Output in the devtools console looks like:
-
-```text
-[theme:event] initialization → light
-  current : light
-  system  : light
-  resolved: light
-  source  : initialization
-  previous: null
-  at      : 2026-07-02T17:00:00.000Z
-
-[theme:event] user → dark
-  current : dark
-  system  : light
-  resolved: dark
-  source  : user
-  previous: { current: 'light', system: 'light', resolved: 'light' }
-  at      : 2026-07-02T17:00:01.000Z
-```
-
-Pass a custom `ThemeDebugLogger` to forward events to a telemetry pipeline, a UI debug overlay, or a test stub:
-
-```ts
-import type { ThemeDebugEvent } from '@ailuracode/alpine-theme';
-
-const theme = createTheme({
-    defaultTheme: 'system',
-    debug: (event) => {
-        // event: { current, system, resolved, source, previous, timestamp }
-        window.__themeLog.push(event);
-    },
-});
-```
-
-Debug events are emitted on the same path as `subscribe()` listeners — the same payload, plus a monotonic `timestamp` captured at emit time. A faulty logger is caught and reported once via `console.warn`; the manager never throws because of a misbehaving sink. The flag defaults to `false`, so production builds stay quiet.
-
-The debug pipeline is implemented in `@ailuracode/alpine-core#debug` as a generic, feature-agnostic primitive — the same `DebugLogger<TDetail>` shape is reused by every controller in the toolkit. The theme package only specializes the label (`[theme:event]`) and the typed detail; the runtime is shared. Consumers that want a truly generic sink can import `defaultDebugLogger` from core instead.
+`theme.on('change', detail => { … })` receives every transition with `source: 'user' | 'system' | 'storage' | 'reset' | 'initialization'` plus the previous state.
 
 ## Alpine usage
 
@@ -199,11 +151,9 @@ interface ThemeStorage {
 Bundled adapters:
 
 - `createLocalStorageThemeStorage({ key })` — default, uses `window.localStorage`; SSR-safe; `subscribe()` wires the `storage` event for cross-tab sync.
-- `createCookieThemeStorage({ key, path, maxAge, sameSite })` — for Blade / Laravel; reads `document.cookie`.
 - `createMemoryThemeStorage(initial?)` — hermetic, useful for tests and SSR seeding.
-- `createNoopThemeStorage()` — disables persistence.
 
-Custom adapters (IndexedDB, server header propagation, encrypted storage) implement `ThemeStorage` directly. The optional `subscribe()` hook enables cross-instance change notifications.
+Custom adapters (cookie, IndexedDB, server header propagation, encrypted storage) implement `ThemeStorage` directly. The optional `subscribe()` hook enables cross-instance change notifications.
 
 ## Cross-tab synchronization
 
@@ -213,32 +163,22 @@ Pass `crossTab: false` to opt out. The localStorage adapter is the only bundled 
 
 ## Flash prevention (head snippet)
 
-The package exports `buildHeadScript({...})` — a function that serializes the same theme-resolution logic the manager uses into a standalone JS string. The output is a single IIFE with **zero imports, no `eval`, no `Function`**, so it is safe under strict CSP (`script-src 'self'`).
-
-```ts
-// vite.config.ts / astro.config.mjs / next.config.js / build step
-import { buildHeadScript } from '@ailuracode/alpine-theme';
-import { writeFileSync } from 'node:fs';
-
-const script = buildHeadScript({
-    storageKey: 'app-theme', // default: 'theme'
-    defaultTheme: 'system', // default: 'system'
-    strategy: 'class', // default: 'class'
-    darkClass: 'dark', // default: 'dark'
-    lightClass: 'light', // default: 'light'
-    target: 'html', // CSS selector — default: 'html'
-});
-
-writeFileSync('public/theme-head.js', script);
-```
-
-Wire it in your document **before** the Alpine bundle:
+For flash prevention, use an inline `<script>` in your document `<head>` that reads the persisted theme from `localStorage` and applies the class or attribute before the body renders:
 
 ```html
 <!doctype html>
 <html>
     <head>
-        <script src="/theme-head.js"></script>
+        <script>
+            (function() {
+                try {
+                    var t = JSON.parse(localStorage.getItem('app-theme'));
+                    if (t === 'dark' || t === 'light') {
+                        document.documentElement.classList.add(t);
+                    }
+                } catch(e) {}
+            })();
+        </script>
     </head>
     <body>
         <script type="module">
@@ -251,11 +191,9 @@ Wire it in your document **before** the Alpine bundle:
 </html>
 ```
 
-The script reads the persisted preference from `localStorage`, falls back to `defaultTheme`, resolves the OS preference from `(prefers-color-scheme: dark)`, and applies the result to `target` — all wrapped in a `try/catch` so a missing API never throws. The manager reconciles state on hydration, so the snippet is **best-effort**: when it fails open, `createTheme()` reapplies the correct value before the user notices.
+The manager reconciles state on hydration, so the snippet is **best-effort**: when it fails open, `createTheme()` reapplies the correct value before the user notices.
 
-Use `strategy: 'attribute'` to emit `data-theme="dark"` instead of class toggling. The class and attribute variants share the same option names; flip `strategy` to switch.
-
-For SSR-rendered layouts (Laravel / Blade), the server can read the cookie and emit the class directly — the head snippet then becomes optional. The client-side manager reconciles on hydration either way.
+For SSR-rendered layouts (Laravel / Blade), the server can read the storage and emit the class directly — the head snippet then becomes optional. The client-side manager reconciles on hydration either way.
 
 ## Laravel / Blade integration
 
@@ -266,19 +204,18 @@ For SSR-rendered layouts (Laravel / Blade), the server can read the cookie and e
     <html class="{{ request()->cookie('app-theme') === 'dark' ? 'dark' : 'light' }}">
     ```
 
-2. **Client side** — initialize the manager with the cookie adapter so the same preference persists on subsequent navigations:
+2. **Client side** — initialize the manager with the memory adapter (or a custom cookie adapter implementing `ThemeStorage`) so the preference persists:
 
     ```ts
-    import { createTheme, createCookieThemeStorage } from '@ailuracode/alpine-theme';
+    import { createTheme } from '@ailuracode/alpine-theme';
 
     createTheme({
         defaultTheme: 'system',
-        storage: createCookieThemeStorage({ key: 'app-theme' }),
         strategy: 'class',
     });
     ```
 
-The server already set the right class on `<html>` — the manager reconciles state and re-applies if the cookie was rotated.
+The server already set the right class on `<html>` — the manager reconciles state and re-applies if needed.
 
 ## SSR
 
@@ -302,7 +239,6 @@ const theme = createTheme({
   target?: HTMLElement | null,                  // default: document.documentElement
   watchSystem?: boolean,                        // default: true
   crossTab?: boolean,                           // default: true
-  debug?: boolean | ThemeDebugLogger,           // default: false
 });
 
 theme.current   // 'light' | 'dark' | 'system'
@@ -312,7 +248,7 @@ theme.get()     // { current, system, resolved }
 theme.set(value)
 theme.toggle()  // resolved 'dark' → 'light', 'light' → 'dark' (explicit)
 theme.reset()   // restores defaultTheme, removes persisted value
-theme.subscribe(listener)  // returns unsubscribe
+theme.on('change', listener)  // returns unsubscribe
 theme.destroy() // idempotent, releases all listeners
 ```
 
@@ -363,8 +299,8 @@ Call it when the consumer unmounts (e.g. inside a SPA route teardown, an Alpine 
 | Single `mode` + `resolved` field                  | Three independent fields: `current` / `system` / `resolved`                                  |
 | `set` / `cycle` / `refresh` methods               | `set` / `toggle` / `reset` methods                                                           |
 | `modes` option for custom cycle order             | Removed — use the storage adapter to persist any value, or pass a default via `defaultTheme` |
-| `onChange` callback option                        | `theme.subscribe(listener)` with structured `source` field                                   |
-| Built-in `localStorage` only                      | Pluggable `ThemeStorage` adapters (`localStorage` / `cookie` / `memory` / `noop` / custom)   |
+| `onChange` callback option                        | `theme.on('change', listener)` with structured `source` field                                |
+| Built-in `localStorage` only                      | Pluggable `ThemeStorage` adapters (`localStorage` / `memory` / custom)                       |
 | `strategy: 'class'` hard-coded                    | `strategy: 'class' \| 'attribute' \| 'none'`                                                 |
 | No cross-tab sync                                 | `storage` event wired by default, opt-out via `crossTab: false`                              |
 | Alpine-only                                       | Framework-agnostic — `createTheme()` works in Blade / Livewire / vanilla TS                  |

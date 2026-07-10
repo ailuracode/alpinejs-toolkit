@@ -7,12 +7,12 @@ Headless command palette store for Alpine.js — searchable actions, keyboard na
 ## Install
 
 ```bash
-npm install @ailuracode/alpine-command alpinejs
+pnpm add @ailuracode/alpine-command alpinejs
 ```
 
 ## Store API
 
-```js
+```ts
 $store.command.open();
 $store.command.search = "theme";
 $store.command.register({

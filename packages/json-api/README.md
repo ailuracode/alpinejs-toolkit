@@ -5,12 +5,12 @@ Strongly typed [JSON:API](https://jsonapi.org/) client for Alpine.js. Define you
 ## Install
 
 ```bash
-npm install @ailuracode/alpine-json-api @ailuracode/alpine-query alpinejs
+pnpm add @ailuracode/alpine-json-api @ailuracode/alpine-query alpinejs
 ```
 
 ## Quick start
 
-```js
+```ts
 import Alpine from "alpinejs";
 import jsonApi, { defineJsonApiSchema } from "@ailuracode/alpine-json-api";
 
@@ -61,7 +61,7 @@ Alpine.start();
 
 ## With `@ailuracode/alpine-query`
 
-```js
+```ts
 $store.query.observe(["articles"], () => $jsonapi.findAll("articles"));
 ```
 

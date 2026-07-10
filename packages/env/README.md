@@ -7,7 +7,7 @@ Browser environment magics: `$network`, `$visibility`, `$battery`, and `$platfor
 ## Install
 
 ```bash
-npm install @ailuracode/alpine-env alpinejs
+pnpm add @ailuracode/alpine-env alpinejs
 ```
 
 ## Quick example

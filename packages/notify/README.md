@@ -7,12 +7,12 @@ Web Notifications API wrapper for Alpine.js via the `$notify` magic.
 ## Install
 
 ```bash
-npm install @ailuracode/alpine-notify alpinejs
+pnpm add @ailuracode/alpine-notify alpinejs
 ```
 
 ## Quick example
 
-```js
+```ts
 import Alpine from "alpinejs";
 import notify from "@ailuracode/alpine-notify";
 
