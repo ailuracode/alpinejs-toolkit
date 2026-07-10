@@ -2,24 +2,6 @@
 
 Guidance for AI agents and contributors working on **@ailuracode/alpinejs-toolkit**.
 
-## ⛔ MANDATORY: Tool Selection (HARD RULE)
-
-**BEFORE typing ANY terminal command, you MUST do this:**
-
-1. Check if `rtk` supports the command you need
-2. If yes → use `rtk <command>` — **NO EXCEPTIONS**
-3. If no → THEN you may use raw commands
-
-**BANNED patterns** (never write these):
-- `git ...` → use `rtk git ...`
-- `gh ...` → use `rtk gh ...`
-- `pnpm ...` → use `rtk pnpm ...`
-- `npm ...` → use `rtk pnpm ...`
-
-**Self-check before every bash call:** "Am I about to type a raw CLI command? STOP. Use rtk."
-
-Fallback is ONLY for behaviors `rtk` doesn't support. When unsure, try `rtk` first.
-
 ## Project
 
 Alpine.js plugin monorepo by **ailuracode**. Twenty-six independent npm packages under `packages/`, plus shared tests and docs. The root package `@ailuracode/alpinejs-toolkit` is **private** and never published.
@@ -164,6 +146,7 @@ Rules are `.mdc` files with YAML frontmatter (`description`, `globs`, `alwaysApp
 
 | Rule file | Scope | Key content |
 |-----------|-------|-------------|
+| `rtk.mdc` | Always | Require `rtk` wrapper for terminal commands (`rtk git`, `rtk pnpm`, etc.) |
 | `git-commit-message.mdc` | Always | PR descriptions, commit messages, Linear conventions |
 | `branches.mdc` | Always | Branch naming convention for issue-driven work |
 | `testing.mdc` | Test files | Harness selection, layer split, contract tests, common mistakes |

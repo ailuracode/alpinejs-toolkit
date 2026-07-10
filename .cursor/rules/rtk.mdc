@@ -1,0 +1,39 @@
+---
+description: Require rtk wrapper for all terminal commands
+alwaysApply: true
+---
+
+## Terminal commands
+
+Before running any shell command, check whether `rtk` supports it. If yes, use `rtk` — no exceptions.
+
+```bash
+# Wrong
+git status
+pnpm test
+gh pr list
+
+# Correct
+rtk git status
+rtk pnpm test
+rtk gh pr list
+```
+
+## Banned patterns
+
+| Raw command | Use instead |
+|-------------|-------------|
+| `git ...` | `rtk git ...` |
+| `gh ...` | `rtk gh ...` |
+| `pnpm ...` | `rtk pnpm ...` |
+| `npm ...` | `rtk pnpm ...` |
+
+## Self-check
+
+Before every bash call: "Am I about to type a raw CLI command? STOP. Use rtk."
+
+## Fallback
+
+Use raw commands only when `rtk` does not support the needed behavior. When unsure, try `rtk` first.
+
+Structured file tools (`Read`, `Grep`, `Glob`) do not go through `rtk`.
