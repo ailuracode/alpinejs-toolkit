@@ -16,7 +16,7 @@ Alpine gives you reactivity in HTML. This monorepo adds **headless, tree-shakeab
 ## Quick start
 
 ```bash
-npm install alpinejs @ailuracode/alpine-core @ailuracode/alpine-theme @ailuracode/alpine-toast
+pnpm add alpinejs @ailuracode/alpine-core @ailuracode/alpine-theme @ailuracode/alpine-toast
 ```
 
 ```js
@@ -89,6 +89,7 @@ Start here for most Alpine apps.
 
 | Package | API | Description |
 |---------|-----|-------------|
+| [`@ailuracode/alpine-overlay`](./packages/overlay/README.md) | `$store.overlay` | Portal root, z-index stack, overlay registry |
 | [`@ailuracode/alpine-dialog`](./packages/dialog/README.md) | `$store.dialog` | Accessible modal state and focus trap |
 | [`@ailuracode/alpine-menu`](./packages/menu/README.md) | `$store.menu` | Exclusive dropdown/context menu keyboard navigation |
 | [`@ailuracode/alpine-tooltip`](./packages/tooltip/README.md) | `$store.tooltip` | Tooltip positioning and delays |

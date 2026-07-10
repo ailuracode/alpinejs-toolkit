@@ -51,7 +51,8 @@ The devtools panel renders a floating UI for inspecting active queries and mutat
 Alpine.plugin(
   queryKit({
     devtools: {
-      position: "bottom-right",  // "bottom" | "right"
+      position: "bottom",        // "bottom" | "right"
+      toggleCorner: "bottom-right",
       theme: "system",           // "light" | "dark" | "system"
     },
   })

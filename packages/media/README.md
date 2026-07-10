@@ -31,7 +31,7 @@ Two complementary slices:
 | Slice                       | Members                                                                                |
 | --------------------------- | -------------------------------------------------------------------------------------- |
 | **Viewport**                | `width`, `height`, `breakpoint`, `intervals`                                            |
-| **Derived viewport**        | `isMobile`, `isTablet`, `isDesktop`, `is(name)`                                        |
+| **Derived viewport**        | `isTouch`, `isCoarse`, `isFine`, `canHover`                                            |
 | **Media features**          | `prefersReducedMotion`, `prefersContrast`, `prefersColorScheme`, `hover`, `pointer`, `orientation` |
 | **Touch / pointer**         | `maxTouchPoints`, `isTouch`, `isCoarse`, `isFine`, `canHover`                          |
 
@@ -83,8 +83,8 @@ Alpine.start();
 ```
 
 ```html
-<span x-show="$store.media.isMobile">Mobile nav</span>
-<span x-show="$store.media.isDesktop">Desktop nav</span>
+<span x-show="$store.media.breakpoint === 'mobile'">Mobile nav</span>
+<span x-show="$store.media.breakpoint === 'desktop'">Desktop nav</span>
 
 <p>Width: <span x-text="$store.media.width"></span>px</p>
 <p>Breakpoint: <span x-text="$store.media.breakpoint"></span></p>
@@ -244,7 +244,7 @@ import {
 
 | `0.1.x`                                                                                  | `0.2.x`                                                                                                              |
 | ---------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
-| `import media from "@ailuracode/alpine-media"` (default export)                            | `import { mediaPlugin } from "@ailuracode/alpine-media"` (named export, matches `themePlugin` / `togglePlugin`)    |
+| `import media from "@ailuracode/alpine-media"` (default export)                            | Prefer `import { mediaPlugin } from "@ailuracode/alpine-media"`; default re-export retained for compatibility        |
 | `Alpine.plugin(media({ ... }))`                                                           | `Alpine.plugin(mediaPlugin({ ... }))`                                                                                |
 | Single `src/index.ts` (492 lines)                                                         | Split into `controller.ts` / `plugin.ts` / `types.ts` / `events.ts` / `internal/*` (matches the rest of the toolkit) |
 | Reactive store built inline with no controller abstraction                                | `MediaController` extends `BaseController` from `@ailuracode/alpine-core` — typed `on('change', listener)` event bus |
@@ -255,7 +255,7 @@ import {
 | Manual SSR guards scattered through the source                                            | Centralized `SSR_MEDIA_DEFAULTS` constant + `safeWindow` from core                                                  |
 | Built with `tsc` + inline `node -e`                                                       | Built with `tsup` (matches theme / toggle)                                                                            |
 
-The public method surface on `$store.media` is unchanged — `refresh()`, `refreshWidth()`, `refreshHeight()`, `is()`, and every observable field (`width`, `height`, `breakpoint`, `isMobile`, `prefersReducedMotion`, etc.) work exactly as before. The only observable behavior change is the addition of the `change` event bus and the typed `id` / `isDestroyed` accessors.
+The public command surface on `$store.media` is unchanged — `refresh()`, `refreshWidth()`, `refreshHeight()`, and every observable field (`width`, `height`, `breakpoint`, `prefersReducedMotion`, `isTouch`, `canHover`, etc.) work as before. The observable behavior changes are the addition of the `change` event bus and the typed `id` / `isDestroyed` accessors. Convenience getters `isMobile`, `isTablet`, `isDesktop`, and `is(name)` were removed — compare `breakpoint` directly instead.
 
 ## License
 

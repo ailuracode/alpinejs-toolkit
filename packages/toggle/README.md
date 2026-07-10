@@ -177,7 +177,7 @@ The package is fully importable in a Node runtime. The controller never touches 
 | `createToggleMagic()` helper                                     | Removed — the plugin inlines the magic factory; standalone consumers use `createToggle(...)`      |
 | No hydration API                                                 | `setSilently(value)` sets without emitting; the queued init microtask preserves any hydrated value |
 
-The default export is gone — use `import { togglePlugin } from "@ailuracode/alpine-toggle"`. This matches the rest of the toolkit (`themePlugin`, `themeController`, etc.).
+Prefer the named `togglePlugin` factory — `import { togglePlugin } from "@ailuracode/alpine-toggle"`. The default re-export is retained for compatibility and matches the rest of the toolkit (`themePlugin`, `scrollPlugin`, etc.).
 
 `0.3.0` adds `setSilently()` and tweaks the init microtask to preserve hydrated values — additive only, no breaking changes.
 
