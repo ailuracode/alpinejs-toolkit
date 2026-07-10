@@ -55,5 +55,24 @@
   },
   "peerDependencies": {
     "@ailuracode/alpine-core": "^0.2.0"
-  }
+  },
+  "toolkit": {
+    "bundleBudget": {
+      "category": "primitive"
+    }
+  },
+  "size-limit": [
+    {
+      "name": "full surface",
+      "path": "dist/index.js",
+      "import": "*",
+      "ignore": [
+        "alpinejs",
+        "@ailuracode/alpine-core"
+      ],
+      "gzip": true,
+      "brotli": true,
+      "limit": "850 B"
+    }
+  ]
 }

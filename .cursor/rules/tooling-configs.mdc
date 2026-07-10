@@ -12,7 +12,7 @@ alwaysApply: true
 | `biome.json` | Biome formatting + linting rules |
 | `tsconfig.json` | Root TypeScript config (all packages share) |
 | `vitest.config.ts` | Root test runner (happy-dom, coverage thresholds, workspace includes) |
-| `.size-limit.json` | Per-package bundle size budgets (`pnpm run size`) |
+| `package.json#size-limit` | Per-package bundle size budgets (`pnpm run size`) |
 | `pnpm-workspace.yaml` | pnpm workspace definition |
 | `.changeset/config.json` | Changesets versioning config |
 | `mcp.json` | MCP server configuration (Linear, Codegraph, etc.) |
@@ -24,7 +24,7 @@ alwaysApply: true
 | File | Required | Notes |
 |------|----------|-------|
 | `package.json` | Yes | Version `0.0.0`, build/test/size scripts, peer deps |
-| `.size-limit.json` | Yes | Bundle budgets for `pnpm run size` |
+| `package.json#size-limit` | Yes | Bundle budgets for `pnpm run size` |
 | `README.md` | Yes | npm readme, English only |
 | `CHANGELOG.md` | Yes | Maintained by Changesets |
 | `tsconfig.json` | No | Only if package-specific overrides needed |

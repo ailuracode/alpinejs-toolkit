@@ -59,5 +59,24 @@
     "fetch",
     "tanstack-query",
     "async"
+  ],
+  "toolkit": {
+    "bundleBudget": {
+      "category": "infrastructure"
+    }
+  },
+  "size-limit": [
+    {
+      "name": "full surface",
+      "path": "dist/index.js",
+      "import": "*",
+      "ignore": [
+        "alpinejs",
+        "@types/alpinejs"
+      ],
+      "gzip": true,
+      "brotli": true,
+      "limit": "5.2 kB"
+    }
   ]
 }

@@ -48,5 +48,25 @@
     "alpine",
     "query",
     "adapter"
+  ],
+  "toolkit": {
+    "bundleBudget": {
+      "category": "adapter"
+    }
+  },
+  "size-limit": [
+    {
+      "name": "full surface",
+      "path": "dist/index.js",
+      "import": "*",
+      "ignore": [
+        "alpinejs",
+        "@ailuracode/alpine-query",
+        "@types/alpinejs"
+      ],
+      "gzip": true,
+      "brotli": true,
+      "limit": "550 B"
+    }
   ]
 }

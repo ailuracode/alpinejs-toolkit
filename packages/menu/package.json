@@ -63,5 +63,26 @@
     "dropdown",
     "accessibility",
     "headless"
+  ],
+  "toolkit": {
+    "bundleBudget": {
+      "category": "complex-feature"
+    }
+  },
+  "size-limit": [
+    {
+      "name": "full surface",
+      "path": "dist/index.js",
+      "import": "*",
+      "ignore": [
+        "alpinejs",
+        "@ailuracode/alpine-core",
+        "@ailuracode/alpine-scroll",
+        "@types/alpinejs"
+      ],
+      "gzip": true,
+      "brotli": true,
+      "limit": "2.5 kB"
+    }
   ]
 }

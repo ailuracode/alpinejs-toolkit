@@ -68,5 +68,25 @@
     "@types/alpinejs": {
       "optional": true
     }
-  }
+  },
+  "toolkit": {
+    "bundleBudget": {
+      "category": "small-feature"
+    }
+  },
+  "size-limit": [
+    {
+      "name": "full surface",
+      "path": "dist/index.js",
+      "import": "*",
+      "ignore": [
+        "alpinejs",
+        "@ailuracode/alpine-core",
+        "@ailuracode/alpine-toggle"
+      ],
+      "gzip": true,
+      "brotli": true,
+      "limit": "2.5 kB"
+    }
+  ]
 }

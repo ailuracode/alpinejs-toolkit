@@ -58,5 +58,24 @@
     "toast",
     "sonner",
     "notifications"
+  ],
+  "toolkit": {
+    "bundleBudget": {
+      "category": "complex-feature"
+    }
+  },
+  "size-limit": [
+    {
+      "name": "full surface",
+      "path": "dist/index.js",
+      "import": "*",
+      "ignore": [
+        "alpinejs",
+        "@ailuracode/alpine-core"
+      ],
+      "gzip": true,
+      "brotli": true,
+      "limit": "3.7 kB"
+    }
   ]
 }

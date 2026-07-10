@@ -69,5 +69,24 @@
     "scroll-lock",
     "controller",
     "headless"
+  ],
+  "toolkit": {
+    "bundleBudget": {
+      "category": "infrastructure"
+    }
+  },
+  "size-limit": [
+    {
+      "name": "full surface",
+      "path": "dist/index.js",
+      "import": "*",
+      "ignore": [
+        "alpinejs",
+        "@ailuracode/alpine-core"
+      ],
+      "gzip": true,
+      "brotli": true,
+      "limit": "5.9 kB"
+    }
   ]
 }

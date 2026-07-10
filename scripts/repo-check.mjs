@@ -9,6 +9,13 @@ const REQUIRED_MANIFEST_FIELDS = ["license", "homepage", "exports", "files"];
 const REQUIRED_REPO_FIELDS = ["type", "url", "directory"];
 const REQUIRED_PACKAGE_FILES = ["README.md", "CHANGELOG.md"];
 const REQUIRED_PUBLISH_FILES = ["dist", "README.md"];
+const BUNDLE_BUDGET_CATEGORIES = new Set([
+  "primitive",
+  "infrastructure",
+  "small-feature",
+  "complex-feature",
+  "adapter",
+]);
 
 /**
  * @typedef {object} DiscoveredPackage
@@ -100,6 +107,34 @@ export function publishablePackages(packages) {
 }
 
 /**
+ * @param {DiscoveredPackage} pkg
+ * @returns {Record<string, unknown> | null}
+ */
+function readToolkitMetadata(pkg) {
+  const toolkit = pkg.manifest.toolkit;
+  return toolkit && typeof toolkit === "object" ? toolkit : null;
+}
+
+/**
+ * @param {DiscoveredPackage} pkg
+ * @returns {Record<string, unknown> | null}
+ */
+export function readBundleBudgetMetadata(pkg) {
+  const toolkit = readToolkitMetadata(pkg);
+  const bundleBudget = toolkit?.bundleBudget;
+  return bundleBudget && typeof bundleBudget === "object" ? bundleBudget : null;
+}
+
+/**
+ * @param {DiscoveredPackage} pkg
+ * @returns {unknown[] | null}
+ */
+export function expectedSizeLimitConfig(pkg) {
+  const sizeLimit = pkg.manifest["size-limit"];
+  return Array.isArray(sizeLimit) ? JSON.parse(JSON.stringify(sizeLimit)) : null;
+}
+
+/**
  * @param {string} root
  * @returns {Set<string>}
  */
@@ -158,6 +193,55 @@ function readDocumentedPackageCount(filePath) {
 
 /**
  * @param {DiscoveredPackage[]} packages
+ * @returns {string[]}
+ */
+function validateSizeBudgetPolicyEntry(pkg) {
+  const errors = [];
+  const rule = readBundleBudgetMetadata(pkg);
+
+  if (!rule) {
+    return [`${pkg.name}: package.json missing toolkit.bundleBudget metadata`];
+  }
+
+  if (typeof rule.category !== "string" || !BUNDLE_BUDGET_CATEGORIES.has(rule.category)) {
+    errors.push(`${pkg.name}: bundle budget category must be recognized`);
+  }
+
+  const configPath = path.join(pkg.dir, ".size-limit.json");
+  const relativeConfigPath = `packages/${pkg.folder}/.size-limit.json`;
+
+  if (typeof rule.exclude === "string") {
+    if (existsSync(configPath)) {
+      errors.push(`${pkg.name}: ${relativeConfigPath} must not exist for excluded packages`);
+    }
+
+    if (Array.isArray(pkg.manifest["size-limit"])) {
+      errors.push(`${pkg.name}: package.json size-limit must not exist for excluded packages`);
+    }
+
+    return errors;
+  }
+
+  const expected = expectedSizeLimitConfig(pkg);
+  if (!Array.isArray(expected) || expected.length === 0) {
+    errors.push(`${pkg.name}: package.json must define a non-empty "size-limit" array`);
+    return errors;
+  }
+
+  if (existsSync(configPath)) {
+    errors.push(`${pkg.name}: ${relativeConfigPath} is deprecated; use package.json "size-limit"`);
+  }
+
+  const scripts = pkg.manifest.scripts;
+  if (!scripts || typeof scripts !== "object" || typeof scripts.size !== "string") {
+    errors.push(`${pkg.name}: package.json must include a "size" script`);
+  }
+
+  return errors;
+}
+
+/**
+ * @param {DiscoveredPackage[]} packages
  * @param {string} root
  * @returns {string[]}
  */
@@ -165,27 +249,15 @@ function validateSizeBudgets(packages, root) {
   const errors = [];
 
   if (existsSync(path.join(root, ".size-limit.json"))) {
-    errors.push("Root .size-limit.json is deprecated; use packages/<name>/.size-limit.json");
+    errors.push('Root .size-limit.json is deprecated; use package.json "size-limit"');
   }
 
   for (const pkg of packages) {
-    const configPath = path.join(pkg.dir, ".size-limit.json");
-    if (!existsSync(configPath)) {
-      errors.push(`${pkg.name}: missing packages/${pkg.folder}/.size-limit.json`);
+    if (pkg.isPrivate) {
       continue;
     }
 
-    const entries = JSON.parse(readFileSync(configPath, "utf8"));
-    if (!Array.isArray(entries) || entries.length === 0) {
-      errors.push(
-        `${pkg.name}: packages/${pkg.folder}/.size-limit.json must include at least one budget`
-      );
-    }
-
-    const scripts = pkg.manifest.scripts;
-    if (!scripts || typeof scripts !== "object" || typeof scripts.size !== "string") {
-      errors.push(`${pkg.name}: package.json must include a "size" script`);
-    }
+    errors.push(...validateSizeBudgetPolicyEntry(pkg));
   }
 
   return errors;

@@ -1,4 +1,3 @@
-import { existsSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
@@ -6,6 +5,9 @@ import {
   catalogPackages,
   diffSurface,
   discoverPackages,
+  expectedSizeLimitConfig,
+  publishablePackages,
+  readBundleBudgetMetadata,
   readMarkdownPackageNames,
   runRepoCheck,
 } from "../scripts/repo-check.mjs";
@@ -41,9 +43,27 @@ describe("repo:check", () => {
     expect(readmeNames.has("@ailuracode/alpine-fixture-drift")).toBe(false);
   });
 
-  it("requires every package to own a .size-limit.json budget", () => {
-    const packages = discoverPackages(path.join(root, "packages"));
-    const missing = packages.filter((pkg) => !existsSync(path.join(pkg.dir, ".size-limit.json")));
+  it('requires every public package to define a "size-limit" budget', () => {
+    const packages = publishablePackages(discoverPackages(path.join(root, "packages")));
+    const missing = packages.filter((pkg) => !Array.isArray(pkg.manifest["size-limit"]));
     expect(missing.map((pkg) => pkg.folder)).toEqual([]);
+  });
+
+  it("requires bundle budget metadata on every public package", () => {
+    const packages = publishablePackages(discoverPackages(path.join(root, "packages")));
+
+    for (const pkg of packages) {
+      expect(readBundleBudgetMetadata(pkg)).not.toBeNull();
+    }
+  });
+
+  it('keeps package "size-limit" configs synced with package metadata', () => {
+    const packages = publishablePackages(discoverPackages(path.join(root, "packages")));
+
+    for (const pkg of packages) {
+      const expected = expectedSizeLimitConfig(pkg);
+      expect(expected).not.toBeNull();
+      expect(pkg.manifest["size-limit"]).toEqual(expected);
+    }
   });
 });
