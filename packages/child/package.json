@@ -50,12 +50,13 @@
     "tsup": "^8.5.0"
   },
   "scripts": {
-    "clean": "rm -rf dist",
     "build": "tsup --config tsup.config.ts && cp src/global.d.ts dist/global.d.ts",
-    "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.test.json",
+    "clean": "rm -rf dist",
+    "prepublishOnly": "pnpm run build",
+    "size": "size-limit",
     "test": "vitest run --config ../../vitest.config.ts test",
     "test:watch": "vitest --config ../../vitest.config.ts",
-    "prepublishOnly": "pnpm run build"
+    "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.test.json"
   },
   "keywords": [
     "alpinejs",

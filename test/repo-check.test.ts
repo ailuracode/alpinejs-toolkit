@@ -1,3 +1,4 @@
+import { existsSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
@@ -38,5 +39,11 @@ describe("repo:check", () => {
     const errors = diffSurface(readmeNames, driftedCatalog, "README.md package catalog");
     expect(errors).toContain("README.md package catalog: missing @ailuracode/alpine-fixture-drift");
     expect(readmeNames.has("@ailuracode/alpine-fixture-drift")).toBe(false);
+  });
+
+  it("requires every package to own a .size-limit.json budget", () => {
+    const packages = discoverPackages(path.join(root, "packages"));
+    const missing = packages.filter((pkg) => !existsSync(path.join(pkg.dir, ".size-limit.json")));
+    expect(missing.map((pkg) => pkg.folder)).toEqual([]);
   });
 });

@@ -33,11 +33,12 @@
     }
   },
   "scripts": {
-    "clean": "rm -rf dist",
     "build": "tsup --config tsup.config.ts && cp src/global.d.ts dist/global.d.ts",
-    "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.test.json",
+    "clean": "rm -rf dist",
+    "size": "size-limit",
     "test": "vitest run --config ../../vitest.config.ts test",
-    "test:watch": "vitest --config ../../vitest.config.ts"
+    "test:watch": "vitest --config ../../vitest.config.ts",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.test.json"
   },
   "devDependencies": {
     "@ailuracode/alpine-core": "workspace:*",

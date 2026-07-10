@@ -46,12 +46,13 @@
     "access": "public"
   },
   "scripts": {
-    "clean": "rm -rf dist",
     "build": "tsup --config tsup.config.ts && cp src/global.d.ts dist/global.d.ts",
-    "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.test.json",
+    "clean": "rm -rf dist",
+    "size": "size-limit",
     "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
     "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage"
+    "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.test.json"
   },
   "devDependencies": {
     "@ailuracode/alpine-core": "workspace:*",

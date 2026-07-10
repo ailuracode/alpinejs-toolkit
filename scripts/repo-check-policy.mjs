@@ -11,7 +11,4 @@ export const REPO_CHECK_POLICY = {
 
   /** Packages not required to have tests under packages/<name>/test/. */
   testExcluded: [],
-
-  /** Packages not required to have a .size-limit.json budget entry. */
-  sizeBudgetRequired: ["core", "theme", "toggle", "child"],
 };

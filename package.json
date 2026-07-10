@@ -25,7 +25,7 @@
     "publish:packages": "pnpm run release",
     "dev:demo": "pnpm --filter alpinejs-toolkit-demo dev",
     "build:demo": "pnpm --filter alpinejs-toolkit-demo build",
-    "size": "size-limit",
+    "size": "pnpm -r --if-present run size",
     "size:check": "pnpm run build && pnpm run size"
   },
   "devDependencies": {

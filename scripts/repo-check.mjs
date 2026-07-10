@@ -157,21 +157,38 @@ function readDocumentedPackageCount(filePath) {
 }
 
 /**
+ * @param {DiscoveredPackage[]} packages
  * @param {string} root
- * @returns {Set<string>}
+ * @returns {string[]}
  */
-function readSizeBudgetFolders(root) {
-  const entries = JSON.parse(readFileSync(path.join(root, ".size-limit.json"), "utf8"));
-  const folders = new Set();
+function validateSizeBudgets(packages, root) {
+  const errors = [];
 
-  for (const entry of entries) {
-    const match = typeof entry.path === "string" ? entry.path.match(/^packages\/([^/]+)\//) : null;
-    if (match) {
-      folders.add(match[1]);
+  if (existsSync(path.join(root, ".size-limit.json"))) {
+    errors.push("Root .size-limit.json is deprecated; use packages/<name>/.size-limit.json");
+  }
+
+  for (const pkg of packages) {
+    const configPath = path.join(pkg.dir, ".size-limit.json");
+    if (!existsSync(configPath)) {
+      errors.push(`${pkg.name}: missing packages/${pkg.folder}/.size-limit.json`);
+      continue;
+    }
+
+    const entries = JSON.parse(readFileSync(configPath, "utf8"));
+    if (!Array.isArray(entries) || entries.length === 0) {
+      errors.push(
+        `${pkg.name}: packages/${pkg.folder}/.size-limit.json must include at least one budget`
+      );
+    }
+
+    const scripts = pkg.manifest.scripts;
+    if (!scripts || typeof scripts !== "object" || typeof scripts.size !== "string") {
+      errors.push(`${pkg.name}: package.json must include a "size" script`);
     }
   }
 
-  return folders;
+  return errors;
 }
 
 /**
@@ -467,30 +484,6 @@ function validateDocumentedCounts(root, catalogCount) {
 }
 
 /**
- * @param {string} root
- * @returns {string[]}
- */
-function validateSizeBudgets(root) {
-  const errors = [];
-  const sizeBudgetFolders = readSizeBudgetFolders(root);
-  const sizeRequired = new Set(REPO_CHECK_POLICY.sizeBudgetRequired);
-
-  for (const folder of sizeRequired) {
-    if (!sizeBudgetFolders.has(folder)) {
-      errors.push(`.size-limit.json: missing budget for packages/${folder}`);
-    }
-  }
-
-  for (const folder of sizeBudgetFolders) {
-    if (!sizeRequired.has(folder)) {
-      errors.push(`.size-limit.json: unexpected budget for packages/${folder}`);
-    }
-  }
-
-  return errors;
-}
-
-/**
  * @param {DiscoveredPackage[]} packages
  * @returns {string[]}
  */
@@ -549,7 +542,7 @@ export function runRepoCheck(options = {}) {
   errors.push(
     ...validateRepositorySurfaces(root, packages, catalog, demo),
     ...validateDocumentedCounts(root, catalog.length),
-    ...validateSizeBudgets(root),
+    ...validateSizeBudgets(packages, root),
     ...validatePackageTests(packages),
     ...validateTooling(root, publishable)
   );
