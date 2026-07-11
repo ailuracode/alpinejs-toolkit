@@ -292,37 +292,46 @@ export class CalendarController extends BaseController<CalendarEvents> {
   toStore(): CalendarInstance {
     const self = this;
 
-    return {
-      get month() {
-        return self.month;
+    const store = {
+      month: self.month,
+      mode: self.mode,
+      selected: self.selected,
+      locale: self.locale,
+      weekStartsOn: self.weekStartsOn,
+      dateFns: self.dateFns,
+      weeks: self.weeks,
+      weekdayLabels: self.weekdayLabels,
+
+      prevMonth() {
+        self.prevMonth();
+        store.month = self.month;
+        store.weeks = self.weeks;
       },
-      get mode() {
-        return self.mode;
+      nextMonth() {
+        self.nextMonth();
+        store.month = self.month;
+        store.weeks = self.weeks;
       },
-      get selected() {
-        return self.selected;
+      goToMonth(date: Date) {
+        self.goToMonth(date);
+        store.month = self.month;
+        store.weeks = self.weeks;
       },
-      get locale() {
-        return self.locale;
+      goToToday() {
+        self.goToToday();
+        store.month = self.month;
+        store.weeks = self.weeks;
       },
-      get weekStartsOn() {
-        return self.weekStartsOn;
+      select(date: Date | null) {
+        self.select(date);
+        store.selected = self.selected;
+        store.weeks = self.weeks;
       },
-      get dateFns() {
-        return self.dateFns;
+      clear() {
+        self.clear();
+        store.selected = self.selected;
+        store.weeks = self.weeks;
       },
-      get weeks() {
-        return self.weeks;
-      },
-      get weekdayLabels() {
-        return self.weekdayLabels;
-      },
-      prevMonth: () => self.prevMonth(),
-      nextMonth: () => self.nextMonth(),
-      goToMonth: (date: Date) => self.goToMonth(date),
-      goToToday: () => self.goToToday(),
-      select: (date: Date | null) => self.select(date),
-      clear: () => self.clear(),
       matches: (date: Date, matcher) => self.matches(date, matcher),
       isSelected: (date: Date) => self.isSelected(date),
       isDisabled: (date: Date) => self.isDisabled(date),
@@ -334,7 +343,9 @@ export class CalendarController extends BaseController<CalendarEvents> {
       format: (date: Date, pattern: string) => self.format(date, pattern),
       formatMonth: (month?: Date) => self.formatMonth(month),
       formatYear: (month?: Date) => self.formatYear(month),
-    };
+    } satisfies CalendarInstance;
+
+    return store;
   }
 
   // ── Internals ────────────────────────────────────────────────────

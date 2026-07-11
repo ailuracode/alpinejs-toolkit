@@ -414,6 +414,33 @@ describe("CalendarController", () => {
       expect(store.isSelected(new Date(2024, 1, 5))).toBe(true);
     });
 
+    it("syncs own properties after mutations (Alpine.reactive compatibility)", () => {
+      const controller = createCalendarController({ month: JAN_2024 });
+      const store = controller.toStore();
+
+      const monthDesc = Object.getOwnPropertyDescriptor(store, "month");
+      expect(monthDesc?.writable).toBe(true);
+      expect(monthDesc?.value).toBeInstanceOf(Date);
+
+      store.nextMonth();
+      expect(store.month.getMonth()).toBe(1);
+
+      store.prevMonth();
+      expect(store.month.getMonth()).toBe(0);
+
+      store.goToMonth(FEB_2024);
+      expect(store.month.getMonth()).toBe(1);
+
+      store.goToToday();
+      expect(store.month.getMonth()).toBe(new Date().getMonth());
+
+      store.select(new Date(2024, 0, 5));
+      expect(store.selected).toBeInstanceOf(Date);
+
+      store.clear();
+      expect(store.selected).toBeNull();
+    });
+
     it("creates independent instances", () => {
       const first = createCalendarController({ month: JAN_2024 });
       const second = createCalendarController({ month: FEB_2024 });
