@@ -13,6 +13,7 @@ Encapsulate mutable state in headless UI controllers (`menu`, `dialog`, `tooltip
 - `MenuController` no longer accepts an external `instances` record in its constructor or command methods.
 - `Controller.toStore()` was removed. Use `createMenuStore()`, `createDialogStore()`, `createTooltipStore()`, or `createCarouselStore()` — or the new `create*StoreFromController()` helpers when wiring a custom adapter.
 - Alpine plugins now mirror controller snapshots into `$store.*.instances` through typed `change` events. Template bindings on `$store.*.instances[id]` continue to work; direct mutation of store snapshots does not change controller state.
+- README and `docs/plugins/*` pages document architecture, standalone usage, and migration for all four packages.
 
 ### Standalone usage
 

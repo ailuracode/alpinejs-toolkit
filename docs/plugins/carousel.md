@@ -46,7 +46,7 @@ Alpine.start();
 
 ### Reactive state
 
-Bind templates to `$store.carousel.instances[id]`:
+Bind templates to `$store.carousel.instances[id]`. Each entry is a **reactive mirror** of controller state (updated on `change` and `slideChange`). Use store commands to mutate; direct writes to `instances[id]` do not affect the controller.
 
 | Property | Description |
 |----------|-------------|
@@ -59,6 +59,42 @@ Bind templates to `$store.carousel.instances[id]`:
 | `slidesInView` | Indices of slides in view |
 
 Convenience accessors mirror the reactive fields: `current(id)`, `count(id)`, etc.
+
+## Architecture
+
+`CarouselController` owns all mutable state and Embla instances. The Alpine plugin mirrors snapshots into `$store.carousel.instances`.
+
+## Standalone usage (no Alpine)
+
+```ts
+import {
+  createCarouselController,
+  createCarouselStore,
+  createCarouselStoreFromController,
+} from "@ailuracode/alpine-carousel";
+
+const controller = createCarouselController();
+controller.create("gallery", { loop: true });
+controller.bindViewport("gallery", viewportEl);
+
+const store = createCarouselStore();
+// or: createCarouselStoreFromController(controller)
+```
+
+| Controller API | Description |
+|----------------|-------------|
+| `hasInstance(id)` | Whether a carousel id is registered |
+| `snapshotInstances()` | Shallow readonly copies for adapter sync |
+| `current(id)` / `count(id)` / `isPlaying(id)` | Query methods |
+
+Subscribe to `controller.on("change", …)` and `controller.on("slideChange", …)` for adapter sync.
+
+## Migration
+
+| Removed / changed | Replacement |
+|-------------------|-------------|
+| `controller.instances` getter | `snapshotInstances()` or `hasInstance(id)` |
+| `controller.toStore()` | `createCarouselStore()` or `createCarouselStoreFromController(controller)` |
 
 ## Configuration
 

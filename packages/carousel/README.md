@@ -68,11 +68,49 @@ Embla expects the **viewport** element (overflow hidden) with a **container** ch
 
 ### Reactive state
 
-Each instance in `$store.carousel.instances[id]` exposes:
+Each entry in `$store.carousel.instances[id]` is a **reactive mirror** of controller state (updated on `change` and `slideChange`). Use store commands to mutate; direct writes to `instances[id]` do not affect the controller.
+
+Exposed fields:
 
 - `currentIndex`, `totalSlides`, `progress`
 - `isFirst`, `isLast`, `isPlaying`
 - `canNext`, `canPrevious`, `slidesInView`
+
+## Standalone usage (no Alpine)
+
+```ts
+import {
+  createCarouselController,
+  createCarouselStore,
+  createCarouselStoreFromController,
+} from "@ailuracode/alpine-carousel";
+
+const controller = createCarouselController();
+controller.create("gallery", { loop: true });
+controller.current("gallery"); // 0
+
+const store = createCarouselStore();
+// or: createCarouselStoreFromController(controller)
+```
+
+| Controller API | Description |
+|----------------|-------------|
+| `hasInstance(id)` | Whether a carousel id is registered |
+| `snapshotInstances()` | Shallow readonly copies for adapter sync |
+| `current(id)` / `count(id)` / `isPlaying(id)` | Query methods |
+
+Subscribe to `controller.on("change", …)` and `controller.on("slideChange", …)` for adapter sync.
+
+## Architecture
+
+`CarouselController` owns all mutable state and the Embla instances. The Alpine plugin mirrors snapshots into `$store.carousel.instances`.
+
+## Migration
+
+| Removed / changed | Replacement |
+|-------------------|-------------|
+| `controller.instances` getter | `snapshotInstances()` or `hasInstance(id)` |
+| `controller.toStore()` | `createCarouselStore()` or `createCarouselStoreFromController(controller)` |
 
 ## Options
 
