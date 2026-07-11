@@ -94,3 +94,20 @@ The plugin re-acquires the wake lock when the tab becomes visible again if you p
 - Wake locks are released automatically when the tab is hidden; the plugin re-requests them on return when appropriate
 - Browser support is limited — always check `isSupported` before calling actions
 - Read-only environment state with imperative methods — no store, no persistence
+
+## Unified permissions adapter
+
+Idle-detection permission is also available through `@ailuracode/alpine-permissions`:
+
+```ts
+import { permissionsPlugin } from "@ailuracode/alpine-permissions";
+import { createIdlePermissionAdapter } from "@ailuracode/alpine-attention";
+
+Alpine.plugin(
+  permissionsPlugin({
+    adapters: [createIdlePermissionAdapter()],
+  })
+);
+```
+
+Registry key: `idle-detection`. `IdleController` uses the same adapter internally. See [permissions.md](./permissions.md).

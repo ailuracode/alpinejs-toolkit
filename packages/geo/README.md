@@ -41,6 +41,19 @@ Alpine.start();
 | **Actions** | `request()`, `watch()`, `unwatch()`, `reset()` |
 | **Getters** | `hasPosition`, `isSupported`, `isWatching`, `isLoading`, `hasError` |
 
+## Permission adapter
+
+For the unified registry in `@ailuracode/alpine-permissions`:
+
+```ts
+import { createGeoPermissionAdapter } from "@ailuracode/alpine-geo";
+
+createGeoPermissionAdapter();
+// registry key: "geolocation"
+```
+
+See [`@ailuracode/alpine-permissions`](../permissions/README.md).
+
 ## License
 
 MIT

@@ -8,6 +8,10 @@ const plugin = getPluginNavItem("permissions")!;
 ---
 
 <DemoSection id={plugin.id} title={plugin.title} api={plugin.api} description={plugin.description}>
+	<p class="text-sm text-muted-foreground mb-4">
+		Snapshots sync on load via <code>query()</code> and <code>watch()</code> — no prompts until you call <code>request()</code>.
+		Bind to <code>$permissions.registry[name]</code> for reactive updates.
+	</p>
 	<div class="space-y-4 text-sm">
 		<template x-for="name in ['notifications', 'geolocation', 'idle-detection']" :key="name">
 			<div class="rounded-md border border-border p-3">

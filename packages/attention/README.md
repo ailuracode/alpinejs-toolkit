@@ -43,6 +43,19 @@ Alpine.start();
 | **Wake lock** | `isSupported`, `isActive`, `isRequesting`, `request()`, `release()` |
 | **Idle** | `isSupported`, `isWatching`, `userState`, `screenState`, `requestPermission()`, `start()`, `stop()` |
 
+## Permission adapter
+
+For the unified registry in `@ailuracode/alpine-permissions`:
+
+```ts
+import { createIdlePermissionAdapter } from "@ailuracode/alpine-attention";
+
+createIdlePermissionAdapter();
+// registry key: "idle-detection"
+```
+
+`IdleController` uses the same adapter internally. See [`@ailuracode/alpine-permissions`](../permissions/README.md).
+
 ## License
 
 MIT

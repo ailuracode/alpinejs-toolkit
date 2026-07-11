@@ -150,6 +150,23 @@ The plugin does not render UI, manage toast stacks, or persist preferences. Use 
 
 Always check `isSupported`, `requiresHomeScreenInstall`, and `permission` before showing permission prompts or assuming notifications will appear.
 
+## Unified permissions adapter
+
+Register with `@ailuracode/alpine-permissions` for a normalized snapshot across capabilities:
+
+```ts
+import { permissionsPlugin } from "@ailuracode/alpine-permissions";
+import { createNotificationPermissionAdapter } from "@ailuracode/alpine-notify";
+
+Alpine.plugin(
+  permissionsPlugin({
+    adapters: [createNotificationPermissionAdapter()],
+  })
+);
+```
+
+Registry key: `notifications`. See [permissions.md](./permissions.md).
+
 ## TypeScript
 
 ```ts

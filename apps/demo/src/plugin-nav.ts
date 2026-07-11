@@ -42,7 +42,7 @@ export const PLUGIN_NAV_GROUPS: PluginNavGroup[] = [
         kind: "store",
         tier: "essential",
         description:
-          "Unified browser permission registry with adapter contract. Feature packages export capability-specific adapters for notifications, geolocation, and idle detection without duplicating permission state.",
+          "Unified browser permission registry with adapter contract. Queries current permission on init (no prompts); use request() from a user action to prompt.",
       },
     ],
   },

@@ -2,6 +2,8 @@
 
 Framework-agnostic browser permission registry with a typed adapter contract.
 
+**[Full documentation →](../../docs/plugins/permissions.md)**
+
 ## Install
 
 ```bash
@@ -33,16 +35,38 @@ Alpine.start();
 ```
 
 ```html
-<button @click="await $permissions.request('notifications')">
+<button
+  x-show="$permissions.registry.notifications?.canRequest"
+  @click="await $permissions.request('notifications')"
+>
   Enable notifications
 </button>
-<p x-text="$permissions.get('notifications')?.permission"></p>
+<p x-text="$permissions.registry.notifications?.permission"></p>
 ```
+
+On plugin registration the registry **queries** current browser permission for each adapter and starts **watching** revocations. Native prompts are never shown automatically.
+
+## Store / magic API
+
+`permissionsPlugin()` registers `$store.permissions` and `$permissions` (same reactive object).
+
+| Member | Description |
+|--------|-------------|
+| `registry` | Readonly map of capability name → `PermissionSnapshot` |
+| `get(name)` | Same as `registry[name]` |
+| `query(name)` | Refresh permission from the browser (no prompt) |
+| `request(name, options?)` | Request permission when `canRequest` is true |
+| `refresh(name)` | Alias for `query(name)` |
+| `watch(name)` | Subscribe to `PermissionStatus.change` when supported |
+| `register(adapter)` | Register an adapter at runtime |
+
+Bind templates to **`$permissions.registry.<name>`** so Alpine re-renders when snapshots change.
 
 ## Controller API
 
 ```ts
 import { createPermissions } from "@ailuracode/alpine-permissions";
+import { createGeoPermissionAdapter } from "@ailuracode/alpine-geo";
 
 const permissions = createPermissions();
 const dispose = permissions.register(createGeoPermissionAdapter());
@@ -55,22 +79,21 @@ dispose();
 permissions.destroy();
 ```
 
-## Store / magic API
+## Feature adapters
 
-`permissionsPlugin()` registers:
-
-- `$store.permissions`
-- `$permissions`
-
-Both expose readonly snapshots plus `query()`, `request()`, `refresh()`, `watch()`, and `register()`.
+| Package | Factory | Permission name |
+|---------|---------|-----------------|
+| `@ailuracode/alpine-notify` | `createNotificationPermissionAdapter(options?)` | `notifications` |
+| `@ailuracode/alpine-geo` | `createGeoPermissionAdapter()` | `geolocation` |
+| `@ailuracode/alpine-attention` | `createIdlePermissionAdapter()` | `idle-detection` |
 
 ## UX policy
 
 - Never request permission during plugin registration or controller mount.
-- Trigger requests only from explicit user actions.
+- `query()` and `watch()` run on plugin init — they do not prompt.
+- Trigger `request()` only from explicit user actions.
 - Do not re-request permissions already reported as denied.
 - Distinguish unsupported APIs, insecure contexts, policy blocks, and platform restrictions.
-- Keep the app functional when permission is unavailable.
 
 ## License
 

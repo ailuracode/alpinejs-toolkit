@@ -105,3 +105,18 @@ All actions accept optional [PositionOptions](https://developer.mozilla.org/en-U
 - `request()` and `watch()` share the same reactive state; a successful update clears the previous error
 - `reset()` clears stored coordinates but does not stop an active watch — call `unwatch()` first if needed
 - Read-only environment access is not exposed as a magic; use the store for shared state and actions across components
+
+## Unified permissions adapter
+
+```ts
+import { permissionsPlugin } from "@ailuracode/alpine-permissions";
+import { createGeoPermissionAdapter } from "@ailuracode/alpine-geo";
+
+Alpine.plugin(
+  permissionsPlugin({
+    adapters: [createGeoPermissionAdapter()],
+  })
+);
+```
+
+Registry key: `geolocation`. See [permissions.md](./permissions.md).
