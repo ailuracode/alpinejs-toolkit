@@ -3,14 +3,16 @@
  *
  * Kept side-effect free so the controller constructor and tests can
  * call them without touching `window` / `document` / `matchMedia`.
- * Mirrors the structure of `@ailuracode/alpine-theme`'s
- * `internal/validation` module — pure logic under `internal/`,
- * public surface in `controller.ts`.
+ *
+ * Lives at the package root (rather than under `internal/`) because
+ * `resolveMediaBreakpoint` is part of the documented public surface —
+ * SSR consumers call it directly to build viewport snapshots without
+ * booting the controller.
  */
 
 import { ToolkitError } from "@ailuracode/alpine-core";
-import type { MediaInterval, MediaSnapshot } from "../types";
-import { DEFAULT_MEDIA_INTERVALS, SSR_MEDIA_DEFAULTS } from "../types";
+import type { MediaInterval, MediaSnapshot } from "./types";
+import { DEFAULT_MEDIA_INTERVALS, SSR_MEDIA_DEFAULTS } from "./types";
 
 /**
  * Resolves which interval a width falls into (smallest-first priority).

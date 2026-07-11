@@ -4,7 +4,7 @@
  * SSR contract is uniform across every package in this monorepo.
  */
 
-import { typeIs, valueIf } from "../core/utils";
+import { typeIs, valueIf } from "./core/utils";
 
 /** Returns `true` when the current runtime exposes `window` and `document`. */
 export const isBrowser = () => {

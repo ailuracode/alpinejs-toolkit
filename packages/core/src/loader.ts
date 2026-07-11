@@ -9,9 +9,9 @@
  * event stream.
  */
 import type { PluginCallback } from "alpinejs";
-import { ToolkitError } from "../core/error";
-import type { PluginLoader } from "../types";
+import { ToolkitError } from "./core/error";
 import { emitLoadError } from "./registry";
+import type { PluginLoader } from "./types";
 
 /**
  * Public error thrown when a plugin loader cannot be resolved.

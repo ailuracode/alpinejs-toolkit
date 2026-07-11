@@ -8,9 +8,9 @@
  *   common case where every plugin has been pre-resolved at registration time.
  */
 import type { Alpine } from "alpinejs";
-import type { PluginRegistryEntry } from "../types";
 import { resolvePluginLoader, resolvePluginLoaderSync } from "./loader";
 import { markPluginInitialized, resolvePluginEntries } from "./registry";
+import type { PluginRegistryEntry } from "./types";
 
 async function initializeEntry(Alpine: Alpine, entry: PluginRegistryEntry): Promise<void> {
   if (entry.initialized) {

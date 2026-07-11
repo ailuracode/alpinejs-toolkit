@@ -3,7 +3,7 @@
  *
  * Per `.cursor/rules/new-package.mdc`, this file
  * MUST only contain re-exports. Implementations live under
- * `./controller`, `./plugin`, `./events`, and `./internal/` so the
+ * `./controller`, `./plugin`, `./events`, and `./language-tag` so the
  * public surface is easy to audit and the package stays
  * tree-shakeable (each export resolves to a single named binding).
  *
@@ -19,8 +19,8 @@
 export { createLang, LangController } from "./controller";
 // --- Events --------------------------------------------------------------
 export type { LangEvents, LangListener } from "./events";
-// --- Pure helpers (re-exported from internal/) --------------------------
-export { normalizeLanguageTag, parseLanguageTag } from "./internal/language-tag";
+// --- Pure language-tag helpers ------------------------------------------
+export { normalizeLanguageTag, parseLanguageTag } from "./language-tag";
 // --- Alpine integration --------------------------------------------------
 export { createLangStore, langPlugin, langPlugin as default } from "./plugin";
 

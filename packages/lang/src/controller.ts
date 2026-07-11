@@ -34,7 +34,7 @@ import {
   generateId,
 } from "@ailuracode/alpine-core";
 import type { LangEvents } from "./events";
-import { normalizeLanguageTag, parseLanguageTag } from "./internal/language-tag";
+import { normalizeLanguageTag, parseLanguageTag } from "./language-tag";
 import type {
   CreateLangOptions,
   LangChangeDetail,

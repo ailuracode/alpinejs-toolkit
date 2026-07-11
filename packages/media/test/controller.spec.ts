@@ -8,6 +8,7 @@
 import assert from "node:assert/strict";
 import { ToolkitError } from "@ailuracode/alpine-core";
 import { afterEach, beforeEach, describe, expect, expectTypeOf, it, vi } from "vitest";
+import { readMediaSnapshot } from "../src/breakpoint";
 import {
   createMedia,
   DEFAULT_MEDIA_INTERVALS,
@@ -20,7 +21,6 @@ import {
   resolveMediaBreakpoint,
   SSR_MEDIA_DEFAULTS,
 } from "../src/index";
-import { readMediaSnapshot } from "../src/internal/breakpoint";
 import { setMatchMedia } from "./setup";
 
 describe("MediaController — initial state", () => {
