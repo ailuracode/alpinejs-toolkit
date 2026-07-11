@@ -594,6 +594,70 @@ function validateTooling(root, publishable) {
 }
 
 /**
+ * Validate dependency direction boundaries for infrastructure packages.
+ * Packages listed in REPO_CHECK_POLICY.depBoundaries must not import
+ * higher-level `@ailuracode/alpine-*` packages via source imports.
+ *
+ * @param {string} root
+ * @returns {string[]}
+ */
+function validateDepBoundaries(root) {
+  const boundaries = REPO_CHECK_POLICY.depBoundaries;
+  if (!boundaries) {
+    return [];
+  }
+
+  const errors = [];
+  const packagesDir = path.join(root, "packages");
+
+  for (const [folder, allowed] of Object.entries(boundaries)) {
+    const srcDir = path.join(packagesDir, folder, "src");
+    if (!existsSync(srcDir)) {
+      continue;
+    }
+
+    /** @type {string[]} */
+    const imports = [];
+    readDirRecursive(srcDir, (filePath) => {
+      if (!(filePath.endsWith(".ts") || filePath.endsWith(".mjs"))) {
+        return;
+      }
+      const source = readFileSync(filePath, "utf8");
+      for (const match of source.matchAll(/from\s+["'](@ailuracode\/alpine-[^"']+)["']/g)) {
+        imports.push(match[1]);
+      }
+    });
+
+    const disallowed = imports.filter(
+      (imp) => !(allowed.includes(imp) || imp.startsWith(`${SCOPE}ui/`))
+    );
+
+    if (disallowed.length > 0) {
+      errors.push(
+        `packages/${folder}: imports disallowed toolkit packages: [${[...new Set(disallowed)].join(", ")}]`
+      );
+    }
+  }
+
+  return errors;
+}
+
+/**
+ * @param {string} dir
+ * @param {(filePath: string) => void} visit
+ */
+function readDirRecursive(dir, visit) {
+  for (const entry of readdirSync(dir, { withFileTypes: true })) {
+    const fullPath = path.join(dir, entry.name);
+    if (entry.isDirectory()) {
+      readDirRecursive(fullPath, visit);
+    } else {
+      visit(fullPath);
+    }
+  }
+}
+
+/**
  * @param {RepoCheckOptions} [options]
  * @returns {RepoCheckResult}
  */
@@ -616,7 +680,8 @@ export function runRepoCheck(options = {}) {
     ...validateDocumentedCounts(root, catalog.length),
     ...validateSizeBudgets(packages, root),
     ...validatePackageTests(packages),
-    ...validateTooling(root, publishable)
+    ...validateTooling(root, publishable),
+    ...validateDepBoundaries(root)
   );
 
   return {
