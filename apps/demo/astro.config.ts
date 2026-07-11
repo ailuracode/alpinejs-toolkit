@@ -9,6 +9,13 @@ import { pluginDocsSidebarItems } from "./src/plugin-nav.ts";
 const root = fileURLToPath(new URL(".", import.meta.url));
 const pkg = (name: string) => `${root}../../packages/${name}/src/index.ts`;
 
+const site =
+  process.env.VERCEL_ENV === "production"
+    ? "https://alpine-demo-ten.vercel.app"
+    : process.env.VERCEL_URL
+      ? `https://${process.env.VERCEL_URL}`
+      : "https://alpine-demo-ten.vercel.app";
+
 const sidebar = [
   {
     label: "Playground",
@@ -76,7 +83,7 @@ const sidebar = [
 
 // https://astro.build/config
 export default defineConfig({
-  site: "https://alpine-demo-ten.vercel.app",
+  site,
   integrations: [
     starlight({
       title: {
