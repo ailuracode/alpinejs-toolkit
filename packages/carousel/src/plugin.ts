@@ -6,14 +6,9 @@
  */
 
 import type { Alpine } from "alpinejs";
-import { CarouselController } from "./controller";
-import type {
-  CarouselAlpine,
-  CarouselInstance,
-  CarouselPluginCallback,
-  CarouselStore,
-  CreateCarouselOptions,
-} from "./types";
+import { CarouselController } from "./controller.js";
+import { createCarouselStoreFromController, syncInstanceRegistry } from "./store.js";
+import type { CarouselAlpine, CarouselPluginCallback, CreateCarouselOptions } from "./types.js";
 
 /** Key under which the carousel store is registered on `$store`. */
 const CAROUSEL_STORE_KEY = "carousel";
@@ -28,50 +23,40 @@ export function carouselPlugin(options: CreateCarouselOptions = {}): CarouselPlu
     const Alpine = alpine as unknown as CarouselAlpine;
     const controller = new CarouselController(options.id);
 
-    // Build a mutable store object that delegates to the controller.
-    // `instances` is a plain object — Alpine's reactive proxy will detect
-    // mutations to its nested properties.
-    const store: CarouselStore = {
-      instances: controller.instances as Record<string, CarouselInstance>,
-      create: (id, opts) => controller.create(id, opts),
-      destroy: (id) => controller.destroy(id),
-      bindViewport: (id, viewport) => controller.bindViewport(id, viewport),
-      next: (id) => controller.next(id),
-      previous: (id) => controller.previous(id),
-      goTo: (id, index) => controller.goTo(id, index),
-      current: (id) => controller.current(id),
-      count: (id) => controller.count(id),
-      canNext: (id) => controller.canNext(id),
-      canPrevious: (id) => controller.canPrevious(id),
-      play: (id) => controller.play(id),
-      pause: (id) => controller.pause(id),
-      isPlaying: (id) => controller.isPlaying(id),
-      instance: (id) => controller.instance(id),
-      handleKeydown: (id, event) => controller.handleKeydown(id, event),
-      carouselProps: (id, opts) => controller.carouselProps(id, opts),
-      viewportProps: (id, opts) => controller.viewportProps(id, opts),
-      slideProps: (id, index) => controller.slideProps(id, index),
-      indicatorProps: (id, index) => controller.indicatorProps(id, index),
-      destroyAll: () => controller.destroyAll(),
-    };
-
+    const store = createCarouselStoreFromController(controller);
     Alpine.store(CAROUSEL_STORE_KEY, store);
     const reactiveStore = Alpine.store(CAROUSEL_STORE_KEY);
 
-    // Sync controller state into the reactive store on every slide change.
-    // Alpine's reactive proxy detects mutations to the nested `instances`
-    // object, so replacing its properties triggers re-renders.
-    controller.on("slideChange", () => {
-      const controllerInstances = controller.instances;
-      for (const key of Object.keys(controllerInstances)) {
-        reactiveStore.instances[key] = controllerInstances[key];
-      }
-      for (const key of Object.keys(reactiveStore.instances)) {
-        if (!(key in controllerInstances)) {
-          delete reactiveStore.instances[key];
-        }
-      }
-    });
+    const syncReactiveInstances = () => {
+      syncInstanceRegistry(reactiveStore.instances, controller.snapshotInstances());
+    };
+
+    reactiveStore.current = (id) => reactiveStore.instances[id]?.currentIndex ?? 0;
+    reactiveStore.count = (id) => reactiveStore.instances[id]?.totalSlides ?? 0;
+    reactiveStore.canNext = (id) => reactiveStore.instances[id]?.canNext ?? false;
+    reactiveStore.canPrevious = (id) => reactiveStore.instances[id]?.canPrevious ?? false;
+    reactiveStore.isPlaying = (id) => reactiveStore.instances[id]?.isPlaying ?? false;
+    reactiveStore.slideProps = (id, index) => {
+      const current = reactiveStore.current(id);
+      const total = reactiveStore.count(id);
+      return {
+        role: "group",
+        "aria-roledescription": "slide",
+        "aria-label": `${index + 1} of ${total}`,
+        "aria-hidden": current !== index ? true : undefined,
+      };
+    };
+    reactiveStore.indicatorProps = (id, index) => {
+      const selected = reactiveStore.current(id) === index;
+      return {
+        type: "button",
+        "aria-label": `Go to slide ${index + 1}`,
+        "aria-current": selected ? "true" : undefined,
+      };
+    };
+
+    controller.on("change", syncReactiveInstances);
+    controller.on("slideChange", syncReactiveInstances);
 
     Alpine.magic(CAROUSEL_STORE_KEY, () => reactiveStore);
 

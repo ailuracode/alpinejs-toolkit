@@ -11,10 +11,16 @@ export interface CarouselSlideChangeDetail {
   readonly totalSlides: number;
 }
 
+/** Detail payload for the `change` event (adapter sync). */
+export interface CarouselChangeDetail {
+  readonly carouselId?: string;
+}
+
 /**
  * Event map for carousel state changes. Emits `slideChange` on
- * every slide transition so consumers can react programmatically.
+ * every slide transition and `change` when instance state updates.
  */
 export interface CarouselEvents extends Record<string, unknown> {
   slideChange: CarouselSlideChangeDetail;
+  change: CarouselChangeDetail;
 }

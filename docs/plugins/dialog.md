@@ -60,6 +60,40 @@ dialog({
 | `scrollLock` | `true` | Lock shared scroll store while open when `scroll` is configured |
 | `onOpen` / `onClose` | — | Lifecycle callbacks |
 
+## Architecture
+
+`DialogController` owns all mutable dialog state. The Alpine plugin mirrors **readonly snapshots** into `$store.dialog.instances` on `open`, `close`, and `change` events. Mutating store snapshots directly does not change controller state.
+
+## Standalone usage (no Alpine)
+
+```ts
+import {
+  createDialogController,
+  createDialogStore,
+  createDialogStoreFromController,
+} from "@ailuracode/alpine-dialog";
+
+const controller = createDialogController({ scrollLock: true });
+controller.register("settings");
+controller.open("settings");
+
+const store = createDialogStore();
+// or: createDialogStoreFromController(controller)
+```
+
+| Controller API | Description |
+|----------------|-------------|
+| `hasInstance(id)` | Whether a dialog id is registered |
+| `snapshotInstances()` | Shallow readonly copies for adapter sync |
+| `isOpen(id)` | Query open state |
+
+## Migration
+
+| Removed / changed | Replacement |
+|-------------------|-------------|
+| `controller.instances` getter | `snapshotInstances()` or `hasInstance(id)` |
+| `controller.toStore()` | `createDialogStore()` or `createDialogStoreFromController(controller)` |
+
 ## Basic markup
 
 ```html

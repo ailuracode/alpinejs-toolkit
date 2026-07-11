@@ -74,3 +74,24 @@ controller.isOpen("my-dialog"); // true
 controller.close("my-dialog");
 controller.destroy();
 ```
+
+Use `createDialogStore()` for a store-shaped object without Alpine, or `createDialogStoreFromController(controller)` when wiring a custom adapter.
+
+| Controller API | Description |
+|----------------|-------------|
+| `hasInstance(id)` | Whether a dialog id is registered |
+| `snapshotInstances()` | Shallow readonly copies for adapter sync |
+| `isOpen(id)` | Query open state |
+
+The controller emits `open`, `close`, and `change` events. The Alpine plugin mirrors snapshots into `$store.dialog.instances`.
+
+## Architecture
+
+`DialogController` owns all mutable state. `$store.dialog.instances` is a reactive mirror updated on `open`, `close`, and `change`. Mutating store snapshots directly does not change controller state.
+
+## Migration
+
+| Removed / changed | Replacement |
+|-------------------|-------------|
+| `controller.instances` getter | `snapshotInstances()` or `hasInstance(id)` |
+| `controller.toStore()` | `createDialogStore()` or `createDialogStoreFromController(controller)` |

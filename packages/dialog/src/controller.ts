@@ -16,7 +16,6 @@ import type {
   DialogInstance,
   DialogInstanceOptions,
   DialogOpenOptions,
-  DialogStore,
   DialogStoreConfig,
 } from "./types";
 
@@ -33,6 +32,10 @@ function createInstance(options: DialogInstanceOptions = {}): DialogInstance {
     onOpen: options.onOpen,
     onClose: options.onClose,
   };
+}
+
+function snapshotDialogInstance(instance: DialogInstance): DialogInstance {
+  return { ...instance };
 }
 
 /**
@@ -58,8 +61,21 @@ export class DialogController extends BaseController<DialogEvents> {
     this.#scroll = config.scroll;
   }
 
-  get instances(): Readonly<Record<string, DialogInstance>> {
-    return this.#instances;
+  /** Whether a dialog instance is registered. */
+  hasInstance(id: string): boolean {
+    return id in this.#instances;
+  }
+
+  /**
+   * Returns a shallow snapshot of all instances for adapter sync.
+   * Mutating the returned objects does not affect controller state.
+   */
+  snapshotInstances(): Record<string, DialogInstance> {
+    const result: Record<string, DialogInstance> = {};
+    for (const [id, instance] of Object.entries(this.#instances)) {
+      result[id] = snapshotDialogInstance(instance);
+    }
+    return result;
   }
 
   register(id: string, options: DialogInstanceOptions = {}): void {
@@ -67,6 +83,7 @@ export class DialogController extends BaseController<DialogEvents> {
       return;
     }
     this.#instances[id] = createInstance(options);
+    this.#notifyChange(id);
   }
 
   unregister(id: string): void {
@@ -78,6 +95,7 @@ export class DialogController extends BaseController<DialogEvents> {
     }
     delete this.#instances[id];
     this.#deactivateTrap(id);
+    this.#notifyChange(id);
   }
 
   open(id: string, options: DialogOpenOptions = {}, source: DialogChangeSource = "user"): void {
@@ -108,6 +126,7 @@ export class DialogController extends BaseController<DialogEvents> {
     instance.onOpen?.();
 
     this.emit("open", { instanceId: id, source });
+    this.#notifyChange(id);
   }
 
   close(id: string, source: DialogChangeSource = "user"): void {
@@ -129,6 +148,7 @@ export class DialogController extends BaseController<DialogEvents> {
     instance.onClose?.();
 
     this.emit("close", { instanceId: id, source });
+    this.#notifyChange(id);
   }
 
   toggle(id: string, options: DialogOpenOptions = {}): void {
@@ -206,27 +226,6 @@ export class DialogController extends BaseController<DialogEvents> {
     super.destroy();
   }
 
-  /**
-   * Returns a store-shaped object for Alpine's `$store.dialog`.
-   * The store delegates to this controller.
-   */
-  toStore(): DialogStore {
-    return {
-      instances: this.#instances as Record<string, DialogInstance>,
-      register: (id, opts) => this.register(id, opts),
-      unregister: (id) => this.unregister(id),
-      open: (id, opts) => this.open(id, opts),
-      close: (id) => this.close(id),
-      toggle: (id, opts) => this.toggle(id, opts),
-      isOpen: (id) => this.isOpen(id),
-      bindContainer: (id, container) => this.bindContainer(id, container),
-      handleKeydown: (id, event) => this.handleKeydown(id, event),
-      handleOutsideClick: (id, event) => this.handleOutsideClick(id, event),
-      dialogProps: (id) => this.dialogProps(id),
-      destroy: () => this.destroy(),
-    };
-  }
-
   #getOrCreate(id: string): DialogInstance {
     this.#instances[id] ??= createInstance({
       closeOnEscape: this.#defaultCloseOnEscape,
@@ -234,6 +233,10 @@ export class DialogController extends BaseController<DialogEvents> {
       scrollLock: this.#defaultScrollLock,
     });
     return this.#instances[id];
+  }
+
+  #notifyChange(instanceId?: string): void {
+    this.emit("change", { instanceId });
   }
 
   #updateScrollLock(locked: boolean): void {
@@ -280,12 +283,4 @@ export class DialogController extends BaseController<DialogEvents> {
  */
 export function createDialogController(config: DialogStoreConfig = {}): DialogController {
   return new DialogController(config);
-}
-
-/**
- * Creates a DialogStore (store-shaped object) directly.
- * Backward-compatible alias.
- */
-export function createDialogStore(config: DialogStoreConfig = {}): DialogStore {
-  return new DialogController(config).toStore();
 }

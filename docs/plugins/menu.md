@@ -113,6 +113,48 @@ $store.menu.register("account"); // no group — never auto-closed by group logi
 | `onOpen` / `onClose` | — | Lifecycle callbacks |
 | `onSelect` | — | Fired when an item is chosen (click, Enter, or Space) |
 
+## Architecture
+
+`MenuController` owns all mutable menu state in a private instance registry. The Alpine plugin is a thin adapter:
+
+1. Store commands (`open`, `close`, `registerItem`, …) forward to the controller.
+2. The controller emits typed `open`, `close`, `select`, and `change` events.
+3. The plugin copies **readonly snapshots** into `$store.menu.instances` so Alpine templates stay reactive.
+
+Mutating `$store.menu.instances[id]` directly does **not** change controller state. Use store methods or subscribe to controller events for custom adapters.
+
+## Standalone usage (no Alpine)
+
+```ts
+import {
+  createMenuController,
+  createMenuStore,
+  createMenuStoreFromController,
+} from "@ailuracode/alpine-menu";
+
+const controller = createMenuController({ exclusive: true });
+controller.register("user-menu");
+controller.open("user-menu");
+
+const store = createMenuStore({ exclusive: true });
+// or: createMenuStoreFromController(controller)
+```
+
+| Controller API | Description |
+|----------------|-------------|
+| `hasInstance(id)` | Whether a menu id is registered |
+| `snapshotInstances()` | Shallow readonly copies for adapter sync |
+| `isOpen(id)` / `activeItem(id)` | Query methods |
+
+## Migration
+
+| Removed / changed | Replacement |
+|-------------------|-------------|
+| `MenuController.instances` | `snapshotInstances()` or `hasInstance(id)` |
+| `constructor(instances, config)` | `constructor(config)` |
+| Commands with an `instances` first argument | Same command without `instances` — e.g. `open(id)` |
+| `controller.toStore()` | `createMenuStore()` or `createMenuStoreFromController(controller)` |
+
 ## Basic markup
 
 ```html

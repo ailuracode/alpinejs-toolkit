@@ -10,11 +10,13 @@
 // --- Re-export core types ------------------------------------------------
 export type { Unsubscribe } from "@ailuracode/alpine-core";
 // --- Controller (framework-agnostic) -------------------------------------
-export { createTooltipController, createTooltipStore, TooltipController } from "./controller";
+export { createTooltipController, TooltipController } from "./controller";
 // --- Event surface -------------------------------------------------------
 export type { TooltipEvents } from "./events";
 // --- Alpine integration --------------------------------------------------
 export { tooltipOptions, tooltipPlugin, tooltipPlugin as default } from "./plugin";
+// --- Store factory -------------------------------------------------------
+export { createTooltipStore, createTooltipStoreFromController } from "./store";
 // --- Public types ---------------------------------------------------------
 export type {
   CreateTooltipOptions,

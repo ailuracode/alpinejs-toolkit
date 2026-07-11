@@ -4,13 +4,9 @@
  * open/close state, keyboard navigation, exclusive mode,
  * and ARIA props.
  *
- * Emits typed `open`, `close`, and `select` events so consumers
- * can react programmatically.
- *
- * Mutating methods accept an `instances` record as their first
- * parameter. This allows the Alpine plugin to pass the reactive
- * proxy's `instances` so mutations trigger Alpine reactivity,
- * while standalone usage passes the controller's own record.
+ * Emits typed `open`, `close`, `select`, and `change` events so
+ * consumers can react programmatically and mirror state into
+ * framework adapters.
  */
 
 import { BaseController, generateId } from "@ailuracode/alpine-core";
@@ -22,7 +18,6 @@ import type {
   MenuInstanceOptions,
   MenuItemOptions,
   MenuItemState,
-  MenuStore,
 } from "./types";
 
 function enabledItems(instance: MenuInstance): MenuItemState[] {
@@ -66,6 +61,13 @@ function createInstance(options: MenuInstanceOptions = {}): MenuInstance {
     onOpen: options.onOpen,
     onClose: options.onClose,
     onSelect: options.onSelect,
+  };
+}
+
+function snapshotMenuInstance(instance: MenuInstance): MenuInstance {
+  return {
+    ...instance,
+    items: instance.items.map((item) => ({ ...item })),
   };
 }
 
@@ -144,62 +146,69 @@ function handleMenuKeydown(
  * Headless menu controller. Manages multiple menu instances with
  * open/close state, keyboard navigation, exclusive mode, and ARIA props.
  *
- * Mutating methods accept an `instances` record so the caller controls
- * which object is mutated — critical for Alpine's reactive proxy.
+ * The controller owns all mutable state. Alpine and other adapters
+ * mirror snapshots through {@link MenuController.snapshotInstances}
+ * and the `change` event.
  */
 export class MenuController extends BaseController<MenuEvents> {
-  readonly instances: Record<string, MenuInstance>;
+  #instances: Record<string, MenuInstance> = {};
   #exclusive: boolean;
   #lockCount = 0;
   #lockHandle: string | null = null;
   #scroll: ScrollStore | undefined;
 
-  constructor(
-    instances: Record<string, MenuInstance>,
-    config: MenuControllerConfig = {},
-    id?: string
-  ) {
+  constructor(config: MenuControllerConfig = {}, id?: string) {
     super(id ?? generateId("menu"));
-    this.instances = instances;
     this.#exclusive = config.exclusive ?? true;
     this.#scroll = config.scroll;
   }
 
-  register(
-    instances: Record<string, MenuInstance>,
-    id: string,
-    options: MenuInstanceOptions = {}
-  ): void {
-    if (this.isDestroyed) {
-      return;
-    }
-    instances[id] = createInstance(options);
+  /** Whether a menu instance is registered. */
+  hasInstance(id: string): boolean {
+    return id in this.#instances;
   }
 
-  unregister(instances: Record<string, MenuInstance>, id: string): void {
-    if (this.isDestroyed) {
-      return;
+  /**
+   * Returns a shallow snapshot of all instances for adapter sync.
+   * Mutating the returned objects does not affect controller state.
+   */
+  snapshotInstances(): Record<string, MenuInstance> {
+    const result: Record<string, MenuInstance> = {};
+    for (const [id, instance] of Object.entries(this.#instances)) {
+      result[id] = snapshotMenuInstance(instance);
     }
-    if (this.isOpen(instances, id)) {
-      this.close(instances, id);
-    }
-    delete instances[id];
+    return result;
   }
 
-  registerItem(
-    instances: Record<string, MenuInstance>,
-    menuId: string,
-    itemId: string,
-    options: MenuItemOptions = {}
-  ): void {
+  register(id: string, options: MenuInstanceOptions = {}): void {
     if (this.isDestroyed) {
       return;
     }
-    const instance = this.#getOrCreate(instances, menuId);
+    this.#instances[id] = createInstance(options);
+    this.#notifyChange(id);
+  }
+
+  unregister(id: string): void {
+    if (this.isDestroyed) {
+      return;
+    }
+    if (this.isOpen(id)) {
+      this.close(id);
+    }
+    delete this.#instances[id];
+    this.#notifyChange(id);
+  }
+
+  registerItem(menuId: string, itemId: string, options: MenuItemOptions = {}): void {
+    if (this.isDestroyed) {
+      return;
+    }
+    const instance = this.#getOrCreate(menuId);
     const existing = instance.items.find((item) => item.id === itemId);
     if (existing) {
       existing.disabled = options.disabled ?? existing.disabled;
       existing.parentId = options.parentId ?? existing.parentId;
+      this.#notifyChange(menuId);
       return;
     }
 
@@ -208,13 +217,14 @@ export class MenuController extends BaseController<MenuEvents> {
       disabled: options.disabled ?? false,
       parentId: options.parentId ?? null,
     });
+    this.#notifyChange(menuId);
   }
 
-  unregisterItem(instances: Record<string, MenuInstance>, menuId: string, itemId: string): void {
+  unregisterItem(menuId: string, itemId: string): void {
     if (this.isDestroyed) {
       return;
     }
-    const instance = instances[menuId];
+    const instance = this.#instances[menuId];
     if (!instance) {
       return;
     }
@@ -223,18 +233,19 @@ export class MenuController extends BaseController<MenuEvents> {
     if (instance.activeItemId === itemId) {
       instance.activeItemId = firstItem(instance);
     }
+    this.#notifyChange(menuId);
   }
 
-  open(instances: Record<string, MenuInstance>, id: string): void {
+  open(id: string): void {
     if (this.isDestroyed) {
       return;
     }
-    const instance = this.#getOrCreate(instances, id);
+    const instance = this.#getOrCreate(id);
     if (instance.open) {
       return;
     }
 
-    const closedCount = this.#closeOtherMenus(instances, id);
+    const closedCount = this.#closeOtherMenus(id);
 
     instance.open = true;
     if (!instance.activeItemId) {
@@ -249,85 +260,74 @@ export class MenuController extends BaseController<MenuEvents> {
     queueMicrotask(() => focusActiveMenu(instance));
 
     this.emit("open", { menuId: id });
+    this.#notifyChange(id);
   }
 
-  close(instances: Record<string, MenuInstance>, id: string): void {
+  close(id: string): void {
     if (this.isDestroyed) {
       return;
     }
-    this.#closeMenu(instances, id);
+    this.#closeMenu(id);
   }
 
-  toggle(instances: Record<string, MenuInstance>, id: string): void {
-    if (this.isOpen(instances, id)) {
-      this.close(instances, id);
+  toggle(id: string): void {
+    if (this.isOpen(id)) {
+      this.close(id);
     } else {
-      this.open(instances, id);
+      this.open(id);
     }
   }
 
-  isOpen(instances: Record<string, MenuInstance>, id: string): boolean {
-    return instances[id]?.open ?? false;
+  isOpen(id: string): boolean {
+    return this.#instances[id]?.open ?? false;
   }
 
-  activeItem(instances: Record<string, MenuInstance>, id: string): string | null {
-    return instances[id]?.activeItemId ?? null;
+  activeItem(id: string): string | null {
+    return this.#instances[id]?.activeItemId ?? null;
   }
 
-  setActiveItem(
-    instances: Record<string, MenuInstance>,
-    menuId: string,
-    itemId: string | null
-  ): void {
+  setActiveItem(menuId: string, itemId: string | null): void {
     if (this.isDestroyed) {
       return;
     }
-    const instance = this.#getOrCreate(instances, menuId);
+    const instance = this.#getOrCreate(menuId);
     if (itemId === null) {
       instance.activeItemId = null;
+      this.#notifyChange(menuId);
       return;
     }
 
     const item = instance.items.find((entry) => entry.id === itemId);
     if (item && !item.disabled) {
       instance.activeItemId = itemId;
+      this.#notifyChange(menuId);
     }
   }
 
-  bindMenu(
-    instances: Record<string, MenuInstance>,
-    menuId: string,
-    container: HTMLElement | null
-  ): void {
+  bindMenu(menuId: string, container: HTMLElement | null): void {
     if (this.isDestroyed) {
       return;
     }
-    const instance = this.#getOrCreate(instances, menuId);
+    const instance = this.#getOrCreate(menuId);
     instance.container = container;
 
     if (instance.open) {
       queueMicrotask(() => focusActiveMenu(instance));
     }
+    this.#notifyChange(menuId);
   }
 
-  bindTrigger(
-    instances: Record<string, MenuInstance>,
-    menuId: string,
-    trigger: HTMLElement | null
-  ): void {
+  bindTrigger(menuId: string, trigger: HTMLElement | null): void {
     if (this.isDestroyed) {
       return;
     }
-    const instance = this.#getOrCreate(instances, menuId);
+    const instance = this.#getOrCreate(menuId);
     instance.trigger = trigger;
+    this.#notifyChange(menuId);
   }
 
-  handleOutsideClick(
-    instances: Record<string, MenuInstance>,
-    menuId: string,
-    event: MouseEvent
-  ): void {
-    const instance = instances[menuId];
+  handleOutsideClick(menuId: string, event: MouseEvent): void {
+    const instance = this.#instances[menuId];
     if (!instance?.open) {
       return;
     }
@@ -341,14 +341,14 @@ export class MenuController extends BaseController<MenuEvents> {
       return;
     }
 
-    this.close(instances, menuId);
+    this.close(menuId);
   }
 
-  selectItem(instances: Record<string, MenuInstance>, menuId: string, itemId: string): void {
+  selectItem(menuId: string, itemId: string): void {
     if (this.isDestroyed) {
       return;
     }
-    const instance = instances[menuId];
+    const instance = this.#instances[menuId];
     const item = instance?.items.find((entry) => entry.id === itemId);
     if (!(instance && item) || item.disabled) {
       return;
@@ -360,62 +360,52 @@ export class MenuController extends BaseController<MenuEvents> {
     this.emit("select", { menuId, itemId });
 
     if (instance.closeOnSelect) {
-      this.#closeMenu(instances, menuId);
+      this.#closeMenu(menuId);
+    } else {
+      this.#notifyChange(menuId);
     }
   }
 
-  handleKeydown(
-    instances: Record<string, MenuInstance>,
-    menuId: string,
-    event: KeyboardEvent
-  ): void {
+  handleKeydown(menuId: string, event: KeyboardEvent): void {
     if (this.isDestroyed) {
       return;
     }
-    const instance = instances[menuId];
+    const instance = this.#instances[menuId];
     if (instance?.open) {
+      const previousActive = instance.activeItemId;
       handleMenuKeydown(
         menuId,
         instance,
         event,
-        (id, itemId) => this.selectItem(instances, id, itemId),
-        (id) => this.close(instances, id)
+        (id, itemId) => this.selectItem(id, itemId),
+        (id) => this.close(id)
       );
       queueMicrotask(() => focusActiveMenu(instance));
+      if (instance.activeItemId !== previousActive) {
+        this.#notifyChange(menuId);
+      }
     }
   }
 
-  handleWindowOutsideClick(
-    instances: Record<string, MenuInstance>,
-    event: MouseEvent,
-    menuIds?: readonly string[]
-  ): void {
-    const ids = menuIds ?? Object.keys(instances);
+  handleWindowOutsideClick(event: MouseEvent, menuIds?: readonly string[]): void {
+    const ids = menuIds ?? Object.keys(this.#instances);
     for (const menuId of ids) {
-      this.handleOutsideClick(instances, menuId, event);
+      this.handleOutsideClick(menuId, event);
     }
   }
 
-  handleWindowKeydown(
-    instances: Record<string, MenuInstance>,
-    event: KeyboardEvent,
-    menuIds?: readonly string[]
-  ): void {
-    const ids = menuIds ?? Object.keys(instances);
+  handleWindowKeydown(event: KeyboardEvent, menuIds?: readonly string[]): void {
+    const ids = menuIds ?? Object.keys(this.#instances);
     for (const menuId of ids) {
-      if (this.isOpen(instances, menuId)) {
-        this.handleKeydown(instances, menuId, event);
+      if (this.isOpen(menuId)) {
+        this.handleKeydown(menuId, event);
         return;
       }
     }
   }
 
-  itemProps(
-    instances: Record<string, MenuInstance>,
-    menuId: string,
-    itemId: string
-  ): Record<string, string | number | boolean | undefined> {
-    const instance = instances[menuId];
+  itemProps(menuId: string, itemId: string): Record<string, string | number | boolean | undefined> {
+    const instance = this.#instances[menuId];
     const item = instance?.items.find((entry) => entry.id === itemId);
     const active = instance?.activeItemId === itemId;
 
@@ -426,52 +416,39 @@ export class MenuController extends BaseController<MenuEvents> {
     };
   }
 
-  menuProps(
-    instances: Record<string, MenuInstance>,
-    menuId: string
-  ): Record<string, string | boolean | undefined> {
-    const instance = instances[menuId];
+  menuProps(menuId: string): Record<string, string | boolean | undefined> {
+    const instance = this.#instances[menuId];
     return {
       role: "menu",
       "aria-orientation": instance?.orientation,
     };
   }
 
-  /**
-   * Returns a store-shaped object for Alpine's `$store.menu`.
-   * The store delegates to this controller using the controller's
-   * own instances record (no Alpine proxy involved).
-   */
-  toStore(): MenuStore {
-    return {
-      instances: this.instances,
-      register: (id, opts) => this.register(this.instances, id, opts),
-      unregister: (id) => this.unregister(this.instances, id),
-      registerItem: (id, itemId, opts) => this.registerItem(this.instances, id, itemId, opts),
-      unregisterItem: (id, itemId) => this.unregisterItem(this.instances, id, itemId),
-      open: (id) => this.open(this.instances, id),
-      close: (id) => this.close(this.instances, id),
-      toggle: (id) => this.toggle(this.instances, id),
-      isOpen: (id) => this.isOpen(this.instances, id),
-      activeItem: (id) => this.activeItem(this.instances, id),
-      setActiveItem: (id, itemId) => this.setActiveItem(this.instances, id, itemId),
-      bindMenu: (id, container) => this.bindMenu(this.instances, id, container),
-      bindTrigger: (id, trigger) => this.bindTrigger(this.instances, id, trigger),
-      handleOutsideClick: (id, event) => this.handleOutsideClick(this.instances, id, event),
-      selectItem: (id, itemId) => this.selectItem(this.instances, id, itemId),
-      handleKeydown: (id, event) => this.handleKeydown(this.instances, id, event),
-      handleWindowOutsideClick: (event, ids) =>
-        this.handleWindowOutsideClick(this.instances, event, ids),
-      handleWindowKeydown: (event, ids) => this.handleWindowKeydown(this.instances, event, ids),
-      itemProps: (id, itemId) => this.itemProps(this.instances, id, itemId),
-      menuProps: (id) => this.menuProps(this.instances, id),
-      destroy: () => this.destroy(),
-    };
+  destroy(): void {
+    if (this.isDestroyed) {
+      return;
+    }
+    for (const id of Object.keys(this.#instances)) {
+      if (this.isOpen(id)) {
+        this.#closeMenu(id);
+      }
+      delete this.#instances[id];
+    }
+    if (this.#lockHandle !== null) {
+      this.#scroll?.unlock(this.#lockHandle);
+      this.#lockHandle = null;
+    }
+    this.#lockCount = 0;
+    super.destroy();
   }
 
-  #getOrCreate(instances: Record<string, MenuInstance>, id: string): MenuInstance {
-    instances[id] ??= createInstance();
-    return instances[id];
+  #getOrCreate(id: string): MenuInstance {
+    this.#instances[id] ??= createInstance();
+    return this.#instances[id];
+  }
+
+  #notifyChange(menuId?: string): void {
+    this.emit("change", { menuId });
   }
 
   #updateScrollLock(locked: boolean): void {
@@ -494,8 +471,8 @@ export class MenuController extends BaseController<MenuEvents> {
     }
   }
 
-  #closeMenu(instances: Record<string, MenuInstance>, id: string, suppressLock = false): void {
-    const instance = instances[id];
+  #closeMenu(id: string, suppressLock = false): void {
+    const instance = this.#instances[id];
     if (!instance?.open) {
       return;
     }
@@ -509,48 +486,30 @@ export class MenuController extends BaseController<MenuEvents> {
     instance.onClose?.();
 
     this.emit("close", { menuId: id });
+    this.#notifyChange(id);
   }
 
-  #closeOtherMenus(instances: Record<string, MenuInstance>, openingId: string): number {
-    const opening = instances[openingId];
+  #closeOtherMenus(openingId: string): number {
+    const opening = this.#instances[openingId];
     const openingGroup = opening?.group ?? null;
     let closedCount = 0;
 
-    for (const menuId of Object.keys(instances)) {
-      if (menuId === openingId || !this.isOpen(instances, menuId)) {
+    for (const menuId of Object.keys(this.#instances)) {
+      if (menuId === openingId || !this.isOpen(menuId)) {
         continue;
       }
 
-      const other = instances[menuId];
+      const other = this.#instances[menuId];
       const shouldClose =
         this.#exclusive !== false || (openingGroup !== null && other.group === openingGroup);
 
       if (shouldClose) {
-        this.#closeMenu(instances, menuId, true);
+        this.#closeMenu(menuId, true);
         closedCount++;
       }
     }
 
     return closedCount;
-  }
-
-  destroy(): void {
-    if (this.isDestroyed) {
-      return;
-    }
-    // Close all open menus and clean up before calling super.destroy()
-    for (const id of Object.keys(this.instances)) {
-      if (this.isOpen(this.instances, id)) {
-        this.#closeMenu(this.instances, id);
-      }
-      delete this.instances[id];
-    }
-    if (this.#lockHandle !== null) {
-      this.#scroll?.unlock(this.#lockHandle);
-      this.#lockHandle = null;
-    }
-    this.#lockCount = 0;
-    super.destroy();
   }
 }
 
@@ -558,13 +517,5 @@ export class MenuController extends BaseController<MenuEvents> {
  * Creates a MenuController. Framework-agnostic, no Alpine dependency.
  */
 export function createMenuController(config?: MenuControllerConfig, id?: string): MenuController {
-  return new MenuController({}, config, id);
-}
-
-/**
- * Creates a MenuStore (store-shaped object) directly.
- * Backward-compatible alias.
- */
-export function createMenuStore(config: MenuControllerConfig = {}): MenuStore {
-  return new MenuController({}, config).toStore();
+  return new MenuController(config, id);
 }

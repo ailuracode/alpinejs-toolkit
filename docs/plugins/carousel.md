@@ -46,7 +46,36 @@ Alpine.start();
 
 ### Reactive state
 
-Bind templates to `$store.carousel.instances[id]`:
+Bind templates to `$store.carousel.instances[id]`. Each entry is a **reactive mirror** of controller state (updated on `change` and `slideChange`). Use store commands to mutate; direct writes to `instances[id]` do not affect the controller.
+
+For dot indicators, iterate the same slide collection you use for slides (most reliable), or bind length to `instances[id].totalSlides`:
+
+```html
+<!-- Preferred: same array as slides -->
+<template x-for="(item, index) in items" :key="'dot-' + item.id">
+  <button
+    type="button"
+    x-bind="$store.carousel.indicatorProps('gallery', index)"
+    :class="$store.carousel.instances.gallery?.currentIndex === index ? 'is-active' : ''"
+    @click="$store.carousel.goTo('gallery', index)"
+  ></button>
+</template>
+
+<!-- Or: reactive slide count after Embla binds -->
+<template
+  x-for="(_, index) in Array.from({ length: $store.carousel.instances.gallery?.totalSlides ?? 0 })"
+  :key="index"
+>
+  <button
+    type="button"
+    x-bind="$store.carousel.indicatorProps('gallery', index)"
+    :class="$store.carousel.instances.gallery?.currentIndex === index ? 'is-active' : ''"
+    @click="$store.carousel.goTo('gallery', index)"
+  ></button>
+</template>
+```
+
+`count(id)` and `current(id)` remain available, but `x-for="n in count(id)"` may not re-render when Embla initializes — do not use it for indicator loops.
 
 | Property | Description |
 |----------|-------------|
@@ -59,6 +88,42 @@ Bind templates to `$store.carousel.instances[id]`:
 | `slidesInView` | Indices of slides in view |
 
 Convenience accessors mirror the reactive fields: `current(id)`, `count(id)`, etc.
+
+## Architecture
+
+`CarouselController` owns all mutable state and Embla instances. The Alpine plugin mirrors snapshots into `$store.carousel.instances`.
+
+## Standalone usage (no Alpine)
+
+```ts
+import {
+  createCarouselController,
+  createCarouselStore,
+  createCarouselStoreFromController,
+} from "@ailuracode/alpine-carousel";
+
+const controller = createCarouselController();
+controller.create("gallery", { loop: true });
+controller.bindViewport("gallery", viewportEl);
+
+const store = createCarouselStore();
+// or: createCarouselStoreFromController(controller)
+```
+
+| Controller API | Description |
+|----------------|-------------|
+| `hasInstance(id)` | Whether a carousel id is registered |
+| `snapshotInstances()` | Shallow readonly copies for adapter sync |
+| `current(id)` / `count(id)` / `isPlaying(id)` | Query methods |
+
+Subscribe to `controller.on("change", …)` and `controller.on("slideChange", …)` for adapter sync.
+
+## Migration
+
+| Removed / changed | Replacement |
+|-------------------|-------------|
+| `controller.instances` getter | `snapshotInstances()` or `hasInstance(id)` |
+| `controller.toStore()` | `createCarouselStore()` or `createCarouselStoreFromController(controller)` |
 
 ## Configuration
 
@@ -128,9 +193,10 @@ Parent grids/flex layouts also need `min-w-0` so the carousel can shrink below i
     </div>
 
     <div role="tablist" aria-label="Choose slide">
-      <template x-for="(_, index) in Array.from({ length: $store.carousel.count('gallery') })" :key="index">
+      <template x-for="(item, index) in items" :key="'indicator-' + item.id">
         <button
           x-bind="$store.carousel.indicatorProps('gallery', index)"
+          :class="$store.carousel.instances.gallery?.currentIndex === index ? 'is-active' : ''"
           @click="$store.carousel.goTo('gallery', index)"
         ></button>
       </template>

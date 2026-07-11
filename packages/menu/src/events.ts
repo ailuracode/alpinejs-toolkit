@@ -18,12 +18,19 @@ export interface MenuSelectDetail {
   readonly itemId: string;
 }
 
+/** Detail payload for the `change` event (adapter sync). */
+export interface MenuChangeDetail {
+  readonly menuId?: string;
+}
+
 /**
- * Event map for menu state changes. Emits `open`, `close`, and `select`
- * events with typed detail payloads so consumers can react programmatically.
+ * Event map for menu state changes. Emits `open`, `close`, `select`, and
+ * `change` events with typed detail payloads so consumers can react
+ * programmatically.
  */
 export interface MenuEvents extends Record<string, unknown> {
   open: MenuOpenDetail;
   close: MenuCloseDetail;
   select: MenuSelectDetail;
+  change: MenuChangeDetail;
 }

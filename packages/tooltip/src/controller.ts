@@ -9,12 +9,7 @@
 
 import { BaseController, generateId } from "@ailuracode/alpine-core";
 import type { TooltipEvents } from "./events";
-import type {
-  TooltipChangeSource,
-  TooltipInstance,
-  TooltipInstanceOptions,
-  TooltipStore,
-} from "./types";
+import type { TooltipChangeSource, TooltipInstance, TooltipInstanceOptions } from "./types";
 
 function createInstance(options: TooltipInstanceOptions = {}): TooltipInstance {
   return {
@@ -34,6 +29,10 @@ function clearTimer(timer: ReturnType<typeof setTimeout> | null): void {
   }
 }
 
+function snapshotTooltipInstance(instance: TooltipInstance): TooltipInstance {
+  return { ...instance };
+}
+
 /**
  * Headless tooltip controller. Manages multiple tooltip instances
  * with open/close state, delay timers, and keyboard dismiss.
@@ -46,8 +45,21 @@ export class TooltipController extends BaseController<TooltipEvents> {
     super(id ?? generateId("tooltip"));
   }
 
-  get instances(): Readonly<Record<string, TooltipInstance>> {
-    return this.#instances;
+  /** Whether a tooltip instance is registered. */
+  hasInstance(id: string): boolean {
+    return id in this.#instances;
+  }
+
+  /**
+   * Returns a shallow snapshot of all instances for adapter sync.
+   * Mutating the returned objects does not affect controller state.
+   */
+  snapshotInstances(): Record<string, TooltipInstance> {
+    const result: Record<string, TooltipInstance> = {};
+    for (const [id, instance] of Object.entries(this.#instances)) {
+      result[id] = snapshotTooltipInstance(instance);
+    }
+    return result;
   }
 
   /** Number of per-instance cleanup callbacks (exposed for testing). */
@@ -185,29 +197,10 @@ export class TooltipController extends BaseController<TooltipEvents> {
     }
 
     this.#instanceCleanups.clear();
+    for (const id of Object.keys(this.#instances)) {
+      delete this.#instances[id];
+    }
     super.destroy();
-  }
-
-  /**
-   * Returns a store-shaped object for Alpine's `$store.tooltip`.
-   * The store delegates to this controller.
-   */
-  toStore(): TooltipStore {
-    return {
-      instances: this.#instances as Record<string, TooltipInstance>,
-      register: (id, options) => this.register(id, options),
-      unregister: (id) => this.unregister(id),
-      open: (id) => this.open(id),
-      close: (id) => this.close(id),
-      toggle: (id) => this.toggle(id),
-      isOpen: (id) => this.isOpen(id),
-      showOnHover: (id) => this.showOnHover(id),
-      hideOnHover: (id) => this.hideOnHover(id),
-      showOnFocus: (id) => this.showOnFocus(id),
-      hideOnFocus: (id) => this.hideOnFocus(id),
-      handleKeydown: (id, event) => this.handleKeydown(id, event),
-      destroy: () => this.destroy(),
-    };
   }
 
   #setCleanup(id: string, cleanup: () => void): void {
@@ -243,12 +236,4 @@ export class TooltipController extends BaseController<TooltipEvents> {
  */
 export function createTooltipController(id?: string): TooltipController {
   return new TooltipController(id);
-}
-
-/**
- * Creates a TooltipStore (store-shaped object) directly.
- * Backward-compatible alias.
- */
-export function createTooltipStore(): TooltipStore {
-  return new TooltipController().toStore();
 }

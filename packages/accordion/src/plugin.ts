@@ -6,13 +6,9 @@
  */
 
 import type { Alpine } from "alpinejs";
-import { AccordionController } from "./controller";
-import type {
-  AccordionAlpine,
-  AccordionPluginCallback,
-  AccordionStore,
-  CreateAccordionOptions,
-} from "./types";
+import { AccordionController } from "./controller.js";
+import { createAccordionStoreFromController, syncGroupRegistry } from "./store.js";
+import type { AccordionAlpine, AccordionPluginCallback, CreateAccordionOptions } from "./types.js";
 
 /** Key under which the accordion store is registered on `$store`. */
 const ACCORDION_STORE_KEY = "accordion";
@@ -27,49 +23,25 @@ export function accordionPlugin(options: CreateAccordionOptions = {}): Accordion
     const Alpine = alpine as unknown as AccordionAlpine;
     const controller = new AccordionController(options.id);
 
-    // Register a minimal store first — Alpine wraps it in a reactive
-    // proxy. We then override the read methods so they go through
-    // the proxy (making x-text / x-show reactive), while mutation
-    // methods delegate to the controller.
-    const store: AccordionStore = {
-      groups: {},
-      register: (id, opts) => controller.register(id, opts),
-      unregister: (id) => controller.unregister(id),
-      registerItem: (id, itemId, disabled) => controller.registerItem(id, itemId, disabled),
-      unregisterItem: (id, itemId) => controller.unregisterItem(id, itemId),
-      open: (id, itemId) => controller.open(id, itemId),
-      close: (id, itemId) => controller.close(id, itemId),
-      toggle: (id, itemId) => controller.toggle(id, itemId),
-      isOpen: () => false,
-      openIds: () => [],
-      activeItem: () => null,
-      setActiveItem: (id, itemId) => controller.setActiveItem(id, itemId),
-      handleKeydown: (id, event) => controller.handleKeydown(id, event),
-      triggerProps: () => ({}),
-      panelProps: () => ({}),
-      destroy: () => controller.destroy(),
+    const store = createAccordionStoreFromController(controller);
+    Alpine.store(ACCORDION_STORE_KEY, store);
+    const reactiveStore = Alpine.store(ACCORDION_STORE_KEY);
+
+    const syncReactiveGroups = () => {
+      syncGroupRegistry(reactiveStore.groups, controller.snapshotGroups());
     };
 
-    Alpine.store(ACCORDION_STORE_KEY, store);
-
-    // Re-read the reactive proxy — all subsequent access goes through
-    // Alpine's reactivity system.
-    const reactive = () => Alpine.store(ACCORDION_STORE_KEY) as unknown as AccordionStore;
-
-    // Override read methods to read from the reactive proxy.
-    // This ensures x-text="isOpen(...)" tracks groups as a dependency.
-    store.isOpen = (id, itemId) => reactive().groups[id]?.open[itemId] ?? false;
-    store.openIds = (id) => {
-      const open = reactive().groups[id]?.open ?? {};
+    reactiveStore.isOpen = (id, itemId) => reactiveStore.groups[id]?.open[itemId] ?? false;
+    reactiveStore.openIds = (id) => {
+      const open = reactiveStore.groups[id]?.open ?? {};
       return Object.entries(open)
         .filter(([, isOpen]) => isOpen)
-        .map(([gid]) => gid);
+        .map(([itemId]) => itemId);
     };
-    store.activeItem = (id) => reactive().groups[id]?.activeItemId ?? null;
-    store.triggerProps = (id, itemId) => {
-      const r = reactive();
-      const open = r.isOpen(id, itemId);
-      const active = r.activeItem(id) === itemId;
+    reactiveStore.activeItem = (id) => reactiveStore.groups[id]?.activeItemId ?? null;
+    reactiveStore.triggerProps = (id, itemId) => {
+      const open = reactiveStore.isOpen(id, itemId);
+      const active = reactiveStore.activeItem(id) === itemId;
       return {
         "aria-expanded": open,
         "aria-controls": `${id}-panel-${itemId}`,
@@ -77,8 +49,8 @@ export function accordionPlugin(options: CreateAccordionOptions = {}): Accordion
         tabindex: active ? 0 : -1,
       };
     };
-    store.panelProps = (id, itemId) => {
-      const open = reactive().isOpen(id, itemId);
+    reactiveStore.panelProps = (id, itemId) => {
+      const open = reactiveStore.isOpen(id, itemId);
       return {
         id: `${id}-panel-${itemId}`,
         role: "region",
@@ -87,21 +59,9 @@ export function accordionPlugin(options: CreateAccordionOptions = {}): Accordion
       };
     };
 
-    // Sync controller state into the reactive store on every change.
-    controller.on("change", () => {
-      const r = reactive();
-      const controllerGroups = controller.groups;
-      for (const key of Object.keys(controllerGroups)) {
-        r.groups[key] = controllerGroups[key];
-      }
-      for (const key of Object.keys(r.groups)) {
-        if (!(key in controllerGroups)) {
-          delete r.groups[key];
-        }
-      }
-    });
+    controller.on("change", syncReactiveGroups);
 
-    Alpine.magic(ACCORDION_STORE_KEY, () => reactive());
+    Alpine.magic(ACCORDION_STORE_KEY, () => reactiveStore);
 
     if (typeof Alpine.cleanup === "function") {
       Alpine.cleanup(() => controller.destroy());

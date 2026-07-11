@@ -17,7 +17,7 @@
 // --- Re-export core types ------------------------------------------------
 export type { Unsubscribe } from "@ailuracode/alpine-core";
 // --- Controller (framework-agnostic) -------------------------------------
-export { createDialogController, createDialogStore, DialogController } from "./controller";
+export { createDialogController, DialogController } from "./controller";
 // --- Event surface -------------------------------------------------------
 export type { DialogEvents } from "./events";
 // --- Focus utilities (internal, re-exported for advanced use) ------------
@@ -29,10 +29,13 @@ export {
   dialogPlugin,
   dialogPlugin as default,
 } from "./plugin";
+// --- Store factory -------------------------------------------------------
+export { createDialogStore, createDialogStoreFromController } from "./store";
 // --- Public types ---------------------------------------------------------
 export type {
   CreateDialogOptions,
   DialogAlpine,
+  DialogChangeDetail,
   DialogChangeSource,
   DialogCloseDetail,
   DialogInstance,

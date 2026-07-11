@@ -47,6 +47,15 @@ function createGroup(options: AccordionGroupOptions = {}): AccordionGroup {
   };
 }
 
+function snapshotGroup(group: AccordionGroup): AccordionGroup {
+  return {
+    ...group,
+    open: { ...group.open },
+    items: group.items.map((item) => ({ ...item })),
+    defaultOpen: [...group.defaultOpen],
+  };
+}
+
 /**
  * Headless accordion controller. Manages multiple accordion groups
  * with open/close state, keyboard navigation, and ARIA props.
@@ -58,8 +67,21 @@ export class AccordionController extends BaseController<AccordionEvents> {
     super(id ?? generateId("accordion"));
   }
 
-  get groups(): Readonly<Record<string, AccordionGroup>> {
-    return this.#groups;
+  /** Whether a group is registered. */
+  hasGroup(accordionId: string): boolean {
+    return accordionId in this.#groups;
+  }
+
+  /**
+   * Returns shallow snapshots of all groups for adapter sync.
+   * Mutating the returned objects does not affect controller state.
+   */
+  snapshotGroups(): Record<string, AccordionGroup> {
+    const result: Record<string, AccordionGroup> = {};
+    for (const [id, group] of Object.entries(this.#groups)) {
+      result[id] = snapshotGroup(group);
+    }
+    return result;
   }
 
   register(accordionId: string, options: AccordionGroupOptions = {}): void {
@@ -67,6 +89,7 @@ export class AccordionController extends BaseController<AccordionEvents> {
       return;
     }
     this.#groups[accordionId] = createGroup(options);
+    this.#emitChange(accordionId, "initialization");
   }
 
   unregister(accordionId: string): void {
@@ -74,6 +97,7 @@ export class AccordionController extends BaseController<AccordionEvents> {
       return;
     }
     delete this.#groups[accordionId];
+    this.#emitChange(accordionId, "initialization");
   }
 
   registerItem(accordionId: string, itemId: string, disabled = false): void {
@@ -84,6 +108,7 @@ export class AccordionController extends BaseController<AccordionEvents> {
     const existing = group.items.find((item) => item.id === itemId);
     if (existing) {
       existing.disabled = disabled;
+      this.#emitChange(accordionId, "user");
       return;
     }
     group.items.push({ id: itemId, disabled });
@@ -91,7 +116,10 @@ export class AccordionController extends BaseController<AccordionEvents> {
     if (group.defaultOpen.includes(itemId) && !disabled) {
       this.open(accordionId, itemId);
       group.activeItemId ??= itemId;
+      return;
     }
+
+    this.#emitChange(accordionId, "user");
   }
 
   unregisterItem(accordionId: string, itemId: string): void {
@@ -105,6 +133,7 @@ export class AccordionController extends BaseController<AccordionEvents> {
 
     group.items = group.items.filter((item) => item.id !== itemId);
     delete group.open[itemId];
+    this.#emitChange(accordionId, "user");
   }
 
   open(accordionId: string, itemId: string): void {
@@ -180,12 +209,14 @@ export class AccordionController extends BaseController<AccordionEvents> {
 
     if (itemId === null) {
       group.activeItemId = null;
+      this.#emitChange(accordionId, "user");
       return;
     }
 
     const item = group.items.find((entry) => entry.id === itemId);
     if (item && !item.disabled) {
       group.activeItemId = itemId;
+      this.#emitChange(accordionId, "user");
     }
   }
 
@@ -226,6 +257,8 @@ export class AccordionController extends BaseController<AccordionEvents> {
       default:
         break;
     }
+
+    this.#emitChange(accordionId, "user");
   }
 
   triggerProps(
@@ -254,7 +287,9 @@ export class AccordionController extends BaseController<AccordionEvents> {
 
   /**
    * Returns a store-shaped object for Alpine's `$store.accordion`.
-   * The store delegates to this controller.
+   * Prefer {@link createAccordionStore} for new code.
+   *
+   * @deprecated Use `createAccordionStore()` or `createAccordionStoreFromController()`.
    */
   toStore(): AccordionStore {
     return {
@@ -297,12 +332,4 @@ export class AccordionController extends BaseController<AccordionEvents> {
  */
 export function createAccordionController(id?: string): AccordionController {
   return new AccordionController(id);
-}
-
-/**
- * Creates an AccordionStore (store-shaped object) directly.
- * Backward-compatible alias.
- */
-export function createAccordionStore(): AccordionStore {
-  return new AccordionController().toStore();
 }

@@ -363,5 +363,6 @@ describe("@ailuracode/alpine-carousel", () => {
 
     carousel.create("demo");
     expect(carousel.instances.demo).toBeDefined();
+    expect(carousel.instances.demo.currentIndex).toBe(0);
   });
 });
