@@ -17,6 +17,7 @@
     "ci:changes": "node scripts/ci-changes.mjs",
     "repo:check": "node scripts/repo-check.mjs",
     "repo:check:built": "node scripts/repo-check.mjs --built",
+    "architecture:check": "node scripts/architecture-check.mjs",
     "changeset:check": "node scripts/changeset-check.mjs",
     "test:packages": "pnpm -r --if-present test",
     "changeset": "changeset",

@@ -7,8 +7,22 @@ alwaysApply: true
 
 - `index.ts` imports ONLY public API (`controllers`, `directives`, `options`, `types`).
 - `index.ts` MUST NOT import internal adapter, bindings, store, or alpine registration files.
-- Tests MUST NOT import from `index.ts` — import controllers/types/options directly.
-- Internal modules (`internal/`, `adapter.ts`, store logic, bindings) are package-private.
+- `src/internal/` is package-private. Public barrels MUST NOT re-export from `internal/` except packages listed in `scripts/architecture-check-policy.mjs`.
+- Cross-package imports MUST NOT target another package's `internal/` path.
+- Unit and controller tests SHOULD import implementation modules directly (`../src/controller.js`, `../src/types.js`).
+- Contract, integration, encapsulation, and public-surface tests MAY import `src/index.ts` to exercise the published entrypoint.
+
+## Testing harness policy
+
+| Layer | Harness | Entrypoint imports |
+|-------|---------|-------------------|
+| Controller / unit tests | No Alpine unless strictly required | Implementation modules only |
+| Magic-only plugins | `createMagicHarness()` | Either direct modules or entrypoint |
+| Store / directive plugins | `startAlpine()` | Contract and integration tests may use entrypoint |
+| Query cache | `createQueryClient()` + `vanillaQueryAdapter` | Direct modules preferred |
+| Contract / packed consumer tests | Real Alpine or Node import of built surface | Entrypoint expected |
+
+Mocks MUST NOT replace real Alpine in store, directive, or integration tests. Magic harnesses use plain objects without Alpine reactivity.
 
 ## Invariants
 
@@ -16,11 +30,17 @@ alwaysApply: true
 2. `Alpine.reactive` was added in Alpine 3.14.1 (August 2025).
 3. `alpinejs` peer dependency MUST be `^3`, never `^4`.
 4. Alpine MUST be optional for non-directive packages (allow `@types/alpinejs` as optional dev dep).
-5. Controller-level code MUST NOT import Alpine directly.
+5. Controller-level code MUST NOT import Alpine at runtime (`import type` is allowed).
 6. Package types MUST augment `Alpine.*` using `declare global`.
 7. `cleanup` is NOT part of core Alpine — it's only available if `alpine-cleanup.js` is imported (injected in `packages/core/src/alpine.ts`).
 8. Package versions MUST be `0.0.0` initially.
-9. Tests MUST use real Alpine with `startAlpine()` helper, not mocks.
+9. Controller constructors MUST NOT access browser globals, start timers, or schedule microtasks. `typeof window` / `typeof navigator` capability probes are allowed.
+10. `@ailuracode/alpine-core` MUST NOT depend on feature packages. Workspace package dependencies MUST remain acyclic.
+11. Stateful publishable packages MUST export a `*Controller` from the root barrel or expose a documented `./controller` subpath unless listed in `architecture-check-policy.mjs`.
+
+## Automation
+
+`pnpm run architecture:check` enforces the invariants above via `scripts/architecture-check.mjs`. Headless CSS boundaries are shared with `repo:check` through `scripts/headless-css-policy.mjs`. Metadata checks (`sideEffects`, bundle budgets, demo wiring) remain in `repo:check`.
 
 ## Anti-patterns
 

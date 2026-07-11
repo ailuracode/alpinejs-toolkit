@@ -65,6 +65,7 @@ pnpm run test:coverage # vitest with coverage thresholds
 pnpm run pack:check   # pnpm pack dry-run for all publishable packages
 pnpm run repo:check   # validate monorepo package catalog and wiring consistency
 pnpm run repo:check:built # repo:check plus built export artifact validation
+pnpm run architecture:check # enforce source-level architecture invariants
 pnpm run changeset:check # verify pending changesets
 pnpm run test:watch   # vitest watch mode
 pnpm run changeset    # create a changeset after user-facing changes
@@ -128,6 +129,7 @@ Requirements:
 - Devtools styles MUST use namespaced tokens (`--aq-*`) and classes (`aq-devtools-*`).
 - Host theme detection (`data-theme`, `.dark`, `prefers-color-scheme`) is allowed only inside devtools paths.
 - `repo:check` scans for styling markers outside exempt paths (`scripts/headless-css-policy.mjs`).
+- `architecture:check` enforces controller boundaries, import visibility, dependency direction, constructor side effects, and test import policy (`scripts/architecture-check.mjs`).
 
 See `.cursor/rules/devtools-tooling.mdc` for the full policy.
 
