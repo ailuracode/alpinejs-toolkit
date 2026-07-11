@@ -44,6 +44,11 @@ import type {
   ResolvedCalendarConfig,
 } from "./types.js";
 
+/** Strips `readonly` modifiers so reactive methods can write through `this`. */
+type Writable<T> = {
+  -readonly [K in keyof T]: T[K];
+};
+
 function resolveConfig(options: CalendarOptions = {}): ResolvedCalendarConfig {
   const context = resolveDateFnsContext(options);
 
@@ -290,62 +295,7 @@ export class CalendarController extends BaseController<CalendarEvents> {
    * the controller and trigger events.
    */
   toStore(): CalendarInstance {
-    const self = this;
-
-    const store = {
-      month: self.month,
-      mode: self.mode,
-      selected: self.selected,
-      locale: self.locale,
-      weekStartsOn: self.weekStartsOn,
-      dateFns: self.dateFns,
-      weeks: self.weeks,
-      weekdayLabels: self.weekdayLabels,
-
-      prevMonth() {
-        self.prevMonth();
-        store.month = self.month;
-        store.weeks = self.weeks;
-      },
-      nextMonth() {
-        self.nextMonth();
-        store.month = self.month;
-        store.weeks = self.weeks;
-      },
-      goToMonth(date: Date) {
-        self.goToMonth(date);
-        store.month = self.month;
-        store.weeks = self.weeks;
-      },
-      goToToday() {
-        self.goToToday();
-        store.month = self.month;
-        store.weeks = self.weeks;
-      },
-      select(date: Date | null) {
-        self.select(date);
-        store.selected = self.selected;
-        store.weeks = self.weeks;
-      },
-      clear() {
-        self.clear();
-        store.selected = self.selected;
-        store.weeks = self.weeks;
-      },
-      matches: (date: Date, matcher) => self.matches(date, matcher),
-      isSelected: (date: Date) => self.isSelected(date),
-      isDisabled: (date: Date) => self.isDisabled(date),
-      isToday: (date: Date) => self.isToday(date),
-      isSameMonth: (date: Date, month?: Date) => self.isSameMonth(date, month),
-      isInRange: (date: Date) => self.isInRange(date),
-      isRangeStart: (date: Date) => self.isRangeStart(date),
-      isRangeEnd: (date: Date) => self.isRangeEnd(date),
-      format: (date: Date, pattern: string) => self.format(date, pattern),
-      formatMonth: (month?: Date) => self.formatMonth(month),
-      formatYear: (month?: Date) => self.formatYear(month),
-    } satisfies CalendarInstance;
-
-    return store;
+    return buildReactiveInstance(this);
   }
 
   // ── Internals ────────────────────────────────────────────────────
@@ -358,6 +308,65 @@ export class CalendarController extends BaseController<CalendarEvents> {
     };
     this.emit("select", detail);
   }
+}
+
+/**
+ * Builds a raw CalendarInstance-shaped object backed by the given controller.
+ * Methods use `this` so Alpine.reactive() Proxy routes mutations through the set trap.
+ */
+export function buildReactiveInstance(controller: CalendarController): CalendarInstance {
+  return {
+    month: controller.month,
+    mode: controller.mode,
+    selected: controller.selected,
+    locale: controller.locale,
+    weekStartsOn: controller.weekStartsOn,
+    dateFns: controller.dateFns,
+    weeks: controller.weeks,
+    weekdayLabels: controller.weekdayLabels,
+
+    prevMonth(this: Writable<CalendarInstance>) {
+      controller.prevMonth();
+      this.month = controller.month;
+      this.weeks = controller.weeks;
+    },
+    nextMonth(this: Writable<CalendarInstance>) {
+      controller.nextMonth();
+      this.month = controller.month;
+      this.weeks = controller.weeks;
+    },
+    goToMonth(this: Writable<CalendarInstance>, date: Date) {
+      controller.goToMonth(date);
+      this.month = controller.month;
+      this.weeks = controller.weeks;
+    },
+    goToToday(this: Writable<CalendarInstance>) {
+      controller.goToToday();
+      this.month = controller.month;
+      this.weeks = controller.weeks;
+    },
+    select(this: Writable<CalendarInstance>, date: Date | null) {
+      controller.select(date);
+      this.selected = controller.selected;
+      this.weeks = controller.weeks;
+    },
+    clear(this: Writable<CalendarInstance>) {
+      controller.clear();
+      this.selected = controller.selected;
+      this.weeks = controller.weeks;
+    },
+    matches: (date, matcher) => controller.matches(date, matcher),
+    isSelected: (date) => controller.isSelected(date),
+    isDisabled: (date) => controller.isDisabled(date),
+    isToday: (date) => controller.isToday(date),
+    isSameMonth: (date, month) => controller.isSameMonth(date, month),
+    isInRange: (date) => controller.isInRange(date),
+    isRangeStart: (date) => controller.isRangeStart(date),
+    isRangeEnd: (date) => controller.isRangeEnd(date),
+    format: (date, pattern) => controller.format(date, pattern),
+    formatMonth: (month) => controller.formatMonth(month),
+    formatYear: (month) => controller.formatYear(month),
+  } satisfies CalendarInstance;
 }
 
 /** Creates a CalendarController. */
@@ -379,62 +388,7 @@ export function createCalendar(options?: CalendarOptions): CalendarInstance {
 /** Builds callable `$calendar` magic that returns independent calendar instances. */
 export function createCalendarMagic(Alpine?: { reactive: <T>(value: T) => T }): CalendarMagic {
   return (options?: CalendarOptions) => {
-    const controller = new CalendarController(options);
-
-    const raw = {
-      month: controller.month,
-      mode: controller.mode,
-      selected: controller.selected,
-      locale: controller.locale,
-      weekStartsOn: controller.weekStartsOn,
-      dateFns: controller.dateFns,
-      weeks: controller.weeks,
-      weekdayLabels: controller.weekdayLabels,
-
-      prevMonth(this: Record<string, unknown>) {
-        controller.prevMonth();
-        this.month = controller.month;
-        this.weeks = controller.weeks;
-      },
-      nextMonth(this: Record<string, unknown>) {
-        controller.nextMonth();
-        this.month = controller.month;
-        this.weeks = controller.weeks;
-      },
-      goToMonth(this: Record<string, unknown>, date: Date) {
-        controller.goToMonth(date);
-        this.month = controller.month;
-        this.weeks = controller.weeks;
-      },
-      goToToday(this: Record<string, unknown>) {
-        controller.goToToday();
-        this.month = controller.month;
-        this.weeks = controller.weeks;
-      },
-      select(this: Record<string, unknown>, date: Date | null) {
-        controller.select(date);
-        this.selected = controller.selected;
-        this.weeks = controller.weeks;
-      },
-      clear(this: Record<string, unknown>) {
-        controller.clear();
-        this.selected = controller.selected;
-        this.weeks = controller.weeks;
-      },
-      matches: (date: Date, matcher: Parameters<CalendarController["matches"]>[1]) =>
-        controller.matches(date, matcher),
-      isSelected: (date: Date) => controller.isSelected(date),
-      isDisabled: (date: Date) => controller.isDisabled(date),
-      isToday: (date: Date) => controller.isToday(date),
-      isSameMonth: (date: Date, month?: Date) => controller.isSameMonth(date, month),
-      isInRange: (date: Date) => controller.isInRange(date),
-      isRangeStart: (date: Date) => controller.isRangeStart(date),
-      isRangeEnd: (date: Date) => controller.isRangeEnd(date),
-      format: (date: Date, pattern: string) => controller.format(date, pattern),
-      formatMonth: (month?: Date) => controller.formatMonth(month),
-      formatYear: (month?: Date) => controller.formatYear(month),
-    } satisfies CalendarInstance;
-
+    const raw = buildReactiveInstance(new CalendarController(options));
     return Alpine ? Alpine.reactive(raw) : raw;
   };
 }

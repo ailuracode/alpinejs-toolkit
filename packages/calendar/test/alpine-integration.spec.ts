@@ -7,7 +7,7 @@ import { describe, expect, it, vi } from "vitest";
 import { createMagicHarness } from "../../../test/mock-alpine.js";
 import { createCalendarMagic } from "../src/controller.js";
 import calendarPlugin from "../src/plugin.js";
-import type { CalendarMagic } from "../src/types.js";
+import type { CalendarInstance, CalendarMagic } from "../src/types.js";
 
 const JAN_2024 = new Date(2024, 0, 15);
 
@@ -69,7 +69,7 @@ describe("calendarPlugin — Alpine integration", () => {
         Reflect.set(target, prop, value);
         return true;
       },
-    }) as unknown as ReturnType<CalendarMagic>;
+    }) as unknown as CalendarInstance;
 
     // Navigation via proxy — methods use `this` which is the proxy
     proxy.nextMonth();
