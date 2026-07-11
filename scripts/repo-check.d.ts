@@ -10,6 +10,7 @@ export interface RepoCheckOptions {
   root?: string;
   packagesDir?: string;
   requireBuilt?: boolean;
+  packageFolders?: string[];
 }
 
 export interface RepoCheckResult {
