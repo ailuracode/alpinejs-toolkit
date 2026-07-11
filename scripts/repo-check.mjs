@@ -394,6 +394,52 @@ function validateRepositoryMetadata(pkg) {
 }
 
 /**
+ * @param {unknown} sideEffects
+ * @returns {boolean}
+ */
+export function isValidSideEffectsMetadata(sideEffects) {
+  if (sideEffects === false) {
+    return true;
+  }
+
+  if (!Array.isArray(sideEffects) || sideEffects.length === 0) {
+    return false;
+  }
+
+  return sideEffects.every((entry) => typeof entry === "string" && entry.length > 0);
+}
+
+/**
+ * @param {DiscoveredPackage} pkg
+ * @returns {string[]}
+ */
+export function validateSideEffectsMetadata(pkg) {
+  const errors = [];
+
+  if (pkg.isPrivate) {
+    return errors;
+  }
+
+  if (!("sideEffects" in pkg.manifest)) {
+    errors.push(`${pkg.name}: package.json missing "sideEffects"`);
+    return errors;
+  }
+
+  const sideEffects = pkg.manifest.sideEffects;
+
+  if (sideEffects === true) {
+    errors.push(`${pkg.name}: sideEffects must be false or a non-empty file allowlist, not true`);
+    return errors;
+  }
+
+  if (!isValidSideEffectsMetadata(sideEffects)) {
+    errors.push(`${pkg.name}: sideEffects must be false or a non-empty array of file glob strings`);
+  }
+
+  return errors;
+}
+
+/**
  * @param {DiscoveredPackage} pkg
  * @returns {string[]}
  */
@@ -461,7 +507,8 @@ function validatePackageMetadata(pkg, requireBuilt) {
     ...validateRequiredPackageFiles(pkg),
     ...validateManifestFields(pkg),
     ...validateRepositoryMetadata(pkg),
-    ...validatePublishMetadata(pkg)
+    ...validatePublishMetadata(pkg),
+    ...validateSideEffectsMetadata(pkg)
   );
 
   if (requireBuilt) {
@@ -714,7 +761,7 @@ function main() {
       : undefined;
 
   const result = runRepoCheck({
-    requireBuilt: argSet.includes("--built"),
+    requireBuilt: argSet.has("--built"),
     packageFolders,
   });
 

@@ -3,7 +3,11 @@ import { mkdtempSync, rmSync } from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { discoverPackages, publishablePackages } from "./repo-check.mjs";
+import {
+  discoverPackages,
+  isValidSideEffectsMetadata,
+  publishablePackages,
+} from "./repo-check.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const REQUIRED_TARBALL_FILES = ["package.json", "README.md"];
@@ -157,6 +161,12 @@ export function validatePackedWorkspace(pkg, packed) {
 
   for (const range of collectWorkspaceDependencyRanges(packed.manifest)) {
     errors.push(`${pkg.name}: packed manifest still contains ${range}`);
+  }
+
+  if (!("sideEffects" in packed.manifest)) {
+    errors.push(`${pkg.name}: packed manifest missing "sideEffects"`);
+  } else if (!isValidSideEffectsMetadata(packed.manifest.sideEffects)) {
+    errors.push(`${pkg.name}: packed manifest has invalid "sideEffects" metadata`);
   }
 
   return errors;
