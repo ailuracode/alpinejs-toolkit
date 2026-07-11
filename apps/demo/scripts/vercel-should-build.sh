@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 # Exit 0 → skip Vercel build. Exit 1 → proceed with build.
+# Vercel runs this from the project root (apps/demo); git pathspecs are repo-root-relative.
 set -euo pipefail
+
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+cd "${REPO_ROOT}"
 
 resolve_base_ref() {
   if [ -n "${VERCEL_GIT_PREVIOUS_SHA:-}" ] && [ "${VERCEL_GIT_PREVIOUS_SHA}" != "undefined" ]; then
@@ -24,6 +28,7 @@ BASE_REF="$(resolve_base_ref)"
 CHANGED="$(
   git diff --name-only "${BASE_REF}" HEAD -- \
     apps/demo \
+    docs \
     packages \
     pnpm-lock.yaml \
     pnpm-workspace.yaml \
