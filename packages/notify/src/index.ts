@@ -26,6 +26,10 @@ export {
 } from "./controller.js";
 // --- Public types ---------------------------------------------------------
 export type { NotifyEvents } from "./events.js";
+export {
+  createNotificationPermissionAdapter,
+  NOTIFICATION_PERMISSION_NAME,
+} from "./permission-adapter.js";
 // --- Alpine integration ---------------------------------------------------
 export { notifyPlugin, notifyPlugin as default } from "./plugin.js";
 export type { NotifyMagic, NotifyPluginOptions } from "./types.js";

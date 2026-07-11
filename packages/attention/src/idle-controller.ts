@@ -9,12 +9,9 @@
  */
 
 import { BaseController } from "@ailuracode/alpine-core";
-import {
-  getIdleDetectorConstructor,
-  IDLE_DETECTION_PERMISSION,
-  readIdlePermissionStatus,
-} from "./browser.js";
+import { getIdleDetectorConstructor } from "./browser.js";
 import type { IdleEvents } from "./events.js";
+import { createIdlePermissionAdapter } from "./permission-adapter.js";
 import type {
   IdleDetectorConstructor,
   IdleDetectorLike,
@@ -64,10 +61,12 @@ export class IdleController extends BaseController<IdleEvents> {
   #detectorChangeHandler: (() => void) | null = null;
   readonly #idleDetectorCtor: IdleDetectorConstructor | null;
   readonly #isSupported: boolean;
+  readonly #permissionAdapter: ReturnType<typeof createIdlePermissionAdapter>;
 
   constructor(idleDetectorCtor?: IdleDetectorConstructor | null) {
     super("idle");
     this.#idleDetectorCtor = idleDetectorCtor ?? getIdleDetectorConstructor();
+    this.#permissionAdapter = createIdlePermissionAdapter(this.#idleDetectorCtor);
     this.#isSupported =
       this.#idleDetectorCtor != null &&
       typeof this.#idleDetectorCtor.requestPermission === "function";
@@ -238,7 +237,9 @@ export class IdleController extends BaseController<IdleEvents> {
       return;
     }
     super.mount();
-    this.#initPermissionListener();
+    void this.#syncPermission().then(() => {
+      this.#initPermissionListener();
+    });
   }
 
   /**
@@ -263,34 +264,30 @@ export class IdleController extends BaseController<IdleEvents> {
     if (this.#permission === "granted") {
       return;
     }
-    const queried = await readIdlePermissionStatus();
-    if (queried != null) {
-      this.#permission = queried;
-    }
+
+    const queried = await this.#permissionAdapter.query();
+    this.#permission = queried === "unknown" ? null : queried;
   }
 
   async #promptPermission(): Promise<PermissionState> {
     if (!this.#idleDetectorCtor) {
       return "denied";
     }
-    try {
-      const permission = await this.#idleDetectorCtor.requestPermission();
-      this.#permission = permission;
 
-      if (permission === "granted") {
-        this.#error = null;
-      } else {
-        this.#error = idlePermissionError(permission);
-      }
+    const result = await this.#permissionAdapter.request();
+    const permission =
+      result.permission === "unknown" ? "denied" : (result.permission as PermissionState);
+    this.#permission = permission;
 
-      this.#emitChange();
-      return permission;
-    } catch (error) {
-      this.#error = error instanceof Error ? error.message : "Failed to request idle permission";
-      this.#permission = "denied";
-      this.#emitChange();
-      return "denied";
+    if (permission === "granted") {
+      this.#error = null;
+    } else {
+      this.#error =
+        result.error?.message ?? idlePermissionError(permission === "denied" ? "denied" : "prompt");
     }
+
+    this.#emitChange();
+    return permission;
   }
 
   async #ensurePermission(): Promise<boolean> {
@@ -364,40 +361,36 @@ export class IdleController extends BaseController<IdleEvents> {
   }
 
   #initPermissionListener(): void {
-    if (typeof navigator === "undefined" || !navigator.permissions?.query) {
+    const subscribe = this.#permissionAdapter.subscribe;
+    if (!subscribe) {
       return;
     }
 
-    void navigator.permissions
-      .query({ name: IDLE_DETECTION_PERMISSION })
-      .then((status) => {
+    void Promise.resolve(
+      subscribe((snapshot) => {
         if (this.isDestroyed) {
           return;
         }
 
-        this.#permission = status.state;
+        const permission =
+          snapshot.permission === "unknown" ? null : (snapshot.permission as PermissionState);
+        this.#permission = permission;
 
-        const onPermissionChange = (): void => {
-          if (this.isDestroyed) {
-            return;
-          }
-          this.#permission = status.state;
-          if (status.state !== "granted" && this.#isWatching) {
-            this.stop();
-          }
-          this.#emitChange();
-        };
-
-        status.addEventListener("change", onPermissionChange);
-        this.registerCleanup(() => {
-          status.removeEventListener("change", onPermissionChange);
-        });
+        if (permission !== "granted" && this.#isWatching) {
+          this.stop();
+        }
 
         this.#emitChange();
       })
-      .catch(() => {
-        // Permissions API name unsupported — fall back to requestPermission().
-      });
+    ).then((unsubscribe) => {
+      if (this.isDestroyed) {
+        unsubscribe();
+        return;
+      }
+
+      this.registerCleanup(unsubscribe);
+      this.#emitChange();
+    });
   }
 
   #emitChange(): void {

@@ -21,5 +21,7 @@ export const REPO_CHECK_POLICY = {
   depBoundaries: {
     /** `alpine-ui` must not import any higher-level toolkit package. */
     ui: [],
+    /** `alpine-permissions` is infrastructure and must stay capability-agnostic. */
+    permissions: ["@ailuracode/alpine-core"],
   },
 };

@@ -51,6 +51,19 @@ cp node_modules/@ailuracode/alpine-notify/dist/notify-sw.js public/notify-sw.js
 | `sendIfPermittedAsync(title, options?)` | `Promise<Notification \| null>` | Same as `sendAsync` |
 | `close(notification)` | `void` | Close without throwing |
 
+## Permission adapter
+
+For the unified registry in `@ailuracode/alpine-permissions`, export and register:
+
+```ts
+import { createNotificationPermissionAdapter } from "@ailuracode/alpine-notify";
+
+createNotificationPermissionAdapter({ serviceWorkerUrl: "/notify-sw.js" });
+// registry key: "notifications"
+```
+
+See [`@ailuracode/alpine-permissions`](../permissions/README.md).
+
 ## Browser compatibility
 
 | Feature | Support |

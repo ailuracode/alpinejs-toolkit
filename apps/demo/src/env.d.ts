@@ -26,6 +26,8 @@ type ExportMagic = import("@ailuracode/alpine-transfer").ExportMagic;
 type CalendarMagic = import("@ailuracode/alpine-calendar").CalendarMagic;
 type ToggleMagic = import("@ailuracode/alpine-toggle").ToggleMagic;
 type PlatformMagic = import("@ailuracode/alpine-env").PlatformMagic;
+type PermissionsStore = import("@ailuracode/alpine-permissions").PermissionsStore;
+type PermissionsMagic = import("@ailuracode/alpine-permissions").PermissionsMagic;
 type NotifyMagic = import("@ailuracode/alpine-notify").NotifyMagic;
 type ShareMagic = import("@ailuracode/alpine-transfer").ShareMagic;
 type WakeLockMagic = import("@ailuracode/alpine-attention").WakeLockMagic;
@@ -65,6 +67,7 @@ declare module "alpinejs" {
       tabs: TabsStore;
       tooltip: TooltipStore;
       lang: LangStore;
+      permissions: PermissionsStore;
     }
     interface Magics<T> {
       $theme: ThemeStore;
@@ -94,6 +97,7 @@ declare module "alpinejs" {
       $tabs: TabsStore;
       $tooltip: TooltipStore;
       $lang: LangStore;
+      $permissions: PermissionsMagic;
     }
   }
 }

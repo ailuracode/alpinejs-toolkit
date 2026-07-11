@@ -1,18 +1,19 @@
 import accordion from "@ailuracode/alpine-accordion";
-import attention from "@ailuracode/alpine-attention";
+import attention, { createIdlePermissionAdapter } from "@ailuracode/alpine-attention";
 import calendar from "@ailuracode/alpine-calendar";
 import carousel from "@ailuracode/alpine-carousel";
 import child from "@ailuracode/alpine-child";
 import command from "@ailuracode/alpine-command";
 import dialog from "@ailuracode/alpine-dialog";
 import env from "@ailuracode/alpine-env";
-import geo from "@ailuracode/alpine-geo";
+import geo, { createGeoPermissionAdapter } from "@ailuracode/alpine-geo";
 import jsonApi from "@ailuracode/alpine-json-api";
 import lang from "@ailuracode/alpine-lang";
 import media from "@ailuracode/alpine-media";
 import menu from "@ailuracode/alpine-menu";
-import notify from "@ailuracode/alpine-notify";
+import notify, { createNotificationPermissionAdapter } from "@ailuracode/alpine-notify";
 import overlay from "@ailuracode/alpine-overlay";
+import permissions from "@ailuracode/alpine-permissions";
 import query from "@ailuracode/alpine-query-adapter-alpine";
 import queryKit, { createAlpineNanostoresAdapter, NanoStores } from "@ailuracode/alpine-query-kit";
 import scroll from "@ailuracode/alpine-scroll";
@@ -59,6 +60,13 @@ export async function startAlpineDemo(): Promise<void> {
   alpine.plugin([persist, anchor, collapse, morph]);
 
   alpine.plugin([
+    permissions({
+      adapters: [
+        createNotificationPermissionAdapter(),
+        createGeoPermissionAdapter(),
+        createIdlePermissionAdapter(),
+      ],
+    }),
     toast({
       variants: toastDemoVariants,
       positions: toastDemoPositions,

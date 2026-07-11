@@ -4,11 +4,12 @@ Guidance for AI agents and contributors working on **@ailuracode/alpinejs-toolki
 
 ## Project
 
-Alpine.js plugin monorepo by **ailuracode**. 28 independent npm packages under `packages/`, plus shared tests and docs. The root package `@ailuracode/alpinejs-toolkit` is **private** and never published.
+Alpine.js plugin monorepo by **ailuracode**. 29 independent npm packages under `packages/`, plus shared tests and docs. The root package `@ailuracode/alpinejs-toolkit` is **private** and never published.
 
 | Package | Type | Store / Magic |
 |---------|------|---------------|
 | `@ailuracode/alpine-core` | Core | Plugin registry (`registerPlugin`, `initPlugins`) |
+| `@ailuracode/alpine-permissions` | Store | `$store.permissions` / `$permissions` — adapter registry |
 | `@ailuracode/alpine-theme` | Store | `$store.theme` |
 | `@ailuracode/alpine-media` | Store | `$store.media` |
 | `@ailuracode/alpine-scroll` | Store | `$store.scroll` |
