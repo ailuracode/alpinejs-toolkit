@@ -17,11 +17,13 @@
 // --- Re-export core types ------------------------------------------------
 export type { Unsubscribe } from "@ailuracode/alpine-core";
 // --- Controller (framework-agnostic) -------------------------------------
-export { AccordionController, createAccordionController, createAccordionStore } from "./controller";
+export { AccordionController, createAccordionController } from "./controller";
 // --- Event surface -------------------------------------------------------
 export type { AccordionEvents } from "./events";
 // --- Alpine integration --------------------------------------------------
 export { accordionOptions, accordionPlugin, accordionPlugin as default } from "./plugin";
+// --- Store factory -------------------------------------------------------
+export { createAccordionStore, createAccordionStoreFromController } from "./store";
 // --- Public types ---------------------------------------------------------
 export type {
   AccordionAlpine,
