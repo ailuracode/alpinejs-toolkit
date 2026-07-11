@@ -6,6 +6,7 @@ import child from "@ailuracode/alpine-child";
 import command from "@ailuracode/alpine-command";
 import dialog from "@ailuracode/alpine-dialog";
 import env from "@ailuracode/alpine-env";
+import form from "@ailuracode/alpine-form";
 import geo from "@ailuracode/alpine-geo";
 import jsonApi from "@ailuracode/alpine-json-api";
 import lang from "@ailuracode/alpine-lang";
@@ -96,6 +97,7 @@ export async function startAlpineDemo(): Promise<void> {
     }),
     overlay(),
     child(),
+    form(),
     lang(),
   ]);
 

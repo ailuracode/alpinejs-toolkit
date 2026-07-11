@@ -1,0 +1,68 @@
+---
+import { getPluginNavItem } from "../../plugin-nav";
+import DemoButton from "../astro/DemoButton.astro";
+import DemoSection from "../DemoSection.astro";
+
+const plugin = getPluginNavItem("form")!;
+---
+
+<DemoSection id={plugin.id} title={plugin.title} api={plugin.api} description={plugin.description}>
+	<div
+		x-data
+		x-init="
+			$store.form.register('demo', { initialValues: { email: '', password: '' }, validateOn: 'blur' });
+			$store.form.registerField('demo', 'email', { validate: value => value ? null : 'Email is required' });
+			$store.form.registerField('demo', 'password', { validate: value => value && String(value).length >= 8 ? null : 'Password must be at least 8 characters' });
+		"
+		class="space-y-4"
+	>
+		<div class="grid gap-3 sm:grid-cols-2">
+			<label class="space-y-1 text-sm">
+				<span>Email</span>
+				<input
+					class="w-full rounded-md border px-3 py-2"
+					data-form-field="email"
+					x-model="$store.form.instances.demo.values.email"
+					x-bind="$store.form.fieldProps('demo', 'email', { errorId: 'demo-email-error' })"
+					@input="$store.form.setValue('demo', 'email', $event.target.value)"
+					@blur="$store.form.touch('demo', 'email')"
+				/>
+				<p id="demo-email-error" class="text-xs text-destructive" x-show="$store.form.instances.demo?.fields?.email?.errors?.length" x-text="$store.form.instances.demo?.fields?.email?.errors?.[0]"></p>
+			</label>
+
+			<label class="space-y-1 text-sm">
+				<span>Password</span>
+				<input
+					type="password"
+					class="w-full rounded-md border px-3 py-2"
+					data-form-field="password"
+					x-model="$store.form.instances.demo.values.password"
+					x-bind="$store.form.fieldProps('demo', 'password', { errorId: 'demo-password-error' })"
+					@input="$store.form.setValue('demo', 'password', $event.target.value)"
+					@blur="$store.form.touch('demo', 'password')"
+				/>
+				<p id="demo-password-error" class="text-xs text-destructive" x-show="$store.form.instances.demo?.fields?.password?.errors?.length" x-text="$store.form.instances.demo?.fields?.password?.errors?.[0]"></p>
+			</label>
+		</div>
+
+		<div class="flex flex-wrap gap-2 text-sm">
+			<span>dirty: <strong x-text="$store.form.instances.demo?.dirty"></strong></span>
+			<span>touched: <strong x-text="$store.form.instances.demo?.touched"></strong></span>
+			<span>valid: <strong x-text="$store.form.instances.demo?.valid"></strong></span>
+			<span>submitting: <strong x-text="$store.form.instances.demo?.submitting"></strong></span>
+		</div>
+
+		<div aria-live="polite" class="text-xs text-muted-foreground" x-text="$store.form.announceErrors('demo', $el)"></div>
+
+		<div class="flex flex-wrap gap-2">
+			<DemoButton @click="$store.form.validate('demo')">validate()</DemoButton>
+			<DemoButton @click="$store.form.submit('demo', async () => { await new Promise(r => setTimeout(r, 400)); })">submit()</DemoButton>
+			<DemoButton @click="$store.form.reset('demo')">reset()</DemoButton>
+			<DemoButton @click="$store.form.setServerErrors('demo', { email: ['Already registered'] }, ['Please fix the highlighted fields'])">simulate server errors</DemoButton>
+		</div>
+	</div>
+
+	<p class="text-xs text-muted-foreground mt-3">
+		Package: <code>{plugin.package}</code> — headless only; pair with your own markup and styles.
+	</p>
+</DemoSection>

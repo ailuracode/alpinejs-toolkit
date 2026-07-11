@@ -254,6 +254,16 @@ export const PLUGIN_NAV_GROUPS: PluginNavGroup[] = [
           "Geolocation coordinates, accuracy, and permission state with watch/start/stop actions.",
       },
       {
+        id: "form",
+        title: "Form",
+        package: "@ailuracode/alpine-form",
+        api: "$store.form / $form",
+        kind: "store",
+        tier: "extended",
+        description:
+          "Headless form state and validation: dirty, touched, valid, submitting, async validation, server error mapping, and reset — without replacing x-model.",
+      },
+      {
         id: "lang",
         title: "Lang",
         package: "@ailuracode/alpine-lang",
@@ -367,6 +377,7 @@ const PLUGIN_DOCS: ReadonlySet<string> = new Set([
   "command",
   "carousel",
   "geo",
+  "form",
   "lang",
   "calendar",
   "query",

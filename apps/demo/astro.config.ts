@@ -152,6 +152,7 @@ export default defineConfig({
         "@ailuracode/alpine-toast": pkg("toast"),
         "@ailuracode/alpine-geo": pkg("geo"),
         "@ailuracode/alpine-json-api": pkg("json-api"),
+        "@ailuracode/alpine-form": pkg("form"),
         "@ailuracode/alpine-lang": pkg("lang"),
         "@ailuracode/alpine-notify": pkg("notify"),
         "@ailuracode/alpine-overlay": pkg("overlay"),

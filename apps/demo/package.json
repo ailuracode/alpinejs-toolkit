@@ -28,6 +28,7 @@
     "@ailuracode/alpine-env": "workspace:*",
     "@ailuracode/alpine-geo": "workspace:*",
     "@ailuracode/alpine-json-api": "workspace:*",
+    "@ailuracode/alpine-form": "workspace:*",
     "@ailuracode/alpine-lang": "workspace:*",
     "@ailuracode/alpine-media": "workspace:*",
     "@ailuracode/alpine-menu": "workspace:*",

@@ -39,6 +39,7 @@ type MenuStore = import("@ailuracode/alpine-menu").MenuStore;
 type TabsStore = import("@ailuracode/alpine-tabs").TabsStore;
 type TooltipStore = import("@ailuracode/alpine-tooltip").TooltipStore;
 type LangStore = import("@ailuracode/alpine-lang").LangStore;
+type FormStore = import("@ailuracode/alpine-form").FormStore;
 
 declare module "alpinejs" {
   interface Alpine {
@@ -65,6 +66,7 @@ declare module "alpinejs" {
       tabs: TabsStore;
       tooltip: TooltipStore;
       lang: LangStore;
+      form: FormStore;
     }
     interface Magics<T> {
       $theme: ThemeStore;
@@ -94,6 +96,7 @@ declare module "alpinejs" {
       $tabs: TabsStore;
       $tooltip: TooltipStore;
       $lang: LangStore;
+      $form: FormStore;
     }
   }
 }
