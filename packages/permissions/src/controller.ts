@@ -104,7 +104,7 @@ export class PermissionsController extends BaseController<PermissionsEvents> {
     const entry = this.#requireEntry(name);
 
     if (entry.pendingRequest) {
-      return entry.pendingRequest;
+      return await entry.pendingRequest;
     }
 
     const snapshot = entry.snapshot;
@@ -113,16 +113,15 @@ export class PermissionsController extends BaseController<PermissionsEvents> {
     }
 
     const generation = ++entry.requestGeneration;
-    const promise = this.#runRequest(entry, generation, options);
-    entry.pendingRequest = promise;
-
-    try {
-      return await promise;
-    } finally {
-      if (entry.pendingRequest === promise) {
+    let pending: Promise<PermissionSnapshot>;
+    pending = this.#runRequest(entry, generation, options).finally(() => {
+      if (entry.pendingRequest === pending) {
         entry.pendingRequest = null;
       }
-    }
+    });
+    entry.pendingRequest = pending;
+
+    return await pending;
   }
 
   refresh(name: string): Promise<PermissionSnapshot> {
