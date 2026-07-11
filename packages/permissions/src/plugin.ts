@@ -2,7 +2,6 @@ import type AlpineType from "alpinejs";
 import { createPermissions, type PermissionsController } from "./controller.js";
 import type {
   PermissionAdapter,
-  PermissionSnapshot,
   PermissionsMagic,
   PermissionsPluginOptions,
   PermissionsStore,
@@ -12,18 +11,14 @@ interface PermissionsAlpine extends AlpineType.Alpine {
   cleanup?(callback: () => void): void;
 }
 
-function createPermissionsStore(controller: PermissionsController): PermissionsStore {
-  const state = {
-    registry: controller.getRegistry() as Record<string, PermissionSnapshot>,
-  };
+const PERMISSIONS_STORE_KEY = "permissions";
 
+function createPermissionsStore(controller: PermissionsController): PermissionsStore {
   const store: PermissionsStore = {
-    get registry() {
-      return state.registry;
-    },
+    registry: { ...controller.getRegistry() },
 
     get(name: string) {
-      return controller.get(name);
+      return store.registry[name];
     },
 
     query(name: string) {
@@ -44,19 +39,22 @@ function createPermissionsStore(controller: PermissionsController): PermissionsS
 
     register(adapter: PermissionAdapter) {
       const dispose = controller.register(adapter);
-      state.registry = controller.getRegistry() as Record<string, PermissionSnapshot>;
+      store.registry = { ...controller.getRegistry() };
       return () => {
         dispose();
-        state.registry = controller.getRegistry() as Record<string, PermissionSnapshot>;
+        store.registry = { ...controller.getRegistry() };
       };
     },
   };
 
-  controller.on("change", () => {
-    state.registry = controller.getRegistry() as Record<string, PermissionSnapshot>;
-  });
-
   return store;
+}
+
+function syncReactiveRegistry(
+  reactiveStore: PermissionsStore,
+  controller: PermissionsController
+): void {
+  reactiveStore.registry = { ...controller.getRegistry() };
 }
 
 function registerPermissions(
@@ -64,14 +62,27 @@ function registerPermissions(
   options: PermissionsPluginOptions = {}
 ): PermissionsController {
   const controller = options.controller ?? createPermissions();
+  const adapters = options.adapters ?? [];
 
-  for (const adapter of options.adapters ?? []) {
+  for (const adapter of adapters) {
     controller.register(adapter);
   }
 
   const store = createPermissionsStore(controller);
-  Alpine.store("permissions", store);
-  Alpine.magic("permissions", () => store as PermissionsMagic);
+  Alpine.store(PERMISSIONS_STORE_KEY, store);
+  const reactiveStore = Alpine.store(PERMISSIONS_STORE_KEY) as PermissionsStore;
+
+  controller.on("change", () => {
+    syncReactiveRegistry(reactiveStore, controller);
+  });
+
+  Alpine.magic(PERMISSIONS_STORE_KEY, () => reactiveStore as PermissionsMagic);
+
+  // Query and observe current permission state without prompting.
+  for (const name of Object.keys(controller.getRegistry())) {
+    void controller.query(name);
+    void controller.watch(name);
+  }
 
   if (typeof Alpine.cleanup === "function") {
     Alpine.cleanup(() => {

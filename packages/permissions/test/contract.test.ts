@@ -19,23 +19,29 @@ describe("@ailuracode/alpine-permissions contract", () => {
     document.body.innerHTML = "";
   });
 
-  it("registers $store.permissions and $permissions", () => {
+  it("registers $store.permissions and syncs query results reactively", async () => {
+    const query = vi.fn(async () => "granted" as const);
     const Alpine = startAlpine(
       permissionsPlugin({
-        adapters: [createPromptAdapter("notifications")],
+        adapters: [{ ...createPromptAdapter("notifications"), query }],
       }) as Parameters<typeof startAlpine>[0]
     );
 
     const store = Alpine.store("permissions") as import("../src/types.js").PermissionsStore;
-    expect(store.get("notifications")?.permission).toBe("unknown");
-    expect(store.query).toBeTypeOf("function");
+
+    await vi.waitFor(() => {
+      expect(query).toHaveBeenCalled();
+      expect(store.registry.notifications?.permission).toBe("granted");
+    });
   });
 
   it("never auto-requests during plugin registration", () => {
     const request = vi.fn(async () => ({ permission: "granted" as const }));
+    const query = vi.fn(async () => "prompt" as const);
     const controller = createPermissions();
     controller.register({
       ...createPromptAdapter("geolocation"),
+      query,
       request,
     });
 
@@ -46,6 +52,21 @@ describe("@ailuracode/alpine-permissions contract", () => {
     );
 
     expect(request).not.toHaveBeenCalled();
+    expect(query).toHaveBeenCalled();
     controller.destroy();
+  });
+
+  it("updates the reactive registry after request()", async () => {
+    const Alpine = startAlpine(
+      permissionsPlugin({
+        adapters: [createPromptAdapter("notifications")],
+      }) as Parameters<typeof startAlpine>[0]
+    );
+
+    const store = Alpine.store("permissions") as import("../src/types.js").PermissionsStore;
+
+    await store.request("notifications");
+
+    expect(store.registry.notifications?.permission).toBe("granted");
   });
 });
