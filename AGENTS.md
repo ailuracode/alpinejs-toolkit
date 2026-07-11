@@ -52,7 +52,6 @@ test/                            # shared test setup (setup.ts, helpers.ts, mock
 
 ## Commands
 
-For terminal workflows, USE `rtk` instead of raw `git`, `gh`, `pnpm`, test, and log commands whenever `rtk` supports that command. Fall back to raw commands only when `rtk` does not support needed behavior. Keep using structured tools like `Read`, `Grep`, and `Glob` for file/context access.
 
 ```bash
 pnpm install          # install all workspaces
@@ -149,7 +148,6 @@ Rules are `.mdc` files with YAML frontmatter (`description`, `globs`, `alwaysApp
 
 | Rule file | Scope | Key content |
 |-----------|-------|-------------|
-| `rtk.mdc` | Always | Require `rtk` wrapper for terminal commands (`rtk git`, `rtk pnpm`, etc.) |
 | `git-commit-message.mdc` | Always | PR descriptions, commit messages, Linear conventions |
 | `branches.mdc` | Always | Branch naming convention for issue-driven work |
 | `testing.mdc` | Test files | Harness selection, layer split, contract tests, common mistakes |
