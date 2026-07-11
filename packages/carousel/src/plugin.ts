@@ -31,6 +31,30 @@ export function carouselPlugin(options: CreateCarouselOptions = {}): CarouselPlu
       syncInstanceRegistry(reactiveStore.instances, controller.snapshotInstances());
     };
 
+    reactiveStore.current = (id) => reactiveStore.instances[id]?.currentIndex ?? 0;
+    reactiveStore.count = (id) => reactiveStore.instances[id]?.totalSlides ?? 0;
+    reactiveStore.canNext = (id) => reactiveStore.instances[id]?.canNext ?? false;
+    reactiveStore.canPrevious = (id) => reactiveStore.instances[id]?.canPrevious ?? false;
+    reactiveStore.isPlaying = (id) => reactiveStore.instances[id]?.isPlaying ?? false;
+    reactiveStore.slideProps = (id, index) => {
+      const current = reactiveStore.current(id);
+      const total = reactiveStore.count(id);
+      return {
+        role: "group",
+        "aria-roledescription": "slide",
+        "aria-label": `${index + 1} of ${total}`,
+        "aria-hidden": current !== index ? true : undefined,
+      };
+    };
+    reactiveStore.indicatorProps = (id, index) => {
+      const selected = reactiveStore.current(id) === index;
+      return {
+        type: "button",
+        "aria-label": `Go to slide ${index + 1}`,
+        "aria-current": selected ? "true" : undefined,
+      };
+    };
+
     controller.on("change", syncReactiveInstances);
     controller.on("slideChange", syncReactiveInstances);
 

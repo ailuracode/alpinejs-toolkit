@@ -16,6 +16,7 @@ Encapsulate mutable state in headless UI controllers (`menu`, `dialog`, `tooltip
 - Alpine plugins now mirror controller snapshots into `$store.*.instances` through typed `change` events. Template bindings on `$store.*.instances[id]` continue to work; direct mutation of store snapshots does not change controller state.
 - README and `docs/plugins/*` pages document architecture, standalone usage, and migration for all four packages.
 - **Accordion** — fixes Alpine reactivity in the playground demo by syncing cloned group snapshots into `$store.accordion.groups` (same adapter pattern as the other controllers).
+- **Carousel** — fixes indicator dots and reactive `count()` / `current()` in the playground by reading through the reactive `$store.carousel.instances` mirror.
 
 ### Standalone usage
 
