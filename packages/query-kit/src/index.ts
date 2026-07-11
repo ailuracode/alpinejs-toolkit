@@ -1,8 +1,8 @@
 /**
  * Public entrypoint for `@ailuracode/alpine-query-kit`.
  *
- * Re-exports only. Implementation lives in `./plugin.ts`,
- * `./devtools/*`, and `./nanostores/*`.
+ * Headless production surface: query cache re-exports and Nanostores adapter.
+ * Query Devtools lives in `@ailuracode/alpine-query-kit/devtools`.
  */
 
 export * from "./plugin.js";

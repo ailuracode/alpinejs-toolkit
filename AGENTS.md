@@ -114,12 +114,30 @@ export default function themePlugin(options = {}) {
 
 Plugins must stay **CSS-framework agnostic**. Do not hardcode `data-theme`, Tailwind `.dark`, or similar in plugin source. The consumer applies styles via callbacks (e.g. `theme({ onChange })`, `scroll({ onLockChange })`).
 
+#### Development tooling exception (ALP-36)
+
+Headless CSS rules apply to all `packages/**` **except** scoped development-tooling paths:
+
+| Path | Package import | Notes |
+|------|----------------|-------|
+| `packages/query-kit/src/devtools/**` | `@ailuracode/alpine-query-kit/devtools` | Styled Query Devtools panel (development-only) |
+
+Requirements:
+
+- Main `@ailuracode/alpine-query-kit` entry MUST remain headless and MUST NOT statically import devtools UI.
+- Devtools styles MUST use namespaced tokens (`--aq-*`) and classes (`aq-devtools-*`).
+- Host theme detection (`data-theme`, `.dark`, `prefers-color-scheme`) is allowed only inside devtools paths.
+- `repo:check` scans for styling markers outside exempt paths (`scripts/headless-css-policy.mjs`).
+
+See `.cursor/rules/devtools-tooling.mdc` for the full policy.
+
 ### Query cache (store-agnostic core)
 
 The query engine is **agnostic to any store library**. Reactivity is injected via `QueryStateAdapter`:
 
 - **`@ailuracode/alpine-query`** — cache core only (`QueryCache`, `createQueryClient`, `query({ adapter })`, `vanillaQueryAdapter`)
-- **`@ailuracode/alpine-query-kit`** — **recommended** for Alpine; Nanostores adapter + devtools + re-exports `@ailuracode/alpine-query`
+- **`@ailuracode/alpine-query-kit`** — **recommended** for Alpine; Nanostores adapter + re-exports `@ailuracode/alpine-query` (headless main entry)
+- **`@ailuracode/alpine-query-kit/devtools`** — Query Devtools styled panel (development-only subpath)
 - **`@ailuracode/alpine-query-adapter-alpine`** — native `Alpine.reactive`, zero external store deps
 - **`@ailuracode/alpine-query-adapter-zustand`** — Zustand vanilla stores; no official zustand-alpine exists — manual `subscribe` → `Alpine.reactive` bridge
 - **`createAlpineBridgedAdapter(Alpine, base)`** — shared bridge in core for adapter plugins
@@ -163,7 +181,7 @@ Rules are `.mdc` files with YAML frontmatter (`description`, `globs`, `alwaysApp
 | `deprecation-policy.mdc` | Source files | Deprecation types, semver rules, migration pattern |
 | `secrets-security.mdc` | Always | Hard rules, .gitignore, token handling |
 | `i18n-messages.mdc` | Docs, demo, README | Message keys, locale files, multi-language docs |
-| `readme-standardization.mdc` | Package README | Install commands, imports, API documentation tiers, verification checklist |
+| `devtools-tooling.mdc` | Query devtools source | Scoped styling exception for `@ailuracode/alpine-query-kit/devtools` |
 
 ### Skills (`.cursor/skills/`)
 

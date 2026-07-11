@@ -1,4 +1,4 @@
-import { queryDevtoolsPlugin } from "@ailuracode/alpine-query-kit";
+import { queryDevtoolsPlugin } from "@ailuracode/alpine-query-kit/devtools";
 import type { AlpineInstance } from "../types/alpine.js";
 import { registerCalendarDemo } from "./calendar-demo.js";
 import { registerCommandDemo } from "./command-demo.js";

@@ -1,12 +1,14 @@
 # @ailuracode/alpine-query-kit
 
-Query cache with Nanostores adapter and devtools panel — the recommended Alpine query stack.
+Query cache with Nanostores adapter — the recommended headless Alpine query stack.
 
 Re-exports everything from `@ailuracode/alpine-query` (cache core) plus:
 
 - **Nanostores adapter** — `nanostoresQueryAdapter`, `createAlpineNanostoresAdapter`
-- **Devtools panel** — `queryDevtoolsPlugin`, `mountQueryDevtools`, `getQueryStore`
 - **Directives** — `directivePlugin`, `magicPlugin`, `modelDirectivePlugin`
+
+Query Devtools (styled development panel) ships from a separate subpath:
+`@ailuracode/alpine-query-kit/devtools`.
 
 **[Full documentation →](../../docs/plugins/query-kit.md)**
 
@@ -26,10 +28,30 @@ Alpine.plugin(queryKit());
 Alpine.start();
 ```
 
-## Without devtools
+## Devtools (development)
+
+Import devtools from the dedicated subpath so production bundles stay headless:
 
 ```ts
-Alpine.plugin(queryKit({ devtools: false }));
+import queryKit from "@ailuracode/alpine-query-kit";
+import { queryDevtoolsPlugin } from "@ailuracode/alpine-query-kit/devtools";
+
+Alpine.plugin(queryKit());
+Alpine.plugin(
+  queryDevtoolsPlugin({
+    position: "bottom",
+    toggleCorner: "bottom-right",
+    theme: "system", // follows host `data-theme`, `.dark`, or system preference
+  })
+);
+```
+
+Or register both in one plugin:
+
+```ts
+import { queryKitWithDevtoolsPlugin } from "@ailuracode/alpine-query-kit/devtools";
+
+Alpine.plugin(queryKitWithDevtoolsPlugin({ devtools: { theme: "dark" } }));
 ```
 
 ## Standalone usage (no Alpine)
@@ -43,27 +65,12 @@ import { createQueryClient, query } from "@ailuracode/alpine-query";
 const client = createQueryClient({ adapter: nanostoresQueryAdapter });
 ```
 
-## Devtools
-
-The devtools panel renders a floating UI for inspecting active queries and mutations.
-
-```ts
-Alpine.plugin(
-  queryKit({
-    devtools: {
-      position: "bottom",        // "bottom" | "right"
-      toggleCorner: "bottom-right",
-      theme: "system",           // "light" | "dark" | "system"
-    },
-  })
-);
-```
-
-### Devtools API
+## Devtools API (`/devtools` subpath)
 
 | Export | Description |
 |--------|-------------|
-| `queryDevtoolsPlugin` | Plugin factory for devtools only (no query cache) |
+| `queryDevtoolsPlugin` | Plugin factory for devtools only |
+| `queryKitWithDevtoolsPlugin` | Registers Nanostores adapter + devtools panel |
 | `mountQueryDevtools(options)` | Mount the devtools panel programmatically |
 | `getQueryStore()` | Access the merged query store snapshot |
 | `DEFAULT_PREFERENCES_STORAGE_KEY` | Storage key for panel preferences |

@@ -5,22 +5,22 @@ description: "Package: @ailuracode/alpine-query-kit"
 
 Package: `@ailuracode/alpine-query-kit`
 
-Recommended Alpine query stack: store-agnostic cache core, Nanostores adapter, `@nanostores/alpine`, and the devtools panel — in one package.
+Recommended Alpine query stack: store-agnostic cache core, Nanostores adapter, and `@nanostores/alpine`. The main entry is **headless**; Query Devtools ships from `@ailuracode/alpine-query-kit/devtools`.
 
 ## Includes
 
-| Module | Description |
-|--------|-------------|
-| Query cache | Re-exports `@ailuracode/alpine-query` (`$store.query`, `queryKey`, …) |
-| Nanostores adapter | `nanostoresQueryAdapter`, `createAlpineNanostoresAdapter`, `NanoStores` |
-| Devtools | Inspector panel for the query cache |
+| Module | Import | Description |
+|--------|--------|-------------|
+| Query cache | `@ailuracode/alpine-query-kit` | Re-exports `@ailuracode/alpine-query` (`$store.query`, `queryKey`, …) |
+| Nanostores adapter | `@ailuracode/alpine-query-kit` | `nanostoresQueryAdapter`, `createAlpineNanostoresAdapter`, `NanoStores` |
+| Devtools | `@ailuracode/alpine-query-kit/devtools` | Styled inspector panel (development-only) |
 
 For Alpine/Zustand-only setups without Nanostores, use [`@ailuracode/alpine-query`](../query.md) with [`query-adapter-alpine`](../query.md) or [`query-adapter-zustand`](../query.md).
 
 ## Install
 
 ```bash
-npm install @ailuracode/alpine-query-kit alpinejs nanostores @nanostores/alpine
+pnpm add @ailuracode/alpine-query-kit alpinejs nanostores @nanostores/alpine
 ```
 
 ## Setup
@@ -33,13 +33,7 @@ Alpine.plugin(queryKit());
 Alpine.start();
 ```
 
-Registers `$store.query`, `@nanostores/alpine` (`x-nano`, `$nano`), and the devtools panel.
-
-## Without devtools
-
-```js
-Alpine.plugin(queryKit({ devtools: false }));
-```
+Registers `$store.query` and `@nanostores/alpine` (`x-nano`, `$nano`). Devtools are **not** included — import them separately when needed.
 
 ## Nanostores adapter only
 
@@ -59,33 +53,49 @@ Alpine.plugin(NanoStores);
 
 ## Devtools
 
-The devtools panel mounts after `alpine:initialized`. Configure position, toggle corner, and persistence:
+Import from the devtools subpath so production bundles omit styled UI:
 
 ```js
-import queryKit, { queryDevtoolsPlugin } from "@ailuracode/alpine-query-kit";
+import queryKit from "@ailuracode/alpine-query-kit";
+import { queryDevtoolsPlugin } from "@ailuracode/alpine-query-kit/devtools";
 
-// Included by default in queryKit()
 Alpine.plugin(queryKit());
-
-// Or register separately (e.g. with query core + another adapter)
 Alpine.plugin(
   queryDevtoolsPlugin({
     position: "bottom",
     toggleCorner: "bottom-left",
+    theme: "system", // host `data-theme`, `.dark`, or prefers-color-scheme
     storeName: "query",
   })
 );
 ```
 
-Lazy-load in production:
+Combined registration:
+
+```js
+import { queryKitWithDevtoolsPlugin } from "@ailuracode/alpine-query-kit/devtools";
+
+Alpine.plugin(queryKitWithDevtoolsPlugin({ devtools: { theme: "dark" } }));
+```
+
+Lazy-load in development:
 
 ```js
 if (import.meta.env.DEV) {
-  const { default: queryDevtools } = await import("@ailuracode/alpine-query-kit");
-  Alpine.plugin(queryDevtools({ devtools: false }));
-  Alpine.plugin((await import("@ailuracode/alpine-query-kit")).queryDevtoolsPlugin());
+  const { queryDevtoolsPlugin } = await import("@ailuracode/alpine-query-kit/devtools");
+  Alpine.plugin(queryDevtoolsPlugin());
 }
 ```
+
+### Theme behavior
+
+| `theme` option | Behavior |
+|----------------|----------|
+| `"light"` | Force light devtools chrome |
+| `"dark"` | Force dark devtools chrome |
+| `"system"` (default) | Follow host `data-theme` on `<html>`, then `.dark` on `<html>`, then `prefers-color-scheme` |
+
+In `system` mode the panel watches `data-theme` / `class` on the document root and reacts to color-scheme media changes.
 
 ### Devtools options
 
@@ -98,12 +108,13 @@ if (import.meta.env.DEV) {
 | `followLatest` | `true` | Auto-select newest query activity |
 | `initialOpen` | `false` | Open panel on load |
 | `filter` | `""` | Initial filter string |
+| `theme` | `"system"` | Panel color theme |
 | `storeName` | `"query"` | Alpine store name to inspect |
 | `additionalStores` | — | Extra query stores to merge in the panel |
 
 ## Exports
 
-All public APIs from the query cache, Nanostores adapter, and devtools are exported from this package:
+Headless APIs (main entry):
 
 ```js
 import queryKit, {
@@ -111,9 +122,17 @@ import queryKit, {
   nanostoresQueryAdapter,
   createAlpineNanostoresAdapter,
   nanostoresQueryPlugin,
-  queryDevtoolsPlugin,
-  mountQueryDevtools,
 } from "@ailuracode/alpine-query-kit";
+```
+
+Devtools APIs (subpath):
+
+```js
+import {
+  queryDevtoolsPlugin,
+  queryKitWithDevtoolsPlugin,
+  mountQueryDevtools,
+} from "@ailuracode/alpine-query-kit/devtools";
 ```
 
 See [Query cache](../query.md) for fetch options, mutations, and adapter authoring.

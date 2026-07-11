@@ -1,0 +1,46 @@
+---
+description: Scoped styling policy for development-only Query Devtools UI
+globs:
+  - packages/query-kit/src/devtools/**
+alwaysApply: false
+---
+
+# Development tooling styling (Query Devtools)
+
+## Decision (ALP-36)
+
+Query Devtools stays in `@ailuracode/alpine-query-kit` but ships from the
+**`@ailuracode/alpine-query-kit/devtools`** subpath. The main package entry
+remains headless.
+
+This is a **narrow, path-scoped exception** to the headless CSS policy. The
+global headless rule in `new-package.mdc` is unchanged.
+
+## Allowed only under `packages/query-kit/src/devtools/**`
+
+- Hardcoded colors, shadows, spacing, borders, and complete panel markup
+- Host theme detection via `data-theme`, `.dark`, and `prefers-color-scheme`
+- Namespaced devtools tokens (`--aq-*`) and classes (`aq-devtools-*`)
+
+## Requirements
+
+1. Styles MUST be scoped to the devtools root element — never global document styles.
+2. Tokens MUST use the `--aq-*` / `aq-devtools-*` namespace (not `data-theme` on consumer markup).
+3. Devtools MUST be opt-in via `@ailuracode/alpine-query-kit/devtools` — the main entry MUST NOT statically import devtools UI.
+4. Theme behavior (`light` | `dark` | `system`) MUST stay covered by `packages/query-kit/test/theme.test.ts`.
+
+## Prohibited elsewhere in `packages/**`
+
+Do not copy devtools styling patterns into headless plugins. `repo:check` scans
+for `UI_STYLES`, `--aq-*` tokens, `aq-devtools-*` classes, and host theme
+selectors outside exempt paths.
+
+## Consumer imports
+
+```ts
+// Production — cache + Nanostores adapter only
+import queryKit from "@ailuracode/alpine-query-kit";
+
+// Development — styled panel (separate bundle)
+import { queryDevtoolsPlugin } from "@ailuracode/alpine-query-kit/devtools";
+```
