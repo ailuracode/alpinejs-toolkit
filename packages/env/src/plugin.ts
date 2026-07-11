@@ -236,40 +236,19 @@ function createReactiveMagics(
   options: Required<EnvPluginOptions>
 ): ReactiveMagics {
   return {
-    network: options.network
-      ? Alpine.reactive({
-          isOnline: runtime.network.isOnline,
-          isOffline: runtime.network.isOffline,
-        })
-      : null,
+    network: options.network ? Alpine.reactive({ ...runtime.network }) : null,
     visibility: options.visibility
       ? Alpine.reactive({
-          isVisible: runtime.visibility.isVisible,
-          isHidden: runtime.visibility.isHidden,
-          state: runtime.visibility.state,
+          ...runtime.visibility,
           is(state: VisibilityMagic["state"]) {
             return this.state === state;
           },
         })
       : null,
-    battery: options.battery
-      ? Alpine.reactive({
-          isAvailable: runtime.battery.isAvailable,
-          level: runtime.battery.level,
-          isCharging: runtime.battery.isCharging,
-          chargingTime: runtime.battery.chargingTime,
-          dischargingTime: runtime.battery.dischargingTime,
-        })
-      : null,
+    battery: options.battery ? Alpine.reactive({ ...runtime.battery }) : null,
     platform: options.platform
       ? Alpine.reactive({
-          name: runtime.platform.name,
-          isMac: runtime.platform.isMac,
-          isWindows: runtime.platform.isWindows,
-          isLinux: runtime.platform.isLinux,
-          isIos: runtime.platform.isIos,
-          isAndroid: runtime.platform.isAndroid,
-          isChromeos: runtime.platform.isChromeos,
+          ...runtime.platform,
           is(platform: PlatformMagic["name"]) {
             return this.name === platform;
           },
@@ -279,51 +258,25 @@ function createReactiveMagics(
 }
 
 function registerMagics(Alpine: AlpineInstall, magics: ReactiveMagics): void {
-  if (magics.network) {
-    Alpine.magic("network", () => magics.network as NetworkMagic);
-  }
-
-  if (magics.visibility) {
-    Alpine.magic("visibility", () => magics.visibility as VisibilityMagic);
-  }
-
-  if (magics.battery) {
-    Alpine.magic("battery", () => magics.battery as BatteryMagic);
-  }
-
-  if (magics.platform) {
-    Alpine.magic("platform", () => magics.platform as PlatformMagic);
+  for (const [name, value] of Object.entries(magics)) {
+    if (value) {
+      Alpine.magic(name, () => value);
+    }
   }
 }
 
 function syncMagics(state: RuntimeSnapshot, magics: ReactiveMagics): void {
   if (magics.network) {
-    magics.network.isOnline = state.network.isOnline;
-    magics.network.isOffline = state.network.isOffline;
+    Object.assign(magics.network, state.network);
   }
-
   if (magics.visibility) {
-    magics.visibility.isVisible = state.visibility.isVisible;
-    magics.visibility.isHidden = state.visibility.isHidden;
-    magics.visibility.state = state.visibility.state;
+    Object.assign(magics.visibility, state.visibility);
   }
-
   if (magics.battery) {
-    magics.battery.isAvailable = state.battery.isAvailable;
-    magics.battery.level = state.battery.level;
-    magics.battery.isCharging = state.battery.isCharging;
-    magics.battery.chargingTime = state.battery.chargingTime;
-    magics.battery.dischargingTime = state.battery.dischargingTime;
+    Object.assign(magics.battery, state.battery);
   }
-
   if (magics.platform) {
-    magics.platform.name = state.platform.name;
-    magics.platform.isMac = state.platform.isMac;
-    magics.platform.isWindows = state.platform.isWindows;
-    magics.platform.isLinux = state.platform.isLinux;
-    magics.platform.isIos = state.platform.isIos;
-    magics.platform.isAndroid = state.platform.isAndroid;
-    magics.platform.isChromeos = state.platform.isChromeos;
+    Object.assign(magics.platform, state.platform);
   }
 }
 

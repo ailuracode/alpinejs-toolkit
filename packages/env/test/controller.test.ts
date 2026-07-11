@@ -1,6 +1,6 @@
 import { clearAllSingletons } from "@ailuracode/alpine-core";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { EnvController } from "../src/controller.js";
+import { createEnv, EnvController } from "../src/controller.js";
 import type { BatteryManagerLike } from "../src/internal/battery.js";
 
 function setNavigatorOnline(value: boolean): void {
@@ -21,11 +21,27 @@ function setDocumentVisibility(hidden: boolean, visibilityState: "visible" | "hi
   });
 }
 
+let originalNavigator: Navigator | undefined;
+
 function installNavigatorMock(mockNavigator: Record<string, unknown>): void {
+  if (originalNavigator === undefined) {
+    originalNavigator = globalThis.navigator;
+  }
+
   Object.defineProperty(globalThis, "navigator", {
     configurable: true,
     value: mockNavigator,
   });
+}
+
+function restoreNavigator(): void {
+  if (originalNavigator !== undefined) {
+    Object.defineProperty(globalThis, "navigator", {
+      configurable: true,
+      value: originalNavigator,
+    });
+    originalNavigator = undefined;
+  }
 }
 
 function createBatteryManager(overrides: Partial<BatteryManagerLike> = {}) {
@@ -82,6 +98,7 @@ function mockGetBattery(implementation: () => Promise<BatteryManagerLike>): () =
 describe("@ailuracode/alpine-env EnvController", () => {
   afterEach(() => {
     clearAllSingletons();
+    restoreNavigator();
     vi.restoreAllMocks();
   });
 
@@ -195,5 +212,54 @@ describe("@ailuracode/alpine-env EnvController", () => {
 
     controller.destroy();
     expect(() => controller.destroy()).not.toThrow();
+  });
+
+  it("createEnv returns a singleton EnvController", () => {
+    const a = createEnv();
+    const b = createEnv();
+
+    expect(a).toBe(b);
+    expect(a.network.isOnline).toBe(true);
+  });
+
+  it("platform.is() compares against platform name", () => {
+    installNavigatorMock({
+      ...navigator,
+      userAgent: "Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X)",
+      platform: "iPhone",
+      maxTouchPoints: 3,
+    });
+    const controller = new EnvController();
+
+    controller.mount();
+
+    expect(controller.platform.is("ios")).toBe(true);
+    expect(controller.platform.is("windows")).toBe(false);
+
+    controller.destroy();
+  });
+
+  it("ignores battery resolution after destroy", async () => {
+    let resolveBattery!: (value: BatteryManagerLike) => void;
+    const restore = mockGetBattery(
+      () =>
+        new Promise<BatteryManagerLike>((resolve) => {
+          resolveBattery = resolve;
+        })
+    );
+    const controller = new EnvController();
+
+    controller.mount();
+    controller.destroy();
+
+    const manager = createBatteryManager();
+    resolveBattery(manager);
+    await vi.waitFor(() => {
+      expect(true).toBe(true);
+    });
+
+    expect(controller.battery.isAvailable).toBe(false);
+
+    restore();
   });
 });
