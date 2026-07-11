@@ -1,10 +1,8 @@
 name: CI
 
-# Trigger policy: CI runs only for dependency/manifest, shared tooling, scripts,
-# GitHub Actions setup, packages, demo app, and shared test harness changes.
-# Docs-only, Cursor rules, and other metadata edits do not trigger CI.
-# Maintenance: extend this allowlist when adding new repo-level inputs CI consumes
-# (see .cursor/rules/tooling-configs.mdc).
+# Change-aware validation: detect affected workspaces first, then run only the
+# checks required for the detected change category. A final gate job always runs
+# on pull requests so documentation-only changes remain mergeable.
 
 on:
   push:
@@ -31,26 +29,70 @@ on:
       - "test/**"
       - "scripts/**"
       - "patches/**"
-      - ".github/actions/**"
-      - ".github/workflows/ci.yml"
+      - ".github/**"
       - "package.json"
       - "pnpm-lock.yaml"
       - "pnpm-workspace.yaml"
       - "tsconfig.json"
       - "vitest.config.ts"
       - "biome.json"
+      - "docs/**"
+      - "AGENTS.md"
+      - "README.md"
+      - ".cursor/**"
+      - ".changeset/**"
+  schedule:
+    - cron: "0 6 * * 1"
+  workflow_dispatch:
 
 jobs:
-  lint:
+  detect:
+    runs-on: ubuntu-latest
+    outputs:
+      docs_only: ${{ steps.changes.outputs.docs_only }}
+      run_full: ${{ steps.changes.outputs.run_full }}
+      run_validate: ${{ steps.changes.outputs.run_validate }}
+      run_audit: ${{ steps.changes.outputs.run_audit }}
+      run_coverage: ${{ steps.changes.outputs.run_coverage }}
+      run_repo_check: ${{ steps.changes.outputs.run_repo_check }}
+      run_pack: ${{ steps.changes.outputs.run_pack }}
+      run_size: ${{ steps.changes.outputs.run_size }}
+      run_demo: ${{ steps.changes.outputs.run_demo }}
+      pack_packages: ${{ steps.changes.outputs.pack_packages }}
+      build_filters: ${{ steps.changes.outputs.build_filters }}
+      test_paths: ${{ steps.changes.outputs.test_paths }}
+      summary: ${{ steps.changes.outputs.summary }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Fetch base branch
+        if: github.event_name == 'pull_request'
+        run: git fetch --no-tags origin "${{ github.base_ref }}"
+
+      - name: Detect changes
+        id: changes
+        env:
+          GITHUB_EVENT_NAME: ${{ github.event_name }}
+          GITHUB_BASE_REF: ${{ github.base_ref }}
+          GITHUB_REF: ${{ github.ref }}
+          CI_BASE_REF: ${{ github.event_name == 'pull_request' && format('origin/{0}', github.base_ref) || 'HEAD~1' }}
+          CI_HEAD_REF: HEAD
+          FORCE_FULL_CI: ${{ github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' }}
+        run: node scripts/ci-changes.mjs --github
+
+      - name: Summarize detection
+        run: echo "${{ steps.changes.outputs.summary }}"
+
+  validate:
+    needs: detect
+    if: needs.detect.outputs.run_validate == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        run: |
-          set -euo pipefail
-          git init
-          git remote add origin "https://github.com/${GITHUB_REPOSITORY}.git"
-          git fetch --depth=1 --no-tags origin "${GITHUB_SHA}"
-          git checkout FETCH_HEAD
+        uses: actions/checkout@v4
 
       - uses: ./.github/actions/setup
 
@@ -64,62 +106,83 @@ jobs:
         run: pnpm run typecheck
 
       - name: Repository consistency
+        if: needs.detect.outputs.run_repo_check == 'true' || needs.detect.outputs.run_full == 'true'
         run: pnpm run repo:check
 
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        run: |
-          set -euo pipefail
-          git init
-          git remote add origin "https://github.com/${GITHUB_REPOSITORY}.git"
-          git fetch --depth=1 --no-tags origin "${GITHUB_SHA}"
-          git checkout FETCH_HEAD
-
-      - uses: ./.github/actions/setup
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Build packages
+      - name: Build all packages
+        if: needs.detect.outputs.run_full == 'true'
         run: pnpm run build
 
+      - name: Build affected packages
+        if: needs.detect.outputs.run_full != 'true' && needs.detect.outputs.build_filters != ''
+        run: |
+          set -euo pipefail
+          cmd=(pnpm -r)
+          while IFS= read -r filter; do
+            if [ -n "$filter" ]; then
+              cmd+=(--filter "$filter")
+            fi
+          done <<< "${{ needs.detect.outputs.build_filters }}"
+          cmd+=(build)
+          "${cmd[@]}"
+
       - name: Run tests with coverage
+        if: needs.detect.outputs.run_coverage == 'true'
         run: pnpm run test:coverage
 
-  pack:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        run: |
-          set -euo pipefail
-          git init
-          git remote add origin "https://github.com/${GITHUB_REPOSITORY}.git"
-          git fetch --depth=1 --no-tags origin "${GITHUB_SHA}"
-          git checkout FETCH_HEAD
-
-      - uses: ./.github/actions/setup
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+      - name: Run affected tests
+        if: needs.detect.outputs.run_coverage != 'true' && needs.detect.outputs.test_paths != ''
+        run: pnpm exec vitest run ${{ needs.detect.outputs.test_paths }}
 
       - name: Validate package tarballs
-        run: pnpm run pack:check
+        if: needs.detect.outputs.run_pack == 'true'
+        run: |
+          set -euo pipefail
+          if [ "${{ needs.detect.outputs.run_full }}" = "true" ]; then
+            node scripts/pack-check.mjs
+          else
+            node scripts/pack-check.mjs --packages "${{ needs.detect.outputs.pack_packages }}"
+          fi
 
       - name: Validate built export surfaces
-        run: pnpm run repo:check:built
+        if: needs.detect.outputs.run_pack == 'true'
+        run: |
+          set -euo pipefail
+          if [ "${{ needs.detect.outputs.run_full }}" = "true" ]; then
+            node scripts/repo-check.mjs --built
+          else
+            node scripts/repo-check.mjs --built --packages "${{ needs.detect.outputs.pack_packages }}"
+          fi
+
+      - name: Enforce bundle-size budgets
+        if: needs.detect.outputs.run_size == 'true'
+        run: |
+          set -euo pipefail
+          if [ "${{ needs.detect.outputs.run_full }}" = "true" ]; then
+            pnpm run size
+          else
+            cmd=(pnpm -r)
+            IFS=',' read -ra folders <<< "${{ needs.detect.outputs.pack_packages }}"
+            for folder in "${folders[@]}"; do
+              if [ -n "$folder" ]; then
+                cmd+=(--filter "@ailuracode/alpine-${folder}")
+              fi
+            done
+            cmd+=(run size)
+            "${cmd[@]}"
+          fi
+
+      - name: Build demo app
+        if: needs.detect.outputs.run_demo == 'true'
+        run: pnpm run build:demo
 
   audit:
+    needs: detect
+    if: needs.detect.outputs.run_audit == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        run: |
-          set -euo pipefail
-          git init
-          git remote add origin "https://github.com/${GITHUB_REPOSITORY}.git"
-          git fetch --depth=1 --no-tags origin "${GITHUB_SHA}"
-          git checkout FETCH_HEAD
+        uses: actions/checkout@v4
 
       - uses: ./.github/actions/setup
 
@@ -129,29 +192,40 @@ jobs:
       - name: Audit critical vulnerabilities
         run: pnpm audit --audit-level critical
 
-  bundle-size:
+  gate:
+    needs: [detect, validate, audit]
+    if: always()
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Check CI gate
+        env:
+          DOCS_ONLY: ${{ needs.detect.outputs.docs_only }}
+          RUN_VALIDATE: ${{ needs.detect.outputs.run_validate }}
+          RUN_AUDIT: ${{ needs.detect.outputs.run_audit }}
+          DETECT_RESULT: ${{ needs.detect.result }}
+          VALIDATE_RESULT: ${{ needs.validate.result }}
+          AUDIT_RESULT: ${{ needs.audit.result }}
         run: |
           set -euo pipefail
-          git init
-          git remote add origin "https://github.com/${GITHUB_REPOSITORY}.git"
-          git fetch --depth=1 --no-tags origin "${GITHUB_SHA}"
-          git checkout FETCH_HEAD
 
-      - uses: ./.github/actions/setup
+          if [ "$DETECT_RESULT" != "success" ]; then
+            echo "detect job did not succeed"
+            exit 1
+          fi
 
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+          if [ "$DOCS_ONLY" = "true" ]; then
+            echo "Documentation-only changes — CI gate passed"
+            exit 0
+          fi
 
-      - name: Build packages
-        run: pnpm run build
+          if [ "$RUN_VALIDATE" = "true" ] && [ "$VALIDATE_RESULT" != "success" ]; then
+            echo "validate job did not succeed"
+            exit 1
+          fi
 
-      # Each package owns its package.json "size-limit" config; root runs pnpm -r size.
-      - name: Enforce bundle-size budgets
-        run: pnpm run size
+          if [ "$RUN_AUDIT" = "true" ] && [ "$AUDIT_RESULT" != "success" ]; then
+            echo "audit job did not succeed"
+            exit 1
+          fi
 
-  # No release job here: this workflow only validates. Publishing is manual —
-  # a maintainer runs `pnpm run version` + `pnpm run release` on `master`
-  # (see README "Versioning & release" and .changeset/README.md).
+          echo "CI gate passed"

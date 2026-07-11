@@ -26,13 +26,7 @@
       "type": "required_status_checks",
       "parameters": {
         "strict_required_status_checks_policy": true,
-        "required_status_checks": [
-          { "context": "CI / lint (pull_request)" },
-          { "context": "CI / typecheck (pull_request)" },
-          { "context": "CI / test (pull_request)" },
-          { "context": "CI / pack (pull_request)" },
-          { "context": "CI / audit (pull_request)" }
-        ]
+        "required_status_checks": [{ "context": "CI / gate (pull_request)" }]
       }
     }
   ],

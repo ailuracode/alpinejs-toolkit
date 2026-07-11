@@ -31,6 +31,7 @@ const BUNDLE_BUDGET_CATEGORIES = new Set([
  * @property {string} [root]
  * @property {string} [packagesDir]
  * @property {boolean} [requireBuilt]
+ * @property {string[]} [packageFolders]
  */
 
 /**
@@ -665,6 +666,8 @@ export function runRepoCheck(options = {}) {
   const root = options.root ?? defaultRoot;
   const packagesDir = options.packagesDir ?? path.join(root, "packages");
   const requireBuilt = options.requireBuilt ?? false;
+  const packageFolders = options.packageFolders;
+  const hasPackageFilter = Array.isArray(packageFolders) && packageFolders.length > 0;
   const packages = discoverPackages(packagesDir);
   const catalog = catalogPackages(packages);
   const demo = demoPackages(packages);
@@ -672,17 +675,23 @@ export function runRepoCheck(options = {}) {
   const errors = [];
 
   for (const pkg of packages) {
+    if (hasPackageFilter && !packageFolders.includes(pkg.folder)) {
+      continue;
+    }
+
     errors.push(...validatePackageMetadata(pkg, requireBuilt));
   }
 
-  errors.push(
-    ...validateRepositorySurfaces(root, packages, catalog, demo),
-    ...validateDocumentedCounts(root, catalog.length),
-    ...validateSizeBudgets(packages, root),
-    ...validatePackageTests(packages),
-    ...validateTooling(root, publishable),
-    ...validateDepBoundaries(root)
-  );
+  if (!hasPackageFilter) {
+    errors.push(
+      ...validateRepositorySurfaces(root, packages, catalog, demo),
+      ...validateDocumentedCounts(root, catalog.length),
+      ...validateSizeBudgets(packages, root),
+      ...validatePackageTests(packages),
+      ...validateTooling(root, publishable),
+      ...validateDepBoundaries(root)
+    );
+  }
 
   return {
     ok: errors.length === 0,
@@ -693,8 +702,21 @@ export function runRepoCheck(options = {}) {
 }
 
 function main() {
-  const args = new Set(process.argv.slice(2));
-  const result = runRepoCheck({ requireBuilt: args.has("--built") });
+  const args = process.argv.slice(2);
+  const argSet = new Set(args);
+  const packagesIndex = args.indexOf("--packages");
+  const packageFolders =
+    packagesIndex >= 0
+      ? args[packagesIndex + 1]
+          ?.split(",")
+          .map((entry) => entry.trim())
+          .filter((entry) => entry.length > 0)
+      : undefined;
+
+  const result = runRepoCheck({
+    requireBuilt: argSet.includes("--built"),
+    packageFolders,
+  });
 
   if (result.ok) {
     console.log(

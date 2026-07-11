@@ -162,11 +162,16 @@ export function validatePackedWorkspace(pkg, packed) {
   return errors;
 }
 
-export function runPackCheck(rootDir = root) {
+export function runPackCheck(rootDir = root, options = {}) {
   const packages = discoverPublishablePackages(rootDir);
+  const packageFolders = options.packageFolders;
+  const selected =
+    Array.isArray(packageFolders) && packageFolders.length > 0
+      ? packages.filter((pkg) => packageFolders.includes(pkg.folder))
+      : packages;
   const errors = [];
 
-  for (const pkg of packages) {
+  for (const pkg of selected) {
     const packed = packWorkspace(rootDir, pkg.name);
     errors.push(...validatePackedWorkspace(pkg, packed));
   }
@@ -174,12 +179,30 @@ export function runPackCheck(rootDir = root) {
   return {
     ok: errors.length === 0,
     errors,
-    packageCount: packages.length,
+    packageCount: selected.length,
   };
 }
 
+function parsePackageFolders(argv) {
+  const index = argv.indexOf("--packages");
+  if (index < 0) {
+    return undefined;
+  }
+
+  const value = argv[index + 1];
+  if (!value) {
+    return undefined;
+  }
+
+  return value
+    .split(",")
+    .map((entry) => entry.trim())
+    .filter((entry) => entry.length > 0);
+}
+
 function main() {
-  const result = runPackCheck(root);
+  const packageFolders = parsePackageFolders(process.argv);
+  const result = runPackCheck(root, { packageFolders });
 
   if (result.ok) {
     console.log(`Packed ${result.packageCount} workspaces successfully.`);
