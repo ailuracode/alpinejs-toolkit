@@ -1,4 +1,14 @@
-import type AlpineType from "alpinejs";
+/**
+ * Pure platform detection. Reads `navigator` (user agent, client
+ * hints, touch points, etc.) and returns a primary platform name
+ * plus per-platform boolean flags. Used by `PlatformController`'s
+ * `name` / `is*` getters, which re-run on every read so any
+ * browser-side change (e.g. user agent morphing in a WebView) is
+ * reflected without explicit listeners.
+ *
+ * SSR-safe: when `navigator` is undefined the snapshot defaults to
+ * `"unknown"` with all flags `false`.
+ */
 
 export const PLATFORM_NAMES = [
   "macos",
@@ -12,21 +22,17 @@ export const PLATFORM_NAMES = [
 
 export type PlatformName = (typeof PLATFORM_NAMES)[number];
 
-export type PlatformFlags = {
+export interface PlatformFlags {
   readonly isMac: boolean;
   readonly isWindows: boolean;
   readonly isLinux: boolean;
   readonly isIos: boolean;
   readonly isAndroid: boolean;
   readonly isChromeos: boolean;
-};
+}
 
-export type PlatformSnapshot = PlatformFlags & {
+export interface PlatformSnapshot extends PlatformFlags {
   readonly name: PlatformName;
-};
-
-export interface PlatformMagic extends PlatformSnapshot {
-  is(platform: PlatformName): boolean;
 }
 
 type NavigatorWithUserAgentData = Navigator & {
@@ -156,6 +162,7 @@ export function detectPlatformName(): PlatformName {
   return "unknown";
 }
 
+/** Boolean flags for the given platform name. */
 export function platformFlags(name: PlatformName): PlatformFlags {
   return {
     isMac: name === "macos",
@@ -167,7 +174,11 @@ export function platformFlags(name: PlatformName): PlatformFlags {
   };
 }
 
-/** Reads a snapshot of the current platform state from the environment. */
+/**
+ * Reads a snapshot of the current platform state from the environment.
+ * Convenience wrapper for tests and SSR adapters; callers that only
+ * need `name` can call `detectPlatformName()` directly.
+ */
 export function readPlatformState(): PlatformSnapshot {
   const name = detectPlatformName();
 
@@ -175,41 +186,4 @@ export function readPlatformState(): PlatformSnapshot {
     name,
     ...platformFlags(name),
   };
-}
-
-/** Builds live platform magic state with getter-based flags. */
-export function createPlatformState(): PlatformMagic {
-  return {
-    get name() {
-      return detectPlatformName();
-    },
-    get isMac() {
-      return platformFlags(detectPlatformName()).isMac;
-    },
-    get isWindows() {
-      return platformFlags(detectPlatformName()).isWindows;
-    },
-    get isLinux() {
-      return platformFlags(detectPlatformName()).isLinux;
-    },
-    get isIos() {
-      return platformFlags(detectPlatformName()).isIos;
-    },
-    get isAndroid() {
-      return platformFlags(detectPlatformName()).isAndroid;
-    },
-    get isChromeos() {
-      return platformFlags(detectPlatformName()).isChromeos;
-    },
-    is(platform: PlatformName) {
-      return detectPlatformName() === platform;
-    },
-  };
-}
-
-/** Registers reactive `$platform` magic on Alpine. */
-export function registerPlatformMagic(Alpine: AlpineType.Alpine): void {
-  const state = Alpine.reactive(createPlatformState());
-
-  Alpine.magic("platform", () => state as PlatformMagic);
 }

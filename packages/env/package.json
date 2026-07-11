@@ -5,6 +5,7 @@
   "type": "module",
   "license": "MIT",
   "author": "ailuracode",
+  "sideEffects": false,
   "publishConfig": {
     "access": "public"
   },
@@ -26,12 +27,17 @@
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
     },
+    "./controller": {
+      "types": "./dist/controller.d.ts",
+      "default": "./dist/controller.js"
+    },
     "./global": {
       "types": "./dist/global.d.ts"
     }
   },
   "types": "./dist/global.d.ts",
   "peerDependencies": {
+    "@ailuracode/alpine-core": "^0.2.0",
     "alpinejs": "^3.0.0",
     "@types/alpinejs": "^3.13.11"
   },
@@ -40,8 +46,12 @@
       "optional": true
     }
   },
+  "devDependencies": {
+    "@ailuracode/alpine-core": "workspace:*",
+    "@types/alpinejs": "^3.13.11"
+  },
   "scripts": {
-    "build": "tsup src/index.ts --format esm --dts --clean --out-dir dist && cp src/global.d.ts dist/global.d.ts",
+    "build": "tsup src/index.ts src/controller.ts --format esm --dts --clean --out-dir dist && cp src/global.d.ts dist/global.d.ts",
     "prepublishOnly": "pnpm run build",
     "size": "size-limit",
     "test": "vitest run --config ../../vitest.config.ts test"
@@ -68,6 +78,7 @@
       "import": "*",
       "ignore": [
         "alpinejs",
+        "@ailuracode/alpine-core",
         "@types/alpinejs"
       ],
       "gzip": true,

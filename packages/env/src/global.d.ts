@@ -1,9 +1,6 @@
 /// <reference types="@types/alpinejs" />
 
-import type { BatteryMagic } from "./battery.js";
-import type { NetworkMagic } from "./network.js";
-import type { PlatformMagic } from "./platform.js";
-import type { VisibilityMagic } from "./visibility.js";
+import type { BatteryMagic, NetworkMagic, PlatformMagic, VisibilityMagic } from "./types.js";
 
 export type { BatteryMagic, NetworkMagic, PlatformMagic, VisibilityMagic };
 

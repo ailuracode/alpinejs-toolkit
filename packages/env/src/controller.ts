@@ -1,8 +1,10 @@
+export { createEnv, EnvController } from "./env-controller.js";
 export { isAndroidDevice, isIosDevice } from "./internal/platform.js";
-export { default } from "./plugin.js";
 export type {
   BatteryMagic,
+  EnvEvents,
   EnvPluginOptions,
+  EnvState,
   NetworkMagic,
   PlatformFlags,
   PlatformMagic,

@@ -94,7 +94,7 @@ export const PLUGIN_NAV_GROUPS: PluginNavGroup[] = [
         kind: "magic",
         tier: "extended",
         description:
-          "Browser environment magics: online/offline, tab visibility, battery, and OS detection in one plugin.",
+          "Browser environment magics plus an optional headless controller subpath for lifecycle-managed environment state.",
       },
       {
         id: "transfer",
