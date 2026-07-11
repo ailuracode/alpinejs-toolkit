@@ -7,8 +7,16 @@
 
 import type { Alpine, PluginCallback } from "@ailuracode/alpine-core";
 import type { Alpine as AlpineBase } from "alpinejs";
-import type { EmblaCarouselType, EmblaOptionsType } from "embla-carousel";
-import type { AutoplayType } from "embla-carousel-autoplay";
+
+/** Slide alignment within the viewport. */
+export type CarouselAlign =
+  | "start"
+  | "center"
+  | "end"
+  | ((viewSize: number, snapSize: number, index: number) => number);
+
+/** Scroll containment behavior at the start and end of the carousel. */
+export type CarouselContainScroll = "trimSnaps" | "keepSnaps" | false;
 
 /** Autoplay configuration options. */
 export type CarouselAutoplayOptions = {
@@ -25,15 +33,15 @@ export type CarouselOptions = {
   autoplay?: boolean;
   autoplayOptions?: CarouselAutoplayOptions;
   axis?: "x" | "y";
-  align?: EmblaOptionsType["align"];
-  containScroll?: EmblaOptionsType["containScroll"];
+  align?: CarouselAlign;
+  containScroll?: CarouselContainScroll;
   dragFree?: boolean;
   duration?: number;
   ariaLive?: "off" | "polite" | "assertive";
   onChange?: (index: number) => void;
 };
 
-/** Internal representation of a carousel instance. */
+/** Readonly snapshot of carousel state exposed through stores and adapters. */
 export type CarouselInstance = {
   currentIndex: number;
   totalSlides: number;
@@ -46,9 +54,6 @@ export type CarouselInstance = {
   slidesInView: number[];
   options: CarouselOptions;
   ariaLive: "off" | "polite" | "assertive";
-  viewport: HTMLElement | null;
-  embla: EmblaCarouselType | null;
-  autoplay: AutoplayType | null;
 };
 
 /** Alpine-facing store surface. */
@@ -67,7 +72,6 @@ export type CarouselStore = {
   play(id: string): void;
   pause(id: string): void;
   isPlaying(id: string): boolean;
-  instance(id: string): EmblaCarouselType | null;
   handleKeydown(id: string, event: KeyboardEvent): void;
   carouselProps(
     id: string,

@@ -26,8 +26,10 @@ export { carouselOptions, carouselPlugin, carouselPlugin as default } from "./pl
 export { createCarouselStore, createCarouselStoreFromController } from "./store";
 // --- Public types ---------------------------------------------------------
 export type {
+  CarouselAlign,
   CarouselAlpine,
   CarouselAutoplayOptions,
+  CarouselContainScroll,
   CarouselInstance,
   CarouselOptions,
   CarouselPluginCallback,

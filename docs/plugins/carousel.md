@@ -37,7 +37,6 @@ Alpine.start();
 | `current(id)` / `count(id)` | Current index and total slides |
 | `canNext(id)` / `canPrevious(id)` | Scroll availability |
 | `play(id)` / `pause(id)` / `isPlaying(id)` | Autoplay controls |
-| `instance(id)` | Raw Embla API for advanced use |
 | `handleKeydown(id, event)` | Arrow keys, Home, End |
 | `carouselProps(id, options?)` | ARIA region props |
 | `viewportProps(id)` | Focusable viewport props |
@@ -219,16 +218,7 @@ For hover pause (`stopOnMouseEnter: true`), the store sets `stopOnInteraction` t
 - `handleKeydown()` supports Arrow keys, Home, and End
 - `viewportProps()` adds `tabindex="0"` for keyboard focus
 
-## Advanced API
-
-Access the underlying Embla instance for custom plugins or APIs:
-
-```js
-const embla = $store.carousel.instance("gallery");
-embla?.scrollTo(2, true);
-```
-
-Prefer the store API for stable behavior across releases.
+Prefer the store API for stable behavior across releases. The underlying carousel engine is encapsulated inside `CarouselController` and is not part of the public API.
 
 ## Playground
 

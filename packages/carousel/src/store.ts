@@ -74,7 +74,6 @@ export function createCarouselStoreFromController(controller: CarouselController
       sync();
     },
     isPlaying: (id) => controller.isPlaying(id),
-    instance: (id) => controller.instance(id),
     handleKeydown: (id, event) => controller.handleKeydown(id, event),
     carouselProps: (id, opts) => controller.carouselProps(id, opts),
     viewportProps: (id, opts) => controller.viewportProps(id, opts),

@@ -14,7 +14,13 @@ import Autoplay, { type AutoplayType } from "embla-carousel-autoplay";
 import type { CarouselEvents } from "./events";
 import type { CarouselInstance, CarouselOptions } from "./types";
 
-function createInstance(options: CarouselOptions = {}): CarouselInstance {
+type InternalCarouselInstance = CarouselInstance & {
+  viewport: HTMLElement | null;
+  embla: EmblaCarouselType | null;
+  autoplay: AutoplayType | null;
+};
+
+function createInstance(options: CarouselOptions = {}): InternalCarouselInstance {
   return {
     currentIndex: 0,
     totalSlides: 0,
@@ -62,11 +68,19 @@ function createAutoplayPlugin(options: CarouselOptions): AutoplayType | null {
   });
 }
 
-function snapshotCarouselInstance(instance: CarouselInstance): CarouselInstance {
+function snapshotCarouselInstance(instance: InternalCarouselInstance): CarouselInstance {
   return {
-    ...instance,
+    currentIndex: instance.currentIndex,
+    totalSlides: instance.totalSlides,
+    progress: instance.progress,
+    isFirst: instance.isFirst,
+    isLast: instance.isLast,
+    isPlaying: instance.isPlaying,
+    canNext: instance.canNext,
+    canPrevious: instance.canPrevious,
     slidesInView: [...instance.slidesInView],
     options: { ...instance.options },
+    ariaLive: instance.ariaLive,
   };
 }
 
@@ -75,7 +89,7 @@ function snapshotCarouselInstance(instance: CarouselInstance): CarouselInstance 
  * instances powered by Embla Carousel.
  */
 export class CarouselController extends BaseController<CarouselEvents> {
-  #instances: Record<string, CarouselInstance> = {};
+  #instances: Record<string, InternalCarouselInstance> = {};
   #cleanups: Map<string, () => void> = new Map();
 
   constructor(id?: string) {
@@ -200,10 +214,6 @@ export class CarouselController extends BaseController<CarouselEvents> {
     return this.#instances[id]?.isPlaying ?? false;
   }
 
-  instance(id: string): EmblaCarouselType | null {
-    return this.#instances[id]?.embla ?? null;
-  }
-
   handleKeydown(id: string, event: KeyboardEvent): void {
     const instance = this.#instances[id];
     if (!instance?.embla) {
@@ -297,7 +307,7 @@ export class CarouselController extends BaseController<CarouselEvents> {
     this.emit("change", { carouselId });
   }
 
-  #getOrCreate(id: string, options?: CarouselOptions): CarouselInstance {
+  #getOrCreate(id: string, options?: CarouselOptions): InternalCarouselInstance {
     if (!this.#instances[id]) {
       this.#instances[id] = createInstance(options);
     } else if (options) {
@@ -357,7 +367,7 @@ export class CarouselController extends BaseController<CarouselEvents> {
     });
   }
 
-  #setupVisibilityAutoplay(id: string, instance: CarouselInstance): void {
+  #setupVisibilityAutoplay(id: string, instance: InternalCarouselInstance): void {
     const stopWhenHidden = instance.options.autoplayOptions?.stopWhenHidden ?? true;
     if (!(instance.options.autoplay && stopWhenHidden)) {
       return;
