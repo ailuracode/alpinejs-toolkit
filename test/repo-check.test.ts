@@ -6,10 +6,12 @@ import {
   diffSurface,
   discoverPackages,
   expectedSizeLimitConfig,
+  isValidSideEffectsMetadata,
   publishablePackages,
   readBundleBudgetMetadata,
   readMarkdownPackageNames,
   runRepoCheck,
+  validateSideEffectsMetadata,
 } from "../scripts/repo-check.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -65,5 +67,60 @@ describe("repo:check", () => {
       expect(expected).not.toBeNull();
       expect(pkg.manifest["size-limit"]).toEqual(expected);
     }
+  });
+
+  it("requires every publishable package to declare sideEffects metadata", () => {
+    const packages = publishablePackages(discoverPackages(path.join(root, "packages")));
+    const missing = packages.filter((pkg) => !("sideEffects" in pkg.manifest));
+
+    expect(missing.map((pkg) => pkg.folder)).toEqual([]);
+  });
+
+  it("accepts false and non-empty allowlist sideEffects metadata", () => {
+    expect(isValidSideEffectsMetadata(false)).toBe(true);
+    expect(isValidSideEffectsMetadata(["./dist/setup.js", "*.css"])).toBe(true);
+    expect(isValidSideEffectsMetadata(true)).toBe(false);
+    expect(isValidSideEffectsMetadata([])).toBe(false);
+    expect(isValidSideEffectsMetadata("false")).toBe(false);
+    expect(isValidSideEffectsMetadata([""])).toBe(false);
+  });
+
+  it("rejects missing, invalid, and true sideEffects metadata", () => {
+    const fixture = {
+      folder: "fixture",
+      name: "@ailuracode/alpine-fixture",
+      dir: path.join(root, "packages", "fixture"),
+      manifest: {},
+      isPrivate: false,
+    };
+
+    expect(validateSideEffectsMetadata(fixture)).toContain(
+      '@ailuracode/alpine-fixture: package.json missing "sideEffects"'
+    );
+
+    expect(
+      validateSideEffectsMetadata({
+        ...fixture,
+        manifest: { sideEffects: true },
+      })
+    ).toContain(
+      "@ailuracode/alpine-fixture: sideEffects must be false or a non-empty file allowlist, not true"
+    );
+
+    expect(
+      validateSideEffectsMetadata({
+        ...fixture,
+        manifest: { sideEffects: [] },
+      })
+    ).toContain(
+      "@ailuracode/alpine-fixture: sideEffects must be false or a non-empty array of file glob strings"
+    );
+
+    expect(
+      validateSideEffectsMetadata({
+        ...fixture,
+        manifest: { sideEffects: false },
+      })
+    ).toEqual([]);
   });
 });

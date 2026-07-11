@@ -45,6 +45,28 @@ describe("pack:check", () => {
     expect(errors).toContain(
       "@ailuracode/alpine-fixture: packed manifest still contains dependencies.@ailuracode/alpine-core=workspace:*"
     );
+    expect(errors).toContain('@ailuracode/alpine-fixture: packed manifest missing "sideEffects"');
+  });
+
+  it("rejects invalid packed sideEffects metadata", () => {
+    const errors = validatePackedWorkspace(
+      { name: "@ailuracode/alpine-fixture" },
+      {
+        files: ["package.json", "README.md", "dist/index.js"],
+        manifest: {
+          sideEffects: true,
+          exports: {
+            ".": {
+              default: "./dist/index.js",
+            },
+          },
+        },
+      }
+    );
+
+    expect(errors).toContain(
+      '@ailuracode/alpine-fixture: packed manifest has invalid "sideEffects" metadata'
+    );
   });
 
   it("passes on current repository", () => {

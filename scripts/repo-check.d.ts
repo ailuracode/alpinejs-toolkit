@@ -30,4 +30,6 @@ export function diffSurface(
   expected: Iterable<DiscoveredPackage>,
   surface: string
 ): string[];
+export function isValidSideEffectsMetadata(sideEffects: unknown): boolean;
+export function validateSideEffectsMetadata(pkg: DiscoveredPackage): string[];
 export function runRepoCheck(options?: RepoCheckOptions): RepoCheckResult;

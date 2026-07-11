@@ -5,6 +5,7 @@
   "type": "module",
   "license": "MIT",
   "author": "ailuracode",
+  "sideEffects": false,
   "publishConfig": {
     "access": "public"
   },
