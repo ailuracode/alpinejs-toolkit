@@ -58,4 +58,31 @@ describe("calendarPlugin — Alpine integration", () => {
     expect(reactive).toHaveBeenCalledTimes(1);
     expect((reactive.mock.calls[0]?.[0] as { month: Date }).month.getMonth()).toBe(0);
   });
+
+  it("plugin methods use `this` so Alpine.reactive Proxy tracks mutations", () => {
+    const { calendar } = createMagicHarness(calendarPlugin) as { calendar: CalendarMagic };
+    const raw = calendar({ month: JAN_2024 });
+
+    // Simulate Alpine.reactive() Proxy behavior: wrap in a real Proxy
+    const proxy = new Proxy(raw as object, {
+      set(target, prop, value) {
+        Reflect.set(target, prop, value);
+        return true;
+      },
+    }) as unknown as ReturnType<CalendarMagic>;
+
+    // Navigation via proxy — methods use `this` which is the proxy
+    proxy.nextMonth();
+    expect(proxy.month.getMonth()).toBe(1);
+
+    proxy.prevMonth();
+    expect(proxy.month.getMonth()).toBe(0);
+
+    // Selection via proxy
+    proxy.select(new Date(2024, 0, 5));
+    expect(proxy.selected).toBeInstanceOf(Date);
+
+    proxy.clear();
+    expect(proxy.selected).toBeNull();
+  });
 });

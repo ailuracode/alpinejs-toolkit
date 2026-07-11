@@ -380,7 +380,61 @@ export function createCalendar(options?: CalendarOptions): CalendarInstance {
 export function createCalendarMagic(Alpine?: { reactive: <T>(value: T) => T }): CalendarMagic {
   return (options?: CalendarOptions) => {
     const controller = new CalendarController(options);
-    const store = controller.toStore();
-    return Alpine ? Alpine.reactive(store) : store;
+
+    const raw = {
+      month: controller.month,
+      mode: controller.mode,
+      selected: controller.selected,
+      locale: controller.locale,
+      weekStartsOn: controller.weekStartsOn,
+      dateFns: controller.dateFns,
+      weeks: controller.weeks,
+      weekdayLabels: controller.weekdayLabels,
+
+      prevMonth(this: Record<string, unknown>) {
+        controller.prevMonth();
+        this.month = controller.month;
+        this.weeks = controller.weeks;
+      },
+      nextMonth(this: Record<string, unknown>) {
+        controller.nextMonth();
+        this.month = controller.month;
+        this.weeks = controller.weeks;
+      },
+      goToMonth(this: Record<string, unknown>, date: Date) {
+        controller.goToMonth(date);
+        this.month = controller.month;
+        this.weeks = controller.weeks;
+      },
+      goToToday(this: Record<string, unknown>) {
+        controller.goToToday();
+        this.month = controller.month;
+        this.weeks = controller.weeks;
+      },
+      select(this: Record<string, unknown>, date: Date | null) {
+        controller.select(date);
+        this.selected = controller.selected;
+        this.weeks = controller.weeks;
+      },
+      clear(this: Record<string, unknown>) {
+        controller.clear();
+        this.selected = controller.selected;
+        this.weeks = controller.weeks;
+      },
+      matches: (date: Date, matcher: Parameters<CalendarController["matches"]>[1]) =>
+        controller.matches(date, matcher),
+      isSelected: (date: Date) => controller.isSelected(date),
+      isDisabled: (date: Date) => controller.isDisabled(date),
+      isToday: (date: Date) => controller.isToday(date),
+      isSameMonth: (date: Date, month?: Date) => controller.isSameMonth(date, month),
+      isInRange: (date: Date) => controller.isInRange(date),
+      isRangeStart: (date: Date) => controller.isRangeStart(date),
+      isRangeEnd: (date: Date) => controller.isRangeEnd(date),
+      format: (date: Date, pattern: string) => controller.format(date, pattern),
+      formatMonth: (month?: Date) => controller.formatMonth(month),
+      formatYear: (month?: Date) => controller.formatYear(month),
+    } satisfies CalendarInstance;
+
+    return Alpine ? Alpine.reactive(raw) : raw;
   };
 }
