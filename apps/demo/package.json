@@ -33,6 +33,7 @@
     "@ailuracode/alpine-menu": "workspace:*",
     "@ailuracode/alpine-notify": "workspace:*",
     "@ailuracode/alpine-overlay": "workspace:*",
+    "@ailuracode/alpine-permissions": "workspace:*",
     "@ailuracode/alpine-query": "workspace:*",
     "@ailuracode/alpine-query-adapter-alpine": "workspace:*",
     "@ailuracode/alpine-query-adapter-zustand": "workspace:*",

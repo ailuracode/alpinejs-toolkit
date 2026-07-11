@@ -37,10 +37,12 @@
     "@ailuracode/alpine-env": "workspace:*"
   },
   "devDependencies": {
-    "@ailuracode/alpine-core": "workspace:*"
+    "@ailuracode/alpine-core": "workspace:*",
+    "@ailuracode/alpine-permissions": "workspace:*"
   },
   "peerDependencies": {
     "@ailuracode/alpine-core": "^0.2.0",
+    "@ailuracode/alpine-permissions": "^0.1.0",
     "alpinejs": "^3.0.0",
     "@types/alpinejs": "^3.13.11"
   },
@@ -50,7 +52,7 @@
     }
   },
   "scripts": {
-    "build": "tsup src/index.ts --format esm --dts --clean --out-dir dist --external @ailuracode/alpine-env && cp src/global.d.ts dist/global.d.ts && cp src/notify-sw.js dist/notify-sw.js",
+    "build": "tsup src/index.ts --format esm --dts --clean --out-dir dist --external @ailuracode/alpine-env --external @ailuracode/alpine-permissions && cp src/global.d.ts dist/global.d.ts && cp src/notify-sw.js dist/notify-sw.js",
     "prepublishOnly": "pnpm run build",
     "size": "size-limit",
     "test": "vitest run --config ../../vitest.config.ts test"

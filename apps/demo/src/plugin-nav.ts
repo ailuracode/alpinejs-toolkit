@@ -34,6 +34,16 @@ export const PLUGIN_NAV_GROUPS: PluginNavGroup[] = [
         description:
           "Centralized portal root + z-index slot allocator + open-stack registry. Used internally by dialog, menu, tooltip, and command to teleport into `#overlay-root` and stack without z-fight. Headless — no DOM outside the portal container.",
       },
+      {
+        id: "permissions",
+        title: "Permissions",
+        package: "@ailuracode/alpine-permissions",
+        api: "$store.permissions / $permissions",
+        kind: "store",
+        tier: "essential",
+        description:
+          "Unified browser permission registry with adapter contract. Feature packages export capability-specific adapters for notifications, geolocation, and idle detection without duplicating permission state.",
+      },
     ],
   },
   {
@@ -352,6 +362,7 @@ const PLUGIN_DOCS: ReadonlySet<string> = new Set([
   "media",
   "scroll",
   "sidebar",
+  "permissions",
   "env",
   "transfer",
   "attention",

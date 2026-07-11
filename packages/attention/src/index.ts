@@ -12,6 +12,10 @@ export type {
   WakeLockChangeDetail,
   WakeLockEvents,
 } from "./events.js";
+export {
+  createIdlePermissionAdapter,
+  IDLE_PERMISSION_NAME,
+} from "./permission-adapter.js";
 export { default as attentionPlugin, default } from "./plugin.js";
 export type {
   IdleDetectorConstructor,

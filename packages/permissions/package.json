@@ -1,23 +1,23 @@
 {
-  "name": "@ailuracode/alpine-attention",
-  "version": "1.0.0",
-  "description": "Alpine.js Screen Wake Lock and Idle Detection magics",
+  "name": "@ailuracode/alpine-permissions",
+  "version": "0.0.0",
+  "description": "Framework-agnostic browser permission registry with adapter contract",
   "type": "module",
   "license": "MIT",
-  "sideEffects": false,
   "author": "ailuracode",
+  "sideEffects": false,
   "publishConfig": {
     "access": "public"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ailuracode/alpinejs-toolkit.git",
-    "directory": "packages/attention"
+    "directory": "packages/permissions"
   },
   "bugs": {
     "url": "https://github.com/ailuracode/alpinejs-toolkit/issues"
   },
-  "homepage": "https://github.com/ailuracode/alpinejs-toolkit/tree/master/packages/attention#readme",
+  "homepage": "https://github.com/ailuracode/alpinejs-toolkit/tree/master/packages/permissions#readme",
   "files": [
     "dist",
     "README.md"
@@ -36,13 +36,8 @@
     }
   },
   "types": "./dist/global.d.ts",
-  "devDependencies": {
-    "@ailuracode/alpine-core": "workspace:*",
-    "@ailuracode/alpine-permissions": "workspace:*"
-  },
   "peerDependencies": {
     "@ailuracode/alpine-core": "^0.2.0",
-    "@ailuracode/alpine-permissions": "^0.1.0",
     "alpinejs": "^3.0.0",
     "@types/alpinejs": "^3.13.11"
   },
@@ -51,8 +46,12 @@
       "optional": true
     }
   },
+  "devDependencies": {
+    "@ailuracode/alpine-core": "workspace:*",
+    "@types/alpinejs": "^3.13.11"
+  },
   "scripts": {
-    "build": "tsup src/index.ts src/controller.ts --format esm --dts --clean --out-dir dist --external @ailuracode/alpine-permissions && cp src/global.d.ts dist/global.d.ts",
+    "build": "tsup src/index.ts src/controller.ts --format esm --dts --clean --out-dir dist && cp src/global.d.ts dist/global.d.ts",
     "prepublishOnly": "pnpm run build",
     "size": "size-limit",
     "test": "vitest run --config ../../vitest.config.ts test"
@@ -61,22 +60,21 @@
     "alpinejs",
     "alpine",
     "plugin",
-    "wake-lock",
-    "wakelock",
-    "idle-detection",
-    "idle",
-    "screen"
+    "permissions",
+    "notifications",
+    "geolocation",
+    "idle-detection"
   ],
   "toolkit": {
     "bundleBudget": {
-      "category": "small-feature"
+      "category": "infrastructure"
     }
   },
   "size-limit": [
     {
-      "name": "plugin surface",
+      "name": "full surface",
       "path": "dist/index.js",
-      "import": "{ attentionPlugin }",
+      "import": "*",
       "ignore": [
         "alpinejs",
         "@ailuracode/alpine-core",
@@ -84,7 +82,7 @@
       ],
       "gzip": true,
       "brotli": true,
-      "limit": "2.0 kB"
+      "limit": "2.5 kB"
     }
   ]
 }

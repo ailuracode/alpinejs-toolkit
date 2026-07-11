@@ -22,6 +22,7 @@ import PanelLeft from "@lucide/astro/icons/panel-left";
 import Puzzle from "@lucide/astro/icons/puzzle";
 import Replace from "@lucide/astro/icons/replace";
 import Send from "@lucide/astro/icons/send";
+import ShieldCheck from "@lucide/astro/icons/shield-check";
 import ToggleLeft from "@lucide/astro/icons/toggle-left";
 
 type PluginNavIcon = typeof Puzzle;
@@ -45,6 +46,8 @@ const PLUGIN_NAV_ICONS: Record<string, PluginNavIcon> = {
   query: Database,
   "query-kit": Database,
   "json-api": Braces,
+  overlay: LayoutPanelTop,
+  permissions: ShieldCheck,
   dialog: AppWindow,
   menu: Menu,
   tooltip: MessageCircle,

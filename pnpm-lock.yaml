@@ -99,6 +99,9 @@ importers:
       '@ailuracode/alpine-overlay':
         specifier: workspace:*
         version: link:../../packages/overlay
+      '@ailuracode/alpine-permissions':
+        specifier: workspace:*
+        version: link:../../packages/permissions
       '@ailuracode/alpine-query':
         specifier: workspace:*
         version: link:../../packages/query
@@ -237,6 +240,9 @@ importers:
       '@ailuracode/alpine-core':
         specifier: workspace:*
         version: link:../core
+      '@ailuracode/alpine-permissions':
+        specifier: workspace:*
+        version: link:../permissions
 
   packages/calendar:
     dependencies:
@@ -364,6 +370,9 @@ importers:
       '@ailuracode/alpine-core':
         specifier: workspace:*
         version: link:../core
+      '@ailuracode/alpine-permissions':
+        specifier: workspace:*
+        version: link:../permissions
 
   packages/json-api:
     dependencies:
@@ -444,6 +453,9 @@ importers:
       '@ailuracode/alpine-core':
         specifier: workspace:*
         version: link:../core
+      '@ailuracode/alpine-permissions':
+        specifier: workspace:*
+        version: link:../permissions
 
   packages/overlay:
     dependencies:
@@ -460,6 +472,19 @@ importers:
       '@ailuracode/alpine-core':
         specifier: workspace:*
         version: link:../core
+
+  packages/permissions:
+    dependencies:
+      alpinejs:
+        specifier: ^3.0.0
+        version: 3.15.12
+    devDependencies:
+      '@ailuracode/alpine-core':
+        specifier: workspace:*
+        version: link:../core
+      '@types/alpinejs':
+        specifier: ^3.13.11
+        version: 3.13.11
 
   packages/query: {}
 

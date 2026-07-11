@@ -13,7 +13,7 @@ describe("pack:check", () => {
   it("discovers every non-private package dynamically", () => {
     const packages = discoverPublishablePackages(root);
 
-    expect(packages.length).toBe(29);
+    expect(packages.length).toBe(30);
     expect(packages.every((pkg) => pkg.isPrivate === false)).toBe(true);
   });
 
@@ -74,6 +74,6 @@ describe("pack:check", () => {
 
     expect(result.ok).toBe(true);
     expect(result.errors).toEqual([]);
-    expect(result.packageCount).toBe(29);
+    expect(result.packageCount).toBe(30);
   }, 120_000);
 });
