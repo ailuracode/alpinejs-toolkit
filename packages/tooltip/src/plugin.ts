@@ -6,13 +6,9 @@
  */
 
 import type { Alpine } from "alpinejs";
-import { TooltipController } from "./controller";
-import type {
-  CreateTooltipOptions,
-  TooltipAlpine,
-  TooltipPluginCallback,
-  TooltipStore,
-} from "./types";
+import { TooltipController } from "./controller.js";
+import { createTooltipStoreFromController, syncInstanceRegistry } from "./store.js";
+import type { CreateTooltipOptions, TooltipAlpine, TooltipPluginCallback } from "./types.js";
 
 /** Key under which the tooltip store is registered on `$store`. */
 const TOOLTIP_STORE_KEY = "tooltip";
@@ -27,42 +23,17 @@ export function tooltipPlugin(options: CreateTooltipOptions = {}): TooltipPlugin
     const Alpine = alpine as unknown as TooltipAlpine;
     const controller = new TooltipController(options.id);
 
-    // Build a mutable store object that delegates to the controller.
-    const store: TooltipStore = {
-      instances: {} as TooltipStore["instances"],
-      register: (id, opts) => controller.register(id, opts),
-      unregister: (id) => controller.unregister(id),
-      open: (id) => controller.open(id),
-      close: (id) => controller.close(id),
-      toggle: (id) => controller.toggle(id),
-      isOpen: (id) => controller.isOpen(id),
-      showOnHover: (id) => controller.showOnHover(id),
-      hideOnHover: (id) => controller.hideOnHover(id),
-      showOnFocus: (id) => controller.showOnFocus(id),
-      hideOnFocus: (id) => controller.hideOnFocus(id),
-      handleKeydown: (id, event) => controller.handleKeydown(id, event),
-      destroy: () => controller.destroy(),
-    };
-
+    const store = createTooltipStoreFromController(controller);
     Alpine.store(TOOLTIP_STORE_KEY, store);
     const reactiveStore = Alpine.store(TOOLTIP_STORE_KEY);
 
-    // Override isOpen to read through the reactive proxy so Alpine
-    // tracks the dependency on instances[id].open.
-    reactiveStore.isOpen = (id: string) => reactiveStore.instances[id]?.open ?? false;
+    const syncReactiveInstances = () => {
+      syncInstanceRegistry(reactiveStore.instances, controller.snapshotInstances());
+    };
 
-    // Sync controller state into the reactive store on every change.
-    controller.on("change", () => {
-      const controllerInstances = controller.instances;
-      for (const key of Object.keys(controllerInstances)) {
-        reactiveStore.instances[key] = controllerInstances[key];
-      }
-      for (const key of Object.keys(reactiveStore.instances)) {
-        if (!(key in controllerInstances)) {
-          delete reactiveStore.instances[key];
-        }
-      }
-    });
+    controller.on("change", syncReactiveInstances);
+
+    reactiveStore.isOpen = (id: string) => reactiveStore.instances[id]?.open ?? false;
 
     Alpine.magic(TOOLTIP_STORE_KEY, () => reactiveStore);
 

@@ -17,11 +17,13 @@
 // --- Re-export core types ------------------------------------------------
 export type { Unsubscribe } from "@ailuracode/alpine-core";
 // --- Controller (framework-agnostic) -------------------------------------
-export { CarouselController, createCarouselController, createCarouselStore } from "./controller";
+export { CarouselController, createCarouselController } from "./controller";
 // --- Event surface -------------------------------------------------------
-export type { CarouselEvents, CarouselSlideChangeDetail } from "./events";
+export type { CarouselChangeDetail, CarouselEvents, CarouselSlideChangeDetail } from "./events";
 // --- Alpine integration --------------------------------------------------
 export { carouselOptions, carouselPlugin, carouselPlugin as default } from "./plugin";
+// --- Store factory -------------------------------------------------------
+export { createCarouselStore, createCarouselStoreFromController } from "./store";
 // --- Public types ---------------------------------------------------------
 export type {
   CarouselAlpine,

@@ -17,11 +17,19 @@
 // --- Re-export core types ------------------------------------------------
 export type { Unsubscribe } from "@ailuracode/alpine-core";
 // --- Controller (framework-agnostic) -------------------------------------
-export { createMenuController, createMenuStore, MenuController } from "./controller";
+export { createMenuController, MenuController } from "./controller";
 // --- Event surface -------------------------------------------------------
-export type { MenuCloseDetail, MenuEvents, MenuOpenDetail, MenuSelectDetail } from "./events";
+export type {
+  MenuChangeDetail,
+  MenuCloseDetail,
+  MenuEvents,
+  MenuOpenDetail,
+  MenuSelectDetail,
+} from "./events";
 // --- Alpine integration --------------------------------------------------
 export { menuOptions, menuPlugin, menuPlugin as default } from "./plugin";
+// --- Store factory -------------------------------------------------------
+export { createMenuStore, createMenuStoreFromController } from "./store";
 // --- Public types ---------------------------------------------------------
 export type {
   CreateMenuOptions,

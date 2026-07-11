@@ -56,6 +56,11 @@ export interface DialogCloseDetail {
   readonly source: DialogChangeSource;
 }
 
+/** Detail payload for the `change` event (adapter sync). */
+export interface DialogChangeDetail {
+  readonly instanceId?: string;
+}
+
 /** Alpine-facing store surface. */
 export interface DialogStore {
   /** Reactive registry — bind templates to `instances[id].open` when needed. */

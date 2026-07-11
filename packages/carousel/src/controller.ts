@@ -12,7 +12,7 @@ import { BaseController, generateId } from "@ailuracode/alpine-core";
 import EmblaCarousel, { type EmblaCarouselType, type EmblaOptionsType } from "embla-carousel";
 import Autoplay, { type AutoplayType } from "embla-carousel-autoplay";
 import type { CarouselEvents } from "./events";
-import type { CarouselInstance, CarouselOptions, CarouselStore } from "./types";
+import type { CarouselInstance, CarouselOptions } from "./types";
 
 function createInstance(options: CarouselOptions = {}): CarouselInstance {
   return {
@@ -62,6 +62,14 @@ function createAutoplayPlugin(options: CarouselOptions): AutoplayType | null {
   });
 }
 
+function snapshotCarouselInstance(instance: CarouselInstance): CarouselInstance {
+  return {
+    ...instance,
+    slidesInView: [...instance.slidesInView],
+    options: { ...instance.options },
+  };
+}
+
 /**
  * Headless carousel controller. Manages a registry of carousel
  * instances powered by Embla Carousel.
@@ -74,8 +82,21 @@ export class CarouselController extends BaseController<CarouselEvents> {
     super(id ?? generateId("carousel"));
   }
 
-  get instances(): Readonly<Record<string, CarouselInstance>> {
-    return this.#instances;
+  /** Whether a carousel instance is registered. */
+  hasInstance(id: string): boolean {
+    return id in this.#instances;
+  }
+
+  /**
+   * Returns a shallow snapshot of all instances for adapter sync.
+   * Mutating the returned objects does not affect controller state.
+   */
+  snapshotInstances(): Record<string, CarouselInstance> {
+    const result: Record<string, CarouselInstance> = {};
+    for (const [id, instance] of Object.entries(this.#instances)) {
+      result[id] = snapshotCarouselInstance(instance);
+    }
+    return result;
   }
 
   create(id: string, options: CarouselOptions = {}): void {
@@ -83,6 +104,7 @@ export class CarouselController extends BaseController<CarouselEvents> {
       return;
     }
     this.#getOrCreate(id, options);
+    this.#notifyChange(id);
   }
 
   /** Destroy a single carousel instance by id. */
@@ -100,6 +122,7 @@ export class CarouselController extends BaseController<CarouselEvents> {
       }
       this.#destroyEmbla(id);
       delete this.#instances[id];
+      this.#notifyChange(id);
     } else {
       this.destroyAll();
       super.destroy();
@@ -124,6 +147,7 @@ export class CarouselController extends BaseController<CarouselEvents> {
 
     this.#getOrCreate(id);
     this.#initEmbla(id, viewport);
+    this.#notifyChange(id);
   }
 
   next(id: string): void {
@@ -159,6 +183,7 @@ export class CarouselController extends BaseController<CarouselEvents> {
     const instance = this.#instances[id];
     if (instance) {
       instance.isPlaying = instance.autoplay?.isPlaying() ?? false;
+      this.#notifyChange(id);
     }
   }
 
@@ -167,6 +192,7 @@ export class CarouselController extends BaseController<CarouselEvents> {
     const instance = this.#instances[id];
     if (instance) {
       instance.isPlaying = instance.autoplay?.isPlaying() ?? false;
+      this.#notifyChange(id);
     }
   }
 
@@ -264,36 +290,11 @@ export class CarouselController extends BaseController<CarouselEvents> {
     for (const id of Object.keys(this.#instances)) {
       this.destroy(id);
     }
+    this.#notifyChange();
   }
 
-  /**
-   * Returns a store-shaped object for Alpine's `$store.carousel`.
-   * The store delegates to this controller.
-   */
-  toStore(): CarouselStore {
-    return {
-      instances: this.#instances as Record<string, CarouselInstance>,
-      create: (id, opts) => this.create(id, opts),
-      destroy: (id) => this.destroy(id),
-      bindViewport: (id, viewport) => this.bindViewport(id, viewport),
-      next: (id) => this.next(id),
-      previous: (id) => this.previous(id),
-      goTo: (id, index) => this.goTo(id, index),
-      current: (id) => this.current(id),
-      count: (id) => this.count(id),
-      canNext: (id) => this.canNext(id),
-      canPrevious: (id) => this.canPrevious(id),
-      play: (id) => this.play(id),
-      pause: (id) => this.pause(id),
-      isPlaying: (id) => this.isPlaying(id),
-      instance: (id) => this.instance(id),
-      handleKeydown: (id, event) => this.handleKeydown(id, event),
-      carouselProps: (id, opts) => this.carouselProps(id, opts),
-      viewportProps: (id, opts) => this.viewportProps(id, opts),
-      slideProps: (id, index) => this.slideProps(id, index),
-      indicatorProps: (id, index) => this.indicatorProps(id, index),
-      destroyAll: () => this.destroyAll(),
-    };
+  #notifyChange(carouselId?: string): void {
+    this.emit("change", { carouselId });
   }
 
   #getOrCreate(id: string, options?: CarouselOptions): CarouselInstance {
@@ -333,6 +334,7 @@ export class CarouselController extends BaseController<CarouselEvents> {
       });
       instance.options.onChange?.(instance.currentIndex);
     }
+    this.#notifyChange(id);
   }
 
   #destroyEmbla(id: string): void {
@@ -433,12 +435,4 @@ export class CarouselController extends BaseController<CarouselEvents> {
  */
 export function createCarouselController(id?: string): CarouselController {
   return new CarouselController(id);
-}
-
-/**
- * Creates a CarouselStore (store-shaped object) directly.
- * Backward-compatible alias.
- */
-export function createCarouselStore(): CarouselStore {
-  return new CarouselController().toStore();
 }

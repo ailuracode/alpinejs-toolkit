@@ -6,8 +6,9 @@
  */
 
 import type { Alpine } from "alpinejs";
-import { DialogController } from "./controller";
-import type { CreateDialogOptions, DialogAlpine, DialogPluginCallback, DialogStore } from "./types";
+import { DialogController } from "./controller.js";
+import { createDialogStoreFromController, syncInstanceRegistry } from "./store.js";
+import type { CreateDialogOptions, DialogAlpine, DialogPluginCallback } from "./types.js";
 
 /** Key under which the dialog store is registered on `$store`. */
 const DIALOG_STORE_KEY = "dialog";
@@ -30,50 +31,17 @@ export function dialogPlugin(options: CreateDialogOptions = {}): DialogPluginCal
       options.id
     );
 
-    // Build a mutable store object that delegates to the controller.
-    // `instances` is a plain object — Alpine's reactive proxy will detect
-    // mutations to its nested properties.
-    const store: DialogStore = {
-      instances: {} as DialogStore["instances"],
-      register: (id, opts) => controller.register(id, opts),
-      unregister: (id) => controller.unregister(id),
-      open: (id, opts) => controller.open(id, opts),
-      close: (id) => controller.close(id),
-      toggle: (id, opts) => controller.toggle(id, opts),
-      isOpen: (id) => controller.isOpen(id),
-      bindContainer: (id, container) => controller.bindContainer(id, container),
-      handleKeydown: (id, event) => controller.handleKeydown(id, event),
-      handleOutsideClick: (id, event) => controller.handleOutsideClick(id, event),
-      dialogProps: (id) => controller.dialogProps(id),
-      destroy: () => controller.destroy(),
-    };
-
+    const store = createDialogStoreFromController(controller);
     Alpine.store(DIALOG_STORE_KEY, store);
     const reactiveStore = Alpine.store(DIALOG_STORE_KEY);
 
-    // Override isOpen to read through the reactive proxy so Alpine tracks
-    // `instances[id].open` access in templates (x-text, x-show).
-    reactiveStore.isOpen = (id: string) => reactiveStore.instances?.[id]?.open ?? false;
-
-    // Sync controller state into the reactive store on every open/close.
-    // Alpine's reactive proxy detects mutations to the nested `instances`
-    // object, so replacing its properties triggers re-renders.
-    const syncInstances = () => {
-      const controllerInstances = controller.instances;
-      for (const key of Object.keys(controllerInstances)) {
-        // Clone each instance so Alpine sees a new object identity on both
-        // open and close transitions; the controller mutates instances in place.
-        reactiveStore.instances[key] = { ...controllerInstances[key] };
-      }
-      for (const key of Object.keys(reactiveStore.instances)) {
-        if (!(key in controllerInstances)) {
-          delete reactiveStore.instances[key];
-        }
-      }
+    const syncReactiveInstances = () => {
+      syncInstanceRegistry(reactiveStore.instances, controller.snapshotInstances());
     };
 
-    controller.on("open", syncInstances);
-    controller.on("close", syncInstances);
+    controller.on("change", syncReactiveInstances);
+
+    reactiveStore.isOpen = (id: string) => reactiveStore.instances?.[id]?.open ?? false;
 
     Alpine.magic(DIALOG_STORE_KEY, () => reactiveStore);
 
