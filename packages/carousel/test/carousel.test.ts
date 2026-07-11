@@ -113,7 +113,6 @@ describe("@ailuracode/alpine-carousel", () => {
     expect(EmblaCarouselMock).toHaveBeenCalledOnce();
     expect(store.count("gallery")).toBe(3);
     expect(store.current("gallery")).toBe(0);
-    expect(store.instance("gallery")).toBe(emblaApi);
   });
 
   it("passes carousel options to Embla", () => {
@@ -353,7 +352,6 @@ describe("@ailuracode/alpine-carousel", () => {
     store.bindViewport("gallery", viewport);
     store.bindViewport("gallery", null);
 
-    expect(store.instance("gallery")).toBeNull();
     expect(emblaApi.destroy).toHaveBeenCalledOnce();
   });
 

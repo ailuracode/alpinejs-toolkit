@@ -59,7 +59,6 @@ Embla expects the **viewport** element (overflow hidden) with a **container** ch
 | `current(id)` / `count(id)` | Current index and total slides |
 | `canNext(id)` / `canPrevious(id)` | Scroll availability |
 | `play(id)` / `pause(id)` / `isPlaying(id)` | Autoplay controls |
-| `instance(id)` | Raw Embla API (advanced) |
 | `handleKeydown(id, event)` | Arrow keys, Home, End |
 | `carouselProps(id, options?)` | ARIA region props |
 | `viewportProps(id, options?)` | Focusable viewport props; sets `--slide-size` (default `100%`, pass `{ slideSize: false }` to use CSS classes instead) |
@@ -111,6 +110,9 @@ Subscribe to `controller.on("change", â€¦)` and `controller.on("slideChange", â€
 |-------------------|-------------|
 | `controller.instances` getter | `snapshotInstances()` or `hasInstance(id)` |
 | `controller.toStore()` | `createCarouselStore()` or `createCarouselStoreFromController(controller)` |
+| `$store.carousel.instance(id)` | `goTo(id, index)`, `next(id)`, `previous(id)`, and other semantic store methods |
+| `CarouselInstance.embla` / `.autoplay` / `.viewport` on snapshots | Use semantic store methods and readonly snapshot fields |
+| `CarouselOptions.align` / `.containScroll` typed via Embla | Toolkit-owned `CarouselAlign` and `CarouselContainScroll` types |
 
 ## Options
 

@@ -5,7 +5,9 @@ import type { CarouselStore } from "./types";
 export { CarouselController, createCarouselController, createCarouselStore } from "./controller";
 export type { CarouselEvents, CarouselSlideChangeDetail } from "./events";
 export type {
+  CarouselAlign,
   CarouselAutoplayOptions,
+  CarouselContainScroll,
   CarouselInstance,
   CarouselOptions,
   CarouselStore,
