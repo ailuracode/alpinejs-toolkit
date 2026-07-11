@@ -40,6 +40,7 @@ function clearTimer(timer: ReturnType<typeof setTimeout> | null): void {
  */
 export class TooltipController extends BaseController<TooltipEvents> {
   #instances: Record<string, TooltipInstance> = {};
+  #instanceCleanups: Map<string, () => void> = new Map();
 
   constructor(id?: string) {
     super(id ?? generateId("tooltip"));
@@ -47,6 +48,11 @@ export class TooltipController extends BaseController<TooltipEvents> {
 
   get instances(): Readonly<Record<string, TooltipInstance>> {
     return this.#instances;
+  }
+
+  /** Number of per-instance cleanup callbacks (exposed for testing). */
+  get instanceCleanupCount(): number {
+    return this.#instanceCleanups.size;
   }
 
   register(id: string, options: TooltipInstanceOptions = {}): void {
@@ -64,11 +70,8 @@ export class TooltipController extends BaseController<TooltipEvents> {
     if (instance) {
       clearTimer(instance.openTimer);
       clearTimer(instance.closeTimer);
-      this.registerCleanup(() => {
-        clearTimer(instance.openTimer);
-        clearTimer(instance.closeTimer);
-      });
     }
+    this.#disposeCleanup(id);
     delete this.#instances[id];
   }
 
@@ -81,17 +84,21 @@ export class TooltipController extends BaseController<TooltipEvents> {
     instance.closeTimer = null;
 
     const openNow = () => {
+      if (this.isDestroyed || !this.#instances[id]) {
+        return;
+      }
       if (instance.open) {
         return;
       }
       instance.open = true;
       instance.onOpen?.();
+      this.#disposeCleanup(id);
       this.#emitChange(id, "user");
     };
 
     if (instance.openDelay > 0) {
       instance.openTimer = setTimeout(openNow, instance.openDelay);
-      this.registerCleanup(() => clearTimer(instance.openTimer));
+      this.#setCleanup(id, () => clearTimer(instance.openTimer));
       return;
     }
 
@@ -111,17 +118,21 @@ export class TooltipController extends BaseController<TooltipEvents> {
     instance.openTimer = null;
 
     const closeNow = () => {
+      if (this.isDestroyed || !this.#instances[id]) {
+        return;
+      }
       if (!instance.open) {
         return;
       }
       instance.open = false;
       instance.onClose?.();
+      this.#disposeCleanup(id);
       this.#emitChange(id, "user");
     };
 
     if (instance.closeDelay > 0) {
       instance.closeTimer = setTimeout(closeNow, instance.closeDelay);
-      this.registerCleanup(() => clearTimer(instance.closeTimer));
+      this.#setCleanup(id, () => clearTimer(instance.closeTimer));
       return;
     }
 
@@ -163,6 +174,20 @@ export class TooltipController extends BaseController<TooltipEvents> {
     }
   }
 
+  destroy(): void {
+    if (this.isDestroyed) {
+      return;
+    }
+
+    for (const instance of Object.values(this.#instances)) {
+      clearTimer(instance.openTimer);
+      clearTimer(instance.closeTimer);
+    }
+
+    this.#instanceCleanups.clear();
+    super.destroy();
+  }
+
   /**
    * Returns a store-shaped object for Alpine's `$store.tooltip`.
    * The store delegates to this controller.
@@ -183,6 +208,19 @@ export class TooltipController extends BaseController<TooltipEvents> {
       handleKeydown: (id, event) => this.handleKeydown(id, event),
       destroy: () => this.destroy(),
     };
+  }
+
+  #setCleanup(id: string, cleanup: () => void): void {
+    this.#disposeCleanup(id);
+    this.#instanceCleanups.set(id, cleanup);
+  }
+
+  #disposeCleanup(id: string): void {
+    const cleanup = this.#instanceCleanups.get(id);
+    if (cleanup) {
+      this.#instanceCleanups.delete(id);
+      cleanup();
+    }
   }
 
   #getOrCreate(id: string): TooltipInstance {
