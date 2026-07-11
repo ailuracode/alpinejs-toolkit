@@ -318,6 +318,53 @@ describe("LangController lifecycle", () => {
     expect(listener).not.toHaveBeenCalled();
   });
 
+  it("direct construction with injected navigator seeds state before mount", () => {
+    const manager = new LangController({
+      navigator: BROWSER_ES_EC,
+      id: "alpha",
+    });
+
+    expect(manager.isMounted).toBe(false);
+    expect(manager.current).toBe("es-ec");
+    expect(manager.isDetected).toBe(true);
+  });
+
+  it("direct construction without navigator seeds fallback until mount", () => {
+    const manager = new LangController({ fallback: "fr", id: "beta" });
+
+    expect(manager.isMounted).toBe(false);
+    expect(manager.current).toBe("fr");
+    expect(manager.isDetected).toBe(false);
+
+    manager.mount();
+    expect(manager.isMounted).toBe(true);
+  });
+
+  it("mount() is idempotent", async () => {
+    const manager = new LangController({ navigator: BROWSER_ES_EC });
+    const listener = vi.fn();
+    manager.on("change", listener);
+
+    manager.mount();
+    manager.mount();
+    await Promise.resolve();
+
+    expect(listener).toHaveBeenCalledTimes(1);
+  });
+
+  it("destroy() before mount() suppresses the initialization event", async () => {
+    const manager = new LangController({ navigator: BROWSER_ES_EC });
+    const listener = vi.fn();
+    manager.on("change", listener);
+
+    manager.destroy();
+    await Promise.resolve();
+
+    expect(listener).not.toHaveBeenCalled();
+    assert.equal(manager.isDestroyed, true);
+    expect(() => manager.mount()).toThrow(/after destroy\(\)/);
+  });
+
   it("emits an initialization event on mount with source: 'initialization'", async () => {
     const manager = createLang({ navigator: BROWSER_ES_EC });
     const listener = vi.fn();
@@ -350,10 +397,12 @@ describe("LangController lifecycle", () => {
       navigator: BROWSER_ES_EC,
       id: "alpha",
     });
+    a.mount();
     const b = new LangController({
       navigator: BROWSER_PT_BR,
       id: "bravo",
     });
+    b.mount();
 
     expect(a.current).toBe("es-ec");
     expect(b.current).toBe("pt-br");
@@ -416,5 +465,24 @@ describe("LangController SSR fallback", () => {
     expect(manager.region).toBeNull();
     expect(manager.languages).toEqual([]);
     expect(manager.isDetected).toBe(false);
+  });
+
+  it("direct construction does not read the global navigator", () => {
+    Object.defineProperty(globalThis, "navigator", {
+      configurable: true,
+      value: {
+        language: "de-DE",
+        languages: ["de-DE", "de"],
+      },
+    });
+
+    const manager = new LangController({ fallback: "en", id: "ssr-direct" });
+
+    expect(manager.current).toBe("en");
+    expect(manager.isDetected).toBe(false);
+
+    manager.mount();
+    expect(manager.current).toBe("de-de");
+    expect(manager.isDetected).toBe(true);
   });
 });

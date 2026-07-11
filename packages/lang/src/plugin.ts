@@ -32,8 +32,8 @@ export function langPlugin(options: LangPluginOptions = {}): LangPluginCallback 
     // every subsequent call is fully typed against `LangAlpine`.
     const Alpine = alpine as unknown as LangAlpine;
     // `createLang()` already mounts; the controller's constructor
-    // performs eager detection from `navigator`, so by the time we
-    // build the store every field has a value to mirror.
+    // seeds deterministic state and `mount()` performs browser
+    // detection when no navigator is injected.
     const manager = createLang(options);
     const store = createLangStore(manager);
     Alpine.store(LANG_STORE_KEY, store);

@@ -12,7 +12,7 @@
 import assert from "node:assert/strict";
 import { describe, expect, expectTypeOf, it } from "vitest";
 import type { ToggleChangeDetail, ToggleEvents, ToggleInstance } from "../src/index";
-import { createToggle } from "../src/index";
+import { createToggle, ToggleController } from "../src/index";
 
 describe("createToggle() — binary (the primary case)", () => {
   it("exposes the configured states and defaults to `on`", () => {
@@ -252,6 +252,17 @@ describe("ToggleController — silent hydration", () => {
     expect(toggle.value).toBe(0);
   });
 
+  it("setSilently() before mount() preserves the hydrated value in the init event", async () => {
+    const toggle = new ToggleController({ states: { on: 1, off: 0 }, initial: 1 });
+    toggle.setSilently(0);
+    toggle.mount();
+    const events: ToggleChangeDetail<number, number, undefined>[] = [];
+    toggle.on("change", (detail) => events.push(detail));
+    await Promise.resolve();
+    expect(toggle.value).toBe(0);
+    expect(events).toEqual([{ current: 0, previous: null, source: "initialization" }]);
+  });
+
   it("init event carries the hydrated value (not the original initial)", async () => {
     const toggle = createToggle({
       states: { on: "on" as const, off: "off" as const },
@@ -280,6 +291,7 @@ describe("ToggleController — lifecycle", () => {
     const toggle = createToggle({ states: { on: 1, off: 0 } });
     expect(toggle.id).toMatch(/^toggle-/);
     expect(toggle.isDestroyed).toBe(false);
+    expect(toggle.isMounted).toBe(true);
   });
 
   it("uses the supplied id when provided", () => {
@@ -288,6 +300,45 @@ describe("ToggleController — lifecycle", () => {
       id: "my-toggle",
     });
     expect(toggle.id).toBe("my-toggle");
+  });
+
+  it("direct construction does not mount or emit until mount() is called", async () => {
+    const toggle = new ToggleController({ states: { on: 1, off: 0 }, initial: 1 });
+    const events: ToggleChangeDetail<number, number, undefined>[] = [];
+    toggle.on("change", (detail) => events.push(detail));
+
+    expect(toggle.isMounted).toBe(false);
+    await Promise.resolve();
+    expect(events).toHaveLength(0);
+
+    toggle.mount();
+    expect(toggle.isMounted).toBe(true);
+    await Promise.resolve();
+    expect(events).toHaveLength(1);
+    expect(events[0]?.source).toBe("initialization");
+  });
+
+  it("mount() is idempotent", async () => {
+    const toggle = new ToggleController({ states: { on: 1, off: 0 }, initial: 1 });
+    const events: ToggleChangeDetail<number, number, undefined>[] = [];
+    toggle.on("change", (detail) => events.push(detail));
+
+    toggle.mount();
+    toggle.mount();
+    await Promise.resolve();
+    expect(events).toHaveLength(1);
+  });
+
+  it("destroy() before mount() suppresses the initialization event", async () => {
+    const toggle = new ToggleController({ states: { on: 1, off: 0 }, initial: 1 });
+    const events: ToggleChangeDetail<number, number, undefined>[] = [];
+    toggle.on("change", (detail) => events.push(detail));
+
+    toggle.destroy();
+    toggle.mount();
+    await Promise.resolve();
+    expect(events).toHaveLength(0);
+    expect(toggle.isDestroyed).toBe(true);
   });
 
   it("destroy() is idempotent and flips isDestroyed", () => {
