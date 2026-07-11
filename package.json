@@ -11,7 +11,9 @@
     "lint:fix": "biome check --write --assist-enabled=true .",
     "format": "biome format --write .",
     "test": "vitest run",
-    "test:coverage": "vitest run --coverage",
+    "test:coverage": "node scripts/per-package-coverage.mjs",
+    "test:coverage:global": "vitest run --coverage",
+    "test:browser": "vitest run --config vitest.browser.config.ts",
     "test:watch": "vitest",
     "pack:check": "pnpm run build && node scripts/pack-check.mjs",
     "repo:check": "node scripts/repo-check.mjs",
@@ -38,6 +40,8 @@
     "size-limit": "^12.1.0",
     "tsup": "^8.5.0",
     "typescript": "^6.0.3",
-    "vitest": "^4.1.10"
+    "vitest": "^4.1.10",
+    "@vitest/browser-playwright": "^4.1.10",
+    "playwright": "^1.59.0"
   }
 }

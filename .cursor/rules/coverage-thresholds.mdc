@@ -1,14 +1,14 @@
 ---
 description: Test coverage thresholds and enforcement
 alwaysApply: false
-globs: vitest.config.ts,packages/*/test/**/*.test.ts,packages/*/test/**/*.spec.ts
+globs: vitest.config.ts,scripts/coverage-policy.json,packages/*/test/**/*.test.ts,packages/*/test/**/*.spec.ts
 ---
 
 # Coverage thresholds
 
-## Global thresholds
+## Global thresholds (backstop)
 
-Configured in root `vitest.config.ts`:
+Configured in root `vitest.config.ts` as a backstop only:
 
 | Metric | Threshold | Enforcement |
 |--------|-----------|-------------|
@@ -16,6 +16,23 @@ Configured in root `vitest.config.ts`:
 | Statements | 80% | Hard fail in CI |
 | Functions | 70% | Hard fail in CI |
 | Branches | 75% | Hard fail in CI |
+
+## Per-package thresholds (authoritative gate)
+
+Run by `pnpm run test:coverage`, which executes `scripts/per-package-coverage.mjs`.
+Each public package is gated by its **own** ratcheted floor in
+`scripts/coverage-policy.json`, so a weakly tested package can no longer pass
+CI on the back of coverage from other workspaces (ALP-23).
+
+- Floors are ratcheted from the current per-package Vitest coverage
+  (`actual - 1`, minimum 40%). Packages at/above a global default keep that
+  default.
+- Raise a floor (improve the bar) by editing `scripts/coverage-policy.json`.
+- Lowering a floor requires justification and must stay ≥ the 40% minimum.
+- Packages below the minimum need a documented `exempt` entry (with a
+  justification string) in `scripts/coverage-policy.json` — see ALP-23
+  acceptance criteria. `repo:check` validates these.
+- New public packages MUST declare a floor (or `exempt`) before merge.
 
 ## Per-package expectations
 
@@ -29,7 +46,9 @@ Configured in root `vitest.config.ts`:
 ## Enforcement
 
 ```bash
-pnpm run test:coverage      # vitest with coverage thresholds
+pnpm run test:coverage            # per-package gate (CI)
+pnpm run test:coverage:global     # global backstop only
+node scripts/per-package-coverage.mjs --threshold-only   # validate policy entries
 ```
 
 ## Rules

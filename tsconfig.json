@@ -50,5 +50,6 @@
     "test/**/*.d.ts",
     "vitest.config.ts",
     "scripts/repo-check.d.ts"
-  ]
+  ],
+  "exclude": ["packages/*/test/browser/**"]
 }

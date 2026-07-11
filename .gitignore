@@ -5,6 +5,8 @@ node_modules/
 # Build outputs
 dist/
 coverage/
+vitest.workspace.generated.ts
+vitest.package.generated.ts
 
 # Logs
 *.log

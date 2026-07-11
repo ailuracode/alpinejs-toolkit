@@ -29,14 +29,43 @@ alwaysApply: false
 Tests MUST be split by layer:
 
 - **Controller tests**: initial state, transitions, invariants, events, options, errors, idempotency, cleanup. Alpine MUST NOT be initialized unless strictly required.
-- **Alpine integration tests**: plugin registration, stores, magics, directives, reactivity, `$dispatch`, expression evaluation, cleanup, multiple instances.
+- **Alpine integration tests**: plugin registration, stores, magics, directives, reactivity, `$dispatch`, expression evaluation, cleanup, multiple instances. Run in happy-dom (`vitest.config.ts`).
 - **Accessibility tests**: ARIA props, focus, keyboard navigation, disabled elements, dynamic elements, restore focus, roving tabindex, `aria-activedescendant`.
 - **Integration tests**: real external dependencies (Embla initialization/destruction, Floating UI cleanup, browser observers).
 - **Contract tests**: core MUST provide reusable tests for controller lifecycle, idempotent destroy, event subscription cleanup, SSR-safe imports, plugin registration, multiple independent instances, no leaked global listeners. Packages MUST run applicable contract tests.
 
+## Two test environments
+
+1. **happy-dom unit/controller suite** (`vitest.config.ts`, run by `pnpm test`
+   and `pnpm run test:coverage`): the default for everything that does not need
+   a real browser. Per-package coverage floors are enforced here.
+2. **Real-browser suite** (`vitest.browser.config.ts`, run by
+   `pnpm run test:browser` in CI with Playwright + Chromium): reserved for the
+   highest-risk accessibility and overlay contracts that happy-dom cannot
+   faithfully exercise — focus capture/restore, focus traps, keyboard
+   navigation for menu/tabs/accordion/command/carousel, escape + nested overlay
+   stacks, portals/teleport, `aria-*`/`inert`/tab-order, scroll locking and
+   scrollbar compensation, and pointer/keyboard parity.
+
+### Where each behavior belongs
+
+| Behavior | Layer |
+|----------|-------|
+| State machine, event emission, cleanup, options, errors | happy-dom controller tests |
+| Store/magic registration, reactivity, `$dispatch` | happy-dom Alpine integration |
+| Focus trap, focus capture/restore, real keyboard nav | **real-browser** |
+| Portal/teleport rendering, `inert`, nested scroll locks | **real-browser** |
+| ARIA attribute correctness, disabled handling | happy-dom accessibility tests (real-browser when focus/tab-order matters) |
+
+Real-browser tests live in `packages/<name>/test/browser/**/*.browser.test.ts`
+and import `page` from `vitest/browser`. They are excluded from the happy-dom
+run and from `tsc` (validated by the Vitest browser runner).
+
 ## Thresholds
 
 Every behavior change MUST include tests. Global thresholds MUST NOT be lowered.
+Per-package floors (ALP-23) are the authoritative gate — see
+`coverage-thresholds.mdc`.
 
 ## Common mistakes
 
@@ -48,5 +77,6 @@ Every behavior change MUST include tests. Global thresholds MUST NOT be lowered.
 | Tests leak `localStorage` / DOM state | Rely on `test/setup.ts` `beforeEach` — don't skip cleanup |
 | Import test helpers without `.js` | `import { startAlpine } from "../../../test/helpers.js"` |
 | Assert Alpine reactivity without real Alpine | Magic harness uses plain objects — no reactivity there |
+| Test focus capture/restore in happy-dom | Move to `test/browser/*.browser.test.ts` (real browser) |
 
 Run `pnpm test` and `pnpm run lint` before finishing.

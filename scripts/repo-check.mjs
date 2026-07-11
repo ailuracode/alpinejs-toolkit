@@ -575,6 +575,66 @@ function validatePackageTests(packages) {
 }
 
 /**
+ * @param {DiscoveredPackage} pkg
+ * @param {Record<string, unknown>} floors
+ * @param {Record<string, unknown>} exempt
+ * @returns {string[]}
+ */
+function validatePackageCoverage(pkg, floors, exempt) {
+  const errors = [];
+  if (exempt[pkg.folder]) {
+    const justification = exempt[pkg.folder];
+    if (typeof justification !== "string" || justification.length === 0) {
+      errors.push(`${pkg.name}: coverage exemption must include a justification`);
+    }
+    return errors;
+  }
+
+  const floor = floors[pkg.folder];
+  if (!floor) {
+    errors.push(`${pkg.name}: missing per-package coverage floor in scripts/coverage-policy.json`);
+    return errors;
+  }
+
+  for (const metric of ["lines", "statements", "functions", "branches"]) {
+    if (typeof floor[metric] !== "number") {
+      errors.push(`${pkg.name}: coverage floor missing metric "${metric}"`);
+    }
+  }
+
+  return errors;
+}
+
+/**
+ * Validate the per-package coverage policy (ALP-23). Every public, test-bearing
+ * package must declare a coverage floor in `scripts/coverage-policy.json` or be
+ * a documented exception. Exempt entries must carry a justification string.
+ *
+ * @param {DiscoveredPackage[]} packages
+ * @returns {string[]}
+ */
+function validateCoveragePolicy(packages) {
+  const policyPath = path.join(defaultRoot, "scripts/coverage-policy.json");
+  if (!existsSync(policyPath)) {
+    return ["scripts/coverage-policy.json: missing per-package coverage policy"];
+  }
+
+  const policy = JSON.parse(readFileSync(policyPath, "utf8"));
+  const floors = policy.packages ?? {};
+  const exempt = policy.exempt ?? {};
+
+  const errors = [];
+  for (const pkg of packages) {
+    if (pkg.isPrivate || !packageHasTests(pkg.dir)) {
+      continue;
+    }
+    errors.push(...validatePackageCoverage(pkg, floors, exempt));
+  }
+
+  return errors;
+}
+
+/**
  * @param {string} root
  * @param {DiscoveredPackage[]} publishable
  * @returns {string[]}
@@ -616,6 +676,7 @@ export function runRepoCheck(options = {}) {
     ...validateDocumentedCounts(root, catalog.length),
     ...validateSizeBudgets(packages, root),
     ...validatePackageTests(packages),
+    ...validateCoveragePolicy(packages),
     ...validateTooling(root, publishable)
   );
 

@@ -88,6 +88,31 @@ jobs:
       - name: Run tests with coverage
         run: pnpm run test:coverage
 
+  browser-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        run: |
+          set -euo pipefail
+          git init
+          git remote add origin "https://github.com/${GITHUB_REPOSITORY}.git"
+          git fetch --depth=1 --no-tags origin "${GITHUB_SHA}"
+          git checkout FETCH_HEAD
+
+      - uses: ./.github/actions/setup
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build packages
+        run: pnpm run build
+
+      - name: Install Playwright browser
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Run real-browser accessibility/overlay tests
+        run: pnpm run test:browser
+
   pack:
     runs-on: ubuntu-latest
     steps:
