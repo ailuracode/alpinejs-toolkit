@@ -1,6 +1,10 @@
 /**
- * Strongly-typed event map for the attention controller.
+ * Strongly-typed event maps for the attention controllers.
  */
+
+import type { IdleScreenState, IdleUserState } from "./types.js";
+
+// ── Detail payloads ──────────────────────────────────────────────
 
 /** Detail payload for wake lock state changes. */
 export interface WakeLockChangeDetail {
@@ -11,18 +15,30 @@ export interface WakeLockChangeDetail {
 
 /** Detail payload for idle detection state changes. */
 export interface IdleChangeDetail {
-  readonly userState: import("./types").IdleUserState | null;
-  readonly screenState: import("./types").IdleScreenState | null;
+  readonly userState: IdleUserState | null;
+  readonly screenState: IdleScreenState | null;
   readonly permission: PermissionState | null;
+  readonly error: string | null;
+  readonly threshold: number;
   readonly isWatching: boolean;
 }
 
+// ── Controller event maps ────────────────────────────────────────
+
+/** Events emitted by {@link WakeLockController}. */
+export interface WakeLockEvents extends Record<string, unknown> {
+  "wakelock:change": WakeLockChangeDetail;
+}
+
+/** Events emitted by {@link IdleController}. */
+export interface IdleEvents extends Record<string, unknown> {
+  "idle:change": IdleChangeDetail;
+}
+
 /**
- * Event map for attention state changes. Two keys:
+ * Combined event map for {@link AttentionController}.
+ * Two keys:
  * - `wakelock:change` — emitted when wake lock is acquired, released, or errors.
  * - `idle:change` — emitted when idle state, screen state, or permission changes.
  */
-export interface AttentionEvents extends Record<string, unknown> {
-  "wakelock:change": WakeLockChangeDetail;
-  "idle:change": IdleChangeDetail;
-}
+export interface AttentionEvents extends WakeLockEvents, IdleEvents {}
