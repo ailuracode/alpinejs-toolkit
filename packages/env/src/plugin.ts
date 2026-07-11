@@ -1,67 +1,15 @@
 import type AlpineType from "alpinejs";
-import { BatteryController, type BatteryMagic, createBattery } from "./battery-controller.js";
-import type { BatteryManagerLike } from "./internal/battery.js";
-import {
-  detectPlatformName,
-  isAndroidDevice,
-  isChromeOsDevice,
-  isIosDevice,
-  isLinuxDevice,
-  isMacDevice,
-  isWindowsDevice,
-  PLATFORM_NAMES,
-  type PlatformFlags,
-  type PlatformName,
-  type PlatformSnapshot,
-  platformFlags,
-  readPlatformState,
-} from "./internal/platform.js";
-import {
-  VISIBILITY_STATES,
-  type VisibilitySnapshot,
-  type VisibilityState,
-} from "./internal/visibility.js";
-import { createNetwork, NetworkController, type NetworkMagic } from "./network-controller.js";
-import { createPlatform, PlatformController, type PlatformMagic } from "./platform-controller.js";
-import {
-  createVisibility,
-  VisibilityController,
-  type VisibilityMagic,
-} from "./visibility-controller.js";
-
-export type {
+import { type BatteryManagerLike, readBatteryState } from "./internal/battery.js";
+import { readNetworkState } from "./internal/network.js";
+import { readPlatformState } from "./internal/platform.js";
+import { readVisibilityState } from "./internal/visibility.js";
+import type {
   BatteryMagic,
-  BatteryManagerLike,
+  EnvPluginOptions,
   NetworkMagic,
-  PlatformFlags,
   PlatformMagic,
-  PlatformName,
-  PlatformSnapshot,
   VisibilityMagic,
-  VisibilitySnapshot,
-  VisibilityState,
-};
-export {
-  BatteryController,
-  createBattery,
-  createNetwork,
-  createPlatform,
-  createVisibility,
-  detectPlatformName,
-  isAndroidDevice,
-  isChromeOsDevice,
-  isIosDevice,
-  isLinuxDevice,
-  isMacDevice,
-  isWindowsDevice,
-  NetworkController,
-  PLATFORM_NAMES,
-  PlatformController,
-  platformFlags,
-  readPlatformState,
-  VISIBILITY_STATES,
-  VisibilityController,
-};
+} from "./types.js";
 
 interface AlpineAugmented {
   cleanup?(callback: () => void): void;
@@ -72,16 +20,312 @@ interface AlpineInstall {
   reactive<T>(value: T): T;
 }
 
-export type EnvPluginOptions = {
-  /** Register `$network`. Default: `true`. */
-  network?: boolean;
-  /** Register `$visibility`. Default: `true`. */
-  visibility?: boolean;
-  /** Register `$battery`. Default: `true`. */
-  battery?: boolean;
-  /** Register `$platform`. Default: `true`. */
-  platform?: boolean;
+type ReactiveMagics = {
+  network: {
+    isOnline: boolean;
+    isOffline: boolean;
+  } | null;
+  visibility: {
+    isVisible: boolean;
+    isHidden: boolean;
+    state: VisibilityMagic["state"];
+    is(state: VisibilityMagic["state"]): boolean;
+  } | null;
+  battery: {
+    isAvailable: boolean;
+    level: number | null;
+    isCharging: boolean;
+    chargingTime: number | null;
+    dischargingTime: number | null;
+  } | null;
+  platform: {
+    name: PlatformMagic["name"];
+    isMac: boolean;
+    isWindows: boolean;
+    isLinux: boolean;
+    isIos: boolean;
+    isAndroid: boolean;
+    isChromeos: boolean;
+    is(platform: PlatformMagic["name"]): boolean;
+  } | null;
 };
+
+type RuntimeSnapshot = Pick<RuntimeState, "network" | "visibility" | "battery" | "platform">;
+type RuntimeSubscriber = (state: RuntimeSnapshot) => void;
+
+type RuntimeState = {
+  readonly subscribers: Set<RuntimeSubscriber>;
+  readonly cleanups: Array<() => void>;
+  mounted: boolean;
+  network: NetworkMagic;
+  visibility: Omit<VisibilityMagic, "is">;
+  battery: BatteryMagic;
+  platform: Omit<PlatformMagic, "is">;
+};
+
+type NavigatorWithBattery = Navigator & {
+  getBattery?: () => Promise<BatteryManagerLike>;
+};
+
+const BATTERY_EVENTS = [
+  "chargingchange",
+  "levelchange",
+  "chargingtimechange",
+  "dischargingtimechange",
+] as const;
+
+const runtime: RuntimeState = {
+  subscribers: new Set<RuntimeSubscriber>(),
+  cleanups: [],
+  mounted: false,
+  network: { isOnline: true, isOffline: false },
+  visibility: { isVisible: true, isHidden: false, state: "visible" },
+  battery: {
+    isAvailable: false,
+    level: null,
+    isCharging: false,
+    chargingTime: null,
+    dischargingTime: null,
+  },
+  platform: {
+    name: "unknown",
+    isMac: false,
+    isWindows: false,
+    isLinux: false,
+    isIos: false,
+    isAndroid: false,
+    isChromeos: false,
+  },
+};
+
+function emit(): void {
+  for (const subscriber of runtime.subscribers) {
+    subscriber(runtime);
+  }
+}
+
+function resetRuntime(): void {
+  runtime.mounted = false;
+  runtime.network = { isOnline: true, isOffline: false };
+  runtime.visibility = { isVisible: true, isHidden: false, state: "visible" };
+  runtime.battery = {
+    isAvailable: false,
+    level: null,
+    isCharging: false,
+    chargingTime: null,
+    dischargingTime: null,
+  };
+  runtime.platform = {
+    name: "unknown",
+    isMac: false,
+    isWindows: false,
+    isLinux: false,
+    isIos: false,
+    isAndroid: false,
+    isChromeos: false,
+  };
+}
+
+function destroyRuntime(): void {
+  while (runtime.cleanups.length > 0) {
+    const cleanup = runtime.cleanups.pop();
+
+    cleanup?.();
+  }
+
+  resetRuntime();
+}
+
+export function resetEnvRuntimeForTests(): void {
+  runtime.subscribers.clear();
+  destroyRuntime();
+}
+
+function ensureRuntime(): void {
+  if (runtime.mounted) {
+    return;
+  }
+
+  runtime.mounted = true;
+  runtime.network = readNetworkState();
+  runtime.visibility = readVisibilityState();
+  runtime.battery = readBatteryState();
+  runtime.platform = readPlatformState();
+
+  if (typeof window !== "undefined") {
+    const updateNetwork = () => {
+      runtime.network = readNetworkState();
+      emit();
+    };
+
+    window.addEventListener("online", updateNetwork);
+    window.addEventListener("offline", updateNetwork);
+    runtime.cleanups.push(() => {
+      window.removeEventListener("online", updateNetwork);
+      window.removeEventListener("offline", updateNetwork);
+    });
+  }
+
+  if (typeof document !== "undefined") {
+    const updateVisibility = () => {
+      runtime.visibility = readVisibilityState();
+      emit();
+    };
+
+    document.addEventListener("visibilitychange", updateVisibility);
+    runtime.cleanups.push(() => {
+      document.removeEventListener("visibilitychange", updateVisibility);
+    });
+  }
+
+  if (typeof navigator !== "undefined") {
+    const nav = navigator as NavigatorWithBattery;
+
+    if (typeof nav.getBattery === "function") {
+      void nav
+        .getBattery()
+        .then((battery) => {
+          if (!runtime.mounted) {
+            return;
+          }
+
+          const updateBattery = () => {
+            runtime.battery = readBatteryState(battery);
+            emit();
+          };
+
+          updateBattery();
+
+          for (const eventName of BATTERY_EVENTS) {
+            battery.addEventListener(eventName, updateBattery);
+          }
+
+          runtime.cleanups.push(() => {
+            for (const eventName of BATTERY_EVENTS) {
+              battery.removeEventListener(eventName, updateBattery);
+            }
+          });
+        })
+        .catch((error) => {
+          runtime.battery = readBatteryState();
+          void error;
+          emit();
+        });
+    }
+  }
+
+  emit();
+}
+
+function subscribe(listener: RuntimeSubscriber): () => void {
+  ensureRuntime();
+  runtime.subscribers.add(listener);
+  listener(runtime);
+
+  return () => {
+    runtime.subscribers.delete(listener);
+
+    if (runtime.subscribers.size === 0) {
+      destroyRuntime();
+    }
+  };
+}
+
+function createReactiveMagics(
+  Alpine: AlpineInstall,
+  options: Required<EnvPluginOptions>
+): ReactiveMagics {
+  return {
+    network: options.network
+      ? Alpine.reactive({
+          isOnline: runtime.network.isOnline,
+          isOffline: runtime.network.isOffline,
+        })
+      : null,
+    visibility: options.visibility
+      ? Alpine.reactive({
+          isVisible: runtime.visibility.isVisible,
+          isHidden: runtime.visibility.isHidden,
+          state: runtime.visibility.state,
+          is(state: VisibilityMagic["state"]) {
+            return this.state === state;
+          },
+        })
+      : null,
+    battery: options.battery
+      ? Alpine.reactive({
+          isAvailable: runtime.battery.isAvailable,
+          level: runtime.battery.level,
+          isCharging: runtime.battery.isCharging,
+          chargingTime: runtime.battery.chargingTime,
+          dischargingTime: runtime.battery.dischargingTime,
+        })
+      : null,
+    platform: options.platform
+      ? Alpine.reactive({
+          name: runtime.platform.name,
+          isMac: runtime.platform.isMac,
+          isWindows: runtime.platform.isWindows,
+          isLinux: runtime.platform.isLinux,
+          isIos: runtime.platform.isIos,
+          isAndroid: runtime.platform.isAndroid,
+          isChromeos: runtime.platform.isChromeos,
+          is(platform: PlatformMagic["name"]) {
+            return this.name === platform;
+          },
+        })
+      : null,
+  };
+}
+
+function registerMagics(Alpine: AlpineInstall, magics: ReactiveMagics): void {
+  if (magics.network) {
+    Alpine.magic("network", () => magics.network as NetworkMagic);
+  }
+
+  if (magics.visibility) {
+    Alpine.magic("visibility", () => magics.visibility as VisibilityMagic);
+  }
+
+  if (magics.battery) {
+    Alpine.magic("battery", () => magics.battery as BatteryMagic);
+  }
+
+  if (magics.platform) {
+    Alpine.magic("platform", () => magics.platform as PlatformMagic);
+  }
+}
+
+function syncMagics(state: RuntimeSnapshot, magics: ReactiveMagics): void {
+  if (magics.network) {
+    magics.network.isOnline = state.network.isOnline;
+    magics.network.isOffline = state.network.isOffline;
+  }
+
+  if (magics.visibility) {
+    magics.visibility.isVisible = state.visibility.isVisible;
+    magics.visibility.isHidden = state.visibility.isHidden;
+    magics.visibility.state = state.visibility.state;
+  }
+
+  if (magics.battery) {
+    magics.battery.isAvailable = state.battery.isAvailable;
+    magics.battery.level = state.battery.level;
+    magics.battery.isCharging = state.battery.isCharging;
+    magics.battery.chargingTime = state.battery.chargingTime;
+    magics.battery.dischargingTime = state.battery.dischargingTime;
+  }
+
+  if (magics.platform) {
+    magics.platform.name = state.platform.name;
+    magics.platform.isMac = state.platform.isMac;
+    magics.platform.isWindows = state.platform.isWindows;
+    magics.platform.isLinux = state.platform.isLinux;
+    magics.platform.isIos = state.platform.isIos;
+    magics.platform.isAndroid = state.platform.isAndroid;
+    magics.platform.isChromeos = state.platform.isChromeos;
+  }
+}
 
 /** Registers browser environment magics: `$network`, `$visibility`, `$battery`, `$platform`. */
 export default function envPlugin(options: EnvPluginOptions = {}): AlpineType.PluginCallback {
@@ -95,133 +339,23 @@ export default function envPlugin(options: EnvPluginOptions = {}): AlpineType.Pl
   return function registerEnv(alpine) {
     const Alpine = alpine as AlpineType.Alpine & AlpineAugmented;
     const typedAlpine = alpine as unknown as AlpineInstall;
-    const cleanups: Array<() => void> = [];
+    const magics = createReactiveMagics(typedAlpine, {
+      network: enableNetwork,
+      visibility: enableVisibility,
+      battery: enableBattery,
+      platform: enablePlatform,
+    });
 
-    if (enableNetwork) {
-      const controller = createNetwork();
-      const reactiveNetwork = typedAlpine.reactive({
-        isOnline: controller.isOnline,
-        isOffline: controller.isOffline,
-      });
+    registerMagics(typedAlpine, magics);
 
-      const unsubscribe = controller.on("change", (detail) => {
-        reactiveNetwork.isOnline = detail.isOnline;
-        reactiveNetwork.isOffline = detail.isOffline;
-      });
-
-      typedAlpine.magic("network", () => reactiveNetwork as NetworkMagic);
-      cleanups.push(unsubscribe);
-      cleanups.push(() => controller.destroy());
-    }
-
-    if (enableVisibility) {
-      const controller = createVisibility();
-      const reactiveVisibility = typedAlpine.reactive({
-        isVisible: controller.isVisible,
-        isHidden: controller.isHidden,
-        state: controller.state,
-        is: (state: VisibilityState) => controller.is(state),
-      });
-
-      const unsubscribe = controller.on("change", (detail) => {
-        reactiveVisibility.isVisible = detail.isVisible;
-        reactiveVisibility.isHidden = detail.isHidden;
-        reactiveVisibility.state = detail.state;
-      });
-
-      typedAlpine.magic("visibility", () => reactiveVisibility as VisibilityMagic);
-      cleanups.push(unsubscribe);
-      cleanups.push(() => controller.destroy());
-    }
-
-    if (enableBattery) {
-      const controller = createBattery();
-      const reactiveBattery = typedAlpine.reactive({
-        isAvailable: controller.isAvailable,
-        level: controller.level,
-        isCharging: controller.isCharging,
-        chargingTime: controller.chargingTime,
-        dischargingTime: controller.dischargingTime,
-      });
-
-      const unsubscribe = controller.on("change", (detail) => {
-        reactiveBattery.isAvailable = detail.isAvailable;
-        reactiveBattery.level = detail.level;
-        reactiveBattery.isCharging = detail.isCharging;
-        reactiveBattery.chargingTime = detail.chargingTime;
-        reactiveBattery.dischargingTime = detail.dischargingTime;
-      });
-
-      typedAlpine.magic("battery", () => reactiveBattery as BatteryMagic);
-      cleanups.push(unsubscribe);
-      cleanups.push(() => controller.destroy());
-    }
-
-    if (enablePlatform) {
-      const controller = createPlatform();
-      const reactivePlatform = typedAlpine.reactive({
-        get name() {
-          return controller.name;
-        },
-        get isMac() {
-          return controller.isMac;
-        },
-        get isWindows() {
-          return controller.isWindows;
-        },
-        get isLinux() {
-          return controller.isLinux;
-        },
-        get isIos() {
-          return controller.isIos;
-        },
-        get isAndroid() {
-          return controller.isAndroid;
-        },
-        get isChromeos() {
-          return controller.isChromeos;
-        },
-        is: (platform: PlatformName) => controller.is(platform),
-      });
-
-      typedAlpine.magic("platform", () => reactivePlatform as PlatformMagic);
-      cleanups.push(() => controller.destroy());
-    }
+    const unsubscribe = subscribe((state) => {
+      syncMagics(state, magics);
+    });
 
     if (typeof Alpine.cleanup === "function") {
       Alpine.cleanup(() => {
-        for (const cleanup of cleanups) {
-          cleanup();
-        }
+        unsubscribe();
       });
     }
   };
 }
-
-export const networkPlugin = envPlugin({
-  network: true,
-  visibility: false,
-  battery: false,
-  platform: false,
-});
-
-export const visibilityPlugin = envPlugin({
-  network: false,
-  visibility: true,
-  battery: false,
-  platform: false,
-});
-
-export const batteryPlugin = envPlugin({
-  network: false,
-  visibility: false,
-  battery: true,
-  platform: false,
-});
-
-export const platformPlugin = envPlugin({
-  network: false,
-  visibility: false,
-  battery: false,
-  platform: true,
-});

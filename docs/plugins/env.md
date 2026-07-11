@@ -7,7 +7,7 @@ Package: `@ailuracode/alpine-env`
 
 Browser environment magics in one package: connectivity, tab visibility, battery, and platform detection.
 
-Under the hood, each magic is backed by a lifecycle-aware headless controller. Alpine only mirrors readonly snapshots into reactivity.
+The root entrypoint stays focused on Alpine magics. The headless API lives under `@ailuracode/alpine-env/controller`.
 
 ## Magics
 
@@ -107,32 +107,19 @@ Operating system and device flags from `navigator.userAgent` and related signals
 
 See [Device detection](../device-detection.md) for when to use `env` vs `media`.
 
-## Headless controllers
+## Headless controller
 
-Use the controllers directly when you want lifecycle-managed environment state without Alpine:
+Use the controller subpath when you want lifecycle-managed environment state without Alpine:
 
 ```js
-import {
-  createBattery,
-  createNetwork,
-  createPlatform,
-  createVisibility,
-} from "@ailuracode/alpine-env";
+import { createEnv } from "@ailuracode/alpine-env/controller";
 
-const network = createNetwork();
-network.on("change", (detail) => {
-  console.log(detail.isOnline);
+const env = createEnv();
+env.on("change", (detail) => {
+  console.log(detail.network.isOnline);
 });
 ```
 
-Controllers are SSR-safe to construct, start subscriptions in `mount()`, and remove listeners on `destroy()`.
+`EnvController` is SSR-safe to construct, starts subscriptions in `mount()`, and removes listeners on `destroy()`.
 
-The Alpine-only shorthands still exist as aliases: `networkPlugin`, `visibilityPlugin`, `batteryPlugin`, `platformPlugin`.
-
-## Utilities
-
-| Function | Description |
-|----------|-------------|
-| `readPlatformState()` | Snapshot of platform flags |
-| `detectPlatformName()` | OS name without Alpine |
-| `isIosDevice()` / `isAndroidDevice()` | Device helpers (used by `@ailuracode/alpine-notify`) |
+Root package no longer exports platform helpers or per-feature controllers. Import the controller subpath for headless usage and use the root package for Alpine integration only.

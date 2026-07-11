@@ -1,7 +1,6 @@
-import { clearAllSingletons, getSingleton } from "@ailuracode/alpine-core";
+import { clearAllSingletons } from "@ailuracode/alpine-core";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { createMagicHarness } from "../../../test/mock-alpine.js";
-import { BATTERY_SINGLETON_KEY, type BatteryController } from "../src/battery-controller.js";
 import envPlugin, {
   type BatteryMagic,
   type NetworkMagic,
@@ -9,12 +8,7 @@ import envPlugin, {
   type VisibilityMagic,
 } from "../src/index.js";
 import type { BatteryManagerLike } from "../src/internal/battery.js";
-import { NETWORK_SINGLETON_KEY, type NetworkController } from "../src/network-controller.js";
-import { PLATFORM_SINGLETON_KEY, type PlatformController } from "../src/platform-controller.js";
-import {
-  VISIBILITY_SINGLETON_KEY,
-  type VisibilityController,
-} from "../src/visibility-controller.js";
+import { resetEnvRuntimeForTests } from "../src/plugin.js";
 
 function createBatteryManager(overrides: Partial<BatteryManagerLike> = {}) {
   const listeners = new Map<string, Set<EventListener>>();
@@ -71,12 +65,9 @@ function countEventCalls(spy: ReturnType<typeof vi.spyOn>, name: string): number
   return spy.mock.calls.filter((call: unknown[]) => call[0] === name).length;
 }
 
-describe("@ailuracode/alpine-env", () => {
+describe("@ailuracode/alpine-env plugin", () => {
   afterEach(() => {
-    getSingleton<NetworkController>(NETWORK_SINGLETON_KEY)?.destroy();
-    getSingleton<VisibilityController>(VISIBILITY_SINGLETON_KEY)?.destroy();
-    getSingleton<BatteryController>(BATTERY_SINGLETON_KEY)?.destroy();
-    getSingleton<PlatformController>(PLATFORM_SINGLETON_KEY)?.destroy();
+    resetEnvRuntimeForTests();
     clearAllSingletons();
     vi.restoreAllMocks();
   });

@@ -26,27 +26,29 @@ Alpine.start();
 Alpine.plugin(env({ battery: false }));
 ```
 
-## Headless controllers
+## Headless controller
 
-This package also exports framework-agnostic controllers when you want the lifecycle without Alpine:
+Use the controller subpath when you want lifecycle-managed environment state without Alpine:
 
 ```js
-import { createNetwork, createVisibility, createBattery, createPlatform } from "@ailuracode/alpine-env";
+import { createEnv } from "@ailuracode/alpine-env/controller";
 
-const network = createNetwork();
-const stop = network.on("change", (detail) => {
-  console.log(detail.isOnline);
+const env = createEnv();
+const stop = env.on("change", (detail) => {
+  console.log(detail.network.isOnline);
 });
 
 stop();
-network.destroy();
+env.destroy();
 ```
 
-Controllers are lifecycle-aware:
+The controller is lifecycle-aware:
 
 - constructors do not touch browser globals
 - subscriptions start in `mount()`
 - `destroy()` is idempotent and removes registered listeners
+
+The root package stays focused on Alpine integration. Import `@ailuracode/alpine-env` for magics, and `@ailuracode/alpine-env/controller` for headless usage.
 
 ## License
 
