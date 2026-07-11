@@ -458,14 +458,7 @@ importers:
         specifier: workspace:*
         version: link:../core
 
-  packages/query:
-    dependencies:
-      '@types/alpinejs':
-        specifier: ^3.13.11
-        version: 3.13.11
-      alpinejs:
-        specifier: ^3.0.0
-        version: 3.15.12
+  packages/query: {}
 
   packages/query-adapter-alpine:
     dependencies:
@@ -484,6 +477,9 @@ importers:
       '@ailuracode/alpine-query':
         specifier: workspace:*
         version: link:../query
+      '@ailuracode/alpine-query-adapter-alpine':
+        specifier: workspace:*
+        version: link:../query-adapter-alpine
       '@types/alpinejs':
         specifier: ^3.13.11
         version: 3.13.11
@@ -499,6 +495,9 @@ importers:
       '@ailuracode/alpine-query':
         specifier: workspace:*
         version: link:../query
+      '@ailuracode/alpine-query-adapter-alpine':
+        specifier: workspace:*
+        version: link:../query-adapter-alpine
       '@nanostores/alpine':
         specifier: ^0.1.1
         version: 0.1.1(alpinejs@3.15.12)(nanostores@1.4.0)

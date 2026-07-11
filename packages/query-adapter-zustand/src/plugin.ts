@@ -1,8 +1,5 @@
-import {
-  createAlpineBridgedAdapter,
-  type QueryPluginOptions,
-  query,
-} from "@ailuracode/alpine-query";
+import type { QueryPluginOptions } from "@ailuracode/alpine-query";
+import query, { createAlpineBridgedAdapter } from "@ailuracode/alpine-query-adapter-alpine";
 import type AlpineType from "alpinejs";
 import { zustandQueryAdapter } from "./adapter.js";
 

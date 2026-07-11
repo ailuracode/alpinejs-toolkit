@@ -13,7 +13,7 @@ import media from "@ailuracode/alpine-media";
 import menu from "@ailuracode/alpine-menu";
 import notify from "@ailuracode/alpine-notify";
 import overlay from "@ailuracode/alpine-overlay";
-import query from "@ailuracode/alpine-query";
+import query from "@ailuracode/alpine-query-adapter-alpine";
 import queryKit, { createAlpineNanostoresAdapter, NanoStores } from "@ailuracode/alpine-query-kit";
 import scroll from "@ailuracode/alpine-scroll";
 import sidebar from "@ailuracode/alpine-sidebar";

@@ -1,8 +1,17 @@
+import type {
+  MutationState,
+  MutationStateHandle,
+  QueryState,
+  QueryStateAdapter,
+  QueryStateHandle,
+} from "@ailuracode/alpine-query";
+import {
+  attachMutationFlags,
+  attachQueryFlags,
+  type MutationStateRecord,
+  type QueryStateRecord,
+} from "@ailuracode/alpine-query";
 import type AlpineType from "alpinejs";
-import type { MutationStateHandle, QueryStateAdapter, QueryStateHandle } from "./adapters/types.js";
-import type { MutationStateRecord, QueryStateRecord } from "./state/view.js";
-import { attachMutationFlags, attachQueryFlags } from "./state/view.js";
-import type { MutationState, QueryState } from "./types.js";
 
 type AlpineInstance = AlpineType.Alpine;
 

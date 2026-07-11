@@ -35,15 +35,6 @@
     }
   },
   "types": "./dist/global.d.ts",
-  "peerDependencies": {
-    "@types/alpinejs": "^3.13.11",
-    "alpinejs": "^3.0.0"
-  },
-  "peerDependenciesMeta": {
-    "@types/alpinejs": {
-      "optional": true
-    }
-  },
   "scripts": {
     "build": "tsup src/index.ts src/adapters/vanilla.ts --format esm --dts --clean --out-dir dist && cp src/global.d.ts dist/global.d.ts",
     "prepublishOnly": "pnpm run build",
