@@ -49,6 +49,7 @@ export function togglePlugin(options: CreateToggleOptions = {}): TogglePluginCal
       opts: ToggleOptions<TA, TB, TN>
     ): ToggleInstance<TA, TB, TN, TA | TB | TN> => {
       const controller = new ToggleController<TA, TB, TN, TA | TB | TN>(opts);
+      controller.mount();
       registry.register(controller.id, controller as ToggleController<unknown, unknown, unknown>);
       const reactive = Alpine.reactive(
         controller as unknown as ToggleController<unknown, unknown, unknown>
@@ -98,5 +99,7 @@ export function createToggle<TA, TB, TN>(
 export function createToggle<TA, TB, TN>(
   options: ToggleOptions<TA, TB, TN>
 ): ToggleController<TA, TB, TN, TA | TB | TN> {
-  return new ToggleController<TA, TB, TN, TA | TB | TN>(options);
+  const controller = new ToggleController<TA, TB, TN, TA | TB | TN>(options);
+  controller.mount();
+  return controller;
 }

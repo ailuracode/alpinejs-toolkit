@@ -10,14 +10,18 @@
  *    shorthands.
  * 2. Transitions — `set`, `toggle`, `next`, `reset`. Each emits a
  *    typed `change` event with the previous snapshot.
- * 3. Lifecycle — `destroy()` is idempotent and tears down every
- *    listener.
+ * 3. Lifecycle — `mount()` schedules the initialization event;
+ *    `destroy()` is idempotent and tears down every listener.
  *
  * Construction rules (per
  * `.cursor/rules/new-package.mdc`):
  *
  * - The constructor MUST NOT access `window` / `document` /
- *   `localStorage`. The controller is pure logic — no browser APIs.
+ *   `localStorage`, schedule microtasks, or emit events. The
+ *   controller is pure logic — no browser APIs.
+ * - `mount()` MUST be idempotent and schedules the initialization
+ *   event on a microtask so subscribers can attach synchronously
+ *   after `mount()` returns.
  * - `destroy()` MUST be idempotent.
  *
  * The controller is generic over the configured state types so
@@ -59,6 +63,7 @@ export class ToggleController<TA, TB, TN, V extends TA | TB | TN = TA | TB | TN>
 
   #value: TA | TB | TN;
   #destroyed = false;
+  #mounted = false;
 
   constructor(options: ToggleOptions<TA, TB, TN>) {
     this.#id = options.id ?? generateId("toggle");
@@ -86,28 +91,6 @@ export class ToggleController<TA, TB, TN, V extends TA | TB | TN = TA | TB | TN>
     this.#value = this.#initial;
 
     this.#emitter = new EventEmitter<ToggleEvents<TA, TB, TN>>();
-
-    // Emit the initialization event on a microtask so consumers
-    // can subscribe synchronously after `new ToggleController(...)`
-    // returns and still receive the initial state. Mirrors the
-    // behaviour of `@ailuracode/alpine-theme`'s controller.
-    //
-    // The emit targets `#value` (current) rather than `#initial`
-    // so consumers who call `setSilently(...)` BEFORE the
-    // microtask fires (a common hydration pattern) keep their
-    // hydrated value. The `previous` field stays `null` per the
-    // initialization contract — listeners can distinguish init
-    // from any later change via the `source` discriminator.
-    queueMicrotask(() => {
-      if (this.#destroyed) {
-        return;
-      }
-      this.#emitter.emit("change", {
-        current: this.#value,
-        previous: null,
-        source: "initialization",
-      });
-    });
   }
 
   // ── Public identity ────────────────────────────────────────────
@@ -118,6 +101,10 @@ export class ToggleController<TA, TB, TN, V extends TA | TB | TN = TA | TB | TN>
 
   get isDestroyed(): boolean {
     return this.#destroyed;
+  }
+
+  get isMounted(): boolean {
+    return this.#mounted;
   }
 
   // ── Public state surface ────────────────────────────────────────
@@ -191,9 +178,10 @@ export class ToggleController<TA, TB, TN, V extends TA | TB | TN = TA | TB | TN>
    *   Callers that want a different reset target should pass the
    *   hydrated value through the constructor's `initial` option
    *   instead.
-   * - The queued initialization microtask (if it hasn't fired
-   *   yet) preserves the hydrated value instead of resetting to
-   *   `#initial` — see the constructor for details.
+   * - The queued initialization microtask (if `mount()` was called
+   *   and the microtask hasn't fired yet) preserves the hydrated
+   *   value instead of resetting to `#initial` — see `mount()` for
+   *   details.
    *
    * Invalid values (not in `states`) are silently rejected, same
    * as `set()`. `destroy()`d controllers ignore the call.
@@ -242,6 +230,38 @@ export class ToggleController<TA, TB, TN, V extends TA | TB | TN = TA | TB | TN>
   }
 
   // ── Lifecycle ───────────────────────────────────────────────────
+
+  /**
+   * Starts the controller and schedules the initialization event on a
+   * microtask so consumers can subscribe synchronously after
+   * `mount()` returns and still receive the initial state. Mirrors
+   * the behaviour of `@ailuracode/alpine-theme`'s controller.
+   *
+   * The emit targets `#value` (current) rather than `#initial` so
+   * consumers who call `setSilently(...)` before the microtask
+   * fires (a common hydration pattern) keep their hydrated value.
+   * The `previous` field stays `null` per the initialization
+   * contract — listeners can distinguish init from any later change
+   * via the `source` discriminator.
+   *
+   * Idempotent — subsequent calls are no-ops. No-ops when destroyed.
+   */
+  mount(): void {
+    if (this.#destroyed || this.#mounted) {
+      return;
+    }
+    this.#mounted = true;
+    queueMicrotask(() => {
+      if (this.#destroyed) {
+        return;
+      }
+      this.#emitter.emit("change", {
+        current: this.#value,
+        previous: null,
+        source: "initialization",
+      });
+    });
+  }
 
   /**
    * Tears down every listener and marks the controller destroyed.

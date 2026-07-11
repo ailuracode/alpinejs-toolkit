@@ -8,7 +8,8 @@
  * Responsibilities:
  *
  * 1. **Detection** — read `navigator.language` / `navigator.languages`
- *    eagerly in the constructor (SSR-safe via a `typeof` guard).
+ *    during `mount()` when no injected navigator is supplied
+ *    (SSR-safe via a `typeof` guard).
  * 2. **Normalization** — lower-case + convert `_` to `-` when the
  *    `normalize` option is enabled (default).
  * 3. **Matching** — `is()` / `includes()` both honor the
@@ -19,9 +20,11 @@
  *
  * Construction rules:
  *
- * - The constructor reads `navigator` lazily — when the runtime is
- *   SSR (`navigator` undefined) the constructor falls back to the
- *   configured fallback without throwing.
+ * - The constructor MUST NOT read the global `navigator`. When the
+ *   caller omits `navigator`, state is seeded from the configured
+ *   fallback until `mount()` runs browser detection.
+ * - An explicitly injected `navigator` (including `null` to disable
+ *   detection) is normalized during construction — pure input only.
  * - The factory `createLang()` auto-mounts so callers receive a
  *   fully-initialized instance.
  * - `destroy()` MUST be idempotent.
@@ -56,8 +59,8 @@ const LANG_SINGLETON_KEY = "@ailuracode/alpine-lang/default";
 
 /**
  * Public entrypoint — builds and mounts a fully-initialized
- * {@link LangController}. The constructor performs eager detection;
- * the factory only adds the auto-mount step.
+ * {@link LangController}. The constructor seeds deterministic
+ * state; the factory wires the browser-touching `mount()` step.
  *
  * Singleton guarantee: at most one live `LangController` per
  * document. Repeated calls return the existing instance; the
@@ -108,7 +111,10 @@ export class LangController extends BaseController<LangEvents> implements LangMa
     // `undefined → null` and skip browser detection.
     this.#reader = options.navigator;
 
-    const detected = detectInitialLanguage(this.#fallback, this.#normalize, this.#reader);
+    const detected =
+      this.#reader !== undefined
+        ? detectInitialLanguage(this.#fallback, this.#normalize, this.#reader)
+        : seedFromFallback(this.#fallback);
     this.#current = detected.current;
     this.#base = detected.base;
     this.#region = detected.region;
@@ -117,17 +123,28 @@ export class LangController extends BaseController<LangEvents> implements LangMa
   }
 
   /**
-   * Starts the controller. The constructor already populated state
-   * from `navigator` (or fallback); `mount()` schedules the
-   * `initialization` emit on a microtask so subscribers see the
-   * first event with the full `LangState` shape and
-   * `source: 'initialization'`, `previous: null`.
+   * Starts the controller. When the caller omitted `navigator`,
+   * `mount()` reads the global `navigator` (SSR-safe) and updates
+   * state before scheduling the `initialization` emit on a
+   * microtask so subscribers see the first event with the full
+   * `LangState` shape and `source: 'initialization'`,
+   * `previous: null`.
    */
   override mount(): void {
     if (this.isMounted) {
       return;
     }
     super.mount();
+
+    if (this.#reader === undefined) {
+      const detected = detectInitialLanguage(this.#fallback, this.#normalize, undefined);
+      this.#current = detected.current;
+      this.#base = detected.base;
+      this.#region = detected.region;
+      this.#languages = detected.languages;
+      this.#isDetected = detected.detected;
+    }
+
     queueMicrotask(() => {
       if (this.isDestroyed) {
         return;
@@ -309,6 +326,22 @@ interface DetectedLanguage {
   readonly region: string | null;
   readonly languages: readonly string[];
   readonly detected: boolean;
+}
+
+/**
+ * Deterministic SSR-safe seed used when global detection is deferred
+ * to `mount()`. Mirrors the fallback branch of
+ * {@link detectInitialLanguage} without touching `navigator`.
+ */
+function seedFromFallback(fallback: string): DetectedLanguage {
+  const parts = parseLanguageTag(fallback);
+  return {
+    current: fallback,
+    base: parts.base === "" ? fallback : parts.base,
+    region: parts.region,
+    languages: [],
+    detected: false,
+  };
 }
 
 /**

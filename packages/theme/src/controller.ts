@@ -178,8 +178,8 @@ export class ThemeController extends BaseController<ThemeEvents> {
     // Forward every toggle `change` to the theme-level emit so
     // listeners receive the full `system` / `resolved` /
     // `source` shape. Theme emits its own `initialization` event
-    // in `#init()` after hydration; the toggle's queued init
-    // microtask is intentionally NOT consumed here.
+    // in `#init()` after hydration; the toggle's init microtask is
+    // intentionally NOT consumed here.
     this.#toggle.on("change", this.#onToggleChange);
 
     this.registerCleanup(this.#toggle.destroy.bind(this.#toggle));
@@ -281,12 +281,14 @@ export class ThemeController extends BaseController<ThemeEvents> {
    * 2. Hydrate the inner toggle via `setSilently` so the queued
    *    init microtask preserves the hydrated value instead of
    *    resetting to `defaultTheme`.
-   * 3. Read the OS preference.
-   * 4. Resolve `resolved` and apply to the DOM.
-   * 5. Register the system-preference listener (if `watchSystem`).
-   * 6. Register the cross-tab listener (if `crossTab` and the
+   * 3. Mount the inner toggle so its initialization microtask
+   *    observes the hydrated value (theme ignores the event).
+   * 4. Read the OS preference.
+   * 5. Resolve `resolved` and apply to the DOM.
+   * 6. Register the system-preference listener (if `watchSystem`).
+   * 7. Register the cross-tab listener (if `crossTab` and the
    *    storage adapter supports `subscribe`).
-   * 7. Schedule the theme `initialization` event on a microtask.
+   * 8. Schedule the theme `initialization` event on a microtask.
    *    The toggle's own init microtask runs too, but its
    *    `change` listener is attached from the constructor so it
    *    gets ignored — the theme emits one init event with the
@@ -299,6 +301,8 @@ export class ThemeController extends BaseController<ThemeEvents> {
     if (initial !== this.#toggle.value) {
       this.#toggle.setSilently(initial);
     }
+
+    this.#toggle.mount();
 
     this.#system = readSystemTheme();
     this.#resolved = resolveTheme(this.#toggle.value, this.#system);
@@ -339,10 +343,10 @@ export class ThemeController extends BaseController<ThemeEvents> {
 
   /**
    * Receives every `change` event from the inner toggle. The
-   * toggle's queued init microtask fires immediately after
-   * construction with `source: 'initialization'` and
-   * `previous: null`; we drop that one and let the theme emit
-   * its own init event with the full shape.
+   * toggle's init microtask fires after `mount()` with
+   * `source: 'initialization'` and `previous: null`; we drop that
+   * one and let the theme emit its own init event with the full
+   * shape.
    *
    * `pendingSource` overrides the source for cross-tab updates so
    * they surface as `source: 'storage'` rather than
