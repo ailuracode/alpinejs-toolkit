@@ -68,12 +68,15 @@ describe("@ailuracode/alpine-carousel reactivity", () => {
           </div>
         </div>
         <div id="dots">
-          <template x-for="n in $store.carousel.count('indicators')" :key="n">
+          <template
+            x-for="(_, index) in Array.from({ length: $store.carousel.instances.indicators?.totalSlides ?? 0 })"
+            :key="index"
+          >
             <button
               type="button"
-              :id="'dot-' + (n - 1)"
-              x-bind:class="$store.carousel.current('indicators') === n - 1 ? 'active' : ''"
-              @click="$store.carousel.goTo('indicators', n - 1)"
+              :id="'dot-' + index"
+              :class="$store.carousel.instances.indicators?.currentIndex === index ? 'active' : ''"
+              @click="$store.carousel.goTo('indicators', index)"
             ></button>
           </template>
         </div>

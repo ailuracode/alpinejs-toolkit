@@ -67,8 +67,8 @@ const slideV = `${slideCard} min-h-0 min-w-0 shrink-0 grow-0 [flex:0_0_var(--sli
 					</div>
 				</div>
 				<div class="mt-3 flex gap-2">
-					<button type="button" class={navButton} :disabled="!$store.carousel.canPrevious('basic')" @click="$store.carousel.previous('basic')">Previous</button>
-					<button type="button" class={navButton} :disabled="!$store.carousel.canNext('basic')" @click="$store.carousel.next('basic')">Next</button>
+					<button type="button" class={navButton} :disabled="!$store.carousel.instances.basic?.canPrevious" @click="$store.carousel.previous('basic')">Previous</button>
+					<button type="button" class={navButton} :disabled="!$store.carousel.instances.basic?.canNext" @click="$store.carousel.next('basic')">Next</button>
 				</div>
 			</section>
 		</div>
@@ -138,13 +138,13 @@ const slideV = `${slideCard} min-h-0 min-w-0 shrink-0 grow-0 [flex:0_0_var(--sli
 						</template>
 					</div>
 				</div>
-				<div class="mt-3 flex flex-wrap items-center gap-2" role="tablist" aria-label="Slide indicators">
-					<template x-for="n in $store.carousel.count('indicators')" :key="n">
+				<div class="mt-3 flex flex-wrap items-center justify-center gap-2.5" role="tablist" aria-label="Slide indicators">
+					<template x-for="n in 5" :key="'dot-' + n">
 						<button
 							type="button"
 							x-bind="$store.carousel.indicatorProps('indicators', n - 1)"
-							class="size-2.5 rounded-full border transition-colors"
-							x-bind:class="$store.carousel.current('indicators') === n - 1 ? 'bg-primary border-primary' : 'bg-muted border-input'"
+							class="size-3 shrink-0 rounded-full border-2 transition-colors"
+							:class="$store.carousel.instances.indicators?.currentIndex === n - 1 ? 'bg-primary border-primary' : 'bg-muted border-muted-foreground/60'"
 							@click="$store.carousel.goTo('indicators', n - 1)"
 						></button>
 					</template>
@@ -177,7 +177,7 @@ const slideV = `${slideCard} min-h-0 min-w-0 shrink-0 grow-0 [flex:0_0_var(--sli
 							class="h-12 flex-1 rounded border text-[10px] font-medium transition-colors"
 							x-bind:class="[
 								slide.color,
-								$store.carousel.current('thumbnails') === slide.id - 1 ? 'ring-2 ring-primary ring-offset-2' : 'opacity-70 hover:opacity-100',
+								$store.carousel.instances.thumbnails?.currentIndex === slide.id - 1 ? 'ring-2 ring-primary ring-offset-2' : 'opacity-70 hover:opacity-100',
 							]"
 							@click="$store.carousel.goTo('thumbnails', slide.id - 1)"
 							x-text="slide.title"

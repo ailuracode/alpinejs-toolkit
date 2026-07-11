@@ -48,6 +48,35 @@ Alpine.start();
 
 Bind templates to `$store.carousel.instances[id]`. Each entry is a **reactive mirror** of controller state (updated on `change` and `slideChange`). Use store commands to mutate; direct writes to `instances[id]` do not affect the controller.
 
+For dot indicators, iterate the same slide collection you use for slides (most reliable), or bind length to `instances[id].totalSlides`:
+
+```html
+<!-- Preferred: same array as slides -->
+<template x-for="(item, index) in items" :key="'dot-' + item.id">
+  <button
+    type="button"
+    x-bind="$store.carousel.indicatorProps('gallery', index)"
+    :class="$store.carousel.instances.gallery?.currentIndex === index ? 'is-active' : ''"
+    @click="$store.carousel.goTo('gallery', index)"
+  ></button>
+</template>
+
+<!-- Or: reactive slide count after Embla binds -->
+<template
+  x-for="(_, index) in Array.from({ length: $store.carousel.instances.gallery?.totalSlides ?? 0 })"
+  :key="index"
+>
+  <button
+    type="button"
+    x-bind="$store.carousel.indicatorProps('gallery', index)"
+    :class="$store.carousel.instances.gallery?.currentIndex === index ? 'is-active' : ''"
+    @click="$store.carousel.goTo('gallery', index)"
+  ></button>
+</template>
+```
+
+`count(id)` and `current(id)` remain available, but `x-for="n in count(id)"` may not re-render when Embla initializes — do not use it for indicator loops.
+
 | Property | Description |
 |----------|-------------|
 | `currentIndex` | Selected slide index |
@@ -164,9 +193,10 @@ Parent grids/flex layouts also need `min-w-0` so the carousel can shrink below i
     </div>
 
     <div role="tablist" aria-label="Choose slide">
-      <template x-for="(_, index) in Array.from({ length: $store.carousel.count('gallery') })" :key="index">
+      <template x-for="(item, index) in items" :key="'indicator-' + item.id">
         <button
           x-bind="$store.carousel.indicatorProps('gallery', index)"
+          :class="$store.carousel.instances.gallery?.currentIndex === index ? 'is-active' : ''"
           @click="$store.carousel.goTo('gallery', index)"
         ></button>
       </template>
