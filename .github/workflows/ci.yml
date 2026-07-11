@@ -105,6 +105,9 @@ jobs:
       - name: Typecheck
         run: pnpm run typecheck
 
+      - name: Architecture invariants
+        run: pnpm run architecture:check
+
       - name: Repository consistency
         if: needs.detect.outputs.run_repo_check == 'true' || needs.detect.outputs.run_full == 'true'
         run: pnpm run repo:check

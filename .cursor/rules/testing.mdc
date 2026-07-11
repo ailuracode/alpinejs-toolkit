@@ -28,11 +28,14 @@ alwaysApply: false
 
 Tests MUST be split by layer:
 
-- **Controller tests**: initial state, transitions, invariants, events, options, errors, idempotency, cleanup. Alpine MUST NOT be initialized unless strictly required.
-- **Alpine integration tests**: plugin registration, stores, magics, directives, reactivity, `$dispatch`, expression evaluation, cleanup, multiple instances.
+- **Controller tests**: initial state, transitions, invariants, events, options, errors, idempotency, cleanup. Import implementation modules directly (`../src/controller.js`). Alpine MUST NOT be initialized unless strictly required.
+- **Alpine integration tests**: plugin registration, stores, magics, directives, reactivity, `$dispatch`, expression evaluation, cleanup, multiple instances. Use `startAlpine()` for store/directive plugins or `createMagicHarness()` for magic-only plugins.
 - **Accessibility tests**: ARIA props, focus, keyboard navigation, disabled elements, dynamic elements, restore focus, roving tabindex, `aria-activedescendant`.
 - **Integration tests**: real external dependencies (Embla initialization/destruction, Floating UI cleanup, browser observers).
-- **Contract tests**: core MUST provide reusable tests for controller lifecycle, idempotent destroy, event subscription cleanup, SSR-safe imports, plugin registration, multiple independent instances, no leaked global listeners. Packages MUST run applicable contract tests.
+- **Contract tests**: import the package entrypoint (`../src/index.js`) or built surface to verify the published API, SSR-safe imports, plugin registration, lifecycle contracts, and multiple independent instances.
+- **Packed consumer tests**: import the built `dist/` output the way npm consumers do.
+
+Controller-focused files (`controller.spec.ts`, `controller.test.ts`) MUST NOT import `src/index.ts`. Contract, integration, encapsulation, and inference tests MAY import the entrypoint.
 
 ## Thresholds
 
@@ -44,6 +47,8 @@ Every behavior change MUST include tests. Global thresholds MUST NOT be lowered.
 |---------|-----|
 | Test store plugin with `createMagicHarness` | Use `startAlpine(plugin)` from `test/helpers.ts` |
 | Test magic-only plugin with `startAlpine` + DOM | Use `createMagicHarness(plugin)` from `test/mock-alpine.ts` |
+| Import `src/index.ts` from `controller.spec.ts` | Import `../src/controller.js` and related modules directly |
+| Contract test imports implementation modules only | Contract/integration tests SHOULD import `../src/index.js` |
 | Theme/media tests fail on `matchMedia` | Call `setMatchMedia(query, matches)` from `test/setup.ts` |
 | Tests leak `localStorage` / DOM state | Rely on `test/setup.ts` `beforeEach` — don't skip cleanup |
 | Import test helpers without `.js` | `import { startAlpine } from "../../../test/helpers.js"` |

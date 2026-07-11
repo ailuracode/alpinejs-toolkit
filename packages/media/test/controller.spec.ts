@@ -8,19 +8,17 @@
 import assert from "node:assert/strict";
 import { ToolkitError } from "@ailuracode/alpine-core";
 import { afterEach, beforeEach, describe, expect, expectTypeOf, it, vi } from "vitest";
-import { readMediaSnapshot } from "../src/breakpoint";
+import { readMediaSnapshot, resolveMediaBreakpoint } from "../src/breakpoint.js";
+import { createMedia, MediaController } from "../src/controller.js";
+import { mediaIntervals } from "../src/plugin.js";
 import {
-  createMedia,
   DEFAULT_MEDIA_INTERVALS,
   type MediaChangeDetail,
-  MediaController,
   type MediaInterval,
   type MediaManager,
   type MediaSnapshot,
-  mediaIntervals,
-  resolveMediaBreakpoint,
   SSR_MEDIA_DEFAULTS,
-} from "../src/index";
+} from "../src/types.js";
 import { setMatchMedia } from "./setup";
 
 describe("MediaController — initial state", () => {
