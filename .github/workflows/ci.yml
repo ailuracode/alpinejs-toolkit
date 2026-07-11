@@ -152,4 +152,6 @@ jobs:
       - name: Enforce bundle-size budgets
         run: pnpm run size
 
-  # changeset check removed — publishing is manual
+  # No release job here: this workflow only validates. Publishing is manual —
+  # a maintainer runs `pnpm run version` + `pnpm run release` on `master`
+  # (see README "Versioning & release" and .changeset/README.md).
