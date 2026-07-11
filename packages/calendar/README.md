@@ -60,8 +60,45 @@ Alpine.start();
 |-|-|
 | **Magic** | `$calendar(options?)` |
 | **Returns** | Independent `CalendarInstance` with month navigation, selection, grid data, and flexible `disabled` matchers |
+| **Events** | `select`, `monthChange`, `clear` (via `CalendarController`) |
 
 No UI is rendered — you build the markup and styles.
+
+## Headless usage (no Alpine)
+
+Import the controller directly — no Alpine dependency required:
+
+```ts
+import { CalendarController, createCalendar } from "@ailuracode/alpine-calendar";
+
+// Via controller class
+const controller = new CalendarController({ weekStartsOn: 1 });
+controller.nextMonth();
+controller.select(new Date());
+console.log(controller.month);
+controller.destroy();
+
+// Via factory
+const cal = createCalendar({ weekStartsOn: 1 });
+```
+
+The controller extends `BaseController` and emits typed events:
+
+```ts
+import { CalendarController } from "@ailuracode/alpine-calendar";
+
+const controller = new CalendarController({ mode: "range" });
+
+controller.on("select", (date) => {
+  console.log("Selected:", date);
+});
+
+controller.on("monthChange", ({ month }) => {
+  console.log("Navigated to:", month);
+});
+```
+
+For backward compatibility, `toStore()` returns a store-shaped object matching the `CalendarInstance` interface.
 
 ## License
 

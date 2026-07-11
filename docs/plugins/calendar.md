@@ -266,6 +266,57 @@ import { createCalendar } from "@ailuracode/alpine-calendar";
 const cal = createCalendar({ weekStartsOn: 1 });
 ```
 
+## Headless controller (no Alpine)
+
+`CalendarController` extends `BaseController` and can be used independently of Alpine:
+
+```ts
+import { CalendarController } from "@ailuracode/alpine-calendar";
+
+const controller = new CalendarController({
+  mode: "range",
+  weekStartsOn: 1,
+  minDate: new Date(2024, 0, 1),
+});
+
+// Navigation
+controller.nextMonth();
+controller.prevMonth();
+controller.goToToday();
+
+// Selection
+controller.select(new Date());
+controller.clear();
+
+// Typed events
+controller.on("select", (date) => console.log("Selected:", date));
+controller.on("monthChange", ({ month }) => console.log("Month:", month));
+controller.on("clear", () => console.log("Cleared"));
+
+// Cleanup
+controller.destroy();
+```
+
+### Factory functions
+
+| Function | Returns | Description |
+|----------|---------|-------------|
+| `createCalendar(options?)` | `CalendarInstance` | Backward-compatible store-shaped object |
+| `createCalendarMagic()` | `CalendarMagic` | `$calendar` magic function |
+| `new CalendarController(options?)` | `CalendarController` | Full controller with events and `destroy()` |
+
+### Events
+
+| Event | Detail | When |
+|-------|--------|------|
+| `select` | `Date` | After selection changes |
+| `monthChange` | `{ month: Date }` | After navigation |
+| `clear` | `undefined` | After selection is cleared |
+
+### `toStore()`
+
+For backward compatibility, `CalendarController.toStore()` returns an object matching the `CalendarInstance` interface. All getters delegate to the controller — mutations flow through commands and trigger events.
+
 ## SSR
 
 The plugin does not touch `window` or `navigator` during initialization. Calendar instances only use `Date` and date-fns, so they are safe to create during SSR as long as you avoid rendering browser-only UI around them.
