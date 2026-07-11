@@ -33,6 +33,7 @@
       "@ailuracode/alpine-query-adapter-alpine": ["./packages/query-adapter-alpine/src/index.ts"],
       "@ailuracode/alpine-query-adapter-zustand": ["./packages/query-adapter-zustand/src/index.ts"],
       "@ailuracode/alpine-query-kit": ["./packages/query-kit/src/index.ts"],
+      "@ailuracode/alpine-query-kit/devtools": ["./packages/query-kit/src/devtools-entry.ts"],
       "@ailuracode/alpine-media": ["./packages/media/src/index.ts"],
       "@ailuracode/alpine-sidebar": ["./packages/sidebar/src/index.ts"],
       "@ailuracode/alpine-scroll": ["./packages/scroll/src/index.ts"],

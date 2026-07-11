@@ -137,6 +137,7 @@ export default defineConfig({
         "@ailuracode/alpine-env": pkg("env"),
         "@ailuracode/alpine-transfer": pkg("transfer"),
         "@ailuracode/alpine-query-kit": pkg("query-kit"),
+        "@ailuracode/alpine-query-kit/devtools": `${root}../../packages/query-kit/src/devtools-entry.ts`,
         "@ailuracode/alpine-attention": pkg("attention"),
         "@ailuracode/alpine-calendar": pkg("calendar"),
         "@ailuracode/alpine-child": pkg("child"),

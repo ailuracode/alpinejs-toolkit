@@ -160,6 +160,8 @@ Headless-only. The consumer owns every visual decision.
 - `!important`.
 - Inline `style="..."` in user-facing output.
 
+**Exception:** scoped development-tooling paths (see `devtools-tooling.mdc` and AGENTS.md). Query Devtools styling lives under `packages/query-kit/src/devtools/**` and ships from `@ailuracode/alpine-query-kit/devtools`.
+
 ### Permitted
 
 - ARIA object literals: `{ role: "dialog", "aria-modal": "true" }`.

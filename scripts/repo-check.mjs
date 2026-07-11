@@ -1,6 +1,7 @@
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { validateHeadlessCssPolicy } from "./headless-css-policy.mjs";
 import { REPO_CHECK_POLICY } from "./repo-check-policy.mjs";
 
 const SCOPE = "@ailuracode/alpine-";
@@ -519,6 +520,28 @@ function validatePackageMetadata(pkg, requireBuilt) {
 }
 
 /**
+ * @param {string} name
+ * @returns {string}
+ */
+export function packageSurfaceBaseName(name) {
+  const match = name.match(/^(@ailuracode\/alpine-[a-z0-9-]+)/);
+  return match?.[1] ?? name;
+}
+
+/**
+ * @param {string} name
+ * @param {Set<string>} expectedNames
+ * @returns {boolean}
+ */
+export function isAllowedPackageSurfaceName(name, expectedNames) {
+  if (!name.startsWith(SCOPE)) {
+    return true;
+  }
+
+  return expectedNames.has(packageSurfaceBaseName(name));
+}
+
+/**
  * @param {Set<string>} actual
  * @param {Iterable<DiscoveredPackage>} expected
  * @param {string} surface
@@ -535,7 +558,7 @@ export function diffSurface(actual, expected, surface) {
   }
 
   for (const name of actual) {
-    if (!name.startsWith(SCOPE) || expectedNames.has(name)) {
+    if (isAllowedPackageSurfaceName(name, expectedNames)) {
       continue;
     }
 
@@ -730,13 +753,15 @@ export function runRepoCheck(options = {}) {
   }
 
   if (!hasPackageFilter) {
+    validateHeadlessCssPolicy.readFile = (filePath) => readFileSync(filePath, "utf8");
     errors.push(
       ...validateRepositorySurfaces(root, packages, catalog, demo),
       ...validateDocumentedCounts(root, catalog.length),
       ...validateSizeBudgets(packages, root),
       ...validatePackageTests(packages),
       ...validateTooling(root, publishable),
-      ...validateDepBoundaries(root)
+      ...validateDepBoundaries(root),
+      ...validateHeadlessCssPolicy(root, readDirRecursive)
     );
   }
 

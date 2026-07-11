@@ -6,6 +6,7 @@ import {
   diffSurface,
   discoverPackages,
   expectedSizeLimitConfig,
+  isAllowedPackageSurfaceName,
   isValidSideEffectsMetadata,
   publishablePackages,
   readBundleBudgetMetadata,
@@ -22,6 +23,14 @@ describe("repo:check", () => {
     expect(result.errors).toEqual([]);
     expect(result.ok).toBe(true);
     expect(result.catalogCount).toBe(28);
+  });
+
+  it("allows package subpath aliases when the base package is cataloged", () => {
+    const expected = new Set(["@ailuracode/alpine-query-kit"]);
+    expect(isAllowedPackageSurfaceName("@ailuracode/alpine-query-kit/devtools", expected)).toBe(
+      true
+    );
+    expect(isAllowedPackageSurfaceName("@ailuracode/alpine-unknown/extra", expected)).toBe(false);
   });
 
   it("detects drift when a catalog package is missing from README surfaces", () => {

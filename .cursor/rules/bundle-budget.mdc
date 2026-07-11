@@ -13,7 +13,8 @@ Enforced via per-package `package.json` `"size-limit"` config and `pnpm run size
 | Metric | Budget | Rationale |
 |--------|--------|-----------|
 | **Per-package import surface** | Limits in each package `package.json` `"size-limit"` section (hundreds of bytes to a few kB gzipped) | Alpine.js itself is ~17 kB gzipped |
-| **CSS output** | 0 bytes | Plugins are headless, CSS-framework agnostic |
+| **CSS output** | 0 bytes (headless packages) | Plugins are CSS-framework agnostic |
+| **Devtools CSS** | Allowed in `@ailuracode/alpine-query-kit/devtools` only | Scoped development-tooling exception (ALP-36) |
 
 ## Enforcement
 

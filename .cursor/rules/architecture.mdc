@@ -52,3 +52,5 @@ alwaysApply: true
 ## Decision record
 
 In September 2025, a proposed `@ailuracode/alpine-core-v2` was evaluated. The conclusion was to keep `core` as a lightweight orchestrator and avoid controller logic inside it. Packages expose their own state shape via typed `Alpine.store` augmentations.
+
+In July 2026 (ALP-36), Query Devtools styling received a **path-scoped exception** to the headless CSS policy. The panel remains in `query-kit` but ships from `@ailuracode/alpine-query-kit/devtools`; `repo:check` enforces the boundary via `scripts/headless-css-policy.mjs`.

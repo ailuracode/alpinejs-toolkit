@@ -30,6 +30,7 @@ Manually verify, at minimum:
 - No internal imports cross package boundaries.
 - `index.ts` is re-exports only — no heavy implementations.
 - Stateful packages expose a public controller class.
+- Headless packages do not ship styled UI (`scripts/headless-css-policy.mjs`; devtools exempt path documented in AGENTS.md).
 
 ## Manual check workflow
 
@@ -51,6 +52,9 @@ Cross-check the diff against `architecture.mdc` and `new-package.mdc`.
 3. When automating, add the check to `scripts/architecture-check.mjs` and wire
    `pnpm run architecture:check` in root `package.json`.
 4. Document the invariant in this skill under _Current invariants_.
+
+`repo:check` already enforces the headless CSS boundary via
+`scripts/headless-css-policy.mjs` (development-tooling path exceptions).
 
 ## Anti-patterns to refuse
 
