@@ -1,31 +1,18 @@
 /**
  * Public entrypoint for `@ailuracode/alpine-attention`.
  *
- * Re-exports only. Implementation lives in `./controller.ts`,
- * the Alpine integration in `./plugin.ts`, and the supporting
- * types in `./types.ts` and `./events.ts`.
+ * Thin Alpine plugin — registers `$wakelock` and `$idle` magics.
+ * Headless controllers and helpers live in `./controller.js`.
  */
 
-// --- Helpers re-exported for consumers / tests ------------------------------
-export {
-  createIdleState,
-  createWakeLockState,
-  DEFAULT_IDLE_THRESHOLD,
-  isIdleDetectionSupported,
-  isWakeLockSupported,
-  MIN_IDLE_THRESHOLD,
-  normalizeIdleThreshold,
-  readIdlePermissionStatus,
-} from "./controller.js";
-// --- Event surface ----------------------------------------------------------
 export type {
   AttentionEvents,
   IdleChangeDetail,
+  IdleEvents,
   WakeLockChangeDetail,
+  WakeLockEvents,
 } from "./events.js";
-// --- Alpine integration -----------------------------------------------------
 export { default as attentionPlugin, default } from "./plugin.js";
-// --- Public types ------------------------------------------------------------
 export type {
   IdleDetectorConstructor,
   IdleDetectorLike,
