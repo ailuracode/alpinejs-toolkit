@@ -1,4 +1,4 @@
-import { existsSync, readFileSync, readdirSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { REPO_CHECK_POLICY } from "./repo-check-policy.mjs";
@@ -619,7 +619,7 @@ function validateDepBoundaries(root) {
     /** @type {string[]} */
     const imports = [];
     readDirRecursive(srcDir, (filePath) => {
-      if (!filePath.endsWith(".ts") && !filePath.endsWith(".mjs")) {
+      if (!(filePath.endsWith(".ts") || filePath.endsWith(".mjs"))) {
         return;
       }
       const source = readFileSync(filePath, "utf8");
@@ -629,7 +629,7 @@ function validateDepBoundaries(root) {
     });
 
     const disallowed = imports.filter(
-      (imp) => !allowed.includes(imp) && !imp.startsWith(`${SCOPE}ui/`)
+      (imp) => !(allowed.includes(imp) || imp.startsWith(`${SCOPE}ui/`))
     );
 
     if (disallowed.length > 0) {
