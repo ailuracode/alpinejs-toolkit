@@ -15,6 +15,7 @@ minimumReleaseAgeExclude:
   - '@ailuracode/alpine-theme@0.2.0'
   - '@astrojs/markdown-satteri@0.3.1'
   - astro@7.0.0
+  - '@ailuracode/alpine-core@0.2.0'
 
 patchedDependencies:
   '@changesets/cli@2.31.0': patches/@changesets__cli@2.31.0.patch
