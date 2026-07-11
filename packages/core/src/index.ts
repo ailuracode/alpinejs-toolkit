@@ -3,9 +3,9 @@
  *
  * Per [.cursor/rules/new-package.mdc](../../../.cursor/rules/new-package.mdc),
  * this file MUST only contain re-exports. Implementations live under
- * `./internal/` and `./core/` so the public surface is easy to audit and
- * the package stays tree-shakeable (each export resolves to a single named
- * binding).
+ * `./core/` (the truly internal toolkit helpers) and at the root for the
+ * stable public modules (`./browser`, `./define`, `./init`, `./loader`,
+ * `./registry`, `./singleton`).
  *
  * Core exposes two layers of functionality:
  *
@@ -22,8 +22,15 @@
  * `package.json#type=module`). `allowImportingTsExtensions` is intentionally
  * NOT enabled here because the public source is the `dist/` emitted by
  * the build, not the in-repo source.
+ *
+ * Re-exports NEVER target `./internal/`. Anything truly private stays
+ * inside `./internal/` (currently only `assert.ts`); anything exported
+ * from this barrel lives at `src/*` so the public surface is
+ * mechanically auditable.
  */
 
+// --- Browser capability helpers (SSR-safe) -------------------------------
+export { isBrowser, safeDocument, safeMatchMedia, safeWindow } from "./browser";
 // --- Controller primitives (used by every feature package) ---------------
 export { BaseController } from "./controller";
 export { CleanupStack } from "./core/cleanup";
@@ -39,23 +46,21 @@ export type { RegisteredInstance } from "./core/registry";
 export { InstanceRegistry } from "./core/registry";
 // --- Generic Alpine typings ----------------------------------------------
 export type { Alpine, PluginCallback } from "./core/type";
-// --- Browser capability helpers (SSR-safe) -------------------------------
-export { isBrowser, safeDocument, safeMatchMedia, safeWindow } from "./internal/browser";
 // --- Plugin definition helpers -------------------------------------------
 export {
   type DefinePluginOptions,
   definePlugin,
   type LazyPluginOptions,
   lazyPlugin,
-} from "./internal/define";
+} from "./define";
 // --- Plugin initialization ----------------------------------------------
 export {
   createAlpinePlugin,
   initPlugins,
   initPluginsSync,
-} from "./internal/init";
+} from "./init";
 // --- Errors --------------------------------------------------------------
-export { PluginLoaderError } from "./internal/loader";
+export { PluginLoaderError } from "./loader";
 // --- Plugin registry -----------------------------------------------------
 export {
   getRegisteredPlugin,
@@ -69,7 +74,7 @@ export {
   resolvePluginEntries,
   setRegistryDebugSink,
   unregisterPlugin,
-} from "./internal/registry";
+} from "./registry";
 // --- Singleton helper (intended for toolkit-internal singleton feature controllers) ---
 export {
   clearAllSingletons,
@@ -77,7 +82,7 @@ export {
   createSingleton,
   getSingleton,
   setSingleton,
-} from "./internal/singleton";
+} from "./singleton";
 // --- Public types --------------------------------------------------------
 export type {
   AlpinePluginCallback,

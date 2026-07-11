@@ -59,9 +59,9 @@ import { type ToggleChangeDetail, ToggleController } from "@ailuracode/alpine-to
 import type { ThemeEvents } from "./events";
 import { createDomStrategy } from "./internal/dom-strategy";
 import { buildDomOptions } from "./internal/dom-strategy/options";
-import { createLocalStorageThemeStorage } from "./internal/storage/local-storage";
-import { createSystemObserver, readSystemTheme } from "./internal/system-observer";
 import { coerceThemePreference, defaultThemePreference, resolveTheme } from "./internal/validation";
+import { createLocalStorageThemeStorage } from "./local-storage";
+import { createSystemObserver, readSystemTheme } from "./system-observer";
 import type {
   CreateThemeOptions,
   ResolvedTheme,

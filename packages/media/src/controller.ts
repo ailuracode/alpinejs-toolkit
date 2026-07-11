@@ -61,12 +61,12 @@ import {
   ToolkitError,
   type Unsubscribe,
 } from "@ailuracode/alpine-core";
-import type { MediaEvents } from "./events";
 import {
   resolveBreakpointFromQueries,
   resolveIntervals,
   resolveMediaBreakpoint,
-} from "./internal/breakpoint";
+} from "./breakpoint";
+import type { MediaEvents } from "./events";
 import { createMatchMediaWatcher } from "./internal/match-media";
 import {
   buildCachedFeatureMedia,

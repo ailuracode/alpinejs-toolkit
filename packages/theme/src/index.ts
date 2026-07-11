@@ -5,7 +5,12 @@
  * only contain re-exports. The framework-agnostic controller lives in
  * `./controller.ts`, the Alpine integration in `./plugin.ts`, and the
  * supporting pure helpers and types live in `./types.ts` and
- * `./internal/*`.
+ * `./internal/*` (private validation, dom strategy).
+ *
+ * Storage adapters (`local-storage.ts`, `memory-storage.ts`) and the
+ * `system-observer` helper live at the package root because they are
+ * public API surface — consumers use them to plug custom storage into
+ * `createTheme()` and to read the OS preference outside the manager.
  *
  * Two ways to consume the package:
  *
@@ -25,14 +30,14 @@ export type { Unsubscribe } from "@ailuracode/alpine-core";
 export { createTheme, ThemeController } from "./controller";
 // --- Event surface ---------------------------------------------------
 export type { ThemeEvents, ThemeListener } from "./events";
-export type { LocalStorageThemeStorageOptions } from "./internal/storage/local-storage";
+export type { LocalStorageThemeStorageOptions } from "./local-storage";
 // --- Storage adapters -----------------------------------------------
-export { createLocalStorageThemeStorage } from "./internal/storage/local-storage";
-export { createMemoryThemeStorage } from "./internal/storage/memory";
-// --- System theme helper ---------------------------------------------
-export { readSystemTheme } from "./internal/system-observer";
+export { createLocalStorageThemeStorage } from "./local-storage";
+export { createMemoryThemeStorage } from "./memory-storage";
 // --- Alpine integration ----------------------------------------------
 export { createThemeStore, themePlugin, themePlugin as default } from "./plugin";
+// --- System theme helper ---------------------------------------------
+export { readSystemTheme } from "./system-observer";
 // --- Public types (state, contracts, options) -------------------------
 export type {
   CreateThemeOptions,

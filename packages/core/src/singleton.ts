@@ -33,7 +33,7 @@
  * construction: it is pure in-memory state.
  */
 
-import { ToolkitError } from "../core/error";
+import { ToolkitError } from "./core/error";
 
 interface SingletonRecord<T> {
   readonly instance: T;

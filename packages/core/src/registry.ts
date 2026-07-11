@@ -19,10 +19,10 @@
  * (`PLUGIN_DUPLICATE`, `PLUGIN_UNKNOWN`, …) cover the diagnostic surface
  * that actually matters.
  */
-import type { DebugLogger } from "../core/debug";
-import { ToolkitError } from "../core/error";
-import type { PluginDefinition, PluginRegistryEntry } from "../types";
-import { assertValidDefinition } from "./assert";
+import type { DebugLogger } from "./core/debug";
+import { ToolkitError } from "./core/error";
+import { assertValidDefinition } from "./internal/assert";
+import type { PluginDefinition, PluginRegistryEntry } from "./types";
 
 /**
  * Diagnostic event emitted by the loader layer when a plugin's

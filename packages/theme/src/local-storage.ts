@@ -11,11 +11,16 @@
  * removed in the other tab; the adapter forwards that to the
  * listener as `null` so the manager can distinguish a clear from a
  * regular write.
+ *
+ * Lives at the package root (rather than under `internal/`) because
+ * it is part of the documented plugin options surface —
+ * `createTheme({ storage: ... })` accepts instances built by this
+ * factory.
  */
 
 import { safeWindow, type Unsubscribe } from "@ailuracode/alpine-core";
-import { DEFAULT_THEME_STORAGE_KEY, type ThemePreference, type ThemeStorage } from "../../types";
-import { isThemePreference } from "../validation";
+import { isThemePreference } from "./internal/validation";
+import { DEFAULT_THEME_STORAGE_KEY, type ThemePreference, type ThemeStorage } from "./types";
 
 /** Options accepted by {@link createLocalStorageThemeStorage}. */
 export interface LocalStorageThemeStorageOptions {

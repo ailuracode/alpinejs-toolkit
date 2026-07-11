@@ -11,10 +11,13 @@
  *
  * `remove()` emits `null` so consumers can distinguish "the storage
  * was cleared" from "a new preference was set".
+ *
+ * Lives at the package root (rather than under `internal/`) because
+ * it is part of the documented plugin options surface.
  */
 
 import type { Unsubscribe } from "@ailuracode/alpine-core";
-import type { ThemePreference, ThemeStorage } from "../../types";
+import type { ThemePreference, ThemeStorage } from "./types";
 
 export function createMemoryThemeStorage(
   initial: ThemePreference | null = null

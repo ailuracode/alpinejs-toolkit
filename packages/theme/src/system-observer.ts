@@ -12,10 +12,14 @@
  * `@ailuracode/alpine-core` so the SSR contract stays uniform with the
  * rest of the toolkit. SSR / Node callers (or runtimes where
  * `matchMedia` is missing) get a no-op cleanup.
+ *
+ * Lives at the package root (rather than under `internal/`) because
+ * `readSystemTheme()` is part of the documented public surface —
+ * SSR consumers call it to seed the manager before boot.
  */
 
 import { safeMatchMedia, type Unsubscribe } from "@ailuracode/alpine-core";
-import type { ResolvedTheme } from "../types";
+import type { ResolvedTheme } from "./types";
 
 /** Stable media query string — kept in one place so tests can target it. */
 export const PREFERS_COLOR_SCHEME_DARK_QUERY = "(prefers-color-scheme: dark)";

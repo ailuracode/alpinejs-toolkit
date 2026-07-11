@@ -1,13 +1,14 @@
 /**
- * Tests for the internal singleton helper.
+ * Tests for the singleton helper.
  *
- * The helper is framework-agnostic, in-memory, and lives in
- * `internal/` (not exported from the public barrel). These tests
- * lock its public contract: `getSingleton` / `setSingleton` /
- * `clearSingleton` / `clearAllSingletons` / `createSingleton`.
- * They also exercise the intended usage pattern — a factory that
- * guarantees a single live instance per key — so a future refactor
- * can't quietly weaken the guarantee.
+ * The helper is framework-agnostic, in-memory, and lives at the package
+ * root (promoted from `internal/` per ALP-30 so the public surface
+ * stays consistent with the architecture contract). These tests lock
+ * its contract: `getSingleton` / `setSingleton` / `clearSingleton` /
+ * `clearAllSingletons` / `createSingleton`. They also exercise the
+ * intended usage pattern — a factory that guarantees a single live
+ * instance per key — so a future refactor can't quietly weaken the
+ * guarantee.
  */
 import { afterEach, describe, expect, it } from "vitest";
 import { ToolkitError } from "../src/index";
@@ -17,7 +18,7 @@ import {
   createSingleton,
   getSingleton,
   setSingleton,
-} from "../src/internal/singleton";
+} from "../src/singleton";
 
 interface FakeController {
   readonly id: string;

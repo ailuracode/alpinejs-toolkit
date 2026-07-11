@@ -24,12 +24,12 @@
  */
 
 export type { Unsubscribe } from "@ailuracode/alpine-core";
+// --- Pure helpers (re-exported for SSR snapshots / userland) ---------
+export { resolveMediaBreakpoint } from "./breakpoint";
 // --- Controller primitives shared with other feature packages --------
 export { createMedia, MEDIA_SINGLETON_KEY, MediaController } from "./controller";
 // --- Event surface ---------------------------------------------------
 export type { MediaEvents } from "./events";
-// --- Pure helpers (re-exported for SSR snapshots / userland) ---------
-export { resolveMediaBreakpoint } from "./internal/breakpoint";
 // --- Alpine integration ----------------------------------------------
 export {
   createMediaStore,

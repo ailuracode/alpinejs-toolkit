@@ -25,9 +25,9 @@
  * ```
  */
 
-import { typeIs } from "../core/utils";
-import type { PluginDefinition, PluginKind, PluginLoader, PluginNames } from "../types";
-import { assertValidDefinition } from "./assert";
+import { typeIs } from "./core/utils";
+import { assertValidDefinition } from "./internal/assert";
+import type { PluginDefinition, PluginKind, PluginLoader, PluginNames } from "./types";
 
 /** Options for {@link definePlugin}. The shape of `names` depends on `kinds`. */
 export interface DefinePluginOptions {
