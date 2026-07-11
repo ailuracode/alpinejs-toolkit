@@ -28,6 +28,97 @@ Alpine.start();
 
 The plugin registers `$store.form` and the `$form` magic.
 
+## TanStack Form-like API
+
+Use `createForm()` for an API aligned with [TanStack Form](https://tanstack.com/form):
+
+```ts
+import { createForm } from "@ailuracode/alpine-form";
+import { z } from "zod";
+
+const signUpSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(8),
+});
+
+const form = createForm({
+  defaultValues: { email: "", password: "" },
+  validators: {
+    onSubmit: signUpSchema, // Standard Schema — Zod 3.24+, Valibot, ArkType
+  },
+  onSubmit: async ({ value }) => {
+    await fetch("/api/signup", { method: "POST", body: JSON.stringify(value) });
+  },
+});
+
+const email = form.field("email", {
+  onChange: ({ value }) => (value ? undefined : "Required"),
+  onChangeAsyncDebounceMs: 300,
+  onChangeAsync: async ({ value }) => {
+    const taken = await checkEmailTaken(value);
+    return taken ? "Email already registered" : undefined;
+  },
+});
+
+email.handleChange("user@example.com");
+email.handleBlur();
+
+await form.handleSubmit();
+
+// TanStack-like state
+form.state.canSubmit;
+form.state.isPristine;
+email.state.meta.errors;
+email.state.meta.errorMap.onChange;
+```
+
+### Field API
+
+| Member | TanStack equivalent | Description |
+|--------|---------------------|-------------|
+| `field(name, validators?)` | `form.Field` | Returns a field handle |
+| `handleChange(value)` | `field.handleChange` | Updates value + runs `onChange` validators |
+| `handleBlur()` | `field.handleBlur` | Marks touched + runs `onBlur` validators |
+| `state.value` | `field.state.value` | Current field value |
+| `state.meta.errors` | `field.state.meta.errors` | All active error messages |
+| `state.meta.errorMap` | `field.state.meta.errorMap` | Errors keyed by trigger (`onChange`, `onBlur`, `onSubmit`) |
+| `parseValueWithSchema(schema)` | `fieldApi.parseValueWithSchema` | Validate a value with Standard Schema |
+
+### Form API
+
+| Member | TanStack equivalent | Description |
+|--------|---------------------|-------------|
+| `handleSubmit()` | `form.handleSubmit` | Validates with `onSubmit` validators then calls `onSubmit` |
+| `state.values` | `form.state.values` | Current form values |
+| `state.canSubmit` | `form.state.canSubmit` | `true` when the form has no errors |
+| `state.isPristine` | `form.state.isPristine` | `true` when no field is dirty |
+| `state.errorMap` | `form.state.errorMap` | Form-level errors by trigger |
+
+## Zod and Standard Schema
+
+The package does **not** bundle Zod. Any library implementing [Standard Schema v1](https://github.com/standard-schema/standard-schema) works via duck typing:
+
+```ts
+import { createStandardSchemaAdapter, isStandardSchema } from "@ailuracode/alpine-form";
+import { z } from "zod";
+
+const schema = z.object({ email: z.string().email() });
+
+// With createForm (recommended)
+const form = createForm({
+  defaultValues: { email: "" },
+  validators: { onSubmit: schema },
+});
+
+// With $store.form / FormController
+$store.form.register("signup", {
+  initialValues: { email: "" },
+  adapter: createStandardSchemaAdapter(schema),
+});
+```
+
+Supported schema libraries (when they expose `~standard`): **Zod**, **Valibot**, **ArkType**, **Effect/Schema**.
+
 ## Store API
 
 ### Per-form state

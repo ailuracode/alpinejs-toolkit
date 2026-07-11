@@ -13,6 +13,7 @@ import {
 import { FormError } from "./error.js";
 import type { FormEvents } from "./events.js";
 import { AsyncGuard } from "./internal/async-guard.js";
+import { DebounceRegistry } from "./internal/debounce.js";
 import { normalizeFormInstanceOptions, normalizeFormStoreConfig } from "./options.js";
 import {
   deleteValueAtPath,
@@ -21,22 +22,34 @@ import {
   setValueAtPath,
   valuesEqual,
 } from "./paths.js";
+import { parseFieldWithStandardSchema, type StandardSchemaV1 } from "./standard-schema.js";
 import type {
+  FieldMeta,
   FieldPath,
   FieldPropsOptions,
   FieldRegistrationOptions,
   FieldState,
   FieldValidator,
+  FieldValidators,
   FormChangeSource,
   FormInstance,
   FormInstanceOptions,
   FormResetOptions,
   FormStoreConfig,
   FormSubmitHandler,
+  FormValidators,
   ServerFieldErrors,
   ValidationAdapter,
+  ValidationTrigger,
 } from "./types.js";
 import { runFieldValidator, runValidationAdapter } from "./validation.js";
+import {
+  buildFormValidatorsAdapter,
+  buildTriggerValidator,
+  getFieldAsyncDebounceMs,
+  getFieldAsyncValidatorForTrigger,
+  getFieldValidatorForTrigger,
+} from "./validators-runtime.js";
 
 interface InternalField {
   path: FieldPath;
@@ -44,8 +57,11 @@ interface InternalField {
   dirty: boolean;
   touched: boolean;
   errors: string[];
+  errorMap: Partial<Record<ValidationTrigger, string>>;
   validating: boolean;
   validator?: FieldValidator;
+  validators?: FieldValidators;
+  debounce: DebounceRegistry;
 }
 
 interface InternalForm {
@@ -54,8 +70,10 @@ interface InternalForm {
   committedValues: Record<string, unknown>;
   fields: Record<FieldPath, InternalField>;
   formErrors: string[];
+  formErrorMap: Partial<Record<ValidationTrigger, string>>;
   validateOn: "change" | "blur" | "submit";
   adapter?: ValidationAdapter;
+  formValidators?: FormValidators;
   submitting: boolean;
   submitted: boolean;
   validationGuard: AsyncGuard;
@@ -65,6 +83,17 @@ interface InternalForm {
 
 function cloneValues(values: Readonly<Record<string, unknown>>): Record<string, unknown> {
   return structuredClone(values);
+}
+
+function createFieldMeta(field: InternalField): FieldMeta {
+  return {
+    errors: [...field.errors],
+    errorMap: { ...field.errorMap },
+    isValid: field.errors.length === 0,
+    isTouched: field.touched,
+    isDirty: field.dirty,
+    isValidating: field.validating,
+  };
 }
 
 function snapshotField(
@@ -78,7 +107,9 @@ function snapshotField(
     dirty: field.dirty,
     touched: field.touched,
     errors: [...field.errors],
+    errorMap: { ...field.errorMap },
     validating: field.validating,
+    meta: createFieldMeta(field),
   };
 }
 
@@ -93,6 +124,7 @@ function snapshotForm(form: InternalForm): FormInstance {
   const validating = Object.values(form.fields).some((field) => field.validating);
   const hasFieldErrors = Object.values(form.fields).some((field) => field.errors.length > 0);
   const invalid = hasFieldErrors || form.formErrors.length > 0;
+  const isPristine = !dirty;
 
   return {
     values: cloneValues(form.values),
@@ -106,7 +138,10 @@ function snapshotForm(form: InternalForm): FormInstance {
     validating,
     submitting: form.submitting,
     submitted: form.submitted,
+    isPristine,
+    canSubmit: !(invalid || form.submitting),
     formErrors: [...form.formErrors],
+    errorMap: { ...form.formErrorMap },
   };
 }
 
@@ -152,8 +187,10 @@ export class FormController extends BaseController<FormEvents> {
       committedValues: cloneValues(initialValues),
       fields: {},
       formErrors: [],
+      formErrorMap: {},
       validateOn: normalized.validateOn,
       adapter: normalized.adapter,
+      formValidators: normalized.validators,
       submitting: false,
       submitted: false,
       validationGuard: new AsyncGuard(),
@@ -206,8 +243,11 @@ export class FormController extends BaseController<FormEvents> {
       dirty: false,
       touched: false,
       errors: [],
+      errorMap: {},
       validating: false,
-      validator: options.validate,
+      validator: options.validate ?? buildTriggerValidator(options.validators, "onSubmit"),
+      validators: options.validators,
+      debounce: new DebounceRegistry(),
     };
 
     this.#notifyChange(formId, "register", normalizedPath);
@@ -224,7 +264,8 @@ export class FormController extends BaseController<FormEvents> {
       return;
     }
 
-    const { [normalizedPath]: _removed, ...remainingFields } = form.fields;
+    const { [normalizedPath]: removed, ...remainingFields } = form.fields;
+    removed.debounce.clear();
     form.fields = remainingFields;
     form.fieldOrder = form.fieldOrder.filter((entry) => entry !== normalizedPath);
     deleteValueAtPath(form.values, normalizedPath);
@@ -233,6 +274,15 @@ export class FormController extends BaseController<FormEvents> {
   }
 
   setValue(formId: string, path: FieldPath, value: unknown): void {
+    this.setFieldValue(formId, path, value, "onChange");
+  }
+
+  setFieldValue(
+    formId: string,
+    path: FieldPath,
+    value: unknown,
+    trigger: ValidationTrigger = "onChange"
+  ): void {
     if (this.isDestroyed) {
       return;
     }
@@ -254,10 +304,7 @@ export class FormController extends BaseController<FormEvents> {
     }
 
     this.#notifyChange(formId, "value", normalizedPath);
-
-    if (form.validateOn === "change") {
-      void this.#validateForm(formId, form, normalizedPath);
-    }
+    this.#scheduleFieldValidation(formId, form, normalizedPath, trigger);
   }
 
   getValue(formId: string, path: FieldPath): unknown {
@@ -269,6 +316,10 @@ export class FormController extends BaseController<FormEvents> {
   }
 
   touch(formId: string, path: FieldPath): void {
+    this.touchField(formId, path, "onBlur");
+  }
+
+  touchField(formId: string, path: FieldPath, trigger: ValidationTrigger = "onBlur"): void {
     if (this.isDestroyed) {
       return;
     }
@@ -276,16 +327,23 @@ export class FormController extends BaseController<FormEvents> {
     const form = this.#requireForm(formId);
     const normalizedPath = normalizePath(path);
     const field = form.fields[normalizedPath];
-    if (!field || field.touched) {
+    if (!field) {
       return;
     }
 
-    field.touched = true;
-    this.#notifyChange(formId, "touch", normalizedPath);
-
-    if (form.validateOn === "blur") {
-      void this.#validateForm(formId, form, normalizedPath);
+    if (!field.touched) {
+      field.touched = true;
+      this.#notifyChange(formId, "touch", normalizedPath);
     }
+
+    this.#scheduleFieldValidation(formId, form, normalizedPath, trigger);
+  }
+
+  parseValueWithSchema<TValue>(
+    schema: StandardSchemaV1<unknown, TValue>,
+    value: unknown
+  ): Promise<string | undefined> {
+    return parseFieldWithStandardSchema(schema, value);
   }
 
   validate(formId: string): Promise<boolean> {
@@ -294,7 +352,74 @@ export class FormController extends BaseController<FormEvents> {
     }
 
     const form = this.#requireForm(formId);
-    return this.#validateForm(formId, form);
+    return this.#validateForm(formId, form, undefined, "onSubmit");
+  }
+
+  #scheduleFieldValidation(
+    formId: string,
+    form: InternalForm,
+    path: FieldPath,
+    trigger: ValidationTrigger
+  ): void {
+    const field = form.fields[path];
+    if (!field) {
+      this.#scheduleLegacyValidation(formId, form, path, trigger);
+      return;
+    }
+
+    if (this.#scheduleDebouncedValidation(formId, form, path, trigger, field)) {
+      return;
+    }
+
+    if (this.#hasTriggerValidator(field, trigger)) {
+      void this.#validateForm(formId, form, path, trigger);
+      return;
+    }
+
+    this.#scheduleLegacyValidation(formId, form, path, trigger);
+  }
+
+  #hasTriggerValidator(field: InternalField, trigger: ValidationTrigger): boolean {
+    return Boolean(
+      getFieldValidatorForTrigger(field.validators, trigger) ??
+        getFieldAsyncValidatorForTrigger(field.validators, trigger)
+    );
+  }
+
+  #scheduleDebouncedValidation(
+    formId: string,
+    form: InternalForm,
+    path: FieldPath,
+    trigger: ValidationTrigger,
+    field: InternalField
+  ): boolean {
+    if (!this.#hasTriggerValidator(field, trigger)) {
+      return false;
+    }
+
+    const debounceValue = getFieldAsyncDebounceMs(field.validators, trigger);
+    if (debounceValue > 0 && getFieldAsyncValidatorForTrigger(field.validators, trigger)) {
+      field.debounce.schedule(`${path}:${trigger}`, debounceValue, () => {
+        void this.#validateForm(formId, form, path, trigger);
+      });
+      return true;
+    }
+
+    return false;
+  }
+
+  #scheduleLegacyValidation(
+    formId: string,
+    form: InternalForm,
+    path: FieldPath,
+    trigger: ValidationTrigger
+  ): void {
+    if (form.validateOn === "change" && trigger === "onChange") {
+      void this.#validateForm(formId, form, path, trigger);
+    }
+    if (form.validateOn === "blur" && trigger === "onBlur") {
+      void this.#validateForm(formId, form, path, trigger);
+    }
   }
 
   async submit(formId: string, handler: FormSubmitHandler): Promise<void> {
@@ -307,7 +432,7 @@ export class FormController extends BaseController<FormEvents> {
       throw new FormError(`Form "${formId}" is already submitting`, "FORM_ALREADY_SUBMITTING");
     }
 
-    const valid = await this.#validateForm(formId, form);
+    const valid = await this.#validateForm(formId, form, undefined, "onSubmit");
     if (!valid) {
       throw new FormError(`Form "${formId}" failed validation`, "FORM_VALIDATION_FAILED");
     }
@@ -351,6 +476,7 @@ export class FormController extends BaseController<FormEvents> {
     const source = options.toCommitted ? form.committedValues : form.initialValues;
     form.values = cloneValues(source);
     form.formErrors = [];
+    form.formErrorMap = {};
     form.submitted = false;
     form.validationGuard.reset();
 
@@ -360,6 +486,7 @@ export class FormController extends BaseController<FormEvents> {
       field.dirty = false;
       field.touched = false;
       field.errors = [];
+      field.errorMap = {};
       field.validating = false;
       if (value !== undefined) {
         setValueAtPath(form.values, field.path, value);
@@ -445,6 +572,9 @@ export class FormController extends BaseController<FormEvents> {
     for (const form of Object.values(this.#forms)) {
       form.submitController?.abort();
       form.validationGuard.bump();
+      for (const field of Object.values(form.fields)) {
+        field.debounce.clear();
+      }
     }
 
     super.destroy();
@@ -461,11 +591,12 @@ export class FormController extends BaseController<FormEvents> {
   async #validateForm(
     formId: string,
     form: InternalForm,
-    changedPath?: FieldPath
+    changedPath?: FieldPath,
+    trigger: ValidationTrigger = "onSubmit"
   ): Promise<boolean> {
     const generation = form.validationGuard.bump();
     const controller = new AbortController();
-    const targets = this.#validationTargets(form, changedPath);
+    const targets = this.#validationTargets(form, changedPath, trigger);
 
     for (const field of targets) {
       field.validating = true;
@@ -476,28 +607,33 @@ export class FormController extends BaseController<FormEvents> {
       form,
       targets,
       controller.signal,
-      generation
+      generation,
+      trigger
     );
     if (fieldErrors === null) {
       return false;
     }
 
-    const adapterResult = await runValidationAdapter(form.adapter, form.values, {
-      formId,
-      fields: Object.fromEntries(
-        Object.entries(form.fields).map(([path, field]) => [
-          path,
-          snapshotField(field, form.values),
-        ])
-      ),
-      signal: controller.signal,
-    });
+    const adapterResult = await runValidationAdapter(
+      buildFormValidatorsAdapter(form.formValidators, trigger) ?? form.adapter,
+      form.values,
+      {
+        formId,
+        fields: Object.fromEntries(
+          Object.entries(form.fields).map(([path, field]) => [
+            path,
+            snapshotField(field, form.values),
+          ])
+        ),
+        signal: controller.signal,
+      }
+    );
 
     if (!form.validationGuard.isCurrent(generation)) {
       return false;
     }
 
-    this.#applyValidationResults(form, fieldErrors, adapterResult);
+    this.#applyValidationResults(form, fieldErrors, adapterResult, trigger);
     this.#notifyChange(formId, "validate", changedPath);
     return (
       !Object.values(form.fields).some((field) => field.errors.length > 0) &&
@@ -505,50 +641,80 @@ export class FormController extends BaseController<FormEvents> {
     );
   }
 
-  #validationTargets(form: InternalForm, changedPath?: FieldPath): InternalField[] {
+  #validationTargets(
+    form: InternalForm,
+    changedPath: FieldPath | undefined,
+    trigger: ValidationTrigger
+  ): InternalField[] {
     return Object.values(form.fields).filter((field) =>
-      this.#shouldValidateField(field.path, changedPath, form.validateOn)
+      this.#shouldValidateField(field, changedPath, trigger, form.validateOn)
     );
   }
 
   #shouldValidateField(
-    path: FieldPath,
+    field: InternalField,
     changedPath: FieldPath | undefined,
+    trigger: ValidationTrigger,
     validateOn: InternalForm["validateOn"]
   ): boolean {
-    if (!changedPath) {
-      return true;
+    if (this.#hasTriggerValidator(field, trigger)) {
+      return !changedPath || field.path === changedPath;
     }
-    return path === changedPath || validateOn === "submit";
+
+    if (field.validator && trigger === "onSubmit") {
+      return !changedPath || field.path === changedPath || validateOn === "submit";
+    }
+
+    if (!changedPath) {
+      return Boolean(field.validator);
+    }
+
+    return this.#matchesLegacyValidateOn(field.path, changedPath, trigger, validateOn);
+  }
+
+  #matchesLegacyValidateOn(
+    path: FieldPath,
+    changedPath: FieldPath,
+    trigger: ValidationTrigger,
+    validateOn: InternalForm["validateOn"]
+  ): boolean {
+    if (validateOn === "change" && trigger === "onChange") {
+      return path === changedPath;
+    }
+    if (validateOn === "blur" && trigger === "onBlur") {
+      return path === changedPath;
+    }
+    return validateOn === "submit" && trigger === "onSubmit";
   }
 
   async #collectFieldErrors(
     form: InternalForm,
     targets: InternalField[],
     signal: AbortSignal,
-    generation: number
-  ): Promise<Record<FieldPath, string[]> | null> {
-    const fieldErrors: Record<FieldPath, string[]> = {};
+    generation: number,
+    trigger: ValidationTrigger
+  ): Promise<Record<FieldPath, { messages: string[]; trigger: ValidationTrigger }> | null> {
+    const fieldErrors: Record<FieldPath, { messages: string[]; trigger: ValidationTrigger }> = {};
 
     for (const field of targets) {
-      if (!field.validator) {
+      const validator =
+        buildTriggerValidator(field.validators, trigger) ??
+        (trigger === "onSubmit" ? field.validator : undefined);
+
+      if (!validator) {
         continue;
       }
 
-      const messages = await runFieldValidator(
-        field.validator,
-        getValueAtPath(form.values, field.path),
-        {
-          path: field.path,
-          values: form.values,
-          signal,
-        }
-      );
+      const messages = await runFieldValidator(validator, getValueAtPath(form.values, field.path), {
+        path: field.path,
+        values: form.values,
+        signal,
+      });
       if (!form.validationGuard.isCurrent(generation)) {
         return null;
       }
       if (messages.length > 0) {
-        fieldErrors[field.path] = [...messages];
+        fieldErrors[field.path] = { messages: [...messages], trigger };
       }
     }
 
@@ -557,19 +723,36 @@ export class FormController extends BaseController<FormEvents> {
 
   #applyValidationResults(
     form: InternalForm,
-    fieldErrors: Record<FieldPath, string[]>,
-    adapterResult: Awaited<ReturnType<typeof runValidationAdapter>>
+    fieldErrors: Record<FieldPath, { messages: string[]; trigger: ValidationTrigger }>,
+    adapterResult: Awaited<ReturnType<typeof runValidationAdapter>>,
+    trigger: ValidationTrigger
   ): void {
     if (adapterResult.fieldErrors) {
       for (const [path, messages] of Object.entries(adapterResult.fieldErrors)) {
-        fieldErrors[path] = [...(fieldErrors[path] ?? []), ...messages];
+        fieldErrors[path] = { messages: [...messages], trigger };
       }
     }
 
     form.formErrors = adapterResult.formErrors ? [...adapterResult.formErrors] : [];
+    if (adapterResult.formErrors?.[0]) {
+      form.formErrorMap[trigger] = adapterResult.formErrors[0];
+    } else if (trigger in form.formErrorMap) {
+      const { [trigger]: _removed, ...rest } = form.formErrorMap;
+      form.formErrorMap = rest;
+    }
 
     for (const field of Object.values(form.fields)) {
-      field.errors = fieldErrors[field.path] ?? [];
+      const entry = fieldErrors[field.path];
+      if (entry) {
+        field.errors = entry.messages;
+        field.errorMap[entry.trigger] = entry.messages[0];
+      } else {
+        field.errors = [];
+        if (trigger in field.errorMap) {
+          const { [trigger]: _removed, ...rest } = field.errorMap;
+          field.errorMap = rest;
+        }
+      }
       field.validating = false;
     }
   }

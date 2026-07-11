@@ -2,4 +2,6 @@
 "@ailuracode/alpine-form": minor
 ---
 
-Add `@ailuracode/alpine-form` — a headless form state and validation package with field registration, sync/async validation adapters, submission lifecycle, JSON:API error mapping, accessibility helpers, and Alpine store integration.
+Add TanStack Form-like `createForm()` API with `handleSubmit()`, `field().handleChange()` / `handleBlur()`, and `state.meta.errorMap`.
+
+Add Standard Schema v1 support for Zod, Valibot, ArkType, and Effect/Schema without bundling a schema library (`createStandardSchemaAdapter`, `validators.onSubmit: schema`).

@@ -2,8 +2,10 @@
  * Public type contracts for `@ailuracode/alpine-form`.
  */
 
-import type { Alpine, PluginCallback } from "@ailuracode/alpine-core";
+import type { Alpine, PluginCallback, Unsubscribe } from "@ailuracode/alpine-core";
 import type { Alpine as AlpineBase } from "alpinejs";
+import type { FormEvents } from "./events.js";
+import type { StandardSchemaV1 } from "./standard-schema.js";
 
 /** Dot-separated field path (e.g. `email`, `address.city`, `items.0.name`). */
 export type FieldPath = string;
@@ -46,7 +48,9 @@ export interface FormValidationContext {
 /** Options when registering a field. */
 export interface FieldRegistrationOptions {
   readonly initialValue?: unknown;
+  /** @deprecated Use `validators` instead. */
   readonly validate?: FieldValidator;
+  readonly validators?: FieldValidators;
 }
 
 /** Per-field state snapshot exposed to consumers. */
@@ -57,7 +61,9 @@ export interface FieldState {
   readonly dirty: boolean;
   readonly touched: boolean;
   readonly errors: readonly string[];
+  readonly errorMap: Readonly<Partial<Record<ValidationTrigger, string>>>;
   readonly validating: boolean;
+  readonly meta: FieldMeta;
 }
 
 /** Per-form instance state snapshot. */
@@ -73,7 +79,10 @@ export interface FormInstance {
   readonly validating: boolean;
   readonly submitting: boolean;
   readonly submitted: boolean;
+  readonly isPristine: boolean;
+  readonly canSubmit: boolean;
   readonly formErrors: readonly string[];
+  readonly errorMap: Readonly<Partial<Record<ValidationTrigger, string>>>;
 }
 
 /** Discriminator for form change events. */
@@ -112,10 +121,125 @@ export interface FormInstanceOptions {
   readonly initialValues?: Readonly<Record<string, unknown>>;
   readonly validateOn?: FormValidateOn;
   readonly adapter?: ValidationAdapter;
+  readonly validators?: FormValidators;
 }
 
-/** When field validation runs automatically. */
+/** When field validation runs automatically (legacy single-trigger mode). */
 export type FormValidateOn = "change" | "blur" | "submit";
+
+/** TanStack Form-style validation trigger. */
+export type ValidationTrigger = "onChange" | "onBlur" | "onSubmit";
+
+/** Context passed to TanStack-style validator functions. */
+export interface ValidatorFnContext<TValues, TValue = unknown> {
+  readonly value: TValue;
+  readonly values: TValues;
+  readonly signal: AbortSignal;
+  readonly path: FieldPath;
+}
+
+/** TanStack-style field or form validator function. */
+export type FormValidatorFn<TValues, TValue = unknown> = (
+  context: ValidatorFnContext<TValues, TValue>
+) => FormValidatorMessage | Promise<FormValidatorMessage>;
+
+/** Message returned by TanStack-style validators. */
+export type FormValidatorMessage = string | undefined;
+
+/** Structured form-level validator result (TanStack `onSubmitAsync` shape). */
+export interface FormValidatorObjectResult {
+  readonly form?: string;
+  readonly fields?: Readonly<Record<FieldPath, string | undefined>>;
+}
+
+/** Union result from form-level validators. */
+export type FormValidatorResult = FormValidatorMessage | FormValidatorObjectResult | undefined;
+
+/** TanStack Form-style field validators. */
+export interface FieldValidators<TValues = Record<string, unknown>, TValue = unknown> {
+  readonly onChange?: FormValidatorFn<TValues, TValue> | StandardSchemaV1;
+  readonly onChangeAsync?: FormValidatorFn<TValues, TValue>;
+  readonly onChangeAsyncDebounceMs?: number;
+  readonly onBlur?: FormValidatorFn<TValues, TValue>;
+  readonly onBlurAsync?: FormValidatorFn<TValues, TValue>;
+  readonly onBlurAsyncDebounceMs?: number;
+  readonly onSubmit?: FormValidatorFn<TValues, TValue>;
+  readonly onSubmitAsync?: FormValidatorFn<TValues, TValue>;
+  readonly onSubmitAsyncDebounceMs?: number;
+}
+
+/** TanStack Form-style form-level validators. */
+export interface FormValidators<TValues = Record<string, unknown>> {
+  readonly onChange?: FormValidatorFn<TValues, TValues> | StandardSchemaV1;
+  readonly onChangeAsync?: FormValidatorFn<TValues, TValues>;
+  readonly onBlur?: FormValidatorFn<TValues, TValues>;
+  readonly onBlurAsync?: FormValidatorFn<TValues, TValues>;
+  readonly onSubmit?: FormValidatorFn<TValues, TValues> | StandardSchemaV1;
+  readonly onSubmitAsync?: FormValidatorFn<TValues, TValues>;
+}
+
+/** Field metadata aligned with TanStack Form `field.state.meta`. */
+export interface FieldMeta {
+  readonly errors: readonly string[];
+  readonly errorMap: Readonly<Partial<Record<ValidationTrigger, string>>>;
+  readonly isValid: boolean;
+  readonly isTouched: boolean;
+  readonly isDirty: boolean;
+  readonly isValidating: boolean;
+}
+
+/** Field state aligned with TanStack Form `field.state`. */
+export interface FieldApiState<TValue = unknown> {
+  readonly value: TValue;
+  readonly meta: FieldMeta;
+}
+
+/** Form state aligned with TanStack Form store selectors. */
+export interface FormApiState<TValues extends Record<string, unknown> = Record<string, unknown>> {
+  readonly values: TValues;
+  readonly canSubmit: boolean;
+  readonly isSubmitting: boolean;
+  readonly isPristine: boolean;
+  readonly isValid: boolean;
+  readonly errorMap: Readonly<Partial<Record<ValidationTrigger, string>>>;
+}
+
+/** Options for `createForm()` — TanStack Form-like factory. */
+export interface CreateFormApiOptions<TValues extends Record<string, unknown>> {
+  readonly id?: string;
+  readonly defaultValues: TValues;
+  readonly onSubmit?: (context: {
+    readonly value: TValues;
+    readonly signal: AbortSignal;
+  }) => void | Promise<void>;
+  readonly validators?: FormValidators<TValues>;
+  readonly controller?: import("./controller.js").FormController;
+}
+
+/** TanStack Form-like form API surface. */
+export interface FormApi<TValues extends Record<string, unknown> = Record<string, unknown>> {
+  readonly id: string;
+  readonly state: FormApiState<TValues>;
+  handleSubmit(): Promise<void>;
+  reset(options?: FormResetOptions): void;
+  field<TValue = unknown>(name: FieldPath): FieldApi<TValue>;
+  parseValueWithSchema<TValue>(
+    schema: StandardSchemaV1<unknown, TValue>,
+    value: unknown
+  ): Promise<string | undefined>;
+  destroy(): void;
+  on<K extends keyof FormEvents>(event: K, listener: (detail: FormEvents[K]) => void): Unsubscribe;
+  off<K extends keyof FormEvents>(event: K, listener: (detail: FormEvents[K]) => void): void;
+}
+
+/** TanStack Form-like field API surface. */
+export interface FieldApi<TValue = unknown> {
+  readonly name: FieldPath;
+  readonly state: FieldApiState<TValue>;
+  handleChange(value: TValue): void;
+  handleBlur(): void;
+  parseValueWithSchema(schema: StandardSchemaV1<unknown, TValue>): Promise<string | undefined>;
+}
 
 /** Options for `reset()`. */
 export interface FormResetOptions {

@@ -31,11 +31,12 @@ export function normalizeFormInstanceOptions(
   options: FormInstanceOptions = {},
   defaults: FormStoreConfig = {}
 ): Required<Pick<FormInstanceOptions, "validateOn">> &
-  Pick<FormInstanceOptions, "initialValues" | "adapter"> {
+  Pick<FormInstanceOptions, "initialValues" | "adapter" | "validators"> {
   return {
     initialValues: options.initialValues,
     validateOn: options.validateOn ?? defaults.defaultValidateOn ?? DEFAULT_VALIDATE_ON,
     adapter: options.adapter,
+    validators: options.validators,
   };
 }
 

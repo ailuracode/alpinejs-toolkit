@@ -38,14 +38,34 @@ Alpine.start();
 </form>
 ```
 
+## TanStack Form-like API
+
+```ts
+import { createForm } from "@ailuracode/alpine-form";
+import { z } from "zod";
+
+const form = createForm({
+  defaultValues: { email: "" },
+  validators: { onSubmit: z.object({ email: z.string().email() }) },
+  onSubmit: async ({ value }) => save(value),
+});
+
+const email = form.field("email", {
+  onChange: ({ value }) => (value ? undefined : "Required"),
+});
+
+email.handleChange("user@example.com");
+await form.handleSubmit();
+```
+
 ## API summary
 
 | | |
 |-|-|
 | **Store** | `$store.form` |
 | **Magic** | `$form` |
-| **State** | per-form `dirty`, `touched`, `valid`, `invalid`, `validating`, `submitting`, `submitted`, `fields`, `formErrors` |
-| **Methods** | `register`, `unregister`, `registerField`, `setValue`, `touch`, `validate`, `submit`, `reset`, `setServerErrors`, `fieldProps`, `focusFirstError`, `announceErrors` |
+| **Factory** | `createForm({ defaultValues, validators, onSubmit })` — TanStack Form-like API |
+| **Schema** | Standard Schema v1 (Zod 3.24+, Valibot, ArkType) via `validators` or `createStandardSchemaAdapter()` |
 | **Headless** | `createFormController()` / `FormController` |
 
 ## Standalone usage (no Alpine)

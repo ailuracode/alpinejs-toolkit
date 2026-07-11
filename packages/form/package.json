@@ -76,7 +76,7 @@
       ],
       "gzip": true,
       "brotli": true,
-      "limit": "4 kB"
+      "limit": "6 kB"
     }
   ]
 }
