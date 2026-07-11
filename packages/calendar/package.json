@@ -35,6 +35,7 @@
     "date-fns": "^4.1.0"
   },
   "peerDependencies": {
+    "@ailuracode/alpine-core": "^0.2.0",
     "alpinejs": "^3.0.0",
     "@types/alpinejs": "^3.13.11"
   },
@@ -70,7 +71,8 @@
       "import": "*",
       "ignore": [
         "alpinejs",
-        "@types/alpinejs"
+        "@types/alpinejs",
+        "@ailuracode/alpine-core"
       ],
       "gzip": true,
       "brotli": true,
