@@ -1,5 +1,4 @@
-import query from "@ailuracode/alpine-query";
-import { createAlpineStoreAdapter } from "@ailuracode/alpine-query-adapter-alpine";
+import query, { createAlpineStoreAdapter } from "@ailuracode/alpine-query-adapter-alpine";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { startAlpine } from "../../../test/helpers.js";
 import type { QueryStore } from "../src/index.js";

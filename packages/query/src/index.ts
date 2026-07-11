@@ -4,11 +4,7 @@ export type {
   QueryStateHandle,
 } from "./adapters/types.js";
 export { vanillaQueryAdapter } from "./adapters/vanilla.js";
-export {
-  bridgeMutationHandleToAlpine,
-  bridgeQueryHandleToAlpine,
-  createAlpineBridgedAdapter,
-} from "./alpine-bridge.js";
+export { QueryCache } from "./cache.js";
 export { createQueryClient, createQueryStore } from "./client.js";
 export type {
   MutationDevtoolsEntry,
@@ -19,13 +15,6 @@ export type {
 export type { ResponseParser, TypedFetchInit } from "./fetch.js";
 export { HttpError, typedFetch } from "./fetch.js";
 export { mutationOptions, queryFn, queryKey, queryOptions } from "./options.js";
-export {
-  createQueryPlugin,
-  default,
-  default as query,
-  type QueryAdapterFactory,
-  type QueryRegisterOptions,
-} from "./plugin.js";
 export {
   attachMutationFlags,
   attachQueryFlags,
@@ -52,4 +41,10 @@ export type {
   QueryState,
   QueryStore,
 } from "./types.js";
-export { hashKey, matchesQueryKey } from "./utils.js";
+export {
+  hashKey,
+  matchesQueryKey,
+  resolveQueryOptions,
+  resolveRetryCount,
+  resolveRetryDelay,
+} from "./utils.js";

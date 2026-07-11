@@ -37,6 +37,7 @@
   },
   "dependencies": {
     "@ailuracode/alpine-query": "workspace:*",
+    "@ailuracode/alpine-query-adapter-alpine": "workspace:*",
     "zustand": "^5.0.11"
   },
   "scripts": {
@@ -65,12 +66,13 @@
       "ignore": [
         "alpinejs",
         "@ailuracode/alpine-query",
+        "@ailuracode/alpine-query-adapter-alpine",
         "@types/alpinejs",
         "zustand"
       ],
       "gzip": true,
       "brotli": true,
-      "limit": "600 B"
+      "limit": "700 B"
     }
   ]
 }

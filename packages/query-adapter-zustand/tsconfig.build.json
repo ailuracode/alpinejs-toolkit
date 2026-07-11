@@ -12,7 +12,8 @@
     "lib": ["ES2022", "DOM"],
     "baseUrl": "../..",
     "paths": {
-      "@ailuracode/alpine-query": ["packages/query/src/index.ts"]
+      "@ailuracode/alpine-query": ["packages/query/src/index.ts"],
+      "@ailuracode/alpine-query-adapter-alpine": ["packages/query-adapter-alpine/src/index.ts"]
     }
   },
   "include": ["src/**/*.ts"]

@@ -44,6 +44,7 @@
   },
   "dependencies": {
     "@ailuracode/alpine-query": "workspace:*",
+    "@ailuracode/alpine-query-adapter-alpine": "workspace:*",
     "@nanostores/alpine": "^0.1.1",
     "nanostores": "^1.4.0"
   },
@@ -72,6 +73,7 @@
       "import": "*",
       "ignore": [
         "alpinejs",
+        "@ailuracode/alpine-query-adapter-alpine",
         "@nanostores/alpine",
         "@types/alpinejs",
         "nanostores"

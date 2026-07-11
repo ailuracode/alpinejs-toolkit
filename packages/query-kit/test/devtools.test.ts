@@ -1,6 +1,6 @@
 import type { QueryStore } from "@ailuracode/alpine-query";
-import query, { createQueryClient } from "@ailuracode/alpine-query";
-import { createAlpineStoreAdapter } from "@ailuracode/alpine-query-adapter-alpine";
+import { createQueryClient } from "@ailuracode/alpine-query";
+import query, { createAlpineStoreAdapter } from "@ailuracode/alpine-query-adapter-alpine";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { startAlpine } from "../../../test/helpers.js";
 import { resetMatchMedia, setMatchMedia } from "../../../test/setup.js";

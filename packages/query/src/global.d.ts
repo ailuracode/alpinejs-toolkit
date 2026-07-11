@@ -1,5 +1,3 @@
-/// <reference types="@types/alpinejs" />
-
 export type QueryKey = readonly unknown[];
 
 export type QueryFunctionContext = {
@@ -206,12 +204,4 @@ export interface QueryStore {
   mutate<TData, TVariables = void, TContext = unknown>(
     options: MutationOptions<TData, TVariables, TContext>
   ): MutationState<QueryData<TData>, QueryData<TVariables>>;
-}
-
-declare global {
-  namespace Alpine {
-    interface Stores {
-      query: QueryStore;
-    }
-  }
 }
