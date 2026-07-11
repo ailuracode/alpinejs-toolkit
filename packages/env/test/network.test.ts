@@ -1,107 +1,72 @@
-import { describe, expect, expectTypeOf, it } from "vitest";
-import { createMagicHarness } from "../../../test/mock-alpine.js";
-import {
-  createNetworkState,
-  type NetworkMagic,
-  readNetworkState,
-  registerNetworkMagic,
-} from "../src/network.js";
+import { clearAllSingletons } from "@ailuracode/alpine-core";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { NetworkController } from "../src/network-controller.js";
 
-describe("@ailuracode/alpine-env type inference", () => {
-  it("types NetworkMagic getters", () => {
-    expectTypeOf<NetworkMagic["isOnline"]>().toEqualTypeOf<boolean>();
-    expectTypeOf<NetworkMagic["isOffline"]>().toEqualTypeOf<boolean>();
+function setNavigatorOnline(value: boolean): void {
+  Object.defineProperty(navigator, "onLine", {
+    configurable: true,
+    value,
+  });
+}
+
+describe("@ailuracode/alpine-env NetworkController", () => {
+  afterEach(() => {
+    clearAllSingletons();
+    vi.restoreAllMocks();
   });
 
-  it("types readNetworkState() return shape", () => {
-    const state = readNetworkState();
+  it("constructs without touching browser globals", () => {
+    setNavigatorOnline(false);
 
-    expectTypeOf(state.isOnline).toEqualTypeOf<boolean>();
-    expectTypeOf(state.isOffline).toEqualTypeOf<boolean>();
-    expectTypeOf(state).toEqualTypeOf<NetworkMagic>();
+    const controller = new NetworkController();
+
+    expect(controller.isOnline).toBe(true);
+    expect(controller.isOffline).toBe(false);
   });
 
-  it("types $network the same as NetworkMagic", () => {
-    Object.defineProperty(navigator, "onLine", {
-      configurable: true,
-      value: true,
-    });
+  it("mounts listeners and removes them on destroy", () => {
+    const addSpy = vi.spyOn(window, "addEventListener");
+    const removeSpy = vi.spyOn(window, "removeEventListener");
+    const controller = new NetworkController();
 
-    const { network } = createMagicHarness(registerNetworkMagic) as { network: NetworkMagic };
+    controller.mount();
 
-    expectTypeOf(network).toEqualTypeOf<NetworkMagic>();
-    expectTypeOf(network.isOnline).toEqualTypeOf<boolean>();
-    expectTypeOf(network.isOffline).toEqualTypeOf<boolean>();
+    expect(addSpy).toHaveBeenCalledWith("online", expect.any(Function));
+    expect(addSpy).toHaveBeenCalledWith("offline", expect.any(Function));
+
+    controller.destroy();
+
+    expect(removeSpy).toHaveBeenCalledWith("online", expect.any(Function));
+    expect(removeSpy).toHaveBeenCalledWith("offline", expect.any(Function));
   });
 
-  it("types createNetworkState()", () => {
-    const state = createNetworkState(true);
+  it("updates state on offline and online events", () => {
+    setNavigatorOnline(true);
+    const controller = new NetworkController();
 
-    expectTypeOf(state.isOnline).toEqualTypeOf<boolean>();
-    expectTypeOf(state.isOffline).toEqualTypeOf<boolean>();
-    expectTypeOf(state).toExtend<NetworkMagic>();
-  });
-});
+    controller.mount();
+    expect(controller.isOnline).toBe(true);
+    expect(controller.isOffline).toBe(false);
 
-describe("@ailuracode/alpine-env", () => {
-  it("registers $network with isOnline state", () => {
-    Object.defineProperty(navigator, "onLine", {
-      configurable: true,
-      value: true,
-    });
-
-    const { network } = createMagicHarness(registerNetworkMagic) as { network: NetworkMagic };
-    expect(network.isOnline).toBe(true);
-    expect(network.isOffline).toBe(false);
-  });
-
-  it("updates isOnline on offline event", () => {
-    Object.defineProperty(navigator, "onLine", {
-      configurable: true,
-      value: true,
-    });
-
-    const { network } = createMagicHarness(registerNetworkMagic) as { network: NetworkMagic };
-
-    Object.defineProperty(navigator, "onLine", {
-      configurable: true,
-      value: false,
-    });
+    setNavigatorOnline(false);
     window.dispatchEvent(new Event("offline"));
 
-    expect(network.isOnline).toBe(false);
-    expect(network.isOffline).toBe(true);
-  });
+    expect(controller.isOnline).toBe(false);
+    expect(controller.isOffline).toBe(true);
 
-  it("updates isOnline on online event", () => {
-    Object.defineProperty(navigator, "onLine", {
-      configurable: true,
-      value: false,
-    });
-
-    const { network } = createMagicHarness(registerNetworkMagic) as { network: NetworkMagic };
-    expect(network.isOnline).toBe(false);
-    expect(network.isOffline).toBe(true);
-
-    Object.defineProperty(navigator, "onLine", {
-      configurable: true,
-      value: true,
-    });
+    setNavigatorOnline(true);
     window.dispatchEvent(new Event("online"));
 
-    expect(network.isOnline).toBe(true);
-    expect(network.isOffline).toBe(false);
+    expect(controller.isOnline).toBe(true);
+    expect(controller.isOffline).toBe(false);
   });
 
-  it("reads navigator state via readNetworkState()", () => {
-    Object.defineProperty(navigator, "onLine", {
-      configurable: true,
-      value: false,
-    });
+  it("destroy is idempotent", () => {
+    const controller = new NetworkController();
 
-    expect(readNetworkState()).toEqual({
-      isOnline: false,
-      isOffline: true,
-    });
+    controller.mount();
+    controller.destroy();
+
+    expect(() => controller.destroy()).not.toThrow();
   });
 });

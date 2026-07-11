@@ -1,14 +1,7 @@
-import { describe, expect, expectTypeOf, it } from "vitest";
-import { createMagicHarness } from "../../../test/mock-alpine.js";
-import {
-  createVisibilityState,
-  readVisibilityState,
-  registerVisibilityMagic,
-  VISIBILITY_STATES,
-  type VisibilityMagic,
-  type VisibilitySnapshot,
-  type VisibilityState,
-} from "../src/visibility.js";
+import { clearAllSingletons } from "@ailuracode/alpine-core";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import type { VisibilityState } from "../src/internal/visibility.js";
+import { VisibilityController } from "../src/visibility-controller.js";
 
 function setDocumentVisibility(hidden: boolean, visibilityState: VisibilityState): void {
   Object.defineProperty(document, "hidden", {
@@ -21,88 +14,59 @@ function setDocumentVisibility(hidden: boolean, visibilityState: VisibilityState
   });
 }
 
-describe("@ailuracode/alpine-env visibility", () => {
-  it("exports literal visibility states", () => {
-    expectTypeOf(VISIBILITY_STATES).toEqualTypeOf<readonly ["visible", "hidden", "prerender"]>();
+describe("@ailuracode/alpine-env VisibilityController", () => {
+  afterEach(() => {
+    clearAllSingletons();
+    vi.restoreAllMocks();
   });
 
-  it("types readVisibilityState() return shape", () => {
-    const snapshot = readVisibilityState({
-      hidden: true,
-      visibilityState: "hidden",
-    });
+  it("constructs without touching browser globals", () => {
+    setDocumentVisibility(true, "hidden");
 
-    expectTypeOf(snapshot).toEqualTypeOf<VisibilitySnapshot>();
-    expectTypeOf(snapshot.isVisible).toEqualTypeOf<boolean>();
-    expectTypeOf(snapshot.isHidden).toEqualTypeOf<boolean>();
-    expectTypeOf(snapshot.state).toEqualTypeOf<VisibilityState>();
+    const controller = new VisibilityController();
+
+    expect(controller.isVisible).toBe(true);
+    expect(controller.isHidden).toBe(false);
+    expect(controller.state).toBe("visible");
   });
 
-  it("registers $visibility with initial visible state", () => {
+  it("mounts listener and removes it on destroy", () => {
+    const addSpy = vi.spyOn(document, "addEventListener");
+    const removeSpy = vi.spyOn(document, "removeEventListener");
+    const controller = new VisibilityController();
+
+    controller.mount();
+
+    expect(addSpy).toHaveBeenCalledWith("visibilitychange", expect.any(Function));
+
+    controller.destroy();
+
+    expect(removeSpy).toHaveBeenCalledWith("visibilitychange", expect.any(Function));
+  });
+
+  it("updates state on visibilitychange", () => {
     setDocumentVisibility(false, "visible");
+    const controller = new VisibilityController();
 
-    const { visibility } = createMagicHarness(registerVisibilityMagic) as {
-      visibility: VisibilityMagic;
-    };
-
-    expect(visibility.isVisible).toBe(true);
-    expect(visibility.isHidden).toBe(false);
-    expect(visibility.state).toBe("visible");
-    expect(visibility.is("visible")).toBe(true);
-    expect(visibility.is("hidden")).toBe(false);
-  });
-
-  it("updates state on visibilitychange when tab is hidden", () => {
-    setDocumentVisibility(false, "visible");
-
-    const { visibility } = createMagicHarness(registerVisibilityMagic) as {
-      visibility: VisibilityMagic;
-    };
+    controller.mount();
+    expect(controller.isVisible).toBe(true);
+    expect(controller.state).toBe("visible");
 
     setDocumentVisibility(true, "hidden");
     document.dispatchEvent(new Event("visibilitychange"));
 
-    expect(visibility.isVisible).toBe(false);
-    expect(visibility.isHidden).toBe(true);
-    expect(visibility.state).toBe("hidden");
-    expect(visibility.is("hidden")).toBe(true);
+    expect(controller.isVisible).toBe(false);
+    expect(controller.isHidden).toBe(true);
+    expect(controller.state).toBe("hidden");
+    expect(controller.is("hidden")).toBe(true);
   });
 
-  it("maps document.hidden and visibilityState in readVisibilityState", () => {
-    expect(
-      readVisibilityState({
-        hidden: true,
-        visibilityState: "hidden",
-      })
-    ).toEqual({
-      isVisible: false,
-      isHidden: true,
-      state: "hidden",
-    });
+  it("destroy is idempotent", () => {
+    const controller = new VisibilityController();
 
-    expect(
-      readVisibilityState({
-        hidden: false,
-        visibilityState: "prerender",
-      })
-    ).toEqual({
-      isVisible: true,
-      isHidden: false,
-      state: "prerender",
-    });
-  });
+    controller.mount();
+    controller.destroy();
 
-  it("types createVisibilityState()", () => {
-    const state = createVisibilityState({
-      isVisible: true,
-      isHidden: false,
-      state: "visible",
-    });
-
-    expectTypeOf(state.isVisible).toEqualTypeOf<boolean>();
-    expectTypeOf(state.isHidden).toEqualTypeOf<boolean>();
-    expectTypeOf(state.state).toEqualTypeOf<VisibilityState>();
-    expectTypeOf(state.is).parameters.toEqualTypeOf<[state: VisibilityState]>();
-    expectTypeOf(state).toExtend<VisibilityMagic>();
+    expect(() => controller.destroy()).not.toThrow();
   });
 });

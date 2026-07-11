@@ -1,8 +1,8 @@
 /**
  * Public entrypoint for `@ailuracode/alpine-env`.
  *
- * Re-exports only. Implementation lives in `./plugin.ts` and
- * feature modules under `./*.ts`.
+ * Re-exports only. Implementation lives in `./plugin.ts`,
+ * controller modules, and pure helpers under `./internal/`.
  */
 
 export * from "./plugin.js";

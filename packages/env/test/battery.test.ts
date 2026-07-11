@@ -1,24 +1,16 @@
-import { describe, expect, it, vi } from "vitest";
-import { createMagicHarness } from "../../../test/mock-alpine.js";
-import {
-  type BatteryMagic,
-  type BatteryManagerLike,
-  readBatteryState,
-  registerBatteryMagic,
-} from "../src/battery.js";
+import { clearAllSingletons } from "@ailuracode/alpine-core";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { BatteryController } from "../src/battery-controller.js";
+import type { BatteryManagerLike } from "../src/internal/battery.js";
 
-function createBatteryManager(overrides: Partial<BatteryManagerLike> = {}): BatteryManagerLike {
+function createBatteryManager(overrides: Partial<BatteryManagerLike> = {}) {
   const listeners = new Map<string, Set<EventListener>>();
 
-  return {
+  const manager: BatteryManagerLike & { listenerCount(type: string): number } = {
     charging: false,
     chargingTime: Number.POSITIVE_INFINITY,
     dischargingTime: 3600,
     level: 0.75,
-    onchargingchange: null,
-    onchargingtimechange: null,
-    ondischargingtimechange: null,
-    onlevelchange: null,
     addEventListener(type: string, listener: EventListener) {
       if (!listeners.has(type)) {
         listeners.set(type, new Set());
@@ -37,135 +29,125 @@ function createBatteryManager(overrides: Partial<BatteryManagerLike> = {}): Batt
       }
       return true;
     },
+    listenerCount(type: string) {
+      return listeners.get(type)?.size ?? 0;
+    },
     ...overrides,
-  } as BatteryManagerLike;
+  };
+
+  return manager;
 }
 
 function mockGetBattery(implementation: () => Promise<BatteryManagerLike>): () => void {
-  const nav = navigator as Navigator & { getBattery?: () => Promise<BatteryManagerLike> };
-  const original = nav.getBattery;
+  const descriptor = Object.getOwnPropertyDescriptor(globalThis, "navigator");
+  const original = navigator;
 
-  Object.defineProperty(navigator, "getBattery", {
+  Object.defineProperty(globalThis, "navigator", {
     configurable: true,
-    value: implementation,
+    value: {
+      ...original,
+      getBattery: implementation,
+    },
   });
 
   return () => {
-    if (original) {
-      Object.defineProperty(navigator, "getBattery", {
-        configurable: true,
-        value: original,
-      });
-    } else {
-      Object.defineProperty(navigator, "getBattery", {
-        configurable: true,
-        value: undefined,
-        writable: true,
-      });
+    if (descriptor) {
+      Object.defineProperty(globalThis, "navigator", descriptor);
+      return;
     }
+
+    Object.defineProperty(globalThis, "navigator", {
+      configurable: true,
+      value: original,
+    });
   };
 }
 
-describe("@ailuracode/alpine-battery", () => {
-  it("registers $battery with unavailable defaults when getBattery is missing", () => {
-    const nav = navigator as Navigator & { getBattery?: () => Promise<BatteryManagerLike> };
-    const original = nav.getBattery;
-    nav.getBattery = undefined;
-
-    const { battery } = createMagicHarness(registerBatteryMagic) as { battery: BatteryMagic };
-
-    expect(battery.isAvailable).toBe(false);
-    expect(battery.level).toBeNull();
-    expect(battery.isCharging).toBe(false);
-
-    if (original) {
-      nav.getBattery = original;
-    }
+describe("@ailuracode/alpine-env BatteryController", () => {
+  afterEach(() => {
+    clearAllSingletons();
+    vi.restoreAllMocks();
   });
 
-  it("loads battery state when getBattery resolves", async () => {
+  it("starts unavailable and loads battery state on mount", async () => {
     const manager = createBatteryManager({
       charging: true,
       level: 0.5,
       chargingTime: 1200,
       dischargingTime: Number.POSITIVE_INFINITY,
     });
-
     const restore = mockGetBattery(() => Promise.resolve(manager));
+    const controller = new BatteryController();
 
-    const { battery } = createMagicHarness(registerBatteryMagic) as { battery: BatteryMagic };
+    expect(controller.isAvailable).toBe(false);
+
+    controller.mount();
 
     await vi.waitFor(() => {
-      expect(battery.isAvailable).toBe(true);
+      expect(controller.isAvailable).toBe(true);
     });
 
-    expect(battery.level).toBe(0.5);
-    expect(battery.isCharging).toBe(true);
-    expect(battery.chargingTime).toBe(1200);
-    expect(battery.dischargingTime).toBeNull();
+    expect(controller.level).toBe(0.5);
+    expect(controller.isCharging).toBe(true);
+    expect(controller.chargingTime).toBe(1200);
+    expect(controller.dischargingTime).toBeNull();
 
+    controller.destroy();
     restore();
   });
 
-  it("updates state on battery events", async () => {
+  it("updates state on battery events and removes listeners on destroy", async () => {
     const manager = createBatteryManager({ level: 0.8, charging: false });
-
     const restore = mockGetBattery(() => Promise.resolve(manager));
+    const controller = new BatteryController();
 
-    const { battery } = createMagicHarness(registerBatteryMagic) as { battery: BatteryMagic };
+    controller.mount();
 
     await vi.waitFor(() => {
-      expect(battery.isAvailable).toBe(true);
+      expect(controller.isAvailable).toBe(true);
     });
+
+    expect(manager.listenerCount("chargingchange")).toBe(1);
+    expect(manager.listenerCount("levelchange")).toBe(1);
+    expect(manager.listenerCount("chargingtimechange")).toBe(1);
+    expect(manager.listenerCount("dischargingtimechange")).toBe(1);
 
     manager.level = 0.4;
     manager.dispatchEvent(new Event("levelchange"));
+    expect(controller.level).toBe(0.4);
 
-    expect(battery.level).toBe(0.4);
+    controller.destroy();
 
-    manager.charging = true;
-    manager.dispatchEvent(new Event("chargingchange"));
-
-    expect(battery.isCharging).toBe(true);
+    expect(manager.listenerCount("chargingchange")).toBe(0);
+    expect(manager.listenerCount("levelchange")).toBe(0);
+    expect(manager.listenerCount("chargingtimechange")).toBe(0);
+    expect(manager.listenerCount("dischargingtimechange")).toBe(0);
 
     restore();
   });
 
-  it("keeps unavailable state when getBattery rejects", async () => {
+  it("logs and stays unavailable when getBattery rejects", async () => {
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => undefined);
     const restore = mockGetBattery(() => Promise.reject(new Error("unavailable")));
+    const controller = new BatteryController();
 
-    const { battery } = createMagicHarness(registerBatteryMagic) as { battery: BatteryMagic };
-
+    controller.mount();
+    await Promise.resolve();
     await Promise.resolve();
 
-    expect(battery.isAvailable).toBe(false);
-    expect(battery.level).toBeNull();
+    expect(controller.isAvailable).toBe(false);
+    expect(controller.level).toBeNull();
+    expect(warnSpy).toHaveBeenCalled();
 
+    controller.destroy();
     restore();
   });
-});
 
-describe("readBatteryState", () => {
-  it("returns unavailable defaults without a manager", () => {
-    expect(readBatteryState()).toEqual({
-      isAvailable: false,
-      level: null,
-      isCharging: false,
-      chargingTime: null,
-      dischargingTime: null,
-    });
-  });
+  it("destroy is idempotent", () => {
+    const controller = new BatteryController();
 
-  it("normalizes infinite time values to null", () => {
-    const manager = createBatteryManager({
-      chargingTime: Number.POSITIVE_INFINITY,
-      dischargingTime: Number.POSITIVE_INFINITY,
-    });
+    controller.destroy();
 
-    const state = readBatteryState(manager);
-
-    expect(state.isAvailable).toBe(true);
-    expect(state.chargingTime).toBeNull();
-    expect(state.dischargingTime).toBeNull();
+    expect(() => controller.destroy()).not.toThrow();
   });
 });
