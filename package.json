@@ -21,8 +21,6 @@
     "changeset": "changeset",
     "version": "changeset version",
     "release": "pnpm run build && pnpm test && changeset publish",
-    "publish:ci": "changeset publish",
-    "publish:packages": "pnpm run release",
     "dev:demo": "pnpm --filter alpinejs-toolkit-demo dev",
     "build:demo": "pnpm --filter alpinejs-toolkit-demo build",
     "size": "pnpm -r --if-present run size",

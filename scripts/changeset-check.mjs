@@ -55,7 +55,7 @@ if (result.status === 0) {
   process.exit(0);
 }
 
-// Release workflow may already have run `changeset version` on this branch.
+// A maintainer may already have run `changeset version` on this branch.
 if (!hasPendingChangesets()) {
   const changed = getChangedPackageDirs();
 

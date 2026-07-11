@@ -155,24 +155,23 @@ pnpm run changeset     # after user-facing changes
 
 ## Versioning & release
 
-Uses [Changesets](https://github.com/changesets/changesets) for independent package versions.
+This repository uses **manual publishing** with [Changesets](https://github.com/changesets/changesets). CI (`ci.yml`) only validates — it never versions or publishes. A maintainer performs the release locally.
 
 ```bash
-pnpm run changeset   # create a changeset
-pnpm run version     # bump versions + changelogs
-pnpm run release     # test + publish to npm
+pnpm run changeset   # 1. add a changeset after a user-facing change
+pnpm run version     # 2. bump versions + generate CHANGELOGs (commits the bump)
+pnpm run release     # 3. build + test + publish changed packages to npm
 ```
 
-GitHub Actions versions packages on the **same PR branch** that contains pending changesets, then publishes to npm on `master` after merge when no changesets remain. Set the `NPM_TOKEN` repository secret for automated npm publish.
+### Release procedure (single source of truth)
 
-## Publishing (manual)
+1. **Versioning** — create a changeset for every consumer-observable change (`patch` bug fix, `minor` new API, `major` breaking). Run `pnpm run version` to apply pending changesets, which bumps `package.json` versions and appends CHANGELOG entries. Commit the result.
+2. **Changelog** — Changesets writes `CHANGELOG.md` per package automatically; no manual edit needed.
+3. **npm publishing** — requires npm 2FA and access to the `@ailuracode` scope. Authenticate with `npm login`, then `pnpm run release` (builds, runs tests, and publishes unpublished versions via `changeset publish`).
+4. **Provenance** — publishes use `publishConfig.access: "public"`. Configure npm provenance per package if your account supports it; it is opt-in and does not block manual release.
+5. **Failure recovery** — if publish partially fails, rerun `pnpm run release` after fixing the cause. Changesets only publishes versions not yet on the registry, so already-published packages are skipped.
 
-Requires npm 2FA and access to `@ailuracode`:
-
-```bash
-npm login
-pnpm run release
-```
+> CI and release permissions are intentionally separate: the GitHub Actions workflow has no `NPM_TOKEN` and cannot publish. Only a maintainer with npm credentials can.
 
 Each package under `packages/*` has its own version, tests, and README.
 
