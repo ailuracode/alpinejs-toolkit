@@ -4,6 +4,7 @@
 import type { AlpineInstance } from "../types/alpine.js";
 
 type CommandStore = {
+  items: Record<string, { id: string }>;
   register(action: {
     id: string;
     label: string;
@@ -41,7 +42,14 @@ export function registerCommandDemo(Alpine: AlpineInstance): void {
     (): CommandDemoComponent => ({
       init() {
         const command = Alpine.store("command") as unknown as CommandStore;
-        command.register({
+        const registerDemo = (item: Parameters<CommandStore["register"]>[0]): void => {
+          if (item.id in command.items) {
+            return;
+          }
+          command.register(item);
+        };
+
+        registerDemo({
           id: "toggle-theme",
           label: "Toggle theme",
           group: "Appearance",
@@ -49,7 +57,7 @@ export function registerCommandDemo(Alpine: AlpineInstance): void {
           aliases: ["spotlight"],
           action: () => (Alpine.store("theme") as { toggle(): void }).toggle(),
         });
-        command.register({
+        registerDemo({
           id: "toast-demo",
           label: "Show toast",
           group: "Actions",
@@ -60,7 +68,7 @@ export function registerCommandDemo(Alpine: AlpineInstance): void {
               variant: "success",
             }),
         });
-        command.register({
+        registerDemo({
           id: "open-settings-page",
           label: "Open settings page",
           group: "Navigation",
@@ -68,7 +76,7 @@ export function registerCommandDemo(Alpine: AlpineInstance): void {
             void command.pushPage({
               id: "settings",
               title: "Settings",
-              load: async () => {
+              load: () => {
                 command.register({
                   id: "settings-theme",
                   label: "Theme settings",
@@ -80,7 +88,7 @@ export function registerCommandDemo(Alpine: AlpineInstance): void {
             });
           },
         });
-        command.register({
+        registerDemo({
           id: "disabled-demo",
           label: "Disabled action",
           group: "Actions",

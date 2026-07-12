@@ -3,6 +3,7 @@
  */
 
 export type { Unsubscribe } from "@ailuracode/alpine-core";
+export { createCommandAlpineStore, syncCommandStore } from "./alpine/store.js";
 export {
   CommandController,
   createCommandController,

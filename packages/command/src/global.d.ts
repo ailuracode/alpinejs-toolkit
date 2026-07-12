@@ -28,15 +28,15 @@ export interface CommandStore {
   activeIndex: number;
   visible: boolean;
   items: Record<string, CommandItem>;
-  readonly isOpen: boolean;
-  readonly executionState: CommandExecutionState;
-  readonly runningId: string | null;
-  readonly currentPageId: string;
-  readonly pageStack: readonly string[];
-  readonly pages: Readonly<Record<string, CommandPage>>;
-  readonly loadingIds: readonly string[];
-  readonly pinnedIds: readonly string[];
-  readonly recentIds: readonly string[];
+  isOpen: boolean;
+  executionState: CommandExecutionState;
+  runningId: string | null;
+  currentPageId: string;
+  pageStack: string[];
+  pages: Record<string, CommandPage>;
+  loadingIds: string[];
+  pinnedIds: string[];
+  recentIds: string[];
   open(): void;
   close(): void;
   toggle(): void;
@@ -52,9 +52,9 @@ export interface CommandStore {
   inputProps(): Record<string, string | boolean | undefined>;
   listboxProps(): Record<string, string | boolean | undefined>;
   optionProps(id: string): Record<string, string | number | boolean | undefined>;
-  readonly filteredItems: CommandItem[];
-  readonly visibleItems: readonly CommandItemState[];
-  readonly groupedItems: Record<string, CommandItem[]>;
+  filteredItems: CommandItem[];
+  visibleItems: CommandItemState[];
+  groupedItems: Record<string, CommandItem[]>;
   destroy(): void;
 }
 

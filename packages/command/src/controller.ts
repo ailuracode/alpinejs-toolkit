@@ -4,6 +4,7 @@
  */
 
 import { BaseController, generateId } from "@ailuracode/alpine-core";
+import { createCommandAlpineStore, syncCommandStore } from "./alpine/store.js";
 import { isEditableTarget, isTypingKey } from "./editable.js";
 import { CommandError } from "./errors.js";
 import type { CommandEvents } from "./events.js";
@@ -415,78 +416,39 @@ export class CommandController extends BaseController<CommandEvents> {
 
   toStore(): CommandStore {
     const controller = this;
-    return {
-      get search() {
+    const store = createCommandAlpineStore(controller);
+    const sync = (): void => {
+      syncCommandStore(store, controller);
+    };
+
+    controller.on("open", sync);
+    controller.on("close", sync);
+    controller.on("change", sync);
+
+    Object.defineProperty(store, "search", {
+      get() {
         return controller.search;
       },
-      set search(value) {
+      set(value: string) {
         controller.search = value;
       },
-      get activeIndex() {
+      enumerable: true,
+      configurable: true,
+    });
+
+    Object.defineProperty(store, "activeIndex", {
+      get() {
         return controller.activeIndex;
       },
-      set activeIndex(value) {
+      set(value: number) {
         controller.activeIndex = value;
       },
-      get visible() {
-        return controller.visible;
-      },
-      get items() {
-        return controller.items as Record<string, CommandItem>;
-      },
-      get isOpen() {
-        return controller.isOpen;
-      },
-      get executionState() {
-        return controller.executionState;
-      },
-      get runningId() {
-        return controller.runningId;
-      },
-      get currentPageId() {
-        return controller.currentPageId;
-      },
-      get pageStack() {
-        return controller.pageStack;
-      },
-      get pages() {
-        return controller.pages;
-      },
-      get loadingIds() {
-        return controller.loadingIds;
-      },
-      get pinnedIds() {
-        return controller.pinnedIds;
-      },
-      get recentIds() {
-        return controller.recentIds;
-      },
-      open: () => controller.open(),
-      close: () => controller.close(),
-      toggle: () => controller.toggle(),
-      register: (item) => controller.register(item),
-      unregister: (id) => controller.unregister(id),
-      run: (id) => controller.run(id),
-      cancelRun: () => controller.cancelRun(),
-      handleKeydown: (event) => controller.handleKeydown(event),
-      pushPage: (page) => controller.pushPage(page),
-      popPage: () => controller.popPage(),
-      goBack: () => controller.goBack(),
-      itemState: (id) => controller.itemState(id),
-      inputProps: () => controller.inputProps(),
-      listboxProps: () => controller.listboxProps(),
-      optionProps: (id) => controller.optionProps(id),
-      get filteredItems() {
-        return controller.filteredItems;
-      },
-      get visibleItems() {
-        return controller.visibleItems;
-      },
-      get groupedItems() {
-        return controller.groupedItems;
-      },
-      destroy: () => controller.destroy(),
-    };
+      enumerable: true,
+      configurable: true,
+    });
+
+    sync();
+    return store;
   }
 
   destroy(): void {
