@@ -2,7 +2,7 @@
 
 Modular **Alpine.js toolkit** — lazy plugin init, headless stores and magics, TypeScript-first DX. Framework-agnostic: works with Vite, Astro, static HTML, or any ESM bundler.
 
-Built by **ailuracode**. 29 independent npm packages; install only what you need.
+Built by **ailuracode**. 30 independent npm packages; install only what you need.
 
 ## Why this exists
 
@@ -99,6 +99,7 @@ Start here for most Alpine apps.
 | [`@ailuracode/alpine-accordion`](./packages/accordion/README.md) | `$store.accordion` | Single/multi accordion state |
 | [`@ailuracode/alpine-command`](./packages/command/README.md) | `$store.command` | Command palette / Spotlight |
 | [`@ailuracode/alpine-carousel`](./packages/carousel/README.md) | `$store.carousel` | Embla-powered accessible carousel |
+| [`@ailuracode/alpine-virtual`](./packages/virtual/README.md) | `$store.virtual` | Headless virtual list controller |
 
 ### Advanced
 
@@ -138,7 +139,7 @@ See [AGENTS.md](./AGENTS.md) for the full checklist when adding a plugin.
 - [Getting started](./docs/getting-started.md) — lazy init, essentials, HTML usage
 - [Core](./docs/core.md) — plugin registry
 - **Essentials** — [theme](./docs/plugins/theme.md), [media](./docs/plugins/media.md), [scroll](./docs/plugins/scroll.md), [sidebar](./docs/plugins/sidebar.md), [lang](./docs/plugins/lang.md)
-- **Headless UI** — [dialog](./docs/plugins/dialog.md), [menu](./docs/plugins/menu.md), [tooltip](./docs/plugins/tooltip.md), [toast](./docs/plugins/toast.md), [tabs](./docs/plugins/tabs.md), [accordion](./docs/plugins/accordion.md), [command](./docs/plugins/command.md), [carousel](./docs/plugins/carousel.md)
+- **Headless UI** — [dialog](./docs/plugins/dialog.md), [menu](./docs/plugins/menu.md), [tooltip](./docs/plugins/tooltip.md), [toast](./docs/plugins/toast.md), [tabs](./docs/plugins/tabs.md), [accordion](./docs/plugins/accordion.md), [command](./docs/plugins/command.md), [carousel](./docs/plugins/carousel.md), [virtual](./docs/plugins/virtual.md)
 - [Query](./docs/query.md) · [Query devtools](./docs/plugins/query-kit.md#devtools)
 - [AGENTS.md](./AGENTS.md) — guide for AI agents and maintainers
 

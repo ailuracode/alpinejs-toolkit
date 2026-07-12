@@ -247,6 +247,16 @@ export const PLUGIN_NAV_GROUPS: PluginNavGroup[] = [
         description:
           "Accessible carousel store powered by Embla — navigation, autoplay, loop, keyboard, and ARIA helpers.",
       },
+      {
+        id: "virtual",
+        title: "Virtual",
+        package: "@ailuracode/alpine-virtual",
+        api: "$store.virtual / $virtual",
+        kind: "store",
+        tier: "headless",
+        description:
+          "Headless virtual list controller — fixed and variable item sizes, overscan, scroll-to-index, and stable keys.",
+      },
     ],
   },
   {
@@ -377,6 +387,7 @@ const PLUGIN_DOCS: ReadonlySet<string> = new Set([
   "accordion",
   "command",
   "carousel",
+  "virtual",
   "geo",
   "lang",
   "calendar",
