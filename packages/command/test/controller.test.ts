@@ -1,6 +1,14 @@
+import type { ScrollStore } from "@ailuracode/alpine-scroll";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { CommandController } from "../src/controller.js";
 import type { CommandItem } from "../src/types.js";
+
+function createScrollStoreMock(): ScrollStore {
+  return {
+    lock: vi.fn(() => "command-lock"),
+    unlock: vi.fn(),
+  } as unknown as ScrollStore;
+}
 
 function createItem(
   overrides: Partial<CommandItem> & Pick<CommandItem, "id" | "label">
@@ -174,5 +182,25 @@ describe("CommandController", () => {
     unregister();
     expect(controller.isDestroyed).toBe(true);
     expect(controller.isOpen).toBe(false);
+  });
+
+  it("locks and unlocks scroll when a scroll store is provided", () => {
+    const scroll = createScrollStoreMock();
+    const lockedController = new CommandController(undefined, { scroll, scrollLock: true });
+    lockedController.register(createItem({ id: "save", label: "Save" }));
+
+    lockedController.open();
+    expect(scroll.lock).toHaveBeenCalledWith("command");
+
+    lockedController.close();
+    expect(scroll.unlock).toHaveBeenCalledWith("command-lock");
+  });
+
+  it("skips scroll lock when scrollLock is disabled", () => {
+    const scroll = createScrollStoreMock();
+    const unlockedController = new CommandController(undefined, { scroll, scrollLock: false });
+
+    unlockedController.open();
+    expect(scroll.lock).not.toHaveBeenCalled();
   });
 });

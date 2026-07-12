@@ -32,5 +32,7 @@ export function normalizeCommandOptions(
     editableSelector: options.editableSelector ?? DEFAULT_EDITABLE_SELECTOR,
     idPrefix: options.idPrefix ?? "command",
     closeOnRun: options.closeOnRun !== false,
+    scroll: options.scroll,
+    scrollLock: options.scrollLock !== false,
   };
 }

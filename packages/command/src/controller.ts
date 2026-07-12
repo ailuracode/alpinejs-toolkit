@@ -4,6 +4,7 @@
  */
 
 import { BaseController, generateId } from "@ailuracode/alpine-core";
+import type { ScrollStore } from "@ailuracode/alpine-scroll";
 import { createCommandAlpineStore, syncCommandStore } from "./alpine/store.js";
 import { isEditableTarget, isTypingKey } from "./editable.js";
 import { CommandError } from "./errors.js";
@@ -64,10 +65,16 @@ export class CommandController extends BaseController<CommandEvents> {
   #runGeneration = 0;
   #loadGeneration = 0;
   #persistenceLoaded = false;
+  #lockCount = 0;
+  #lockHandle: string | null = null;
+  readonly #scroll: ScrollStore | undefined;
+  readonly #scrollLock: boolean;
 
   constructor(id?: string, config: CommandStoreConfig = {}) {
     super(id ?? generateId("command"));
     this.#options = normalizeCommandOptions(config);
+    this.#scroll = this.#options.scroll;
+    this.#scrollLock = this.#options.scrollLock;
   }
 
   get items(): Readonly<Record<string, CommandItem>> {
@@ -165,6 +172,9 @@ export class CommandController extends BaseController<CommandEvents> {
     this.#visible = true;
     this.#search = "";
     this.#activeIndex = 0;
+    if (this.#scrollLock) {
+      this.#updateScrollLock(true);
+    }
     void this.#ensurePersistenceLoaded();
     void this.#ensureCurrentPageLoaded();
     this.#options.onOpen?.();
@@ -180,6 +190,9 @@ export class CommandController extends BaseController<CommandEvents> {
     this.#search = "";
     this.#activeIndex = 0;
     this.#pageStack = [ROOT_PAGE_ID];
+    if (this.#scrollLock) {
+      this.#updateScrollLock(false);
+    }
     this.cancelRun();
     this.#options.onClose?.();
     this.emit("close", undefined);
@@ -457,6 +470,11 @@ export class CommandController extends BaseController<CommandEvents> {
     }
     this.cancelRun();
     this.#loadGeneration++;
+    if (this.#lockHandle !== null) {
+      this.#scroll?.unlock(this.#lockHandle);
+      this.#lockHandle = null;
+    }
+    this.#lockCount = 0;
     for (const id of Object.keys(this.#items)) {
       delete this.#items[id];
     }
@@ -633,6 +651,26 @@ export class CommandController extends BaseController<CommandEvents> {
     }
     this.#clampActiveIndex();
     this.emit("change", undefined);
+  }
+
+  #updateScrollLock(locked: boolean): void {
+    if (locked) {
+      if (this.#lockCount === 0 && this.#scroll && this.#lockHandle === null) {
+        this.#lockHandle = this.#scroll.lock("command");
+      }
+      this.#lockCount++;
+      return;
+    }
+
+    if (this.#lockCount === 0) {
+      return;
+    }
+
+    this.#lockCount--;
+    if (this.#lockCount === 0 && this.#lockHandle !== null) {
+      this.#scroll?.unlock(this.#lockHandle);
+      this.#lockHandle = null;
+    }
   }
 }
 

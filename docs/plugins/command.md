@@ -83,10 +83,11 @@ Disabled commands remain visible unless `hidden` is true. Keyboard navigation an
 ## Integration
 
 - **Overlay** — optional `overlayId` documents a palette layer id for `$store.overlay.zIndexOf(overlayId, layer)`
+- **Scroll** — pass `scroll: $store.scroll` to lock page scroll while open (enabled by default when provided)
 - **Keyboard** — global open shortcuts remain consumer-owned; compose with `@ailuracode/alpine-keyboard` when needed
 - **Dialog / Toast** — render the palette in a dialog panel or call `$toast()` from `action` / `onRun`
 
-Neither overlay, keyboard, dialog, nor toast is required.
+Neither overlay, scroll, keyboard, dialog, nor toast is required.
 
 ## SSR
 

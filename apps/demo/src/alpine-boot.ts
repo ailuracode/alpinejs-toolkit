@@ -88,7 +88,6 @@ export async function startAlpineDemo(): Promise<void> {
     tooltip(),
     tabs(),
     accordion(),
-    command(),
     carousel(),
     virtual(),
     calendar,
@@ -126,6 +125,7 @@ export async function startAlpineDemo(): Promise<void> {
     }),
     dialog({ scroll: scrollStore }),
     menu({ scroll: scrollStore }),
+    command({ scroll: scrollStore }),
   ]);
 
   await document.fonts.ready;

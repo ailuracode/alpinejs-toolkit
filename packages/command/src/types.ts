@@ -3,6 +3,7 @@
  */
 
 import type { Alpine, PluginCallback } from "@ailuracode/alpine-core";
+import type { ScrollStore } from "@ailuracode/alpine-scroll";
 import type { Alpine as AlpineBase } from "alpinejs";
 
 /** Action callback invoked when a command is executed. */
@@ -90,6 +91,8 @@ export type CommandStoreConfig = {
   readonly editableSelector?: string;
   readonly idPrefix?: string;
   readonly closeOnRun?: boolean;
+  readonly scroll?: ScrollStore;
+  readonly scrollLock?: boolean;
 };
 
 /** Normalized options used internally by the controller. */
@@ -106,6 +109,8 @@ export type NormalizedCommandOptions = {
   readonly editableSelector: string;
   readonly idPrefix: string;
   readonly closeOnRun: boolean;
+  readonly scroll?: ScrollStore;
+  readonly scrollLock: boolean;
 };
 
 /** Options accepted by the command plugin factory. */

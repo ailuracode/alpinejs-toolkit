@@ -1,6 +1,6 @@
 # @ailuracode/alpine-command
 
-Headless command palette store for Alpine.js — searchable actions, keyboard navigation, nested pages, async execution, groups, aliases, and ARIA helpers. Compose optionally with overlay and keyboard plugins.
+Headless command palette store for Alpine.js — searchable actions, keyboard navigation, nested pages, async execution, groups, aliases, and ARIA helpers. Compose optionally with overlay, scroll, and keyboard plugins.
 
 **[Full documentation →](../../docs/plugins/command.md)**
 
