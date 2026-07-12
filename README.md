@@ -91,6 +91,7 @@ Start here for most Alpine apps.
 |---------|-----|-------------|
 | [`@ailuracode/alpine-overlay`](./packages/overlay/README.md) | `$store.overlay` | Portal root, z-index stack, overlay registry |
 | [`@ailuracode/alpine-permissions`](./packages/permissions/README.md) | `$store.permissions` | Unified browser permission registry and adapter contract |
+| [`@ailuracode/alpine-keyboard`](./packages/keyboard/README.md) | `$store.keyboard` | Scoped keyboard shortcut registry with chords and sequences |
 | [`@ailuracode/alpine-dialog`](./packages/dialog/README.md) | `$store.dialog` | Accessible modal state and focus trap |
 | [`@ailuracode/alpine-menu`](./packages/menu/README.md) | `$store.menu` | Exclusive dropdown/context menu keyboard navigation |
 | [`@ailuracode/alpine-tooltip`](./packages/tooltip/README.md) | `$store.tooltip` | Tooltip positioning and delays |

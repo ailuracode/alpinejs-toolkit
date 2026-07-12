@@ -44,6 +44,16 @@ export const PLUGIN_NAV_GROUPS: PluginNavGroup[] = [
         description:
           "Unified browser permission registry with adapter contract. Queries current permission on init (no prompts); use request() from a user action to prompt.",
       },
+      {
+        id: "keyboard",
+        title: "Keyboard",
+        package: "@ailuracode/alpine-keyboard",
+        api: "$store.keyboard / $keyboard",
+        kind: "store",
+        tier: "essential",
+        description:
+          "Headless scoped keyboard shortcut registry — chords, sequences, conflict resolution, editable-target filtering, and overlay pause scopes.",
+      },
     ],
   },
   {
@@ -373,6 +383,7 @@ const PLUGIN_DOCS: ReadonlySet<string> = new Set([
   "scroll",
   "sidebar",
   "permissions",
+  "keyboard",
   "env",
   "transfer",
   "attention",

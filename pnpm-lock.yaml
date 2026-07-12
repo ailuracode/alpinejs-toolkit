@@ -84,6 +84,9 @@ importers:
       '@ailuracode/alpine-json-api':
         specifier: workspace:*
         version: link:../../packages/json-api
+      '@ailuracode/alpine-keyboard':
+        specifier: workspace:*
+        version: link:../../packages/keyboard
       '@ailuracode/alpine-lang':
         specifier: workspace:*
         version: link:../../packages/lang
@@ -392,6 +395,19 @@ importers:
       '@ailuracode/alpine-core':
         specifier: workspace:*
         version: link:../core
+
+  packages/keyboard:
+    dependencies:
+      alpinejs:
+        specifier: ^3.0.0
+        version: 3.15.12
+    devDependencies:
+      '@ailuracode/alpine-core':
+        specifier: workspace:*
+        version: link:../core
+      '@types/alpinejs':
+        specifier: ^3.13.11
+        version: 3.13.11
 
   packages/lang:
     dependencies:

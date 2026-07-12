@@ -10,6 +10,7 @@ Alpine.js plugin monorepo by **ailuracode**. 30 independent npm packages under `
 |---------|------|---------------|
 | `@ailuracode/alpine-core` | Core | Plugin registry (`registerPlugin`, `initPlugins`) |
 | `@ailuracode/alpine-permissions` | Store | `$store.permissions` / `$permissions` — adapter registry |
+| `@ailuracode/alpine-keyboard` | Store | `$store.keyboard` / `$keyboard` — scoped shortcut registry |
 | `@ailuracode/alpine-theme` | Store | `$store.theme` |
 | `@ailuracode/alpine-media` | Store | `$store.media` |
 | `@ailuracode/alpine-scroll` | Store | `$store.scroll` |

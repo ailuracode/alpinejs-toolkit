@@ -23,5 +23,7 @@ export const REPO_CHECK_POLICY = {
     ui: [],
     /** `alpine-permissions` is infrastructure and must stay capability-agnostic. */
     permissions: ["@ailuracode/alpine-core"],
+    /** `alpine-keyboard` is infrastructure and must stay UI-agnostic. */
+    keyboard: ["@ailuracode/alpine-core"],
   },
 };
