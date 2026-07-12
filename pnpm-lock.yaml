@@ -81,6 +81,9 @@ importers:
       '@ailuracode/alpine-geo':
         specifier: workspace:*
         version: link:../../packages/geo
+      '@ailuracode/alpine-gesture':
+        specifier: workspace:*
+        version: link:../../packages/gesture
       '@ailuracode/alpine-json-api':
         specifier: workspace:*
         version: link:../../packages/json-api
@@ -382,6 +385,19 @@ importers:
       '@ailuracode/alpine-permissions':
         specifier: workspace:*
         version: link:../permissions
+
+  packages/gesture:
+    dependencies:
+      alpinejs:
+        specifier: ^3.0.0
+        version: 3.15.12
+    devDependencies:
+      '@ailuracode/alpine-core':
+        specifier: workspace:*
+        version: link:../core
+      '@types/alpinejs':
+        specifier: ^3.13.10
+        version: 3.13.11
 
   packages/json-api:
     dependencies:

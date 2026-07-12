@@ -43,7 +43,8 @@
       "@ailuracode/alpine-theme": ["./packages/theme/src/index.ts"],
       "@ailuracode/alpine-toggle": ["./packages/toggle/src/index.ts"],
       "@ailuracode/alpine-geo": ["./packages/geo/src/index.ts"],
-      "@ailuracode/alpine-lang": ["./packages/lang/src/index.ts"]
+      "@ailuracode/alpine-lang": ["./packages/lang/src/index.ts"],
+      "@ailuracode/alpine-gesture": ["./packages/gesture/src/index.ts"]
     }
   },
   "include": [

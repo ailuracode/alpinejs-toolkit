@@ -171,6 +171,16 @@ export const PLUGIN_NAV_GROUPS: PluginNavGroup[] = [
         description:
           "asChild-style directive — merges wrapper attributes onto the first child via Alpine.morph(). Requires @alpinejs/morph.",
       },
+      {
+        id: "gesture",
+        title: "Gesture",
+        package: "@ailuracode/alpine-gesture",
+        api: "$store.gesture / x-gesture",
+        kind: "store",
+        tier: "extended",
+        description:
+          "Headless gesture recognition — tap, double-tap, long-press, swipe, pan, and pinch via pointer events. Configurable thresholds, axis locking, and deterministic competing-gesture cancellation.",
+      },
     ],
   },
   {

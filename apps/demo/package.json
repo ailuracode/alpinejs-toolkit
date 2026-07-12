@@ -27,6 +27,7 @@
     "@ailuracode/alpine-core": "workspace:*",
     "@ailuracode/alpine-dialog": "workspace:*",
     "@ailuracode/alpine-env": "workspace:*",
+    "@ailuracode/alpine-gesture": "workspace:*",
     "@ailuracode/alpine-geo": "workspace:*",
     "@ailuracode/alpine-json-api": "workspace:*",
     "@ailuracode/alpine-keyboard": "workspace:*",
