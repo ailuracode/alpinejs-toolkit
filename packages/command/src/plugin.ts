@@ -1,21 +1,126 @@
 /**
  * Alpine.js integration for `@ailuracode/alpine-command`.
- *
- * Thin adapter that wires {@link CommandController} into
- * `$store.command` and the `$command` magic.
  */
 
 import type { Alpine } from "alpinejs";
-import { CommandController } from "./controller";
+import { CommandController } from "./controller.js";
 import type {
   CommandAlpine,
   CommandPluginCallback,
   CommandPluginOptions,
   CommandStore,
-} from "./types";
+} from "./types.js";
 
 /** Key under which the command store is registered on `$store`. */
 const COMMAND_STORE_KEY = "command";
+
+interface ReactiveCommandStore extends CommandStore {
+  revision: number;
+}
+
+/** Builds the reactive Alpine store from a controller instance. */
+export function createCommandStoreFromController(
+  controller: CommandController
+): ReactiveCommandStore {
+  const store: ReactiveCommandStore = {
+    revision: 0,
+    get search() {
+      void store.revision;
+      return controller.search;
+    },
+    set search(value) {
+      controller.search = value;
+    },
+    get activeIndex() {
+      void store.revision;
+      return controller.activeIndex;
+    },
+    set activeIndex(value) {
+      controller.activeIndex = value;
+    },
+    get visible() {
+      void store.revision;
+      return controller.visible;
+    },
+    set visible(value) {
+      if (value) {
+        controller.open();
+      } else {
+        controller.close();
+      }
+    },
+    get items() {
+      void store.revision;
+      return controller.items as Record<string, import("./types.js").CommandItem>;
+    },
+    get isOpen() {
+      void store.revision;
+      return controller.isOpen;
+    },
+    get executionState() {
+      void store.revision;
+      return controller.executionState;
+    },
+    get runningId() {
+      void store.revision;
+      return controller.runningId;
+    },
+    get currentPageId() {
+      void store.revision;
+      return controller.currentPageId;
+    },
+    get pageStack() {
+      void store.revision;
+      return controller.pageStack;
+    },
+    get pages() {
+      void store.revision;
+      return controller.pages;
+    },
+    get loadingIds() {
+      void store.revision;
+      return controller.loadingIds;
+    },
+    get pinnedIds() {
+      void store.revision;
+      return controller.pinnedIds;
+    },
+    get recentIds() {
+      void store.revision;
+      return controller.recentIds;
+    },
+    open: () => controller.open(),
+    close: () => controller.close(),
+    toggle: () => controller.toggle(),
+    register: (item) => controller.register(item),
+    unregister: (id) => controller.unregister(id),
+    run: (id) => controller.run(id),
+    cancelRun: () => controller.cancelRun(),
+    handleKeydown: (event) => controller.handleKeydown(event),
+    pushPage: (page) => controller.pushPage(page),
+    popPage: () => controller.popPage(),
+    goBack: () => controller.goBack(),
+    itemState: (id) => controller.itemState(id),
+    inputProps: () => controller.inputProps(),
+    listboxProps: () => controller.listboxProps(),
+    optionProps: (id) => controller.optionProps(id),
+    get filteredItems() {
+      void store.revision;
+      return controller.filteredItems;
+    },
+    get visibleItems() {
+      void store.revision;
+      return controller.visibleItems;
+    },
+    get groupedItems() {
+      void store.revision;
+      return controller.groupedItems;
+    },
+    destroy: () => controller.destroy(),
+  };
+
+  return store;
+}
 
 /**
  * Plugin factory — returns the `Alpine.plugin()` callback. Pass
@@ -26,76 +131,18 @@ export function commandPlugin(options: CommandPluginOptions = {}): CommandPlugin
   return function registerCommand(alpine: Alpine): void {
     const Alpine = alpine as unknown as CommandAlpine;
     const controller = new CommandController(options.id, options);
-
-    // Build a mutable store object that delegates to the controller.
-    const store: CommandStore = {
-      search: "",
-      activeIndex: 0,
-      visible: false,
-      items: {} as CommandStore["items"],
-
-      get isOpen() {
-        return this.visible;
-      },
-
-      get filteredItems() {
-        const defaultFilter = (i: import("./types").CommandItem, s: string): boolean => {
-          if (!s.trim()) {
-            return true;
-          }
-          const query = s.trim().toLowerCase();
-          const haystack = [i.label, i.group ?? "", i.shortcut ?? "", ...(i.keywords ?? [])]
-            .join(" ")
-            .toLowerCase();
-          return haystack.includes(query);
-        };
-        const filter = options.filter ?? defaultFilter;
-        const list = Object.values(this.items).filter(
-          (item) => !item.disabled && filter(item, this.search)
-        );
-        if (this.activeIndex >= list.length) {
-          this.activeIndex = Math.max(list.length - 1, 0);
-        }
-        return list;
-      },
-
-      get groupedItems() {
-        const groups: Record<string, import("./types").CommandItem[]> = {};
-        for (const item of this.filteredItems) {
-          const group = item.group ?? "General";
-          groups[group] ??= [];
-          groups[group].push(item);
-        }
-        return groups;
-      },
-
-      open: () => controller.open(),
-      close: () => controller.close(),
-      toggle: () => controller.toggle(),
-      register: (item) => controller.register(item),
-      unregister: (id) => controller.unregister(id),
-      run: (id) => controller.run(id),
-      handleKeydown: (event) => controller.handleKeydown(event),
-      destroy: () => controller.destroy(),
-    };
+    const store = createCommandStoreFromController(controller);
 
     Alpine.store(COMMAND_STORE_KEY, store);
-    const reactiveStore = Alpine.store(COMMAND_STORE_KEY);
+    const reactiveStore = Alpine.store(COMMAND_STORE_KEY) as ReactiveCommandStore;
 
-    // Sync controller state into the reactive store on state changes.
-    // Alpine's reactive proxy detects mutations to the store properties,
-    // so replacing them triggers re-renders.
-    controller.on("open", () => {
-      reactiveStore.visible = true;
-      reactiveStore.search = "";
-      reactiveStore.activeIndex = 0;
-    });
+    const syncFromController = (): void => {
+      reactiveStore.revision++;
+    };
 
-    controller.on("close", () => {
-      reactiveStore.visible = false;
-      reactiveStore.search = "";
-      reactiveStore.activeIndex = 0;
-    });
+    controller.on("open", syncFromController);
+    controller.on("close", syncFromController);
+    controller.on("change", syncFromController);
 
     Alpine.magic(COMMAND_STORE_KEY, () => reactiveStore);
 

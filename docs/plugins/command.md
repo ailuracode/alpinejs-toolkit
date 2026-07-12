@@ -5,24 +5,30 @@ description: "Package: @ailuracode/alpine-command"
 
 Package: `@ailuracode/alpine-command`
 
-Headless command palette (Spotlight-style) store — searchable actions, groups, keyboard navigation, shortcuts, and disabled items.
+Headless command palette (Spotlight-style) store — searchable actions, groups, keyboard navigation, nested pages, async execution, aliases, and ARIA helpers.
 
 ## Install
 
 ```bash
-npm install @ailuracode/alpine-command alpinejs
+pnpm add @ailuracode/alpine-command alpinejs
 ```
 
 ## Setup
 
 ```js
 import Alpine from "alpinejs";
-import command from "@ailuracode/alpine-command";
+import { commandPlugin } from "@ailuracode/alpine-command";
 
 Alpine.plugin(
-  command({
+  commandPlugin({
+    searchStrategy: "substring",
     onRun(item) {
       console.log("Ran", item.id);
+    },
+    persistence: {
+      maxRecent: 8,
+      getRecent: () => JSON.parse(localStorage.getItem("recent-commands") ?? "[]"),
+      setRecent: (ids) => localStorage.setItem("recent-commands", JSON.stringify(ids)),
     },
   })
 );
@@ -37,10 +43,13 @@ Alpine.start();
 | `isOpen` | Whether the palette is open |
 | `search` | Reactive filter string |
 | `activeIndex` | Keyboard-highlighted row |
-| `filteredItems` | Items matching `search` |
+| `filteredItems` / `visibleItems` | Visible commands for the current page |
 | `groupedItems` | Filtered items grouped by `group` |
-| `register(item)` | Register an action |
-| `run(id)` | Execute an action |
+| `register(item)` | Register an action; returns `unregister()` |
+| `run(id)` / `cancelRun()` | Execute or cancel in-flight async work |
+| `pushPage(page)` / `goBack()` | Nested command pages |
+| `executionState` / `runningId` | Async execution state |
+| `inputProps()` / `listboxProps()` / `optionProps(id)` | Headless ARIA props |
 | `handleKeydown(event)` | Typing, Backspace, Arrow/Home/End/Enter/Escape |
 
 ### Command item
@@ -52,23 +61,49 @@ Alpine.start();
   group?: "Appearance",
   shortcut?: "⌘K",
   keywords?: ["dark", "light"],
-  disabled?: false,
+  aliases?: ["spotlight"],
+  disabled?: false | (() => boolean),
+  hidden?: false | (() => boolean),
+  enabled?: true | (() => boolean),
+  pinned?: false,
+  page?: "root",
+  load?: async () => {},
   action: () => {},
 }
 ```
 
+### Search
+
+- Default strategy: substring ranking on label, aliases, keywords, group, and shortcut
+- `searchStrategy: "fuzzy"` enables lightweight fuzzy matching
+- `rank(item, search)` replaces the deprecated `filter(item, search)` boolean API
+
+Disabled commands remain visible unless `hidden` is true. Keyboard navigation and `run()` skip disabled or loading commands.
+
 ## Integration
 
-- **Dialog** — render the palette inside a dialog panel and open via `$store.dialog` + `$store.command.open()` in demos
-- **Toast** — call `$toast()` inside `action` or `onRun` for feedback (optional peer)
+- **Overlay** — optional `overlayId` documents a palette layer id for `$store.overlay.zIndexOf(overlayId, layer)`
+- **Keyboard** — global open shortcuts remain consumer-owned; compose with `@ailuracode/alpine-keyboard` when needed
+- **Dialog / Toast** — render the palette in a dialog panel or call `$toast()` from `action` / `onRun`
 
-Neither dialog nor toast is a required dependency.
+Neither overlay, keyboard, dialog, nor toast is required.
 
 ## SSR
 
-Register commands on the client. Global shortcut listeners are consumer-owned.
+Register commands on the client. The controller does not touch browser globals during import or construction.
 
-## Limitations
+## Standalone usage
 
-- Built-in filter is substring match on label/group/shortcut/keywords
-- No built-in modal markup — pair with `@ailuracode/alpine-dialog` when needed
+```ts
+import { createCommandController } from "@ailuracode/alpine-command";
+
+const command = createCommandController();
+command.register({ id: "save", label: "Save", action: () => {} });
+command.open();
+```
+
+## Migration notes
+
+- `register()` now returns an unregister callback; `unregister(id)` remains available
+- `filter` is deprecated in favor of `rank` or `searchStrategy`
+- `filteredItems` now includes disabled commands; use `itemState(id)?.disabled` or `visibleItems` for runtime state

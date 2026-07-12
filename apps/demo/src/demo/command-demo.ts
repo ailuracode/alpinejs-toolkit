@@ -1,13 +1,5 @@
 /**
  * Alpine.data factory for the command palette demo.
- *
- * Lives in a `.ts` file (not inline `x-data="..."` in the
- * `.astro` template) because multi-line JS expressions inside
- * `x-data` confuse the TypeScript/JSX parser in `.astro` —
- * the `>` that closes the `<div>` is mistaken for a tag end.
- * The fix here matches `registerToggleDemos`, `registerQueryDemos`,
- * etc.: register the component via `Alpine.data()` and reference
- * it by name (`commandDemo`) from the template.
  */
 import type { AlpineInstance } from "../types/alpine.js";
 
@@ -18,12 +10,20 @@ type CommandStore = {
     group: string;
     shortcut?: string;
     keywords?: string[];
+    aliases?: string[];
     disabled?: boolean;
+    page?: string;
     action: () => void;
-  }): void;
+  }): () => void;
+  pushPage(page: { id: string; title: string; load?: () => Promise<void> }): Promise<void>;
   toggle(): void;
   isOpen: boolean;
+  currentPageId: string;
   handleKeydown(event: KeyboardEvent): void;
+  inputProps(): Record<string, string | boolean | undefined>;
+  listboxProps(): Record<string, string | boolean | undefined>;
+  optionProps(id: string): Record<string, string | number | boolean | undefined>;
+  itemState(id: string): { disabled: boolean; loading: boolean } | null;
 };
 
 type ToastStore = {
@@ -46,6 +46,7 @@ export function registerCommandDemo(Alpine: AlpineInstance): void {
           label: "Toggle theme",
           group: "Appearance",
           shortcut: "⌘K",
+          aliases: ["spotlight"],
           action: () => (Alpine.store("theme") as { toggle(): void }).toggle(),
         });
         command.register({
@@ -60,11 +61,30 @@ export function registerCommandDemo(Alpine: AlpineInstance): void {
             }),
         });
         command.register({
+          id: "open-settings-page",
+          label: "Open settings page",
+          group: "Navigation",
+          action: () => {
+            void command.pushPage({
+              id: "settings",
+              title: "Settings",
+              load: async () => {
+                command.register({
+                  id: "settings-theme",
+                  label: "Theme settings",
+                  group: "Settings",
+                  page: "settings",
+                  action: () => (Alpine.store("theme") as { toggle(): void }).toggle(),
+                });
+              },
+            });
+          },
+        });
+        command.register({
           id: "disabled-demo",
           label: "Disabled action",
           group: "Actions",
           disabled: true,
-          // No-op action — disabled in the registry so it never runs.
           action: () => undefined,
         });
       },

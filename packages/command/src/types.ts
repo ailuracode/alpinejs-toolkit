@@ -1,8 +1,5 @@
 /**
  * Public type contracts for `@ailuracode/alpine-command`.
- *
- * Every public type lives in a `types.ts` module so consumers can import
- * them without pulling the implementation. The shape IS the contract.
  */
 
 import type { Alpine, PluginCallback } from "@ailuracode/alpine-core";
@@ -11,23 +8,104 @@ import type { Alpine as AlpineBase } from "alpinejs";
 /** Action callback invoked when a command is executed. */
 export type CommandAction = () => void | Promise<void>;
 
-/** A registered command item. */
-export type CommandItem = {
-  id: string;
-  label: string;
-  group?: string;
-  shortcut?: string;
-  keywords?: string[];
-  disabled?: boolean;
-  action: CommandAction;
+/** Static or reactive predicate for command state. */
+export type CommandPredicate = boolean | (() => boolean);
+
+/** Async loader for lazy command registration. */
+export type CommandLoader = () => void | Promise<void>;
+
+/** Search ranking strategy. */
+export type CommandSearchStrategy = "substring" | "fuzzy";
+
+/** Rank function — higher scores surface earlier; `null` excludes the item. */
+export type CommandRankFn = (item: CommandItem, search: string) => number | null;
+
+/**
+ * @deprecated Use {@link CommandRankFn} via `rank` or `searchStrategy` instead.
+ * Legacy boolean filter kept for backward compatibility.
+ */
+export type CommandFilterFn = (item: CommandItem, search: string) => boolean;
+
+/** Optional recent/pinned persistence hooks. */
+export type CommandPersistence = {
+  readonly maxRecent?: number;
+  readonly getRecent?: () => readonly string[] | Promise<readonly string[]>;
+  readonly setRecent?: (ids: readonly string[]) => void | Promise<void>;
+  readonly getPinned?: () => readonly string[] | Promise<readonly string[]>;
+  readonly setPinned?: (ids: readonly string[]) => void | Promise<void>;
 };
 
-/** Config callbacks for the command palette. */
+/** Nested command page metadata. */
+export type CommandPage = {
+  readonly id: string;
+  readonly title: string;
+  readonly parentId?: string;
+  readonly load?: CommandLoader;
+};
+
+/** A registered command item. */
+export type CommandItem = {
+  readonly id: string;
+  readonly label: string;
+  readonly group?: string;
+  readonly shortcut?: string;
+  readonly keywords?: string[];
+  readonly aliases?: string[];
+  readonly disabled?: CommandPredicate;
+  readonly hidden?: CommandPredicate;
+  readonly enabled?: CommandPredicate;
+  readonly pinned?: boolean;
+  readonly page?: string;
+  readonly load?: CommandLoader;
+  readonly action: CommandAction;
+};
+
+/** Resolved runtime state for a visible command row. */
+export type CommandItemState = {
+  readonly id: string;
+  readonly item: CommandItem;
+  readonly disabled: boolean;
+  readonly hidden: boolean;
+  readonly loading: boolean;
+  readonly pinned: boolean;
+  readonly recent: boolean;
+  readonly rank: number;
+  readonly selectable: boolean;
+};
+
+/** Explicit async lifecycle state for the palette. */
+export type CommandExecutionState = "idle" | "loading" | "running";
+
+/** Config callbacks and behavior for the command palette. */
 export type CommandStoreConfig = {
-  onOpen?: () => void;
-  onClose?: () => void;
-  onRun?: (item: CommandItem) => void;
-  filter?: (item: CommandItem, search: string) => boolean;
+  readonly onOpen?: () => void;
+  readonly onClose?: () => void;
+  readonly onRun?: (item: CommandItem) => void;
+  /** @deprecated Use `rank` or `searchStrategy` instead. */
+  readonly filter?: CommandFilterFn;
+  readonly rank?: CommandRankFn;
+  readonly searchStrategy?: CommandSearchStrategy;
+  readonly persistence?: CommandPersistence;
+  readonly overlayId?: string;
+  readonly editableSelector?: string;
+  readonly idPrefix?: string;
+  readonly closeOnRun?: boolean;
+};
+
+/** Normalized options used internally by the controller. */
+export type NormalizedCommandOptions = {
+  readonly id?: string;
+  readonly onOpen?: () => void;
+  readonly onClose?: () => void;
+  readonly onRun?: (item: CommandItem) => void;
+  readonly rank: CommandRankFn;
+  readonly searchStrategy: CommandSearchStrategy;
+  readonly persistence: Required<Pick<CommandPersistence, "maxRecent">> &
+    Omit<CommandPersistence, "maxRecent">;
+  readonly overlayId?: string;
+  readonly editableSelector: string;
+  readonly idPrefix: string;
+  readonly closeOnRun: boolean;
 };
 
 /** Options accepted by the command plugin factory. */
@@ -39,19 +117,34 @@ export interface CommandPluginOptions extends CommandStoreConfig {
 export interface CommandStore {
   search: string;
   activeIndex: number;
-  /** Whether the palette is visible. */
   visible: boolean;
-  /** Registered command items. */
   items: Record<string, CommandItem>;
   readonly isOpen: boolean;
+  readonly executionState: CommandExecutionState;
+  readonly runningId: string | null;
+  readonly currentPageId: string;
+  readonly pageStack: readonly string[];
+  readonly pages: Readonly<Record<string, CommandPage>>;
+  readonly loadingIds: readonly string[];
+  readonly pinnedIds: readonly string[];
+  readonly recentIds: readonly string[];
   open(): void;
   close(): void;
   toggle(): void;
-  register(item: CommandItem): void;
+  register(item: CommandItem): () => void;
   unregister(id: string): void;
   run(id: string): Promise<void>;
+  cancelRun(): void;
   handleKeydown(event: KeyboardEvent): void;
+  pushPage(page: CommandPage): Promise<void>;
+  popPage(): void;
+  goBack(): void;
+  itemState(id: string): CommandItemState | null;
+  inputProps(): Record<string, string | boolean | undefined>;
+  listboxProps(): Record<string, string | boolean | undefined>;
+  optionProps(id: string): Record<string, string | number | boolean | undefined>;
   readonly filteredItems: CommandItem[];
+  readonly visibleItems: readonly CommandItemState[];
   readonly groupedItems: Record<string, CommandItem[]>;
   destroy(): void;
 }

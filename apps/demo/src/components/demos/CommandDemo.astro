@@ -11,7 +11,8 @@ const plugin = getPluginNavItem("command")!;
 		<div>
 			<h3 class="text-sm font-medium mb-2">Command palette</h3>
 			<p class="text-xs text-muted-foreground mb-3">
-				Open: <strong x-text="$store.command.isOpen"></strong> · Press
+				Open: <strong x-text="$store.command.isOpen"></strong> · Page:
+				<strong x-text="$store.command.currentPageId"></strong> · Press
 				<kbd class="px-1 rounded border">⌘K</kbd> or use the button
 			</p>
 			<DemoButton @click="$store.command.open()">Open command palette</DemoButton>
@@ -39,21 +40,27 @@ const plugin = getPluginNavItem("command")!;
 						placeholder="Search commands…"
 						x-model="$store.command.search"
 						aria-label="Search commands"
+						x-bind="$store.command.inputProps()"
 					/>
-					<ul class="max-h-64 overflow-auto p-2">
-						<template x-for="(item, index) in $store.command.filteredItems" :key="item.id">
+					<ul class="max-h-64 overflow-auto p-2" x-bind="$store.command.listboxProps()">
+						<template x-for="(entry, index) in $store.command.visibleItems" :key="entry.id">
 							<li>
 								<button
 									type="button"
 									class="flex w-full items-center justify-between rounded-md px-3 py-2 text-left text-sm"
-									:class="index === $store.command.activeIndex ? 'bg-accent' : 'hover:bg-accent/60'"
-									@click="$store.command.run(item.id)"
+									:class="[
+										index === $store.command.activeIndex ? 'bg-accent' : 'hover:bg-accent/60',
+										entry.disabled ? 'opacity-50 cursor-not-allowed' : '',
+									]"
+									:disabled="entry.disabled || entry.loading"
+									x-bind="$store.command.optionProps(entry.id)"
+									@click="!entry.disabled && $store.command.run(entry.id)"
 								>
 									<span>
-										<span x-text="item.label"></span>
-										<span class="text-xs text-muted-foreground ml-2" x-text="item.group"></span>
+										<span x-text="entry.item.label"></span>
+										<span class="text-xs text-muted-foreground ml-2" x-text="entry.item.group"></span>
 									</span>
-									<span class="text-xs text-muted-foreground" x-text="item.shortcut"></span>
+									<span class="text-xs text-muted-foreground" x-text="entry.item.shortcut"></span>
 								</button>
 							</li>
 						</template>
@@ -66,8 +73,8 @@ const plugin = getPluginNavItem("command")!;
 			<h3 class="text-sm font-medium mb-2">Integration</h3>
 			<ul class="text-xs text-muted-foreground list-disc pl-5 space-y-1">
 				<li>Actions can call <code>$toast</code>, <code>$store.theme</code>, or any app logic</li>
-				<li>Pair with <code>@ailuracode/alpine-dialog</code> for modal command UIs</li>
-				<li><code>filteredItems</code> and <code>groupedItems</code> update reactively from <code>search</code></li>
+				<li>Nested pages load child commands via <code>pushPage()</code></li>
+				<li><code>visibleItems</code>, ARIA props, and disabled rows stay headless for your markup</li>
 			</ul>
 		</div>
 	</div>

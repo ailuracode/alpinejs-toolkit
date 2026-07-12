@@ -1,6 +1,6 @@
 # @ailuracode/alpine-command
 
-Headless command palette store for Alpine.js — searchable actions, keyboard navigation, groups, and shortcuts. Compose optionally with dialog and toast plugins.
+Headless command palette store for Alpine.js — searchable actions, keyboard navigation, nested pages, async execution, groups, aliases, and ARIA helpers. Compose optionally with overlay and keyboard plugins.
 
 **[Full documentation →](../../docs/plugins/command.md)**
 
@@ -15,12 +15,24 @@ pnpm add @ailuracode/alpine-command alpinejs
 ```ts
 $store.command.open();
 $store.command.search = "theme";
-$store.command.register({
+const unregister = $store.command.register({
   id: "toggle-theme",
   label: "Toggle theme",
   group: "Appearance",
   shortcut: "⌘K",
+  aliases: ["spotlight"],
   action: () => {},
 });
 $store.command.run("toggle-theme");
+unregister();
 ```
+
+## Highlights
+
+- Configurable search ranking (`substring`, `fuzzy`, or custom `rank`)
+- Dynamic `hidden`, `disabled`, and `enabled` predicates
+- Disabled commands stay visible but are skipped by keyboard execution
+- Nested pages via `pushPage()` / `goBack()`
+- Async item/page loading and race-safe `run()` / `cancelRun()`
+- Optional recent/pinned persistence hooks
+- Headless combobox/listbox ARIA props via `inputProps()`, `listboxProps()`, and `optionProps()`

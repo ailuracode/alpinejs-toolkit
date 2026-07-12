@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { startAlpine } from "../../../test/helpers.js";
 import commandPlugin, { createCommandStore } from "../src/index.js";
 
-describe("@ailuracode/alpine-command", () => {
+describe("@ailuracode/alpine-command integration", () => {
   let store: ReturnType<typeof createCommandStore>;
 
   beforeEach(() => {
@@ -50,10 +50,10 @@ describe("@ailuracode/alpine-command", () => {
     store.activeIndex = store.filteredItems.findIndex((item) => item.id === "save");
 
     store.handleKeydown(new KeyboardEvent("keydown", { key: "Enter" }));
-    await Promise.resolve();
-
+    await vi.waitFor(() => {
+      expect(store.isOpen).toBe(false);
+    });
     expect(action).toHaveBeenCalledOnce();
-    expect(store.isOpen).toBe(false);
   });
 
   it("navigates with arrow keys", () => {
