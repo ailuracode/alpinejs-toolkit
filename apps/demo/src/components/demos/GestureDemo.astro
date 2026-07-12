@@ -14,14 +14,14 @@ const plugin = getPluginNavItem("gesture")!;
 				lastGesture: 'none',
 				panX: 0,
 				panY: 0,
-				handleTap(e) { this.lastGesture = 'tap' },
-				handleDoubleTap(e) { this.lastGesture = 'doubletap' },
-				handleLongPress(e) { this.lastGesture = 'longpress' },
-				handleSwipe(e) { this.lastGesture = 'swipe ' + e.detail.direction },
-				handlePan(e) {
-					if (e.detail.phase === 'start') { this.lastGesture = 'pan start'; this.panX = 0; this.panY = 0 }
-					if (e.detail.phase === 'move') { this.panX = e.detail.distanceX; this.panY = e.detail.distanceY; this.lastGesture = 'pan move' }
-					if (e.detail.phase === 'end') { this.lastGesture = 'pan end' }
+				handleTap(d) { this.lastGesture = 'tap' },
+				handleDoubleTap(d) { this.lastGesture = 'doubletap' },
+				handleLongPress(d) { this.lastGesture = 'longpress' },
+				handleSwipe(d) { this.lastGesture = 'swipe ' + d.direction },
+				handlePan(d) {
+					if (d.phase === 'start') { this.lastGesture = 'pan start'; this.panX = 0; this.panY = 0 }
+					if (d.phase === 'move') { this.panX = d.distanceX; this.panY = d.distanceY; this.lastGesture = 'pan move' }
+					if (d.phase === 'end') { this.lastGesture = 'pan end' }
 				}
 			}"
 			class="rounded-lg border bg-card p-6"
@@ -45,7 +45,7 @@ const plugin = getPluginNavItem("gesture")!;
 					class={cn(badgeVariants({ variant: "outline" }))}
 					x-text="lastGesture"
 				></span>
-				<template x-if="lastGesture.startsWith('pan move')">
+				<template x-if="lastGesture === 'pan move'">
 					<span class="text-xs text-muted-foreground">
 						dx=<span x-text="panX"></span> dy=<span x-text="panY"></span>
 					</span>
