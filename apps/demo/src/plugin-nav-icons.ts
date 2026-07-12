@@ -11,6 +11,7 @@ import Globe from "@lucide/astro/icons/globe";
 import Languages from "@lucide/astro/icons/languages";
 import LayoutDashboard from "@lucide/astro/icons/layout-dashboard";
 import LayoutPanelTop from "@lucide/astro/icons/layout-panel-top";
+import List from "@lucide/astro/icons/list";
 import ListCollapse from "@lucide/astro/icons/list-collapse";
 import MapPin from "@lucide/astro/icons/map-pin";
 import Menu from "@lucide/astro/icons/menu";
@@ -55,6 +56,7 @@ const PLUGIN_NAV_ICONS: Record<string, PluginNavIcon> = {
   accordion: ListCollapse,
   command: Command,
   carousel: GalleryHorizontal,
+  virtual: List,
 };
 
 export function getPluginNavIcon(id: string): PluginNavIcon {

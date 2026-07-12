@@ -24,6 +24,7 @@ import toast, { toastPositions, toastVariants } from "@ailuracode/alpine-toast";
 import toggle from "@ailuracode/alpine-toggle";
 import tooltip from "@ailuracode/alpine-tooltip";
 import transfer from "@ailuracode/alpine-transfer";
+import virtual from "@ailuracode/alpine-virtual";
 import anchor from "@alpinejs/anchor";
 import collapse from "@alpinejs/collapse";
 import morph from "@alpinejs/morph";
@@ -85,6 +86,7 @@ export async function startAlpineDemo(): Promise<void> {
     accordion(),
     command(),
     carousel(),
+    virtual(),
     calendar,
     attention,
     geo(),
