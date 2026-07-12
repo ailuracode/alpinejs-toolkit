@@ -105,11 +105,13 @@ function registerKeyboard(
 }
 
 /** Alpine.js keyboard plugin. Registers `$store.keyboard` and `$keyboard`. */
-export function keyboardPlugin(options: KeyboardPluginOptions): (Alpine: AlpineType.Alpine) => KeyboardController;
+export function keyboardPlugin(
+  options: KeyboardPluginOptions
+): (Alpine: AlpineType.Alpine) => KeyboardController;
 export function keyboardPlugin(Alpine: AlpineType.Alpine): void;
 export function keyboardPlugin(
   optionsOrAlpine?: KeyboardPluginOptions | AlpineType.Alpine
-): void | ((Alpine: AlpineType.Alpine) => KeyboardController) {
+): undefined | ((Alpine: AlpineType.Alpine) => KeyboardController) {
   if (optionsOrAlpine && typeof (optionsOrAlpine as AlpineType.Alpine).magic === "function") {
     registerKeyboard(optionsOrAlpine as KeyboardAlpine, {});
     return;
