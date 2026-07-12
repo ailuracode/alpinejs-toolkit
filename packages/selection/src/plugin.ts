@@ -24,6 +24,7 @@ export function selectionPlugin(options: CreateSelectionOptions = {}): Selection
     };
 
     controller.on("change", syncReactiveInstances);
+    syncReactiveInstances();
 
     Alpine.magic(SELECTION_STORE_KEY, () => reactiveStore);
 

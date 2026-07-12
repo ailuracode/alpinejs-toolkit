@@ -3,56 +3,10 @@ import { getPluginNavItem } from "../../plugin-nav";
 import DemoSection from "../DemoSection.astro";
 
 const plugin = getPluginNavItem("selection")!;
-const itemClass = "cursor-pointer rounded-md border px-3 py-2 text-sm";
 ---
 
 <DemoSection id={plugin.id} title={plugin.title} api={plugin.api} description={plugin.description}>
-	<div
-		class="grid min-w-0 gap-8"
-		x-data="{
-			items: ['Alpha', 'Bravo', 'Charlie', 'Delta', 'Echo'],
-			disabled: ['Charlie'],
-			mode: 'multiple',
-			selectedLabel() {
-				const snap = $store.selection.instances.demo;
-				if (!snap) return '—';
-				return snap.selectedKeys.join(', ') || 'none';
-			},
-			itemClass(key) {
-				const snap = $store.selection.instances.demo;
-				const base = '${itemClass}';
-				if (!snap) return base;
-				const selected = snap.selectedKeys.includes(key);
-				const active = snap.activeKey === key;
-				const selectable = !snap.disabledKeys.includes(key);
-				return [
-					base,
-					selected ? 'border-primary bg-primary/10' : 'border-border',
-					active ? 'ring-2 ring-primary/40' : '',
-					!selectable ? 'opacity-50 cursor-not-allowed' : '',
-				].join(' ');
-			},
-			onClick(event, key) {
-				const snap = $store.selection.instances.demo;
-				if (!snap || snap.disabledKeys.includes(key)) return;
-				$store.selection.setActive('demo', key);
-				if (event.shiftKey) {
-					$store.selection.extend('demo', key);
-					return;
-				}
-				if (event.metaKey || event.ctrlKey) {
-					$store.selection.toggle('demo', key);
-					return;
-				}
-				$store.selection.replace('demo', key);
-			},
-			setMode(next) {
-				this.mode = next;
-				$store.selection.setMode('demo', next);
-			},
-		}"
-		x-init="$store.selection.create('demo', { mode, keys: items, disabledKeys: disabled })"
-	>
+	<div class="grid min-w-0 gap-8" x-data="selectionDemo">
 		<div class="flex flex-wrap items-center gap-2 text-xs">
 			<span class="text-muted-foreground">Mode</span>
 			<button type="button" class="rounded-md border px-2 py-1" @click="setMode('single')">Single</button>
@@ -65,7 +19,10 @@ const itemClass = "cursor-pointer rounded-md border px-3 py-2 text-sm";
 		<p class="text-xs text-muted-foreground">
 			Click to replace, Ctrl/Cmd+click to toggle, Shift+click to extend. Charlie is disabled.
 		</p>
-		<p class="text-xs font-mono" x-text="`Selected: ${selectedLabel()}`"></p>
+		<p
+			class="text-xs font-mono"
+			x-text="`Selected: ${$store.selection.instances.demo?.selectedKeys.join(', ') || 'none'}`"
+		></p>
 		<p class="text-xs text-muted-foreground" x-show="$store.selection.instances.demo">
 			Mode:
 			<span class="font-mono" x-text="$store.selection.instances.demo?.mode"></span>
@@ -75,12 +32,16 @@ const itemClass = "cursor-pointer rounded-md border px-3 py-2 text-sm";
 
 		<ul class="grid gap-2 sm:grid-cols-2" x-bind="$store.selection.listProps('demo', { label: 'Selection demo' })">
 			<template x-for="item in items" :key="item">
-				<li
-					x-bind="$store.selection.itemProps('demo', item)"
-					:class="itemClass(item)"
-					@click="onClick($event, item)"
-					x-text="item"
-				></li>
+				<li role="presentation">
+					<button
+						type="button"
+						x-bind="$store.selection.itemProps('demo', item)"
+						:class="itemClass(item)"
+						:disabled="$store.selection.instances.demo?.disabledKeys.includes(item)"
+						@click="pick($event, item)"
+						x-text="item"
+					></button>
+				</li>
 			</template>
 		</ul>
 	</div>

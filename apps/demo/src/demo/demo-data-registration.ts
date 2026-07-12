@@ -5,6 +5,7 @@ import { registerCommandDemo } from "./command-demo.js";
 import { registerDemoShell, registerToastDemoHandlers } from "./demo-shell.js";
 import { registerJsonApiDemo } from "./json-api-demo.js";
 import { registerQueryAdvancedDemo, registerQueryDemos } from "./query-demos.js";
+import { registerSelectionDemo } from "./selection-demo.js";
 import { registerToastSonner } from "./sonner-demo.js";
 import { registerToggleDemos } from "./toggle-demos.js";
 
@@ -16,6 +17,7 @@ export function registerDemoDataModules(Alpine: AlpineInstance): void {
   registerToggleDemos(Alpine);
   registerCalendarDemo(Alpine);
   registerCommandDemo(Alpine);
+  registerSelectionDemo(Alpine);
   registerDemoShell(Alpine);
   registerToastDemoHandlers(Alpine);
   registerToastSonner(Alpine);
