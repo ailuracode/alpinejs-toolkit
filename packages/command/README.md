@@ -35,4 +35,4 @@ unregister();
 - Nested pages via `pushPage()` / `goBack()`
 - Async item/page loading and race-safe `run()` / `cancelRun()`
 - Optional recent/pinned persistence hooks
-- Headless combobox/listbox ARIA props via `inputProps()`, `listboxProps()`, and `optionProps()`
+- Optional scroll lock via `@ailuracode/alpine-scroll` while the palette is open
