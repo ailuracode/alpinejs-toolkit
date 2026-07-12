@@ -27,6 +27,7 @@
       "@ailuracode/alpine-transfer": ["./packages/transfer/src/index.ts"],
       "@ailuracode/alpine-toast": ["./packages/toast/src/index.ts"],
       "@ailuracode/alpine-json-api": ["./packages/json-api/src/index.ts"],
+      "@ailuracode/alpine-keyboard": ["./packages/keyboard/src/index.ts"],
       "@ailuracode/alpine-notify": ["./packages/notify/src/index.ts"],
       "@ailuracode/alpine-overlay": ["./packages/overlay/src/index.ts"],
       "@ailuracode/alpine-permissions": ["./packages/permissions/src/index.ts"],

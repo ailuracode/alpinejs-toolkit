@@ -8,6 +8,7 @@ import dialog from "@ailuracode/alpine-dialog";
 import env from "@ailuracode/alpine-env";
 import geo, { createGeoPermissionAdapter } from "@ailuracode/alpine-geo";
 import jsonApi from "@ailuracode/alpine-json-api";
+import keyboard from "@ailuracode/alpine-keyboard";
 import lang from "@ailuracode/alpine-lang";
 import media from "@ailuracode/alpine-media";
 import menu from "@ailuracode/alpine-menu";
@@ -66,6 +67,9 @@ export async function startAlpineDemo(): Promise<void> {
         createGeoPermissionAdapter(),
         createIdlePermissionAdapter(),
       ],
+    }),
+    keyboard({
+      pauseWhileScopesActive: ["modal"],
     }),
     toast({
       variants: toastDemoVariants,
