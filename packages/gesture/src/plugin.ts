@@ -32,12 +32,16 @@ type DirectiveArg = {
   expression: string;
   modifiers: string[];
 };
-type DirectiveCleanup = { cleanup: (cb: () => void) => void };
+type DirectiveUtilities = {
+  cleanup: (cb: () => void) => void;
+  effect: (cb: () => void) => void;
+  evaluateLater: (expression: string) => (receiver?: () => void, extras?: { scope?: Record<string, unknown>; params?: unknown[] }) => void;
+};
 
 function createDirectiveHandler(
   pluginOptions: GestureOptions
-): (el: Element, arg: DirectiveArg, cleanup: DirectiveCleanup) => void {
-  return (el, { expression, modifiers }, { cleanup }) => {
+): (el: Element, arg: DirectiveArg, utilities: DirectiveUtilities) => void {
+  return (el, { expression, modifiers }, { cleanup, evaluateLater }) => {
     const kind = modifiers[0] as GestureKind | undefined;
     if (!kind) {
       return;
@@ -50,18 +54,13 @@ function createDirectiveHandler(
     });
     ctrl.mount();
 
+    const evaluateGesture = evaluateLater(expression);
+
     const unsub = ctrl.on(
       "gesture" as never,
       ((detail: { kind: GestureKind }) => {
         if (detail.kind === kind) {
-          const data = (el as HTMLElement & { _x_dataStack?: Record<string, unknown>[] })
-            ._x_dataStack;
-          if (data && data.length > 0) {
-            const scope = data[0];
-            if (typeof scope[expression] === "function") {
-              scope[expression](detail);
-            }
-          }
+          evaluateGesture(() => {}, { scope: { $event: detail }, params: [detail] });
         }
         el.dispatchEvent(new CustomEvent(kind, { bubbles: true, detail }));
       }) as never

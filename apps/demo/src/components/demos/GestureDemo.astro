@@ -17,11 +17,17 @@ const plugin = getPluginNavItem("gesture")!;
 				handleTap(d) { this.lastGesture = 'tap' },
 				handleDoubleTap(d) { this.lastGesture = 'doubletap' },
 				handleLongPress(d) { this.lastGesture = 'longpress' },
-				handleSwipe(d) { this.lastGesture = 'swipe ' + d.direction },
+				handleSwipe(d) { this.lastGesture = 'swipe ' + (d.state ? d.state.direction : d.direction) },
 				handlePan(d) {
-					if (d.phase === 'start') { this.lastGesture = 'pan start'; this.panX = 0; this.panY = 0 }
-					if (d.phase === 'move') { this.panX = d.distanceX; this.panY = d.distanceY; this.lastGesture = 'pan move' }
-					if (d.phase === 'end') { this.lastGesture = 'pan end' }
+					const s = d.state || d;
+					if (s.active && s.kind === 'pan' && this.lastGesture !== 'pan move') {
+						this.lastGesture = 'pan move';
+					}
+					this.panX = s.distanceX || 0;
+					this.panY = s.distanceY || 0;
+					if (!s.active && this.lastGesture.startsWith('pan')) {
+						this.lastGesture = 'pan end';
+					}
 				}
 			}"
 			class="rounded-lg border bg-card p-6"
