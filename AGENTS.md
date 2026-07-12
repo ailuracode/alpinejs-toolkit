@@ -154,43 +154,12 @@ Do not couple `QueryCache` directly to Nanostores, Zustand, or Alpine.reactive â
 
 - Add more demo apps or Vite entry points unless requested
 - Publish the private root package
-- Introduce `@airluracode` typo (correct: `@ailuracode`)
 - Couple plugins to a specific CSS framework
 - Skip tests for plugin logic changes
 - Ship a new plugin without adding it to the Astro demo app
 - Manually edit version numbers for releases (use Changesets)
 - Run commands not explicitly requested (e.g. `git log` when only `git push` was asked)
 
-## Cursor configuration
-
-Project rules and skills follow the [Cursor](https://cursor.com) layout. This repo also follows the portable [AGENTS.md](https://agents.md) format for cross-agent compatibility.
-
-### Rules (`.cursor/rules/`)
-
-Rules are `.mdc` files with YAML frontmatter (`description`, `globs`, `alwaysApply`):
-
-| Rule file | Scope | Key content |
-|-----------|-------|-------------|
-| `git-commit-message.mdc` | Always | PR descriptions, commit messages, Linear conventions |
-| `branches.mdc` | Always | Branch naming convention for issue-driven work |
-| `testing.mdc` | Test files | Harness selection, layer split, contract tests, common mistakes |
-| `new-package.mdc` | Always | Package layout, plugin shape, public API, headless UI, CSS policy, errors, demo wiring |
-| `formatting.mdc` | Always | Biome rules, TypeScript strict, SSR safety, prohibited/preferred patterns |
-| `architecture.mdc` | Always | Import rules, structure, invariants, anti-patterns, reference packages |
-| `alpine-integration.mdc` | Always | Store/directive registration, SSR safety, type augmentation |
-| `mcp.mdc` | Always | Linear MCP usage |
-| `bundle-budget.mdc` | Package JSON, vitest config | Size thresholds, enforcement, breaking rules |
-| `coverage-thresholds.mdc` | Test files | 80% thresholds, per-package expectations |
-| `tooling.mdc` | Package JSON, changeset | Version rules, changesets, CI checks |
-| `tooling-configs.mdc` | Always | Config file locations, per-package files, CI files |
-| `deprecation-policy.mdc` | Source files | Deprecation types, semver rules, migration pattern |
-| `secrets-security.mdc` | Always | Hard rules, .gitignore, token handling |
-| `i18n-messages.mdc` | Docs, demo, README | Message keys, locale files, multi-language docs |
-| `devtools-tooling.mdc` | Query devtools source | Scoped styling exception for `@ailuracode/alpine-query-kit/devtools` |
-
-### Skills (`.cursor/skills/`)
-
-Project skills live in `.cursor/skills/<name>/SKILL.md`. Each skill has YAML frontmatter (`name`, `description`) and is loaded on demand for specialized workflows (scaffolding packages, changesets, Vitest, Astro, accessibility audits, etc.).
 
 ## References
 
