@@ -9,6 +9,7 @@
  */
 
 import { BaseController } from "@ailuracode/alpine-core";
+import { SelectionController } from "@ailuracode/alpine-selection";
 import type { Day, Locale } from "date-fns";
 import {
   addMonths,
@@ -28,10 +29,14 @@ import {
   isRangeEndpointSelected,
   isSingleSelected,
   normalizeSelection,
-  selectMultipleDate,
-  selectRangeDate,
-  selectSingleDate,
 } from "./internal/selection.js";
+import {
+  calendarSelectionEquals,
+  clearCalendarSelection,
+  ensureCalendarSelection,
+  readCalendarSelection,
+  selectCalendarDate,
+} from "./internal/selection-bridge.js";
 import { isDateDisabledByRules, matchesCalendarMatcher, normalizeMatchers } from "./matchers.js";
 import type {
   CalendarDateRange,
@@ -70,14 +75,19 @@ function resolveConfig(options: CalendarOptions = {}): ResolvedCalendarConfig {
  */
 export class CalendarController extends BaseController<CalendarEvents> {
   readonly #config: ResolvedCalendarConfig;
+  readonly #selection = new SelectionController();
   #month: Date;
-  #selected: CalendarSelection;
 
   constructor(options: CalendarOptions = {}, id?: string) {
     super(id);
     this.#config = resolveConfig(options);
     this.#month = this.#config.month;
-    this.#selected = this.#config.selected;
+    ensureCalendarSelection(
+      this.#selection,
+      this.#config.mode,
+      this.#config.selected,
+      this.#config.context
+    );
   }
 
   // ── Read-only state ──────────────────────────────────────────────
@@ -91,7 +101,7 @@ export class CalendarController extends BaseController<CalendarEvents> {
   }
 
   get selected(): CalendarSelection {
-    return this.#selected;
+    return readCalendarSelection(this.#selection, this.#config.mode, this.#config.context);
   }
 
   get locale(): Locale {
@@ -177,17 +187,16 @@ export class CalendarController extends BaseController<CalendarEvents> {
       return;
     }
 
-    const previous = this.#selected;
+    const previous = this.selected;
+    const next = selectCalendarDate(
+      this.#selection,
+      previous,
+      day,
+      this.#config.mode,
+      this.#config.context
+    );
 
-    if (this.#config.mode === "single") {
-      this.#selected = selectSingleDate(previous, day);
-    } else if (this.#config.mode === "multiple") {
-      this.#selected = selectMultipleDate(previous, day, this.#config.context);
-    } else {
-      this.#selected = selectRangeDate(previous, day, this.#config.context);
-    }
-
-    if (this.#selected !== previous) {
+    if (!calendarSelectionEquals(next, previous, this.#config.mode, this.#config.context)) {
       this.#emitSelect(date);
     }
   }
@@ -197,10 +206,10 @@ export class CalendarController extends BaseController<CalendarEvents> {
       return;
     }
 
-    const previous = this.#selected;
-    this.#selected = this.#config.mode === "multiple" ? [] : null;
+    const previous = this.selected;
+    const next = clearCalendarSelection(this.#selection, this.#config.mode, this.#config.context);
 
-    if (this.#selected !== previous) {
+    if (!calendarSelectionEquals(next, previous, this.#config.mode, this.#config.context)) {
       this.emit("clear", undefined);
     }
   }
@@ -215,14 +224,14 @@ export class CalendarController extends BaseController<CalendarEvents> {
     const day = normalizeDate(date, this.#config.context);
 
     if (this.#config.mode === "single") {
-      return isSingleSelected(this.#selected, day, this.#config.context);
+      return isSingleSelected(this.selected, day, this.#config.context);
     }
 
     if (this.#config.mode === "multiple") {
-      return isMultipleSelected(this.#selected, day, this.#config.context);
+      return isMultipleSelected(this.selected, day, this.#config.context);
     }
 
-    return isRangeEndpointSelected(this.#selected, day, this.#config.context);
+    return isRangeEndpointSelected(this.selected, day, this.#config.context);
   }
 
   isDisabled(date: Date): boolean {
@@ -248,7 +257,7 @@ export class CalendarController extends BaseController<CalendarEvents> {
       return false;
     }
 
-    const range = this.#selected as CalendarDateRange | null;
+    const range = this.selected as CalendarDateRange | null;
 
     if (!(range?.from && range.to)) {
       return false;
@@ -264,12 +273,12 @@ export class CalendarController extends BaseController<CalendarEvents> {
   }
 
   isRangeStart(date: Date): boolean {
-    const range = this.#selected as CalendarDateRange | null;
+    const range = this.selected as CalendarDateRange | null;
     return range?.from ? isSameDay(date, range.from, this.#config.context) : false;
   }
 
   isRangeEnd(date: Date): boolean {
-    const range = this.#selected as CalendarDateRange | null;
+    const range = this.selected as CalendarDateRange | null;
     return range?.to ? isSameDay(date, range.to, this.#config.context) : false;
   }
 
@@ -304,7 +313,7 @@ export class CalendarController extends BaseController<CalendarEvents> {
     const detail: CalendarSelectDetail = {
       date,
       mode: this.#config.mode,
-      selected: this.#selected,
+      selected: this.selected,
     };
     this.emit("select", detail);
   }

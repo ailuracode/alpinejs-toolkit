@@ -236,6 +236,9 @@ importers:
       '@ailuracode/alpine-core':
         specifier: workspace:*
         version: link:../core
+      '@ailuracode/alpine-selection':
+        specifier: workspace:*
+        version: link:../selection
 
   packages/attention:
     dependencies:
@@ -255,9 +258,6 @@ importers:
 
   packages/calendar:
     dependencies:
-      '@ailuracode/alpine-core':
-        specifier: ^0.2.0
-        version: 0.2.0(@types/alpinejs@3.13.11)(alpinejs@3.15.12)
       '@types/alpinejs':
         specifier: ^3.13.11
         version: 3.13.11
@@ -267,6 +267,13 @@ importers:
       date-fns:
         specifier: ^4.1.0
         version: 4.4.0
+    devDependencies:
+      '@ailuracode/alpine-core':
+        specifier: workspace:*
+        version: link:../core
+      '@ailuracode/alpine-selection':
+        specifier: workspace:*
+        version: link:../selection
 
   packages/carousel:
     dependencies:
@@ -324,6 +331,9 @@ importers:
       '@ailuracode/alpine-scroll':
         specifier: workspace:*
         version: link:../scroll
+      '@ailuracode/alpine-selection':
+        specifier: workspace:*
+        version: link:../selection
 
   packages/core:
     dependencies:
@@ -645,6 +655,9 @@ importers:
       '@ailuracode/alpine-core':
         specifier: workspace:*
         version: link:../core
+      '@ailuracode/alpine-selection':
+        specifier: workspace:*
+        version: link:../selection
 
   packages/theme:
     dependencies:
@@ -764,15 +777,6 @@ importers:
         version: link:../core
 
 packages:
-
-  '@ailuracode/alpine-core@0.2.0':
-    resolution: {integrity: sha512-AXuRnTpwrOmI7s5b5KwBiPgG4Lbr7KiRcO+7uxMWQOfdyYRHCVmTR9TCYCKPU5ZWEWPtIsY9mEpUhN9LZblxHA==}
-    peerDependencies:
-      '@types/alpinejs': '*'
-      alpinejs: ^3.0.0
-    peerDependenciesMeta:
-      '@types/alpinejs':
-        optional: true
 
   '@alpinejs/anchor@3.15.12':
     resolution: {integrity: sha512-8G9QGvWo9N+J16dEgbaXYIlxe8lWo25uNHhoAONZSDj1av+1VfIgU9FB4q+h6me0D/+7NqY+dw9OlIAAHQv4wg==}
@@ -5256,12 +5260,6 @@ packages:
     resolution: {integrity: sha512-bXE4cR/kVZhKZX/RjPEflHaKVhUVl85noU3v6b8apfQEc1x4A+zBxjZ4lN8LqGd6WZ3dl98pY4o717VFmoPp+A==}
 
 snapshots:
-
-  '@ailuracode/alpine-core@0.2.0(@types/alpinejs@3.13.11)(alpinejs@3.15.12)':
-    dependencies:
-      alpinejs: 3.15.12
-    optionalDependencies:
-      '@types/alpinejs': 3.13.11
 
   '@alpinejs/anchor@3.15.12':
     dependencies:

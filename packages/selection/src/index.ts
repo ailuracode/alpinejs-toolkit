@@ -7,6 +7,14 @@ export { createControlledAdapter, createUncontrolledAdapter } from "./adapter.js
 export { createSelectionController, SelectionController } from "./controller.js";
 export { SelectionError, type SelectionErrorCode } from "./error.js";
 export type { SelectionChangeDetail, SelectionEvents } from "./events.js";
+export {
+  firstSelectableIndex,
+  firstSelectableKey,
+  lastSelectableIndex,
+  lastSelectableKey,
+  moveSelectableIndex,
+  moveSelectableKey,
+} from "./navigation.js";
 export { selectionOptions, selectionPlugin, selectionPlugin as default } from "./plugin.js";
 export {
   deserializeSelection,

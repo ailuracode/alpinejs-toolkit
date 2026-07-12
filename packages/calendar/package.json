@@ -35,8 +35,13 @@
   "dependencies": {
     "date-fns": "^4.1.0"
   },
+  "devDependencies": {
+    "@ailuracode/alpine-core": "workspace:*",
+    "@ailuracode/alpine-selection": "workspace:*"
+  },
   "peerDependencies": {
     "@ailuracode/alpine-core": "^0.2.0",
+    "@ailuracode/alpine-selection": "^0.1.0",
     "alpinejs": "^3.0.0",
     "@types/alpinejs": "^3.13.11"
   },
@@ -73,7 +78,8 @@
       "ignore": [
         "alpinejs",
         "@types/alpinejs",
-        "@ailuracode/alpine-core"
+        "@ailuracode/alpine-core",
+        "@ailuracode/alpine-selection"
       ],
       "gzip": true,
       "brotli": true,

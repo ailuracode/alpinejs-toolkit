@@ -8,26 +8,30 @@
  */
 
 import { BaseController, generateId, safeWindow } from "@ailuracode/alpine-core";
+import {
+  firstSelectableKey,
+  lastSelectableKey,
+  moveSelectableKey,
+  SelectionController,
+} from "@ailuracode/alpine-selection";
 import type { TabsEvents } from "./events";
-import type { TabItem, TabsGroup, TabsGroupOptions, TabsStore } from "./types";
+import type { TabsGroup, TabsGroupOptions, TabsStore } from "./types";
 
-function enabledTabs(group: TabsGroup): TabItem[] {
-  return group.items.filter((item) => !item.disabled);
-}
-
-function tabIndex(group: TabsGroup, tabId: string): number {
-  return enabledTabs(group).findIndex((item) => item.id === tabId);
-}
-
-function moveTab(group: TabsGroup, delta: number): string | null {
-  const items = enabledTabs(group);
-  if (items.length === 0) {
-    return null;
-  }
-
-  const current = group.activeTabId ? tabIndex(group, group.activeTabId) : 0;
-  const next = (current + delta + items.length) % items.length;
-  return items[next]?.id ?? null;
+function moveTab(
+  group: TabsGroup,
+  delta: number,
+  selection: SelectionController,
+  groupId: string
+): string | null {
+  const keys = group.items.map((item) => item.id);
+  const disabled = group.items.filter((item) => item.disabled).map((item) => item.id);
+  const current =
+    group.activation === "manual"
+      ? selection.getSnapshot(groupId).activeKey
+      : selection.getSnapshot(groupId).value;
+  const currentKey = typeof current === "string" ? current : null;
+  const next = moveSelectableKey(currentKey, delta, keys, disabled);
+  return next === null ? null : String(next);
 }
 
 function readUrlTab(param: string): string | null {
@@ -62,12 +66,15 @@ function createGroup(options: TabsGroupOptions = {}): TabsGroup {
 function focusTab(
   group: TabsGroup,
   tabId: string,
-  select: (group: TabsGroup, tabId: string) => void
+  groupId: string,
+  selection: SelectionController,
+  select: (group: TabsGroup, groupId: string, tabId: string) => void
 ): void {
   if (group.activation === "automatic") {
-    select(group, tabId);
+    select(group, groupId, tabId);
     return;
   }
+  selection.setActive(groupId, tabId);
   group.activeTabId = tabId;
 }
 
@@ -75,12 +82,14 @@ function focusRelativeTab(
   group: TabsGroup,
   delta: number,
   event: KeyboardEvent,
-  select: (group: TabsGroup, tabId: string) => void
+  groupId: string,
+  selection: SelectionController,
+  select: (group: TabsGroup, groupId: string, tabId: string) => void
 ): void {
   event.preventDefault();
-  const tabId = moveTab(group, delta);
+  const tabId = moveTab(group, delta, selection, groupId);
   if (tabId) {
-    focusTab(group, tabId, select);
+    focusTab(group, tabId, groupId, selection, select);
   }
 }
 
@@ -88,46 +97,52 @@ function focusEdgeTab(
   group: TabsGroup,
   edge: "start" | "end",
   event: KeyboardEvent,
-  select: (group: TabsGroup, tabId: string) => void
+  groupId: string,
+  selection: SelectionController,
+  select: (group: TabsGroup, groupId: string, tabId: string) => void
 ): void {
   event.preventDefault();
-  const items = enabledTabs(group);
-  const tabId = edge === "start" ? items[0]?.id : items[items.length - 1]?.id;
-  if (tabId) {
-    focusTab(group, tabId, select);
+  const keys = group.items.map((item) => item.id);
+  const disabled = group.items.filter((item) => item.disabled).map((item) => item.id);
+  const tabId =
+    edge === "start" ? firstSelectableKey(keys, disabled) : lastSelectableKey(keys, disabled);
+  if (tabId !== null) {
+    focusTab(group, String(tabId), groupId, selection, select);
   }
 }
 
 function handleTabsKeydown(
   group: TabsGroup,
   event: KeyboardEvent,
-  select: (group: TabsGroup, tabId: string) => void
+  groupId: string,
+  selection: SelectionController,
+  select: (group: TabsGroup, groupId: string, tabId: string) => void
 ): void {
   const horizontal = group.orientation === "horizontal";
   const vertical = group.orientation === "vertical";
 
   if (event.key === "ArrowRight" && horizontal) {
-    focusRelativeTab(group, 1, event, select);
+    focusRelativeTab(group, 1, event, groupId, selection, select);
     return;
   }
   if (event.key === "ArrowLeft" && horizontal) {
-    focusRelativeTab(group, -1, event, select);
+    focusRelativeTab(group, -1, event, groupId, selection, select);
     return;
   }
   if (event.key === "ArrowDown" && vertical) {
-    focusRelativeTab(group, 1, event, select);
+    focusRelativeTab(group, 1, event, groupId, selection, select);
     return;
   }
   if (event.key === "ArrowUp" && vertical) {
-    focusRelativeTab(group, -1, event, select);
+    focusRelativeTab(group, -1, event, groupId, selection, select);
     return;
   }
   if (event.key === "Home") {
-    focusEdgeTab(group, "start", event, select);
+    focusEdgeTab(group, "start", event, groupId, selection, select);
     return;
   }
   if (event.key === "End") {
-    focusEdgeTab(group, "end", event, select);
+    focusEdgeTab(group, "end", event, groupId, selection, select);
   }
 }
 
@@ -137,6 +152,7 @@ function handleTabsKeydown(
  */
 export class TabsController extends BaseController<TabsEvents> {
   #groups: Record<string, TabsGroup> = {};
+  readonly #selection = new SelectionController();
 
   constructor(id?: string) {
     super(id ?? generateId("tabs"));
@@ -151,12 +167,15 @@ export class TabsController extends BaseController<TabsEvents> {
       return;
     }
     const group = createGroup(options);
-    if (options.urlParam) {
-      const fromUrl = readUrlTab(options.urlParam);
-      if (fromUrl) {
-        group.activeTabId = fromUrl;
-      }
-    }
+    const defaultTab = options.urlParam
+      ? (readUrlTab(options.urlParam) ?? options.defaultTab ?? null)
+      : (options.defaultTab ?? null);
+    this.#selection.create(groupId, {
+      mode: "single",
+      defaultValue: defaultTab,
+      keys: [],
+    });
+    group.activeTabId = typeof defaultTab === "string" ? defaultTab : null;
     this.#groups[groupId] = group;
   }
 
@@ -164,6 +183,7 @@ export class TabsController extends BaseController<TabsEvents> {
     if (this.isDestroyed) {
       return;
     }
+    this.#selection.destroy(groupId);
     delete this.#groups[groupId];
   }
 
@@ -179,7 +199,10 @@ export class TabsController extends BaseController<TabsEvents> {
       group.items.push({ id: tabId, disabled });
     }
 
-    if (!(group.activeTabId || disabled)) {
+    this.#syncSelection(groupId);
+    const snapshot = this.#selection.getSnapshot(groupId);
+    if (!(snapshot.value || disabled)) {
+      this.#selection.replace(groupId, tabId);
       group.activeTabId = tabId;
     }
   }
@@ -194,9 +217,9 @@ export class TabsController extends BaseController<TabsEvents> {
     }
 
     group.items = group.items.filter((item) => item.id !== tabId);
-    if (group.activeTabId === tabId) {
-      group.activeTabId = enabledTabs(group)[0]?.id ?? null;
-    }
+    this.#syncSelection(groupId);
+    const active = this.active(groupId);
+    group.activeTabId = active;
   }
 
   select(groupId: string, tabId: string): void {
@@ -211,11 +234,18 @@ export class TabsController extends BaseController<TabsEvents> {
   }
 
   active(groupId: string): string | null {
-    return this.#groups[groupId]?.activeTabId ?? null;
+    const value = this.#selection.getSnapshot(groupId).value;
+    return typeof value === "string" || typeof value === "number" ? String(value) : null;
   }
 
   isActive(groupId: string, tabId: string): boolean {
-    return this.#groups[groupId]?.activeTabId === tabId;
+    const group = this.#groups[groupId];
+    if (group?.activation === "manual") {
+      const snapshot = this.#selection.getSnapshot(groupId);
+      const focused = snapshot.activeKey ?? snapshot.value;
+      return focused === tabId;
+    }
+    return this.#selection.isSelected(groupId, tabId);
   }
 
   next(groupId: string): void {
@@ -226,7 +256,7 @@ export class TabsController extends BaseController<TabsEvents> {
     if (!group) {
       return;
     }
-    const nextTab = moveTab(group, 1);
+    const nextTab = moveTab(group, 1, this.#selection, groupId);
     if (nextTab) {
       this.#selectInternal(group, groupId, nextTab);
     }
@@ -240,7 +270,7 @@ export class TabsController extends BaseController<TabsEvents> {
     if (!group) {
       return;
     }
-    const prevTab = moveTab(group, -1);
+    const prevTab = moveTab(group, -1, this.#selection, groupId);
     if (prevTab) {
       this.#selectInternal(group, groupId, prevTab);
     }
@@ -249,7 +279,9 @@ export class TabsController extends BaseController<TabsEvents> {
   handleKeydown(groupId: string, event: KeyboardEvent): void {
     const group = this.#groups[groupId];
     if (group) {
-      handleTabsKeydown(group, event, (g, tabId) => this.#selectInternal(g, groupId, tabId));
+      handleTabsKeydown(group, event, groupId, this.#selection, (g, id, tabId) =>
+        this.#selectInternal(g, id, tabId)
+      );
     }
   }
 
@@ -313,6 +345,8 @@ export class TabsController extends BaseController<TabsEvents> {
       return;
     }
 
+    this.#selection.replace(groupId, tabId);
+    this.#selection.setActive(groupId, tabId);
     group.activeTabId = tabId;
     if (group.urlParam) {
       writeUrlTab(group.urlParam, tabId);
@@ -325,6 +359,34 @@ export class TabsController extends BaseController<TabsEvents> {
     });
 
     group.onChange?.(tabId);
+  }
+
+  #syncSelection(groupId: string): void {
+    const group = this.#groups[groupId];
+    if (!group) {
+      return;
+    }
+    const keys = group.items.map((item) => item.id);
+    const disabled = group.items.filter((item) => item.disabled).map((item) => item.id);
+    this.#selection.setKeys(groupId, keys);
+    this.#selection.setDisabledKeys(groupId, disabled);
+
+    if (group.urlParam) {
+      const fromUrl = readUrlTab(group.urlParam);
+      if (fromUrl && keys.includes(fromUrl) && !disabled.includes(fromUrl)) {
+        this.#selection.replace(groupId, fromUrl);
+        group.activeTabId = fromUrl;
+        return;
+      }
+    }
+  }
+
+  override destroy(): void {
+    if (this.isDestroyed) {
+      return;
+    }
+    this.#selection.destroy();
+    super.destroy();
   }
 }
 

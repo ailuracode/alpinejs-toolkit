@@ -5,13 +5,17 @@
 
 import { BaseController, generateId } from "@ailuracode/alpine-core";
 import type { ScrollStore } from "@ailuracode/alpine-scroll";
+import {
+  firstSelectableIndex,
+  lastSelectableIndex,
+  moveSelectableIndex,
+} from "@ailuracode/alpine-selection";
 import { createCommandAlpineStore, syncCommandStore } from "./alpine/store.js";
 import { isEditableTarget, isTypingKey } from "./editable.js";
 import { CommandError } from "./errors.js";
 import type { CommandEvents } from "./events.js";
 import { DEFAULT_MAX_RECENT, normalizeCommandOptions, ROOT_PAGE_ID } from "./options.js";
 import { resolvePredicate } from "./predicates.js";
-import { firstSelectableIndex, lastSelectableIndex, moveSelectableIndex } from "./selection.js";
 import type {
   CommandExecutionState,
   CommandItem,
