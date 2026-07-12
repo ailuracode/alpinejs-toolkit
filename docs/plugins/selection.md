@@ -33,6 +33,15 @@ Selection state is mirrored on `$store.selection.instances[id]`. Read from that 
 
 `isSelected()`, `isActive()`, and similar helpers are for imperative code (event handlers, tests). They do not register reactive dependencies in templates.
 
+In inline `x-data` object methods, bare names like `mode` or `items` are **not** in scope — use `this.mode` / `this.items`, or call `create` from an `x-init` expression:
+
+```html
+<div
+  x-data="{ items: ['Alpha', 'Bravo'], mode: 'multiple' }"
+  x-init="$store.selection.create('rows', { mode, keys: items })"
+>
+```
+
 ## Store API
 
 | Method | Description |

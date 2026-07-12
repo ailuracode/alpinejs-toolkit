@@ -48,6 +48,15 @@ Alpine.start();
 
 Bind styles and labels to `$store.selection.instances[id]` (or `itemProps` / `listProps`) so Alpine tracks selection changes. Imperative helpers such as `isSelected()` read the controller directly and do not trigger template updates on their own.
 
+In inline `x-data` methods, reference component fields with `this` (or run `create` from an `x-init` expression where Alpine injects data scope):
+
+```html
+<div
+  x-data="{ items: ['Alpha', 'Bravo'], mode: 'multiple' }"
+  x-init="$store.selection.create('list', { mode, keys: items })"
+>
+```
+
 ## Store API
 
 - `$store.selection.create(id, options)` — register a selection instance
