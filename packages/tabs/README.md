@@ -7,8 +7,10 @@ Headless accessible tabs store for Alpine.js — selection, keyboard navigation,
 ## Install
 
 ```bash
-pnpm add @ailuracode/alpine-tabs @ailuracode/alpine-core alpinejs
+pnpm add @ailuracode/alpine-tabs @ailuracode/alpine-core @ailuracode/alpine-selection alpinejs
 ```
+
+Active tab tracking is backed by `@ailuracode/alpine-selection` (single mode).
 
 ## Store API
 

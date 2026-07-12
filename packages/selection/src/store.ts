@@ -3,7 +3,40 @@
  */
 
 import { SelectionController } from "./controller.js";
-import type { SelectionInstance, SelectionStore } from "./types.js";
+import { toKeyString } from "./options.js";
+import type { SelectionInstance, SelectionKey, SelectionStore } from "./types.js";
+
+function snapshotItemProps(
+  snapshot: SelectionInstance,
+  key: SelectionKey
+): Record<string, string | number | boolean | undefined> {
+  const keyString = toKeyString(key);
+  const selected = snapshot.selectedKeys.some((entry) => toKeyString(entry) === keyString);
+  const active = snapshot.activeKey !== null && toKeyString(snapshot.activeKey) === keyString;
+  const selectable =
+    snapshot.allowDisabledSelection ||
+    !snapshot.disabledKeys.some((entry) => toKeyString(entry) === keyString);
+
+  return {
+    role: "option",
+    "data-selection-key": keyString,
+    "aria-selected": selected,
+    "aria-disabled": selectable ? undefined : true,
+    "data-selection-active": active ? true : undefined,
+  };
+}
+
+function snapshotListProps(
+  snapshot: SelectionInstance,
+  options: { label?: string } = {}
+): Record<string, string | boolean | undefined> {
+  const multiselectable = snapshot.mode !== "single";
+  return {
+    role: "listbox",
+    "aria-label": options.label,
+    "aria-multiselectable": multiselectable ? true : undefined,
+  };
+}
 
 export function syncInstanceRegistry(
   target: Record<string, SelectionInstance>,
@@ -107,8 +140,20 @@ export function createSelectionStoreFromController(
     isActive: (id, key) => controller.isActive(id, key),
     isAnchor: (id, key) => controller.isAnchor(id, key),
     getSnapshot: (id) => controller.getSnapshot(id),
-    listProps: (id, options) => controller.listProps(id, options),
-    itemProps: (id, key) => controller.itemProps(id, key),
+    listProps: (id, options) => {
+      const snapshot = instances[id];
+      if (snapshot) {
+        return snapshotListProps(snapshot, options);
+      }
+      return controller.listProps(id, options);
+    },
+    itemProps: (id, key) => {
+      const snapshot = instances[id];
+      if (snapshot) {
+        return snapshotItemProps(snapshot, key);
+      }
+      return controller.itemProps(id, key);
+    },
   };
 
   controller.on("change", sync);

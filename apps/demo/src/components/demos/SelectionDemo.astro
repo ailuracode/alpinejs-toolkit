@@ -26,17 +26,23 @@ const itemClass = "cursor-pointer rounded-md border px-3 py-2 text-sm";
 				return snap.selectedKeys.join(', ') || 'none';
 			},
 			itemClass(key) {
-				const selected = $store.selection.isSelected('demo', key);
-				const active = $store.selection.isActive('demo', key);
+				const snap = $store.selection.instances.demo;
+				const base = '${itemClass}';
+				if (!snap) return base;
+				const selected = snap.selectedKeys.includes(key);
+				const active = snap.activeKey === key;
+				const selectable = !snap.disabledKeys.includes(key);
 				return [
-					'${itemClass}',
+					base,
 					selected ? 'border-primary bg-primary/10' : 'border-border',
 					active ? 'ring-2 ring-primary/40' : '',
-					!$store.selection.isSelectable('demo', key) ? 'opacity-50 cursor-not-allowed' : '',
+					!selectable ? 'opacity-50 cursor-not-allowed' : '',
 				].join(' ');
 			},
 			onClick(event, key) {
-				if (!$store.selection.isSelectable('demo', key)) return;
+				const snap = $store.selection.instances.demo;
+				if (!snap || snap.disabledKeys.includes(key)) return;
+				$store.selection.setActive('demo', key);
 				if (event.shiftKey) {
 					$store.selection.extend('demo', key);
 					return;
@@ -67,11 +73,18 @@ const itemClass = "cursor-pointer rounded-md border px-3 py-2 text-sm";
 			Click to replace, Ctrl/Cmd+click to toggle, Shift+click to extend. Charlie is disabled.
 		</p>
 		<p class="text-xs font-mono" x-text="`Selected: ${selectedLabel()}`"></p>
+		<p class="text-xs text-muted-foreground" x-show="$store.selection.instances.demo">
+			Mode:
+			<span class="font-mono" x-text="$store.selection.instances.demo?.mode"></span>
+			· Active:
+			<span class="font-mono" x-text="$store.selection.instances.demo?.activeKey ?? '—'"></span>
+		</p>
 
 		<ul class="grid gap-2 sm:grid-cols-2" x-bind="$store.selection.listProps('demo', { label: 'Selection demo' })">
 			<template x-for="item in items" :key="item">
 				<li
-					x-bind="{ ...$store.selection.itemProps('demo', item), class: itemClass(item) }"
+					x-bind="$store.selection.itemProps('demo', item)"
+					:class="itemClass(item)"
 					@click="onClick($event, item)"
 					x-text="item"
 				></li>
