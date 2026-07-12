@@ -267,6 +267,16 @@ export const PLUGIN_NAV_GROUPS: PluginNavGroup[] = [
         description:
           "Headless virtual list controller — fixed and variable item sizes, overscan, scroll-to-index, and stable keys.",
       },
+      {
+        id: "selection",
+        title: "Selection",
+        package: "@ailuracode/alpine-selection",
+        api: "$store.selection / $selection",
+        kind: "store",
+        tier: "headless",
+        description:
+          "Framework-agnostic selection primitives — single, multiple, and range modes with anchor tracking and disabled items.",
+      },
     ],
   },
   {
@@ -399,6 +409,7 @@ const PLUGIN_DOCS: ReadonlySet<string> = new Set([
   "command",
   "carousel",
   "virtual",
+  "selection",
   "geo",
   "lang",
   "calendar",

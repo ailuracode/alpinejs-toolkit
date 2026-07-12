@@ -120,6 +120,9 @@ importers:
       '@ailuracode/alpine-scroll':
         specifier: workspace:*
         version: link:../../packages/scroll
+      '@ailuracode/alpine-selection':
+        specifier: workspace:*
+        version: link:../../packages/selection
       '@ailuracode/alpine-sidebar':
         specifier: workspace:*
         version: link:../../packages/sidebar
@@ -585,6 +588,19 @@ importers:
       tsup:
         specifier: ^8.5.0
         version: 8.5.1(patch_hash=f20e8b64de39029c6d726ef4ed37bc95f4d585b90816509f5533e8e7064d9516)(jiti@2.7.0)(postcss@8.5.16)(typescript@6.0.3)
+
+  packages/selection:
+    dependencies:
+      '@types/alpinejs':
+        specifier: ^3.13.11
+        version: 3.13.11
+      alpinejs:
+        specifier: ^3.0.0
+        version: 3.15.12
+    devDependencies:
+      '@ailuracode/alpine-core':
+        specifier: workspace:*
+        version: link:../core
 
   packages/sidebar:
     dependencies:

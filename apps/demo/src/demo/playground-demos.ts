@@ -27,6 +27,7 @@ import ToggleDemo from "../components/demos/ToggleDemo.astro";
 import TooltipDemo from "../components/demos/TooltipDemo.astro";
 import TransferDemo from "../components/demos/TransferDemo.astro";
 import VirtualDemo from "../components/demos/VirtualDemo.astro";
+import SelectionDemo from "../components/demos/SelectionDemo.astro";
 import { PLUGIN_NAV_ITEMS, type PluginNavItem } from "../plugin-nav";
 
 export const PLAYGROUND_DEMOS: Record<string, AstroComponentFactory> = {
@@ -49,6 +50,7 @@ export const PLAYGROUND_DEMOS: Record<string, AstroComponentFactory> = {
   command: CommandDemo,
   carousel: CarouselDemo,
   virtual: VirtualDemo,
+  selection: SelectionDemo,
   toast: ToastDemo,
   attention: AttentionDemo,
   notify: NotifyDemo,

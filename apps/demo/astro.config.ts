@@ -149,6 +149,7 @@ export default defineConfig({
         "@ailuracode/alpine-command": pkg("command"),
         "@ailuracode/alpine-carousel": pkg("carousel"),
         "@ailuracode/alpine-virtual": pkg("virtual"),
+        "@ailuracode/alpine-selection": pkg("selection"),
         "@ailuracode/alpine-core": pkg("core"),
         "@ailuracode/alpine-toast": pkg("toast"),
         "@ailuracode/alpine-geo": pkg("geo"),
