@@ -9,6 +9,7 @@ export type ToolkitErrorCode =
   | "PLUGIN_UNKNOWN"
   | "PLUGIN_INVALID_DEFINITION"
   | "PLUGIN_LOADER_INVALID"
+  | "PLUGIN_INIT_IN_FLIGHT"
   // Lifecycle
   | "CONTROLLER_DESTROYED";
 

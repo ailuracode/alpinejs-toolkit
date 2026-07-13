@@ -81,14 +81,11 @@ export interface RegisteredPlugin {
 }
 
 /**
- * Internal registry entry. `initialized` is mutable so the registry can
- * record whether each plugin has run (Alpine.plugin() is idempotent).
- * Kept here (not under `internal/`) so consumers can type their tests
- * against the same shape. The mutable field is intentionally NOT re-exported
- * through `index.ts`.
+ * Internal registry entry. Initialization state is tracked per Alpine runtime
+ * via {@link getRuntimeInitState} — not on this object — so multiple Alpine
+ * instances can initialize the same registered plugin independently.
  */
 export interface PluginRegistryEntry {
   readonly name: string;
   readonly definition: PluginDefinition;
-  initialized: boolean;
 }
