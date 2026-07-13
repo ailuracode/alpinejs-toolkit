@@ -63,6 +63,40 @@ Each `x-gesture:<kind>` registers its own controller, so a single element can mi
 </div>
 ```
 
+### Pinch zoom
+
+`pinch` events carry a relative `scale` factor measured from the distance between the two active pointers when recognition starts. The `x-gesture:pinch` handler receives a `GestureRecognizedDetail` as `$event`; read `detail.state.scale` (or `detail.scale` when subscribing to controller `pinch` events directly). Multiply your committed zoom level by that scale on each move, then persist the result when the pointers release:
+
+```html
+<div
+  x-data="{
+    zoom: 1,
+    baseZoom: 1,
+    onPinch(detail) {
+      const scale = detail.state?.scale ?? detail.scale ?? 1;
+      this.zoom = Math.min(3, Math.max(0.5, this.baseZoom * scale));
+    },
+    commitZoom() {
+      this.baseZoom = this.zoom;
+    }
+  }"
+>
+  <div
+    x-gesture:pinch="onPinch"
+    @pointerup="commitZoom()"
+    style="touch-action: none;"
+  >
+    <img
+      src="/photo.jpg"
+      alt="Zoomable photo"
+      :style="'transform: scale(' + zoom + ')'"
+    />
+  </div>
+</div>
+```
+
+`detail.state.scale` is `1` at the start of a pinch and grows above `1` when the pointers spread (zoom in) or shrinks below `1` when they pinch together (zoom out). `detail.state.rotation` reports the angle delta in degrees. Set `touch-action: none` (or `pinch-zoom` where native scrolling should remain) on the target surface so the browser does not steal the gesture.
+
 ## Competing gestures
 
 When several recognisers are active the controller cancels losers deterministically:

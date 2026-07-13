@@ -84,3 +84,23 @@ Returns the current gesture state object.
   <div x-gesture:pan="onPan">Drag me</div>
 </div>
 ```
+
+### Pinch zoom
+
+```html
+<div
+  x-data="{
+    zoom: 1,
+    baseZoom: 1,
+    onPinch(d) {
+      const scale = d.state?.scale ?? d.scale ?? 1;
+      this.zoom = this.baseZoom * scale;
+    },
+    commitZoom() { this.baseZoom = this.zoom }
+  }"
+>
+  <div x-gesture:pinch="onPinch" @pointerup="commitZoom()" style="touch-action: none;">
+    <div :style="'transform: scale(' + zoom + ')'">Pinch me</div>
+  </div>
+</div>
+```

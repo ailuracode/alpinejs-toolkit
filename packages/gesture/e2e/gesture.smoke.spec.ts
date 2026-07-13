@@ -118,4 +118,60 @@ test.describe("@ailuracode/alpine-gesture smoke", () => {
 
     expect(longPressFired).toBe("longpress");
   });
+
+  test("recognizes a pinch spread and updates the scale output", async ({ page }) => {
+    await page.goto("/");
+    await waitForAlpineFixture(page);
+
+    const result = page.getByTestId("pinch-scale");
+    await expect(result).toHaveText("1.00");
+
+    await page.evaluate(() => {
+      const target = document.getElementById("pinch-target");
+      if (!target) {
+        return;
+      }
+
+      const rect = target.getBoundingClientRect();
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+      const half = 24;
+
+      const pointerOne = {
+        downX: centerX - half,
+        downY: centerY - half,
+        moveX: centerX - half - 40,
+        moveY: centerY - half - 40,
+      };
+      const pointerTwo = {
+        downX: centerX + half,
+        downY: centerY + half,
+        moveX: centerX + half + 40,
+        moveY: centerY + half + 40,
+      };
+
+      const dispatch = (type: string, x: number, y: number, pointerId: number) => {
+        target.dispatchEvent(
+          new PointerEvent(type, {
+            clientX: x,
+            clientY: y,
+            pointerId,
+            bubbles: true,
+            pointerType: "touch",
+          })
+        );
+      };
+
+      dispatch("pointerdown", pointerOne.downX, pointerOne.downY, 1);
+      dispatch("pointerdown", pointerTwo.downX, pointerTwo.downY, 2);
+      dispatch("pointermove", pointerOne.moveX, pointerOne.moveY, 1);
+      dispatch("pointermove", pointerTwo.moveX, pointerTwo.moveY, 2);
+      dispatch("pointerup", pointerOne.moveX, pointerOne.moveY, 1);
+      dispatch("pointerup", pointerTwo.moveX, pointerTwo.moveY, 2);
+    });
+
+    await expect(result).not.toHaveText("1.00");
+    const scaleText = await result.textContent();
+    expect(Number(scaleText)).toBeGreaterThan(1);
+  });
 });
