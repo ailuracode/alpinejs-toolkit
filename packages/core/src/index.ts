@@ -59,6 +59,21 @@ export {
   initPlugins,
   initPluginsSync,
 } from "./init";
+// --- Controller-backed Alpine adapter lifecycle bridge -------------------
+export type {
+  AlpineLifecycleHost,
+  ControllerStoreBridge,
+  ControllerStoreBridgeOptions,
+  Destroyable,
+  ReactiveStoreRegistration,
+  WireControllerLifecycleOptions,
+} from "./lifecycle-bridge";
+export {
+  bridgeControllerStore,
+  registerReactiveStore,
+  registerStoreMagic,
+  wireControllerLifecycle,
+} from "./lifecycle-bridge";
 // --- Errors --------------------------------------------------------------
 export {
   isPluginSource,

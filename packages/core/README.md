@@ -223,6 +223,44 @@ multiple kinds of one plugin (e.g. `magic: ['theme']` + `store: ['theme']`).
 | `InstanceRegistry<T>`     | Map of controller instances keyed by string ID              |
 | `ToolkitError`            | Base error with stable `code` and optional `cause`          |
 
+### Controller-backed Alpine lifecycle bridge
+
+Use these helpers when a feature package wires a headless controller
+into `$store.*` and a matching `$name` magic. They centralize the
+invariant adapter sequence while leaving store synchronization in the
+feature package.
+
+| Export | Description |
+| ------ | ----------- |
+| `bridgeControllerStore(options)` | Registers the store proxy, magic accessor, subscription cleanup, and `controller.destroy()` |
+| `registerReactiveStore(alpine, key, store)` | Registers a store and returns Alpine's reactive proxy |
+| `registerStoreMagic(alpine, key, accessor)` | Registers a magic that returns a stable reference |
+| `wireControllerLifecycle(alpine, controller, options)` | Forwards teardown through `Alpine.cleanup` |
+
+**Cleanup order** (documented and tested):
+
+1. Controller event-bus unsubscribes (LIFO)
+2. Adapter-specific cleanups such as DOM listeners (LIFO)
+3. `controller.destroy()`
+
+**When to use the bridge**
+
+- Controller-backed store plugins that mirror controller `change` events
+  onto a reactive store proxy (`theme`, `sidebar`, `media`, `scroll`, …).
+- Prefer `bridgeControllerStore()` when the magic returns the store
+  proxy. Use the lower-level helpers when the magic is a composite API
+  (for example `$toast`).
+
+**When a custom adapter is justified**
+
+- Instance-registry plugins that sync `instances` maps and expose
+  per-id helpers (`dialog`, `menu`, `carousel`, …).
+- Directive plugins (`x-child`, `x-gesture`) or magic-only packages.
+- Adapters that register multiple stores or magics from one controller.
+
+Store field mirroring MUST stay in the package's `subscribe` callback —
+the bridge does not hide domain-specific synchronization.
+
 ### Generic Alpine typings
 
 | Export                | Description                                                         |

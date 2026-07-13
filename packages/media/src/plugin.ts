@@ -11,6 +11,7 @@
  * on their intervals array without losing literal type inference.
  */
 
+import { bridgeControllerStore } from "@ailuracode/alpine-core";
 import type { Alpine } from "alpinejs";
 import { createMedia, MEDIA_SINGLETON_KEY, MediaController } from "./controller";
 import type {
@@ -44,34 +45,17 @@ export function mediaPlugin<Name extends string = string>(
     const Alpine = alpine as unknown as MediaAlpine;
     const controller = createMedia<Name>(options) as MediaController<Name>;
     const store = createMediaStore<Name>(controller);
-    Alpine.store(MEDIA_STORE_KEY, store);
 
-    // Re-target the subscription so mutations land on the reactive
-    // proxy, not on the unwrapped original — otherwise `x-text`
-    // bindings never re-render. We cache the proxy so the `$media`
-    // magic returns the SAME reference instead of forcing Alpine to
-    // re-resolve the store on every access.
-    const reactiveStore = Alpine.store(MEDIA_STORE_KEY) as MediaStore<Name>;
-
-    // Track the change-subscription unsubscribe so the cleanup hook
-    // can detach the bus listener even when the same controller is
-    // re-used by a second `mediaPlugin()` call (HMR / re-mount).
-    const unsubscribe = controller.on("change", (detail: MediaChangeDetail<Name>) => {
-      syncMediaStoreMirror(reactiveStore, detail);
+    bridgeControllerStore({
+      alpine: Alpine,
+      storeKey: MEDIA_STORE_KEY,
+      store,
+      controller,
+      subscribe: (reactiveStore) =>
+        controller.on("change", (detail: MediaChangeDetail<Name>) => {
+          syncMediaStoreMirror(reactiveStore, detail);
+        }),
     });
-    Alpine.magic(MEDIA_STORE_KEY, () => reactiveStore);
-
-    if (typeof Alpine.cleanup === "function") {
-      Alpine.cleanup(() => {
-        unsubscribe();
-        // `controller.destroy()` is idempotent and releases the
-        // singleton slot. Alpine keeps the store reference registered
-        // because `alpinejs` does not expose an `unstore` API — the
-        // mirror stops updating once the controller is destroyed, and
-        // consumers can detect it through `store.isDestroyed`.
-        controller.destroy();
-      });
-    }
   };
 }
 
