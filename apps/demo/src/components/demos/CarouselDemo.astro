@@ -1,6 +1,7 @@
 ---
 import { getPluginNavItem } from "../../plugin-nav";
 import DemoSection from "../DemoSection.astro";
+import Kbd from "../astro/Kbd.astro";
 
 const plugin = getPluginNavItem("carousel")!;
 const navButton =
@@ -265,9 +266,9 @@ const slideV = `${slideCard} min-h-0 min-w-0 shrink-0 grow-0 [flex:0_0_var(--sli
 				</div>
 			</section>
 			<ul class="mt-2 text-xs text-muted-foreground list-disc pl-5 space-y-1">
-				<li><kbd class="px-1 rounded border">←</kbd> <kbd class="px-1 rounded border">↑</kbd> previous</li>
-				<li><kbd class="px-1 rounded border">→</kbd> <kbd class="px-1 rounded border">↓</kbd> next</li>
-				<li><kbd class="px-1 rounded border">Home</kbd> / <kbd class="px-1 rounded border">End</kbd> first / last</li>
+				<li><Kbd>←</Kbd> <Kbd>↑</Kbd> previous</li>
+				<li><Kbd>→</Kbd> <Kbd>↓</Kbd> next</li>
+				<li><Kbd>Home</Kbd> / <Kbd>End</Kbd> first / last</li>
 			</ul>
 		</div>
 	</div>

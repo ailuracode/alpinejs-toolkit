@@ -2,6 +2,7 @@
 import { getPluginNavItem } from "../../plugin-nav";
 import DemoButton from "../astro/DemoButton.astro";
 import DemoSection from "../DemoSection.astro";
+import Kbd from "../astro/Kbd.astro";
 
 const plugin = getPluginNavItem("keyboard")!;
 ---
@@ -32,10 +33,10 @@ const plugin = getPluginNavItem("keyboard")!;
 		"
 	>
 		<p>
-			Try <kbd class="px-1 rounded border border-border">mod+shift+k</kbd>,
-			the sequence <kbd class="px-1 rounded border border-border">g</kbd> then
-			<kbd class="px-1 rounded border border-border">h</kbd>, or toggle the editor scope and press
-			<kbd class="px-1 rounded border border-border">x</kbd>.
+			Try <Kbd>mod+shift+k</Kbd>,
+			the sequence <Kbd>g</Kbd> then
+			<Kbd>h</Kbd>, or toggle the editor scope and press
+			<Kbd>x</Kbd>.
 		</p>
 		<div class="flex flex-wrap gap-2">
 			<DemoButton @click="$keyboard.activateScope('editor')">activateScope('editor')</DemoButton>

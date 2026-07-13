@@ -28,10 +28,10 @@ const sectionClass = ["scroll-mt-20", className].filter(Boolean).join(" ");
 						<slot name="title" />
 					</CardTitle>
 				) : (
-					<CardTitle class="text-balance">
+					<CardTitle className={api ? "text-balance inline-flex flex-wrap items-baseline gap-2" : "text-balance"}>
 						{title}
 						{api && (
-							<code class="ml-2 rounded-[var(--ios-radius-sm)] bg-[var(--ios-fill-quaternary)] px-1.5 py-0.5 text-xs font-normal text-[var(--ios-label-secondary)]">{api}</code>
+							<code class="shrink-0 rounded-[var(--ios-radius-sm)] bg-[var(--ios-fill-quaternary)] px-1.5 py-0.5 text-xs font-normal text-[var(--ios-label-secondary)]">{api}</code>
 						)}
 					</CardTitle>
 				)}

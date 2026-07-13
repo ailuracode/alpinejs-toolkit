@@ -2,6 +2,7 @@
 import { getPluginNavItem } from "../../plugin-nav";
 import DemoButton from "../astro/DemoButton.astro";
 import DemoSection from "../DemoSection.astro";
+import Kbd from "../astro/Kbd.astro";
 
 const plugin = getPluginNavItem("command")!;
 ---
@@ -13,7 +14,7 @@ const plugin = getPluginNavItem("command")!;
 			<p class="text-xs text-muted-foreground mb-3">
 				Open: <strong x-text="$store.command.isOpen"></strong> · Page:
 				<strong x-text="$store.command.currentPageId"></strong> · Press
-				<kbd class="px-1 rounded border">⌘K</kbd> or use the button
+				<Kbd>⌘K</Kbd> or use the button
 			</p>
 			<DemoButton @click="$store.command.open()">Open command palette</DemoButton>
 			<DemoButton variant="destructive" @click="$store.command.close()">Close</DemoButton>

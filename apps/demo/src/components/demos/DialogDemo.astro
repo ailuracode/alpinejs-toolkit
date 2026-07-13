@@ -2,6 +2,7 @@
 import { getPluginNavItem } from "../../plugin-nav";
 import DemoButton from "../astro/DemoButton.astro";
 import DemoSection from "../DemoSection.astro";
+import Kbd from "../astro/Kbd.astro";
 
 const plugin = getPluginNavItem("dialog")!;
 const buttonClasses =
@@ -89,7 +90,7 @@ const buttonClasses =
 		<div>
 			<h3 class="text-sm font-medium mb-2">Keyboard &amp; accessibility</h3>
 			<ul class="text-xs text-muted-foreground list-disc pl-5 space-y-1">
-				<li><kbd class="px-1 rounded border">Escape</kbd> closes when <code>closeOnEscape</code> is enabled</li>
+				<li><Kbd>Escape</Kbd> closes when <code>closeOnEscape</code> is enabled</li>
 				<li>Scroll lock wired in the demo via <code>onOpen</code>/<code>onClose</code> + <code>$store.scroll</code></li>
 				<li>The unlock is deferred 200ms to wait for the leave transition</li>
 				<li><code>dialogProps()</code> sets <code>role="dialog"</code>, <code>aria-modal</code>, labelled/describedby</li>

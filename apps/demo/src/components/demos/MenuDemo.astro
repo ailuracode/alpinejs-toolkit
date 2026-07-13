@@ -2,6 +2,7 @@
 import { getPluginNavItem } from "../../plugin-nav";
 import DemoButton from "../astro/DemoButton.astro";
 import DemoSection from "../DemoSection.astro";
+import Kbd from "../astro/Kbd.astro";
 
 const plugin = getPluginNavItem("menu")!;
 const itemClasses =
@@ -130,9 +131,9 @@ const menuData = `{
 		<div>
 			<h3 class="text-sm font-medium mb-2">Keyboard</h3>
 			<p class="text-xs text-muted-foreground">
-				<kbd class="px-1 rounded border">↑</kbd>/<kbd class="px-1 rounded border">↓</kbd> move focus,
-				<kbd class="px-1 rounded border">Enter</kbd> selects,
-				<kbd class="px-1 rounded border">Escape</kbd> closes. Position with
+				<Kbd>↑</Kbd>/<Kbd>↓</Kbd> move focus,
+				<Kbd>Enter</Kbd> selects,
+				<Kbd>Escape</Kbd> closes. Position with
 				<code>x-anchor.bottom-start.fixed</code> via <code>@alpinejs/anchor</code> — the store handles state, keyboard, and scroll lock only.
 			</p>
 		</div>

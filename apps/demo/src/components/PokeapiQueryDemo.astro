@@ -18,7 +18,7 @@ const { dataName, title, badgeClass = "" } = Astro.props;
 			<CardTitle class="flex flex-wrap items-center gap-2">
 				{title}
 				<Badge
-					class={badgeClass}
+					class:list={["shrink-0", badgeClass]}
 					x-bind:class="{ 'bg-primary text-primary-foreground': query?.isSuccess }"
 					x-text="badge"
 				/>
