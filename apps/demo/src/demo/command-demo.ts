@@ -84,6 +84,7 @@ export function registerCommandDemo(Alpine: AlpineInstance): void {
                   page: "settings",
                   action: () => (Alpine.store("theme") as { toggle(): void }).toggle(),
                 });
+                return Promise.resolve();
               },
             });
           },

@@ -1,5 +1,5 @@
 export {
-  registerDemoPlugins,
+  startAlpineDemo,
   type ToastDemoContent,
   toastDemoPositions,
   toastDemoVariants,

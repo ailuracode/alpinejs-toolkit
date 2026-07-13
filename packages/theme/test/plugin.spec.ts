@@ -164,14 +164,15 @@ describe("themePlugin — DOM re-apply on navigation events", () => {
   // them on demand. This avoids touching real DOM state and lets
   // us inspect what the plugin installed.
   let listeners: Map<string, Set<() => void>>;
-  let originalAddEventListener: typeof document.addEventListener;
-  let originalRemoveEventListener: typeof document.removeEventListener;
+  type DocumentListener = (type: string, cb: () => void) => void;
+  let originalAddEventListener: DocumentListener;
+  let originalRemoveEventListener: DocumentListener;
 
   beforeEach(() => {
     listeners = new Map();
     const doc = document as unknown as {
-      addEventListener(type: string, cb: () => void): void;
-      removeEventListener(type: string, cb: () => void): void;
+      addEventListener: DocumentListener;
+      removeEventListener: DocumentListener;
     };
     originalAddEventListener = doc.addEventListener.bind(doc);
     originalRemoveEventListener = doc.removeEventListener.bind(doc);
@@ -201,8 +202,8 @@ describe("themePlugin — DOM re-apply on navigation events", () => {
     // Restore real addEventListener / removeEventListener so other
     // suites in the same worker don't see the stub.
     const doc = document as unknown as {
-      addEventListener: typeof document.addEventListener;
-      removeEventListener: typeof document.removeEventListener;
+      addEventListener: DocumentListener;
+      removeEventListener: DocumentListener;
     };
     doc.addEventListener = originalAddEventListener;
     doc.removeEventListener = originalRemoveEventListener;
