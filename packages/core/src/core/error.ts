@@ -3,6 +3,7 @@ export type ToolkitErrorCode =
   | "TOOLKIT_INVALID_ARGUMENT"
   | "TOOLKIT_INVALID_STATE"
   | "TOOLKIT_NOT_SUPPORTED"
+  | "TOOLKIT_SINGLETON_SCOPE_REQUIRED"
   // Core / registry / loader
   | "PLUGIN_NAME_REQUIRED"
   | "PLUGIN_DUPLICATE"

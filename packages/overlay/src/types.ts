@@ -6,6 +6,7 @@
  * Alpine adapter; do NOT inline duplicate shapes in either module.
  */
 
+import type { SingletonScope } from "@ailuracode/alpine-core";
 import type { Unsubscribe } from "@ailuracode/alpine-ui";
 
 /**
@@ -29,6 +30,13 @@ export interface OverlayOptions {
   readonly baseZIndex?: number;
   /** Gap between consecutive slots. Default `10`. */
   readonly step?: number;
+  /**
+   * Singleton scope for this controller. Defaults to the active
+   * `document`, an ambient `runWithSingletonScope()` context, or —
+   * in SSR — must be provided explicitly via
+   * `createSingletonScope()`.
+   */
+  readonly scope?: SingletonScope;
 }
 
 /** Normalized, fully-resolved options. */

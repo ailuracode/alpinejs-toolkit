@@ -41,10 +41,10 @@
 
 import {
   BaseController,
-  clearSingleton,
   createSingleton,
   generateId,
   isBrowser,
+  releaseSingleton,
   safeWindow,
   ToolkitError,
   type Unsubscribe,
@@ -146,11 +146,16 @@ export const SCROLL_SINGLETON_KEY = "@ailuracode/alpine-scroll/default";
  * `createScroll()` factory enforces uniqueness.
  */
 export function createScroll(options: ScrollOptions = {}): ScrollController {
-  return createSingleton(SCROLL_SINGLETON_KEY, () => {
-    const controller = new ScrollController(options);
-    controller.mount();
-    return controller;
-  });
+  const { scope, ...factoryOptions } = options;
+  return createSingleton(
+    SCROLL_SINGLETON_KEY,
+    () => {
+      const controller = new ScrollController(factoryOptions);
+      controller.mount();
+      return controller;
+    },
+    { scope, options: factoryOptions }
+  );
 }
 
 export class ScrollController extends BaseController<ScrollEvents> implements ScrollManager {
@@ -253,7 +258,7 @@ export class ScrollController extends BaseController<ScrollEvents> implements Sc
     // Release the singleton slot so the next `createScroll()` call
     // builds a fresh controller. Mirrors `createSidebar()` /
     // `createTheme()` / `createLang()`.
-    clearSingleton(SCROLL_SINGLETON_KEY);
+    releaseSingleton(SCROLL_SINGLETON_KEY, this);
   }
 
   reset(): void {

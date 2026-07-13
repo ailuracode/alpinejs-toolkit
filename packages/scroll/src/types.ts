@@ -20,7 +20,7 @@
  *    controller into `$store.scroll` and the `$scroll` magic.
  */
 
-import type { Alpine, PluginCallback, Unsubscribe } from "@ailuracode/alpine-core";
+import type { Alpine, PluginCallback, SingletonScope, Unsubscribe } from "@ailuracode/alpine-core";
 import type { Alpine as AlpineBase } from "alpinejs";
 
 /** Re-exported so consumers can grab the unsubscribe helper from one path. */
@@ -127,6 +127,13 @@ export interface ScrollOptions {
    * Default: `null` (CSS variable only, no automatic padding).
    */
   readonly target?: Element | string | null;
+  /**
+   * Singleton scope for this controller. Defaults to the active
+   * `document`, an ambient `runWithSingletonScope()` context, or —
+   * in SSR — must be provided explicitly via
+   * `createSingletonScope()`.
+   */
+  readonly scope?: SingletonScope;
 }
 
 /* -------------------------------------------------------------------------- */

@@ -11,7 +11,7 @@
  * parameter preserves literal interval names when consumers pass
  * `as const` arrays through {@link mediaIntervals}.
  */
-import type { Alpine, PluginCallback, Unsubscribe } from "@ailuracode/alpine-core";
+import type { Alpine, PluginCallback, SingletonScope, Unsubscribe } from "@ailuracode/alpine-core";
 import type { Alpine as AlpineBase } from "alpinejs";
 
 /** Re-exported so consumers can grab every media type from one path. */
@@ -105,6 +105,13 @@ export interface CreateMediaOptions<Name extends string = string> {
    * the controller rewrite.
    */
   readonly debounceMs?: number;
+  /**
+   * Singleton scope for this controller. Defaults to the active
+   * `document`, an ambient `runWithSingletonScope()` context, or —
+   * in SSR — must be provided explicitly via
+   * `createSingletonScope()`.
+   */
+  readonly scope?: SingletonScope;
 }
 
 /**

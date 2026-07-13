@@ -20,7 +20,7 @@
  * core (replaces the previous inlined `Map`-based registry).
  */
 
-import { BaseController, clearSingleton, createSingleton } from "@ailuracode/alpine-core";
+import { BaseController, createSingleton, releaseSingleton } from "@ailuracode/alpine-core";
 import { OverlayError } from "./error.js";
 import type { OverlayEvents } from "./events.js";
 import { resolveOrCreatePortalRoot, safeDocument } from "./internal/portal.js";
@@ -210,7 +210,7 @@ export class OverlayController extends BaseController<OverlayEvents> {
     this.#state = null;
     this.#root = null;
     super.destroy();
-    clearSingleton(OVERLAY_SINGLETON_KEY);
+    releaseSingleton(OVERLAY_SINGLETON_KEY, this);
   }
 
   #emit(detail: OverlayChangeDetail): void {
@@ -252,13 +252,17 @@ function slotKeyOf(plugin: string, id: string): string {
  * first call. Mirrors the singleton pattern used by `theme`,
  * `lang`, `sidebar`, `media`, and `scroll` v1.0.0.
  */
-export function createOverlay(options?: OverlayOptions): OverlayController {
-  const existing = createSingleton<OverlayController>(OVERLAY_SINGLETON_KEY, () => {
-    const controller = new OverlayController(options);
-    controller.mount();
-    return controller;
-  });
-  return existing;
+export function createOverlay(options: OverlayOptions = {}): OverlayController {
+  const { scope, ...factoryOptions } = options;
+  return createSingleton(
+    OVERLAY_SINGLETON_KEY,
+    () => {
+      const controller = new OverlayController(factoryOptions);
+      controller.mount();
+      return controller;
+    },
+    { scope, options: factoryOptions }
+  );
 }
 
 /** Type-narrowed `on` that exposes only the overlay event surface. */
