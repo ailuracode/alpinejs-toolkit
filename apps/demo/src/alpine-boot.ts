@@ -7,6 +7,7 @@ import command from "@ailuracode/alpine-command";
 import dialog from "@ailuracode/alpine-dialog";
 import env from "@ailuracode/alpine-env";
 import geo, { createGeoPermissionAdapter } from "@ailuracode/alpine-geo";
+import gesture from "@ailuracode/alpine-gesture";
 import jsonApi from "@ailuracode/alpine-json-api";
 import keyboard from "@ailuracode/alpine-keyboard";
 import lang from "@ailuracode/alpine-lang";
@@ -71,7 +72,7 @@ export async function startAlpineDemo(): Promise<void> {
       ],
     }),
     keyboard({
-      pauseWhileScopesActive: ["modal"],
+      options: { pauseWhileScopesActive: ["modal"] },
     }),
     toast({
       variants: toastDemoVariants,
@@ -85,6 +86,7 @@ export async function startAlpineDemo(): Promise<void> {
       maxVisible: 3,
     }),
     env(),
+    gesture(),
     transfer(),
     tooltip(),
     tabs(),

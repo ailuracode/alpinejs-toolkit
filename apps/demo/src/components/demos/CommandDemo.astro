@@ -1,6 +1,7 @@
 ---
 import { getPluginNavItem } from "../../plugin-nav";
 import DemoButton from "../astro/DemoButton.astro";
+import Kbd from "../astro/Kbd.astro";
 import DemoSection from "../DemoSection.astro";
 
 const plugin = getPluginNavItem("command")!;
@@ -10,10 +11,10 @@ const plugin = getPluginNavItem("command")!;
 	<div class="grid gap-6" x-data="commandDemo" @keydown.window="handleGlobalKey($event)">
 		<div>
 			<h3 class="text-sm font-medium mb-2">Command palette</h3>
-			<p class="text-xs text-muted-foreground mb-3">
+			<p class="text-xs text-[var(--ios-label-secondary)] mb-3">
 				Open: <strong x-text="$store.command.isOpen"></strong> · Page:
 				<strong x-text="$store.command.currentPageId"></strong> · Press
-				<kbd class="px-1 rounded border">⌘K</kbd> or use the button
+				<Kbd>⌘K</Kbd> or use the button
 			</p>
 			<DemoButton @click="$store.command.open()">Open command palette</DemoButton>
 			<DemoButton variant="destructive" @click="$store.command.close()">Close</DemoButton>
@@ -49,7 +50,7 @@ const plugin = getPluginNavItem("command")!;
 									type="button"
 									class="flex w-full items-center justify-between rounded-md px-3 py-2 text-left text-sm"
 									:class="[
-										index === $store.command.activeIndex ? 'bg-accent' : 'hover:bg-accent/60',
+										index === $store.command.activeIndex ? 'bg-[var(--ios-fill-quaternary)]' : 'hover:bg-[var(--ios-fill-quaternary)]/60',
 										entry.disabled ? 'opacity-50 cursor-not-allowed' : '',
 									]"
 									:disabled="entry.disabled || entry.loading"
@@ -58,9 +59,9 @@ const plugin = getPluginNavItem("command")!;
 								>
 									<span>
 										<span x-text="entry.item.label"></span>
-										<span class="text-xs text-muted-foreground ml-2" x-text="entry.item.group"></span>
+										<span class="text-xs text-[var(--ios-label-secondary)] ml-2" x-text="entry.item.group"></span>
 									</span>
-									<span class="text-xs text-muted-foreground" x-text="entry.item.shortcut"></span>
+									<span class="text-xs text-[var(--ios-label-secondary)]" x-text="entry.item.shortcut"></span>
 								</button>
 							</li>
 						</template>
@@ -71,7 +72,7 @@ const plugin = getPluginNavItem("command")!;
 
 		<div>
 			<h3 class="text-sm font-medium mb-2">Integration</h3>
-			<ul class="text-xs text-muted-foreground list-disc pl-5 space-y-1">
+			<ul class="text-xs text-[var(--ios-label-secondary)] list-disc pl-5 space-y-1">
 				<li>Actions can call <code>$toast</code>, <code>$store.theme</code>, or any app logic</li>
 				<li>Nested pages load child commands via <code>pushPage()</code></li>
 				<li><code>visibleItems</code>, ARIA props, and disabled rows stay headless for your markup</li>
@@ -79,5 +80,5 @@ const plugin = getPluginNavItem("command")!;
 		</div>
 	</div>
 
-	<p class="text-xs text-muted-foreground mt-6">Package: <code>{plugin.package}</code></p>
+	<p class="text-xs text-[var(--ios-label-secondary)] mt-6">Package: <code>{plugin.package}</code></p>
 </DemoSection>

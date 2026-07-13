@@ -2,6 +2,7 @@ import type AlpineType from "alpinejs";
 import { createPermissions, type PermissionsController } from "./controller.js";
 import type {
   PermissionAdapter,
+  PermissionSnapshot,
   PermissionsMagic,
   PermissionsPluginOptions,
   PermissionsStore,
@@ -13,12 +14,29 @@ interface PermissionsAlpine extends AlpineType.Alpine {
 
 const PERMISSIONS_STORE_KEY = "permissions";
 
+function syncRegistry(
+  registry: Record<string, PermissionSnapshot>,
+  controller: PermissionsController
+): void {
+  const next = controller.getRegistry();
+
+  for (const key of Object.keys(registry)) {
+    if (!(key in next)) {
+      Reflect.deleteProperty(registry, key);
+    }
+  }
+
+  Object.assign(registry, next);
+}
+
 function createPermissionsStore(controller: PermissionsController): PermissionsStore {
+  const registry: Record<string, PermissionSnapshot> = { ...controller.getRegistry() };
+
   const store: PermissionsStore = {
-    registry: { ...controller.getRegistry() },
+    registry,
 
     get(name: string) {
-      return store.registry[name];
+      return registry[name];
     },
 
     query(name: string) {
@@ -39,10 +57,10 @@ function createPermissionsStore(controller: PermissionsController): PermissionsS
 
     register(adapter: PermissionAdapter) {
       const dispose = controller.register(adapter);
-      store.registry = { ...controller.getRegistry() };
+      syncRegistry(registry, controller);
       return () => {
         dispose();
-        store.registry = { ...controller.getRegistry() };
+        syncRegistry(registry, controller);
       };
     },
   };
@@ -54,7 +72,7 @@ function syncReactiveRegistry(
   reactiveStore: PermissionsStore,
   controller: PermissionsController
 ): void {
-  reactiveStore.registry = { ...controller.getRegistry() };
+  syncRegistry(reactiveStore.registry as Record<string, PermissionSnapshot>, controller);
 }
 
 function registerPermissions(

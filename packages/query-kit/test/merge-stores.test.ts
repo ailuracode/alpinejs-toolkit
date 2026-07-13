@@ -103,4 +103,119 @@ describe("query devtools merge stores", () => {
       { id: "1", label: "Alpine.reactive" },
     ]);
   });
+
+  it("throws when no stores have devtools support", () => {
+    const fakeStore = { devtools: undefined } as unknown as Parameters<
+      typeof createMergedQueryDevtools
+    >[0][number];
+    expect(() => createMergedQueryDevtools([fakeStore])).toThrow(
+      /requires at least one query store/
+    );
+  });
+
+  it("throws when a store lacks devtools", () => {
+    const valid = createQueryClient({ adapter: nanostoresQueryAdapter });
+    const fakeStore = { devtools: undefined } as unknown as Parameters<
+      typeof createMergedQueryDevtools
+    >[0][number];
+    // Only the invalid store is passed, so validStores is empty
+    expect(() => createMergedQueryDevtools([fakeStore])).toThrow(
+      /requires at least one query store/
+    );
+    valid.reset();
+  });
+
+  it("getStoresForScope returns all stores for 'all' scope", () => {
+    const primary = createQueryClient({ adapter: nanostoresQueryAdapter });
+    const secondary = createQueryClient({ adapter: nanostoresQueryAdapter });
+    const merged = createMergedQueryDevtools([primary, secondary]);
+
+    expect(merged.getStoresForScope("all")).toHaveLength(2);
+  });
+
+  it("getStoresForScope returns empty array for unknown scope", () => {
+    const primary = createQueryClient({ adapter: nanostoresQueryAdapter });
+    const merged = createMergedQueryDevtools([primary]);
+
+    expect(merged.getStoresForScope("unknown")).toEqual([]);
+  });
+
+  it("getStoreForQuery throws for unknown storeId", () => {
+    const primary = createQueryClient({ adapter: nanostoresQueryAdapter });
+    const merged = createMergedQueryDevtools([primary]);
+
+    expect(() =>
+      merged.getStoreForQuery({ storeId: "unknown" } as unknown as Parameters<
+        typeof merged.getStoreForQuery
+      >[0])
+    ).toThrow(/No query store registered/);
+  });
+
+  it("getStoreForMutation throws for unknown storeId", () => {
+    const primary = createQueryClient({ adapter: nanostoresQueryAdapter });
+    const merged = createMergedQueryDevtools([primary]);
+
+    expect(() =>
+      merged.getStoreForMutation({ storeId: "unknown" } as unknown as Parameters<
+        typeof merged.getStoreForMutation
+      >[0])
+    ).toThrow(/No query store registered/);
+  });
+
+  it("resolveQueryDevtoolsStores uses stores array when provided", async () => {
+    const { resolveQueryDevtoolsStores } = await import("../src/devtools/merge-stores.js");
+    const primary = createQueryClient({ adapter: nanostoresQueryAdapter });
+    const secondary = createQueryClient({ adapter: nanostoresQueryAdapter });
+    const stores = resolveQueryDevtoolsStores({ stores: [primary, secondary] });
+
+    expect(stores).toContain(primary);
+    expect(stores).toContain(secondary);
+  });
+
+  it("resolveQueryDevtoolsStores uses single store when provided", async () => {
+    const { resolveQueryDevtoolsStores } = await import("../src/devtools/merge-stores.js");
+    const primary = createQueryClient({ adapter: nanostoresQueryAdapter });
+    const stores = resolveQueryDevtoolsStores({ store: primary });
+
+    expect(stores).toContain(primary);
+  });
+
+  it("resolveQueryDevtoolsStores combines store and additionalStores", async () => {
+    const { resolveQueryDevtoolsStores } = await import("../src/devtools/merge-stores.js");
+    const primary = createQueryClient({ adapter: nanostoresQueryAdapter });
+    const secondary = createQueryClient({ adapter: nanostoresQueryAdapter });
+    const stores = resolveQueryDevtoolsStores({
+      store: primary,
+      additionalStores: [secondary],
+    });
+
+    expect(stores).toContain(primary);
+    expect(stores).toContain(secondary);
+  });
+
+  it("resolveQueryDevtoolsStores throws when no stores provided", async () => {
+    const { resolveQueryDevtoolsStores } = await import("../src/devtools/merge-stores.js");
+    expect(() => resolveQueryDevtoolsStores({})).toThrow(/requires at least one query store/);
+  });
+
+  it("clearMutations clears all stores", async () => {
+    const Alpine = startAlpine();
+    const primary = createQueryClient({ adapter: createAlpineStoreAdapter(Alpine) });
+    const secondary = createQueryClient({ adapter: createAlpineStoreAdapter(Alpine) });
+    const merged = createMergedQueryDevtools([primary, secondary]);
+
+    const mutation = primary.mutate<string, string>({ mutationFn: async (x) => `ok:${x}` });
+    await mutation.mutate("x");
+    const beforeSnapshot = primary.devtools.getSnapshot();
+    expect(beforeSnapshot.mutations.length).toBeGreaterThan(0);
+
+    merged.devtools.clearMutations();
+    const afterPrimary = primary.devtools.getSnapshot();
+    const afterSecondary = secondary.devtools.getSnapshot();
+    expect(afterPrimary.mutations).toHaveLength(0);
+    expect(afterSecondary.mutations).toHaveLength(0);
+
+    primary.reset();
+    secondary.reset();
+  });
 });

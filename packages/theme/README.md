@@ -248,11 +248,12 @@ theme.get()     // { current, system, resolved }
 theme.set(value)
 theme.toggle()  // resolved 'dark' → 'light', 'light' → 'dark' (explicit)
 theme.reset()   // restores defaultTheme, removes persisted value
+theme.apply()   // re-applies resolved to the DOM (after external <html> mutations)
 theme.on('change', listener)  // returns unsubscribe
 theme.destroy() // idempotent, releases all listeners
 ```
 
-`toggle()` creates an explicit user preference — the manager does NOT return to `'system'`. `reset()` removes the persisted value and applies the configured `defaultTheme`.
+`toggle()` creates an explicit user preference — the manager does NOT return to `'system'`. `reset()` removes the persisted value and applies the configured `defaultTheme`. `apply()` re-runs the DOM strategy with the currently resolved value, bypassing the strategy's last-applied cache — useful when something else (Astro view transitions, browser extensions, hot reloads) has removed the class / attribute the strategy set on mount. It does not change internal state, persistence, or emit a `change` event.
 
 ## Initialization order
 
@@ -288,22 +289,23 @@ The init is idempotent — `createTheme()` is safe to call once per page, but th
 
 Call it when the consumer unmounts (e.g. inside a SPA route teardown, an Alpine `x-destroy` hook, or a Blade `@yield` block that lives for one request). For server-rendered pages that load Alpine on every navigation, the listeners are torn down automatically with the `window`.
 
-## Migration from `@ailuracode/alpine-theme@0.1.x`
+## Migration from `@ailuracode/alpine-theme@0.x`
 
-`0.2.0` is a breaking rewrite. The public surface changed:
+`1.0.0` is a breaking rewrite. The public surface changed:
 
-| `0.1.x`                                           | `0.2.x`                                                                                      |
-| ------------------------------------------------- | -------------------------------------------------------------------------------------------- |
-| `new ThemeController({…})` + `controller.mount()` | `createTheme({…})` (synchronous init)                                                        |
-| `themePlugin({…})` registers `$store.theme` only  | `themePlugin({…})` registers both `$store.theme` and `$theme`                                |
-| Single `mode` + `resolved` field                  | Three independent fields: `current` / `system` / `resolved`                                  |
-| `set` / `cycle` / `refresh` methods               | `set` / `toggle` / `reset` methods                                                           |
-| `modes` option for custom cycle order             | Removed — use the storage adapter to persist any value, or pass a default via `defaultTheme` |
-| `onChange` callback option                        | `theme.on('change', listener)` with structured `source` field                                |
-| Built-in `localStorage` only                      | Pluggable `ThemeStorage` adapters (`localStorage` / `memory` / custom)                       |
-| `strategy: 'class'` hard-coded                    | `strategy: 'class' \| 'attribute' \| 'none'`                                                 |
-| No cross-tab sync                                 | `storage` event wired by default, opt-out via `crossTab: false`                              |
-| Alpine-only                                       | Framework-agnostic — `createTheme()` works in Blade / Livewire / vanilla TS                  |
+| `0.x`                                             | `1.x`                                                                                       |
+| ------------------------------------------------- | ------------------------------------------------------------------------------------------- |
+| `new ThemeController({…})` + `controller.mount()` | `createTheme({…})` (synchronous init)                                                       |
+| `themePlugin({…})` registers `$store.theme` only  | `themePlugin({…})` registers both `$store.theme` and `$theme`                              |
+| Single `mode` + `resolved` field                  | Three independent fields: `current` / `system` / `resolved`                                |
+| `isLight` / `isDark` / `isSystem` / `isResolvedLight` / `isResolvedDark` | Dropped — read `theme.current` / `theme.resolved` directly and compare                     |
+| `set` / `cycle` / `refresh` methods               | `set` / `toggle` / `reset` / `apply` methods                                                |
+| `modes` option for custom cycle order             | Removed — pass a default via `defaultTheme`, persist any value through the storage adapter |
+| `onChange` callback option                        | `theme.on('change', listener)` with structured `source` field                               |
+| Built-in `localStorage` only                      | Pluggable `ThemeStorage` adapters (`localStorage` / `memory` / custom)                      |
+| `strategy: 'class'` hard-coded                    | `strategy: 'class' \| 'attribute' \| 'none'`                                                |
+| No cross-tab sync                                 | `storage` event wired by default, opt-out via `crossTab: false`                             |
+| Alpine-only                                       | Framework-agnostic — `createTheme()` works in Blade / Livewire / vanilla TS                 |
 
 `storage` is now pluggable. To migrate a custom `localStorage` key, pass `createLocalStorageThemeStorage({ key: 'my-key' })`. To migrate from `modes`, set the persisted value directly through the storage adapter (e.g. `storage.set('dark')` before `createTheme()` reads).
 

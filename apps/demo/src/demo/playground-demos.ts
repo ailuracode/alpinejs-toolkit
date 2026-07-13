@@ -8,6 +8,7 @@ import CommandDemo from "../components/demos/CommandDemo.astro";
 import DialogDemo from "../components/demos/DialogDemo.astro";
 import EnvDemo from "../components/demos/EnvDemo.astro";
 import GeoDemo from "../components/demos/GeoDemo.astro";
+import GestureDemo from "../components/demos/GestureDemo.astro";
 import JsonApiDemo from "../components/demos/JsonApiDemo.astro";
 import KeyboardDemo from "../components/demos/KeyboardDemo.astro";
 import LangDemo from "../components/demos/LangDemo.astro";
@@ -28,7 +29,6 @@ import TooltipDemo from "../components/demos/TooltipDemo.astro";
 import TransferDemo from "../components/demos/TransferDemo.astro";
 import VirtualDemo from "../components/demos/VirtualDemo.astro";
 import SelectionDemo from "../components/demos/SelectionDemo.astro";
-import { PLUGIN_NAV_ITEMS, type PluginNavItem } from "../plugin-nav";
 
 export const PLAYGROUND_DEMOS: Record<string, AstroComponentFactory> = {
   theme: ThemeDemo,
@@ -36,6 +36,7 @@ export const PLAYGROUND_DEMOS: Record<string, AstroComponentFactory> = {
   media: MediaDemo,
   scroll: ScrollDemo,
   geo: GeoDemo,
+  gesture: GestureDemo,
   lang: LangDemo,
   toggle: ToggleDemo,
   child: ChildDemo,
@@ -64,8 +65,4 @@ export const PLAYGROUND_DEMOS: Record<string, AstroComponentFactory> = {
 
 export function getPlaygroundDemo(id: string): AstroComponentFactory | undefined {
   return PLAYGROUND_DEMOS[id];
-}
-
-export function isPlaygroundPlugin(id: string): id is PluginNavItem["id"] {
-  return PLUGIN_NAV_ITEMS.some((item) => item.id === id);
 }

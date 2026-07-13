@@ -1,6 +1,11 @@
 import Alpine from "alpinejs";
 import { afterEach, describe, expect, it } from "vitest";
+import { startAlpine } from "../../../test/helpers.js";
 import dialogPlugin from "../src/index.js";
+
+function startDialogAlpine() {
+  startAlpine(dialogPlugin());
+}
 
 function getDialogShell(): HTMLElement | null {
   return document.getElementById("close")?.closest("[x-show]") as HTMLElement | null;
@@ -12,6 +17,8 @@ describe("@ailuracode/alpine-dialog x-teleport integration", () => {
   });
 
   it("closes when the close button is clicked inside a teleported dialog", async () => {
+    startDialogAlpine();
+
     document.body.innerHTML = `
       <div id="overlay-root"></div>
       <div x-data x-init="$store.dialog.register('settings')">
@@ -27,10 +34,7 @@ describe("@ailuracode/alpine-dialog x-teleport integration", () => {
         </template>
       </div>
     `;
-
-    const register = dialogPlugin();
-    Alpine.plugin(register);
-    Alpine.start();
+    await Alpine.nextTick();
 
     document.getElementById("open")?.click();
     await Alpine.nextTick();
@@ -46,6 +50,8 @@ describe("@ailuracode/alpine-dialog x-teleport integration", () => {
   });
 
   it("closes on Escape in a teleported dialog", async () => {
+    startDialogAlpine();
+
     document.body.innerHTML = `
       <div id="overlay-root"></div>
       <div x-data x-init="$store.dialog.register('settings')" @keydown.window="$store.dialog.handleKeydown('settings', $event)">
@@ -59,10 +65,7 @@ describe("@ailuracode/alpine-dialog x-teleport integration", () => {
         </template>
       </div>
     `;
-
-    const register = dialogPlugin();
-    Alpine.plugin(register);
-    Alpine.start();
+    await Alpine.nextTick();
 
     document.getElementById("open")?.click();
     await Alpine.nextTick();
@@ -76,6 +79,8 @@ describe("@ailuracode/alpine-dialog x-teleport integration", () => {
   });
 
   it("closes on backdrop click in a teleported dialog", async () => {
+    startDialogAlpine();
+
     document.body.innerHTML = `
       <div id="overlay-root"></div>
       <div x-data x-init="$store.dialog.register('settings')">
@@ -90,10 +95,7 @@ describe("@ailuracode/alpine-dialog x-teleport integration", () => {
         </template>
       </div>
     `;
-
-    const register = dialogPlugin();
-    Alpine.plugin(register);
-    Alpine.start();
+    await Alpine.nextTick();
 
     document.getElementById("open")?.click();
     await Alpine.nextTick();

@@ -9,6 +9,7 @@ const SCOPE = "@ailuracode/alpine-";
 const SOURCE_FILE_PATTERN = /\.(?:[cm]?ts|[cm]?js)$/;
 const TEST_FILE_PATTERN = /\.(?:test|spec)\.[cm]?[jt]sx?$/;
 const FROM_INTERNAL_RE = /\bfrom\s+["'](?:\.\/|\.\.\/)internal\//;
+const FROM_ADAPTER_RE = /\bfrom\s+["'](?:\.\/|\.\.\/)(?:alpine|bindings?|adapter)\//;
 const VALUE_ALPINE_IMPORT_RE = /^import\s+(?!type\b)[\s\S]*?\sfrom\s+["']alpinejs["']/m;
 const INDEX_IMPORT_RE = /from\s+["'](?:\.\.\/)+src\/index(?:\.(?:js|ts))?["']/;
 const CONTROLLER_FILE_RE = /(?:^|\/)controller(?:[-.][^/]+)?\.(?:[cm]?ts|[cm]?js)$/;
@@ -168,11 +169,13 @@ export function validateInternalBarrelExports(root, policy) {
     const violations = barrel
       .split(/\r?\n/)
       .map((line, index) => ({ line, lineNumber: index + 1 }))
-      .filter(({ line }) => FROM_INTERNAL_RE.test(line));
+      .filter(({ line }) => FROM_INTERNAL_RE.test(line) || FROM_ADAPTER_RE.test(line));
 
     for (const violation of violations) {
+      const adapterMatch = violation.line.match(FROM_ADAPTER_RE);
+      const kind = adapterMatch ? "alpine adapter" : "internal";
       errors.push(
-        `packages/${entry.name}/src/index.ts:${violation.lineNumber}: public barrel must not re-export from src/internal/ (${violation.line.trim()})`
+        `packages/${entry.name}/src/index.ts:${violation.lineNumber}: public barrel must not re-export from ${kind} path (${violation.line.trim()})`
       );
     }
   }

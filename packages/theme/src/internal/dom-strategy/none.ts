@@ -23,7 +23,7 @@ export class NoneStrategy implements DomStrategy {
     // intentionally empty
   }
 
-  apply(_resolved: ResolvedTheme): void {
+  apply(_resolved: ResolvedTheme, _force = false): void {
     // intentionally empty
   }
 

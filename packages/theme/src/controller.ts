@@ -238,6 +238,30 @@ export class ThemeController extends BaseController<ThemeEvents> {
   }
 
   /**
+   * Re-applies the currently resolved theme to the DOM, bypassing
+   * the strategy's internal cache of the last-applied value.
+   *
+   * The controller normally treats the DOM as a function of its
+   * internal state and skips redundant writes. That assumption
+   * breaks when something external mutates the target element —
+   * most notably Astro View Transitions, which preserves `<html>`
+   * across navigations but lets the framework's diff sync its
+   * attributes, potentially removing the `dark` / `light` /
+   * `data-theme` attribute our strategy set on initial mount.
+   *
+   * Call this after any external DOM mutation that may have
+   * invalidated the strategy's view of the world. The change is
+   * purely cosmetic — internal state and persistence are untouched —
+   * so no `change` event is emitted.
+   */
+  apply(): void {
+    if (this.isDestroyed) {
+      return;
+    }
+    this.#dom.apply(this.#resolved, true);
+  }
+
+  /**
    * Tears down every side effect. Idempotent. `super.destroy()` runs
    * first so the registered cleanups (toggle, system observer,
    * cross-tab listener) execute against a live lifecycle; the DOM

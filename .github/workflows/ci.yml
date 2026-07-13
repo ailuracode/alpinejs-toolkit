@@ -20,6 +20,7 @@ on:
       - "pnpm-workspace.yaml"
       - "tsconfig.json"
       - "vitest.config.ts"
+      - "e2e/**"
       - "biome.json"
   pull_request:
     branches: [master]
@@ -35,6 +36,7 @@ on:
       - "pnpm-workspace.yaml"
       - "tsconfig.json"
       - "vitest.config.ts"
+      - "e2e/**"
       - "biome.json"
       - "docs/**"
       - "AGENTS.md"
@@ -58,19 +60,25 @@ jobs:
       run_pack: ${{ steps.changes.outputs.run_pack }}
       run_size: ${{ steps.changes.outputs.run_size }}
       run_demo: ${{ steps.changes.outputs.run_demo }}
+      run_e2e: ${{ steps.changes.outputs.run_e2e }}
       pack_packages: ${{ steps.changes.outputs.pack_packages }}
       build_filters: ${{ steps.changes.outputs.build_filters }}
       test_paths: ${{ steps.changes.outputs.test_paths }}
+      e2e_packages: ${{ steps.changes.outputs.e2e_packages }}
       summary: ${{ steps.changes.outputs.summary }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+        run: |
+          set -euo pipefail
 
-      - name: Fetch base branch
-        if: github.event_name == 'pull_request'
-        run: git fetch --no-tags origin "${{ github.base_ref }}"
+          git init
+          git remote add origin "https://github.com/${GITHUB_REPOSITORY}.git"
+          git fetch --no-tags origin "${GITHUB_SHA}"
+          git checkout FETCH_HEAD
+
+          if [ "${GITHUB_EVENT_NAME}" = "pull_request" ]; then
+            git fetch --no-tags origin "${GITHUB_BASE_REF}"
+          fi
 
       - name: Detect changes
         id: changes
@@ -92,7 +100,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        run: |
+          set -euo pipefail
+          git init
+          git remote add origin "https://github.com/${GITHUB_REPOSITORY}.git"
+          git fetch --depth=1 --no-tags origin "${GITHUB_SHA}"
+          git checkout FETCH_HEAD
 
       - uses: ./.github/actions/setup
 
@@ -179,13 +192,63 @@ jobs:
         if: needs.detect.outputs.run_demo == 'true'
         run: pnpm run build:demo
 
+  e2e:
+    needs: detect
+    if: needs.detect.outputs.run_e2e == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        run: |
+          set -euo pipefail
+          git init
+          git remote add origin "https://github.com/${GITHUB_REPOSITORY}.git"
+          git fetch --depth=1 --no-tags origin "${GITHUB_SHA}"
+          git checkout FETCH_HEAD
+
+      - uses: ./.github/actions/setup
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Playwright browsers
+        run: |
+          set -euo pipefail
+          if [ "${{ needs.detect.outputs.run_full }}" = "true" ] && [ "${{ github.event_name }}" = "schedule" ]; then
+            pnpm run playwright:install:all
+          else
+            pnpm run playwright:install
+          fi
+
+      - name: Run Playwright E2E (full browser matrix)
+        if: needs.detect.outputs.run_full == 'true' && github.event_name == 'schedule'
+        run: pnpm run test:e2e:full
+
+      - name: Run Playwright E2E (Chromium baseline)
+        if: needs.detect.outputs.run_full != 'true' || github.event_name != 'schedule'
+        env:
+          E2E_BROWSER_PROFILE: pr
+        run: |
+          set -euo pipefail
+          if [ "${{ needs.detect.outputs.run_full }}" = "true" ]; then
+            pnpm run test:e2e
+          elif [ -n "${{ needs.detect.outputs.e2e_packages }}" ]; then
+            node scripts/e2e-run.mjs --packages "${{ needs.detect.outputs.e2e_packages }}"
+          else
+            echo "No affected E2E packages"
+          fi
+
   audit:
     needs: detect
     if: needs.detect.outputs.run_audit == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        run: |
+          set -euo pipefail
+          git init
+          git remote add origin "https://github.com/${GITHUB_REPOSITORY}.git"
+          git fetch --depth=1 --no-tags origin "${GITHUB_SHA}"
+          git checkout FETCH_HEAD
 
       - uses: ./.github/actions/setup
 
@@ -196,7 +259,7 @@ jobs:
         run: pnpm audit --audit-level critical
 
   gate:
-    needs: [detect, validate, audit]
+    needs: [detect, validate, e2e, audit]
     if: always()
     runs-on: ubuntu-latest
     steps:
@@ -205,8 +268,10 @@ jobs:
           DOCS_ONLY: ${{ needs.detect.outputs.docs_only }}
           RUN_VALIDATE: ${{ needs.detect.outputs.run_validate }}
           RUN_AUDIT: ${{ needs.detect.outputs.run_audit }}
+          RUN_E2E: ${{ needs.detect.outputs.run_e2e }}
           DETECT_RESULT: ${{ needs.detect.result }}
           VALIDATE_RESULT: ${{ needs.validate.result }}
+          E2E_RESULT: ${{ needs.e2e.result }}
           AUDIT_RESULT: ${{ needs.audit.result }}
         run: |
           set -euo pipefail
@@ -223,6 +288,11 @@ jobs:
 
           if [ "$RUN_VALIDATE" = "true" ] && [ "$VALIDATE_RESULT" != "success" ]; then
             echo "validate job did not succeed"
+            exit 1
+          fi
+
+          if [ "$RUN_E2E" = "true" ] && [ "$E2E_RESULT" != "success" ]; then
+            echo "e2e job did not succeed"
             exit 1
           fi
 

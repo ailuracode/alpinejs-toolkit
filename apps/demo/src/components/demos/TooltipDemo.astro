@@ -4,9 +4,9 @@ import DemoSection from "../DemoSection.astro";
 
 const plugin = getPluginNavItem("tooltip")!;
 const buttonClasses =
-  "inline-flex min-w-28 items-center justify-center rounded-md border border-input bg-background px-3 py-2 text-sm font-medium hover:bg-accent focus:outline-none focus-visible:ring-2 focus-visible:ring-ring";
+  "inline-flex min-w-28 items-center justify-center rounded-md border border-input bg-background px-3 py-2 text-sm font-medium hover:bg-[var(--ios-fill-quaternary)] focus:outline-none focus-visible:ring-2 focus-visible:ring-ring";
 const tooltipClasses =
-  "pointer-events-none whitespace-nowrap rounded-md border bg-popover px-3 py-1.5 text-xs text-popover-foreground shadow-md";
+  "pointer-events-none whitespace-nowrap rounded-md border bg-[var(--ios-bg-elevated)] px-3 py-1.5 text-xs text-[var(--ios-label)] shadow-md";
 ---
 
 <DemoSection id={plugin.id} title={plugin.title} api={plugin.api} description={plugin.description}>
@@ -38,7 +38,7 @@ const tooltipClasses =
 	>
 		<div>
 			<h3 class="text-sm font-medium mb-2">Placement variants</h3>
-			<p class="text-xs text-muted-foreground mb-4">
+			<p class="text-xs text-[var(--ios-label-secondary)] mb-4">
 				Hover or focus each trigger. One teleported panel with <code>@alpinejs/anchor</code> — only the
 				active placement mounts an anchor. Active:
 				<strong x-text="activeDemo?.placement ?? '—'"></strong>
@@ -58,7 +58,7 @@ const tooltipClasses =
 							@keydown.escape="$store.tooltip.handleKeydown(demo.id, $event)"
 							x-text="demo.label"
 						></button>
-						<code class="text-[10px] text-muted-foreground" x-text="demo.placement"></code>
+						<code class="text-[10px] text-[var(--ios-label-secondary)]" x-text="demo.placement"></code>
 					</div>
 				</template>
 			</div>
@@ -174,7 +174,7 @@ const tooltipClasses =
 			x-init="$store.tooltip.register('tip-scroll', { openDelay: 0, closeDelay: 0 })"
 		>
 			<h3 class="text-sm font-medium mb-2">Scroll test</h3>
-			<p class="text-xs text-muted-foreground mb-3">
+			<p class="text-xs text-[var(--ios-label-secondary)] mb-3">
 				Hover the trigger, then scroll inside the box — <code>x-anchor.fixed.noflip</code> with
 				<code>x-teleport</code> keeps the tooltip anchored while scrolling.
 			</p>
@@ -210,7 +210,7 @@ const tooltipClasses =
 
 		<div>
 			<h3 class="text-sm font-medium mb-2">Notes</h3>
-			<ul class="text-xs text-muted-foreground list-disc pl-5 space-y-1">
+			<ul class="text-xs text-[var(--ios-label-secondary)] list-disc pl-5 space-y-1">
 				<li>Pair with <code>@alpinejs/anchor</code> — store handles open/close, delays, and Escape</li>
 				<li>
 					Use <code>x-teleport</code> + <code>x-anchor.fixed.noflip</code> — one anchor per open tooltip
@@ -220,5 +220,5 @@ const tooltipClasses =
 		</div>
 	</div>
 
-	<p class="text-xs text-muted-foreground mt-6">Package: <code>{plugin.package}</code></p>
+	<p class="text-xs text-[var(--ios-label-secondary)] mt-6">Package: <code>{plugin.package}</code></p>
 </DemoSection>

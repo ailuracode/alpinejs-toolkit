@@ -7,7 +7,7 @@ const plugin = getPluginNavItem("geo")!;
 ---
 
 <DemoSection id={plugin.id} title={plugin.title} api={plugin.api} description={plugin.description}>
-	<p class="text-sm text-muted-foreground" x-show="!$store.geo.isSupported" x-cloak>
+	<p class="text-sm text-[var(--ios-label-secondary)]" x-show="!$store.geo.isSupported" x-cloak>
 		Geolocation is not available in this browser.
 	</p>
 	<template x-if="$store.geo.isSupported">
@@ -26,13 +26,13 @@ const plugin = getPluginNavItem("geo")!;
 				<li x-show="$store.geo.altitude !== null">Altitude: <strong x-text="$store.geo.altitude?.toFixed(1)"></strong> m</li>
 				<li x-show="$store.geo.speed !== null">Speed: <strong x-text="$store.geo.speed?.toFixed(1)"></strong> m/s</li>
 			</ul>
-			<p class="text-sm text-destructive mt-2" x-show="$store.geo.hasError" x-cloak>
+			<p class="text-sm text-[var(--ios-red)] mt-2" x-show="$store.geo.hasError" x-cloak>
 				<strong x-text="$store.geo.error"></strong>
 				<span x-show="$store.geo.errorCode !== null"> (code <span x-text="$store.geo.errorCode"></span>)</span>
 			</p>
 		</div>
 	</template>
-	<p class="text-xs text-muted-foreground mt-3">
+	<p class="text-xs text-[var(--ios-label-secondary)] mt-3">
 		Package: <code>{plugin.package}</code>
 	</p>
 </DemoSection>

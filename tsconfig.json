@@ -44,13 +44,17 @@
       "@ailuracode/alpine-theme": ["./packages/theme/src/index.ts"],
       "@ailuracode/alpine-toggle": ["./packages/toggle/src/index.ts"],
       "@ailuracode/alpine-geo": ["./packages/geo/src/index.ts"],
-      "@ailuracode/alpine-lang": ["./packages/lang/src/index.ts"]
+      "@ailuracode/alpine-lang": ["./packages/lang/src/index.ts"],
+      "@ailuracode/alpine-gesture": ["./packages/gesture/src/index.ts"]
     }
   },
   "include": [
     "packages/*/src/**/*.ts",
     "packages/*/src/**/*.d.ts",
     "packages/*/test/**/*.ts",
+    "packages/*/e2e/**/*.ts",
+    "packages/*/playwright.config.ts",
+    "e2e/**/*.ts",
     "test/**/*.ts",
     "test/**/*.d.ts",
     "vitest.config.ts",

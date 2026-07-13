@@ -12,7 +12,6 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 describe("pack:check", () => {
   it("discovers every non-private package dynamically", () => {
     const packages = discoverPublishablePackages(root);
-
     expect(packages.length).toBe(33);
     expect(packages.every((pkg) => pkg.isPrivate === false)).toBe(true);
   });

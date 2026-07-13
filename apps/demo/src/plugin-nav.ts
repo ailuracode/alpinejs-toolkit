@@ -171,6 +171,16 @@ export const PLUGIN_NAV_GROUPS: PluginNavGroup[] = [
         description:
           "asChild-style directive — merges wrapper attributes onto the first child via Alpine.morph(). Requires @alpinejs/morph.",
       },
+      {
+        id: "gesture",
+        title: "Gesture",
+        package: "@ailuracode/alpine-gesture",
+        api: "$store.gesture / x-gesture",
+        kind: "store",
+        tier: "extended",
+        description:
+          "Headless gesture recognition — tap, double-tap, long-press, swipe, pan, and pinch via pointer events. Configurable thresholds, axis locking, and deterministic competing-gesture cancellation.",
+      },
     ],
   },
   {
@@ -347,10 +357,6 @@ export const PLUGIN_NAV_GROUPS: PluginNavGroup[] = [
 ];
 
 export const PLUGIN_NAV_ITEMS: PluginNavItem[] = PLUGIN_NAV_GROUPS.flatMap((group) => group.items);
-
-export const ESSENTIAL_PLUGIN_IDS = PLUGIN_NAV_ITEMS.filter(
-  (item) => item.tier === "essential"
-).map((item) => item.id);
 
 export function getPluginsByTier(tier: PluginTier): PluginNavItem[] {
   return PLUGIN_NAV_ITEMS.filter((item) => item.tier === tier);

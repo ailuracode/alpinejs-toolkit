@@ -9,7 +9,7 @@ const plugin = getPluginNavItem("toast")!;
 <DemoSection id={plugin.id} title={plugin.title} api={plugin.api} description={plugin.description}>
 	<div class="grid gap-4">
 		<div>
-			<p class="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-2">Variants</p>
+			<p class="text-xs font-semibold uppercase tracking-wide text-[var(--ios-label-secondary)] mb-2">Variants</p>
 			<div class="flex flex-wrap gap-2">
 				<DemoButton @click="$toast('Hello from Alpine!')">Default</DemoButton>
 				<DemoButton @click="$toast.success('Saved')">Success</DemoButton>
@@ -21,7 +21,7 @@ const plugin = getPluginNavItem("toast")!;
 		</div>
 
 		<div>
-			<p class="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-2">Position & Content</p>
+			<p class="text-xs font-semibold uppercase tracking-wide text-[var(--ios-label-secondary)] mb-2">Position & Content</p>
 			<div class="flex flex-wrap gap-2">
 				<DemoButton @click="$toast('Top center', { position: 'top-center' })">Top Center</DemoButton>
 				<DemoButton @click="$toast.info({ content: { kind: 'badge', label: 'Pro plan', seats: 3 } })">Custom Content</DemoButton>
@@ -30,7 +30,7 @@ const plugin = getPluginNavItem("toast")!;
 		</div>
 
 		<div>
-			<p class="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-2">Queue API</p>
+			<p class="text-xs font-semibold uppercase tracking-wide text-[var(--ios-label-secondary)] mb-2">Queue API</p>
 			<div class="flex flex-wrap gap-2" x-data="{ lastToastId: null }">
 				<DemoButton @click="$toast.pushUnique('sync', { title: 'Syncing…', variant: 'loading', duration: false })">pushUnique</DemoButton>
 				<DemoButton @click="$toast.fromPayload({ title: 'Flash message', variant: 'success', description: 'fromPayload()' })">fromPayload</DemoButton>
@@ -42,7 +42,7 @@ const plugin = getPluginNavItem("toast")!;
 		</div>
 
 		<div>
-			<p class="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-2">Promise</p>
+			<p class="text-xs font-semibold uppercase tracking-wide text-[var(--ios-label-secondary)] mb-2">Promise</p>
 			<div class="flex flex-wrap gap-2">
 				<DemoButton @click="$toast.promise(function () { return new Promise(function (r) { setTimeout(function () { r('done') }, 1200) }) }, { loading: 'Saving…', success: 'Saved!', error: 'Failed' })">
 					Resolve
@@ -54,7 +54,7 @@ const plugin = getPluginNavItem("toast")!;
 		</div>
 
 		<div>
-			<p class="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-2">Window Event</p>
+			<p class="text-xs font-semibold uppercase tracking-wide text-[var(--ios-label-secondary)] mb-2">Window Event</p>
 			<DemoButton
 				@click="window.dispatchEvent(new CustomEvent('toast', { detail: { title: 'From window event', variant: 'info' } }))"
 			>
@@ -62,7 +62,7 @@ const plugin = getPluginNavItem("toast")!;
 			</DemoButton>
 		</div>
 	</div>
-	<p class="text-xs text-muted-foreground mt-3">
+	<p class="text-xs text-[var(--ios-label-secondary)] mt-3">
 		Package: <code>{plugin.package}</code> · Renderer: <code>SonnerToasts.astro</code>
 	</p>
 </DemoSection>

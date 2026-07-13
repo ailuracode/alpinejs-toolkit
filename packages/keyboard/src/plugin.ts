@@ -1,3 +1,4 @@
+import type { Alpine } from "@ailuracode/alpine-core";
 import type AlpineType from "alpinejs";
 import { createKeyboard, type KeyboardController } from "./controller.js";
 import type {
@@ -10,9 +11,9 @@ import type {
   ShortcutScope,
 } from "./types.js";
 
-interface KeyboardAlpine extends AlpineType.Alpine {
+type KeyboardAlpine = Alpine<{ keyboard: KeyboardStore }> & {
   cleanup?(callback: () => void): void;
-}
+};
 
 const KEYBOARD_STORE_KEY = "keyboard";
 
@@ -80,9 +81,10 @@ function registerInitialShortcuts(
 }
 
 function registerKeyboard(
-  Alpine: KeyboardAlpine,
+  alpine: AlpineType.Alpine,
   options: KeyboardPluginOptions = {}
 ): KeyboardController {
+  const Alpine = alpine as unknown as KeyboardAlpine;
   const controller = options.controller ?? createKeyboard(options.options);
   registerInitialShortcuts(controller, options.shortcuts ?? []);
 
@@ -113,14 +115,14 @@ export function keyboardPlugin(
   optionsOrAlpine?: KeyboardPluginOptions | AlpineType.Alpine
 ): undefined | ((Alpine: AlpineType.Alpine) => KeyboardController) {
   if (optionsOrAlpine && typeof (optionsOrAlpine as AlpineType.Alpine).magic === "function") {
-    registerKeyboard(optionsOrAlpine as KeyboardAlpine, {});
+    registerKeyboard(optionsOrAlpine as AlpineType.Alpine, {});
     return;
   }
 
   const options = (optionsOrAlpine as KeyboardPluginOptions | undefined) ?? {};
 
   return (Alpine: AlpineType.Alpine) => {
-    return registerKeyboard(Alpine as KeyboardAlpine, options);
+    return registerKeyboard(Alpine, options);
   };
 }
 
