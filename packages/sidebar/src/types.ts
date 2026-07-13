@@ -13,7 +13,7 @@
  * `$store.sidebar` and `$sidebar` magic.
  */
 
-import type { Alpine, PluginCallback, Unsubscribe } from "@ailuracode/alpine-core";
+import type { Alpine, PluginCallback, SingletonScope, Unsubscribe } from "@ailuracode/alpine-core";
 import type { ScrollStore } from "@ailuracode/alpine-scroll";
 import type { Alpine as AlpineBase } from "alpinejs";
 
@@ -193,6 +193,13 @@ export interface CreateSidebarOptions {
    * already in their target shape by the time the callback runs.
    */
   readonly onVisibilityChange?: (visible: boolean, source: SidebarChangeSource) => void;
+  /**
+   * Singleton scope for this controller. Defaults to the active
+   * `document`, an ambient `runWithSingletonScope()` context, or —
+   * in SSR — must be provided explicitly via
+   * `createSingletonScope()`.
+   */
+  readonly scope?: SingletonScope;
 }
 
 /** Default `localStorage` key used by {@link createLocalStorageSidebarStorage}. */

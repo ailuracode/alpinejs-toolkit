@@ -55,9 +55,9 @@
 
 import {
   BaseController,
-  clearSingleton,
   createSingleton,
   generateId,
+  releaseSingleton,
   ToolkitError,
   type Unsubscribe,
 } from "@ailuracode/alpine-core";
@@ -125,11 +125,16 @@ export const MEDIA_SINGLETON_KEY = "@ailuracode/alpine-media/default";
 export function createMedia<Name extends string>(
   options: CreateMediaOptions<Name> = {}
 ): MediaController<Name> {
-  return createSingleton(MEDIA_SINGLETON_KEY, () => {
-    const controller = new MediaController<Name>(options);
-    controller.mount();
-    return controller;
-  });
+  const { scope, ...factoryOptions } = options;
+  return createSingleton(
+    MEDIA_SINGLETON_KEY,
+    () => {
+      const controller = new MediaController<Name>(factoryOptions);
+      controller.mount();
+      return controller;
+    },
+    { scope, options: factoryOptions }
+  );
 }
 
 /**
@@ -381,7 +386,7 @@ export class MediaController<Name extends string = string>
     this.#breakpointQueries = null;
     this.#win = null;
     super.destroy();
-    clearSingleton(MEDIA_SINGLETON_KEY);
+    releaseSingleton(MEDIA_SINGLETON_KEY, this);
   }
 
   // ── Initialization ──────────────────────────────────────────────

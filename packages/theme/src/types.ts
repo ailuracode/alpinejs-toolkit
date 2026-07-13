@@ -7,7 +7,7 @@
  * or type are breaking changes.
  */
 
-import type { Alpine, PluginCallback, Unsubscribe } from "@ailuracode/alpine-core";
+import type { Alpine, PluginCallback, SingletonScope, Unsubscribe } from "@ailuracode/alpine-core";
 import type { Alpine as AlpineBase } from "alpinejs";
 
 /** The values the user can select. `'system'` defers to the OS preference. */
@@ -160,6 +160,13 @@ export interface CreateThemeOptions {
    * changes. The default localStorage adapter enables this.
    */
   readonly crossTab?: boolean;
+  /**
+   * Singleton scope for this controller. Defaults to the active
+   * `document`, an ambient `runWithSingletonScope()` context, or —
+   * in SSR — must be provided explicitly via
+   * `createSingletonScope()`.
+   */
+  readonly scope?: SingletonScope;
 }
 
 /** Public, framework-agnostic manager returned by {@link createTheme}. */

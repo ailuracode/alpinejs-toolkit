@@ -47,9 +47,9 @@
 
 import {
   BaseController,
-  clearSingleton,
   createSingleton,
   generateId,
+  releaseSingleton,
   safeMatchMedia,
 } from "@ailuracode/alpine-core";
 import type { ScrollStore } from "@ailuracode/alpine-scroll";
@@ -114,11 +114,16 @@ type MappedSidebarChangeSource = Extract<SidebarChangeSource, "user" | "reset">;
  * `createSidebar()` factory enforces uniqueness.
  */
 export function createSidebar(options: CreateSidebarOptions = {}): SidebarController {
-  return createSingleton(SIDEBAR_SINGLETON_KEY, () => {
-    const controller = new SidebarController(options);
-    controller.mount();
-    return controller;
-  });
+  const { scope, ...factoryOptions } = options;
+  return createSingleton(
+    SIDEBAR_SINGLETON_KEY,
+    () => {
+      const controller = new SidebarController(factoryOptions);
+      controller.mount();
+      return controller;
+    },
+    { scope, options: factoryOptions }
+  );
 }
 
 /**
@@ -333,7 +338,7 @@ export class SidebarController extends BaseController<SidebarEvents> implements 
       this.#lockHandle = null;
     }
     super.destroy();
-    clearSingleton(SIDEBAR_SINGLETON_KEY);
+    releaseSingleton(SIDEBAR_SINGLETON_KEY, this);
   }
 
   /**

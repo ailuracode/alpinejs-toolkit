@@ -51,9 +51,9 @@
 
 import {
   BaseController,
-  clearSingleton,
   createSingleton,
   generateId,
+  releaseSingleton,
 } from "@ailuracode/alpine-core";
 import { type ToggleChangeDetail, ToggleController } from "@ailuracode/alpine-toggle";
 import type { ThemeEvents } from "./events";
@@ -103,11 +103,16 @@ const THEME_SINGLETON_KEY = "@ailuracode/alpine-theme/default";
  * `createTheme()` factory enforces uniqueness.
  */
 export function createTheme(options: CreateThemeOptions = {}): ThemeController {
-  return createSingleton(THEME_SINGLETON_KEY, () => {
-    const controller = new ThemeController(options);
-    controller.mount();
-    return controller;
-  });
+  const { scope, ...factoryOptions } = options;
+  return createSingleton(
+    THEME_SINGLETON_KEY,
+    () => {
+      const controller = new ThemeController(factoryOptions);
+      controller.mount();
+      return controller;
+    },
+    { scope, options: factoryOptions }
+  );
 }
 
 /**
@@ -276,7 +281,7 @@ export class ThemeController extends BaseController<ThemeEvents> {
     }
     super.destroy();
     this.#dom.destroy();
-    clearSingleton(THEME_SINGLETON_KEY);
+    releaseSingleton(THEME_SINGLETON_KEY, this);
   }
 
   /**

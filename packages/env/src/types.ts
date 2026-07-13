@@ -1,3 +1,5 @@
+import type { SingletonScope } from "@ailuracode/alpine-core";
+
 export type VisibilityState = "visible" | "hidden" | "prerender";
 
 export interface NetworkMagic {
@@ -60,3 +62,14 @@ export type EnvPluginOptions = {
   battery?: boolean;
   platform?: boolean;
 };
+
+/** Options accepted by {@link createEnv}. */
+export interface CreateEnvOptions {
+  /**
+   * Singleton scope for this controller. Defaults to the active
+   * `document`, an ambient `runWithSingletonScope()` context, or —
+   * in SSR — must be provided explicitly via
+   * `createSingletonScope()`.
+   */
+  readonly scope?: SingletonScope;
+}
