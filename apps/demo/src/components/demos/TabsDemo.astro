@@ -4,7 +4,7 @@ import DemoSection from "../DemoSection.astro";
 
 const plugin = getPluginNavItem("tabs")!;
 const tabClasses =
-  "rounded-md px-3 py-2 text-sm font-medium data-[active]:bg-primary data-[active]:text-primary-foreground hover:bg-accent";
+  "rounded-md px-3 py-2 text-sm font-medium data-[active]:bg-[var(--ios-blue)] data-[active]:text-white hover:bg-[var(--ios-fill-quaternary)]";
 ---
 
 <DemoSection id={plugin.id} title={plugin.title} api={plugin.api} description={plugin.description}>
@@ -18,7 +18,7 @@ const tabClasses =
 	>
 		<div>
 			<h3 class="text-sm font-medium mb-2">Controlled tabs</h3>
-			<p class="text-xs text-muted-foreground mb-3">
+			<p class="text-xs text-[var(--ios-label-secondary)] mb-3">
 				Active: <strong x-text="$store.tabs.active('settings-tabs')"></strong> · URL sync via
 				<code>?tab=</code>
 			</p>
@@ -61,5 +61,5 @@ const tabClasses =
 		</div>
 	</div>
 
-	<p class="text-xs text-muted-foreground mt-6">Package: <code>{plugin.package}</code></p>
+	<p class="text-xs text-[var(--ios-label-secondary)] mt-6">Package: <code>{plugin.package}</code></p>
 </DemoSection>

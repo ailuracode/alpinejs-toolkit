@@ -71,7 +71,7 @@ export async function startAlpineDemo(): Promise<void> {
       ],
     }),
     keyboard({
-      pauseWhileScopesActive: ["modal"],
+      options: { pauseWhileScopesActive: ["modal"] },
     }),
     toast({
       variants: toastDemoVariants,

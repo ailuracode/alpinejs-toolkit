@@ -28,14 +28,19 @@ export class ClassStrategy implements DomStrategy {
     this.#lightClass = options.lightClass;
   }
 
-  apply(resolved: ResolvedTheme): void {
+  apply(resolved: ResolvedTheme, force = false): void {
     const target = this.#configuredTarget ?? safeDocumentElement();
-    if (!target || resolved === this.#current) {
+    if (!target) {
+      return;
+    }
+    if (!force && resolved === this.#current) {
       return;
     }
     // Remove both classes (or the same one twice — idempotent) before
     // adding the new one. This guarantees no stale class lingers when
-    // the consumer renames `darkClass` / `lightClass` at runtime.
+    // the consumer renames `darkClass` / `lightClass` at runtime,
+    // and that `force` re-applies after external DOM mutations
+    // (e.g. Astro View Transitions syncing `<html>` attributes).
     target.classList.remove(this.#darkClass, this.#lightClass);
     target.classList.add(resolved === "dark" ? this.#darkClass : this.#lightClass);
     this.#current = resolved;

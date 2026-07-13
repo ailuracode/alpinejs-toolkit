@@ -25,9 +25,12 @@ export class AttributeStrategy implements DomStrategy {
     this.#attribute = options.attribute;
   }
 
-  apply(resolved: ResolvedTheme): void {
+  apply(resolved: ResolvedTheme, force = false): void {
     const target = this.#configuredTarget ?? safeDocumentElement();
-    if (!target || resolved === this.#current) {
+    if (!target) {
+      return;
+    }
+    if (!force && resolved === this.#current) {
       return;
     }
     target.setAttribute(this.#attribute, resolved);

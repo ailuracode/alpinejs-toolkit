@@ -46,7 +46,7 @@ const rowClass = "absolute left-0 top-0 flex w-full items-center border-b px-3 t
 		<!-- Fixed-size list -->
 		<div class="min-w-0" x-init="bindVirtual($el, 'fixed', { count: fixedRows.length, estimateSize: 36, overscan: 6 })">
 			<h3 class="text-sm font-medium mb-2">Fixed-size (10,000 rows)</h3>
-			<p class="text-xs text-muted-foreground mb-3" x-text="stateLine('fixed')"></p>
+			<p class="text-xs text-[var(--ios-label-secondary)] mb-3" x-text="stateLine('fixed')"></p>
 			<div
 				data-virtual-scroll="fixed"
 				class={scrollViewport}
@@ -84,7 +84,7 @@ const rowClass = "absolute left-0 top-0 flex w-full items-center border-b px-3 t
 			"
 		>
 			<h3 class="text-sm font-medium mb-2">Variable-size rows</h3>
-			<p class="text-xs text-muted-foreground mb-3" x-text="stateLine('variable')"></p>
+			<p class="text-xs text-[var(--ios-label-secondary)] mb-3" x-text="stateLine('variable')"></p>
 			<div data-virtual-scroll="variable" class={scrollViewport} x-bind="$store.virtual.listProps('variable', { label: 'Variable virtual list' })">
 				<div :style="contentStyle('variable')" x-bind="$store.virtual.contentProps('variable')">
 					<template x-for="item in $store.virtual.instances.variable?.virtualItems ?? []" :key="item.key">

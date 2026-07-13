@@ -1,7 +1,6 @@
 ---
-import { badgeVariants } from "@/components/ui/badge";
-import { cn } from "@/lib/utils";
 import { getPluginNavItem } from "../../plugin-nav";
+import Badge from "../astro/Badge.astro";
 import DemoSection from "../DemoSection.astro";
 
 const plugin = getPluginNavItem("gesture")!;
@@ -40,7 +39,7 @@ const plugin = getPluginNavItem("gesture")!;
 					this.pinchOrigin = this.pinchScale;
 				}
 			}"
-			class="rounded-lg border bg-card p-6"
+			class="rounded-lg border bg-[var(--ios-bg-secondary)] p-6"
 		>
 			<p class="text-sm font-medium mb-4">Try the gestures below on the touch area:</p>
 
@@ -50,19 +49,19 @@ const plugin = getPluginNavItem("gesture")!;
 				x-gesture:longpress="handleLongPress"
 				x-gesture:swipe="handleSwipe"
 				x-gesture:pan="handlePan"
-				class="flex h-40 select-none items-center justify-center rounded-md border-2 border-dashed text-sm text-muted-foreground touch-none"
+				class="flex h-40 select-none items-center justify-center rounded-md border-2 border-dashed text-sm text-[var(--ios-label-secondary)] touch-none"
 			>
 				Interact here
 			</div>
 
 			<div class="mt-3 flex flex-wrap items-center gap-2">
 				<span class="text-sm">Last:</span>
-				<span
-					class={cn(badgeVariants({ variant: "outline" }))}
-					x-text="lastGesture"
-				></span>
+			<Badge
+				variant="outline"
+				x-text="lastGesture"
+			></Badge>
 				<template x-if="lastGesture === 'pan move'">
-					<span class="text-xs text-muted-foreground flex flex-col gap-0.5">
+					<span class="text-xs text-[var(--ios-label-secondary)] flex flex-col gap-0.5">
 						<span>dx=<span x-text="panX.toFixed(4)"></span></span>
 						<span>dy=<span x-text="panY.toFixed(4)"></span></span>
 					</span>
@@ -76,7 +75,7 @@ const plugin = getPluginNavItem("gesture")!;
 				class="flex h-40 select-none items-center justify-center overflow-hidden rounded-md border-2 border-dashed touch-none"
 			>
 				<div
-					class="flex h-24 w-24 items-center justify-center rounded-md border bg-muted text-xs text-muted-foreground"
+					class="flex h-24 w-24 items-center justify-center rounded-md border bg-[var(--ios-fill-quaternary)] text-xs text-[var(--ios-label-secondary)]"
 					:style="'transform: scale(' + pinchScale + ')'"
 				>
 					<span x-text="'×' + pinchScale.toFixed(2)"></span>
@@ -84,7 +83,7 @@ const plugin = getPluginNavItem("gesture")!;
 			</div>
 		</div>
 	</div>
-	<p class="text-xs text-muted-foreground mt-3">
+	<p class="text-xs text-[var(--ios-label-secondary)] mt-3">
 		Package: <code>{plugin.package}</code>
 	</p>
 </DemoSection>

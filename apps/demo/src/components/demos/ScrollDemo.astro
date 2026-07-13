@@ -44,10 +44,10 @@ const plugin = getPluginNavItem("scroll")!;
 		<DemoButton @click="$store.scroll.toBottom()">toBottom()</DemoButton>
 		<DemoButton @click="$store.scroll.unlockAll()">unlockAll()</DemoButton>
 	</div>
-	<p class="text-sm text-muted-foreground mt-3">
+	<p class="text-sm text-[var(--ios-label-secondary)] mt-3">
 		Sticky progress bar in the header uses <code>$store.scroll.progress</code>. Mobile sidebar open also locks scroll via the shared <code>scroll</code> store wiring in <code>alpine-boot.ts</code>.
 	</p>
-	<p class="text-xs text-muted-foreground mt-3">
+	<p class="text-xs text-[var(--ios-label-secondary)] mt-3">
 		Package: <code>{plugin.package}</code>
 	</p>
 </DemoSection>
