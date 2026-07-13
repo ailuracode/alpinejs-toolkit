@@ -17,9 +17,9 @@
 	--normal-text: var(--popover-foreground);
 	--normal-border: var(--border);
 	--border-radius: var(--ios-radius-lg);
-	--toast-close-button-start: 0;
-	--toast-close-button-end: unset;
-	--toast-close-button-transform: translate(-35%, -35%);
+	--toast-close-button-start: unset;
+	--toast-close-button-end: 8px;
+	--toast-close-button-transform: translate(0, -25%);
 	--toast-icon-margin-start: -3px;
 	--toast-icon-margin-end: 4px;
 	--toast-button-margin-start: auto;
