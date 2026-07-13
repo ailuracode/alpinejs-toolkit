@@ -650,10 +650,10 @@ describe("QueryCache — comprehensive coverage", () => {
         },
       });
 
-      const promise = mutation.mutate("x");
+      const handled = mutation.mutate("x").catch(() => undefined);
       // advance past the retry delays (10ms then 20ms)
       await vi.advanceTimersByTimeAsync(50);
-      await promise.catch(() => undefined);
+      await handled;
       expect(mutation.status).toBe("error");
       retryCache.reset();
     });
