@@ -174,6 +174,12 @@ export interface QueryStore {
     } & QueryOptions<TData>
   ): Promise<void>;
   invalidate(key?: QueryKey | QueryKey[]): void;
+  /**
+   * Forcibly removes cache entries. Cancels timers and in-flight fetches,
+   * disposes adapter handles, and unsubscribes devtools listeners. Active
+   * observers are detached without decrementing their local subscription; a
+   * subsequent `destroy()` on the observe result is a no-op.
+   */
   remove(key?: QueryKey | QueryKey[]): void;
   setData<TData>(key: QueryKey, data: TData | ((current: TData | undefined) => TData)): void;
   cancel(key: QueryKey): void;
