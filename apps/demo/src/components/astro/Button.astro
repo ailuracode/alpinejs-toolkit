@@ -18,7 +18,7 @@ const {
   ...rest
 } = Astro.props as Props;
 
-const classes = cn(buttonVariants({ variant, size }), className);
+const classes = cn(buttonVariants({ variant, size }), "press-effect", className);
 ---
 
 {

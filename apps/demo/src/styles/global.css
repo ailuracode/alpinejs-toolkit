@@ -241,7 +241,7 @@
 	}
 }
 
-/* ── iOS-style transitions ── */
+/* ── Motion & Micro-interactions ── */
 @layer utilities {
 	.ios-transition {
 		transition-property: color, background-color, border-color, opacity, transform;
@@ -251,5 +251,100 @@
 
 	.ios-spring {
 		transition-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.1);
+	}
+}
+
+/* Card hover lift effect */
+@layer utilities {
+	.card-hover {
+		transition: transform 0.2s cubic-bezier(0.25, 0.1, 0.25, 1),
+								box-shadow 0.2s cubic-bezier(0.25, 0.1, 0.25, 1),
+								border-color 0.2s ease;
+	}
+	.card-hover:hover {
+		transform: translateY(-2px);
+		box-shadow: 0 8px 25px -5px rgba(0, 0, 0, 0.08),
+								0 4px 10px -5px rgba(0, 0, 0, 0.04);
+	}
+	.dark .card-hover:hover {
+		box-shadow: 0 8px 25px -5px rgba(0, 0, 0, 0.3),
+								0 4px 10px -5px rgba(0, 0, 0, 0.2);
+	}
+}
+
+/* Staggered fade-in for page load */
+@layer utilities {
+	.fade-in-up {
+		animation: fadeInUp 0.5s cubic-bezier(0.25, 0.1, 0.25, 1) both;
+	}
+	.fade-in-up-delay-1 { animation-delay: 0.05s; }
+	.fade-in-up-delay-2 { animation-delay: 0.1s; }
+	.fade-in-up-delay-3 { animation-delay: 0.15s; }
+	.fade-in-up-delay-4 { animation-delay: 0.2s; }
+	.fade-in-up-delay-5 { animation-delay: 0.25s; }
+	.fade-in-up-delay-6 { animation-delay: 0.3s; }
+}
+
+@keyframes fadeInUp {
+	from {
+		opacity: 0;
+		transform: translateY(12px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+/* Subtle grain texture overlay */
+@layer base {
+	body::before {
+		content: "";
+		position: fixed;
+		inset: 0;
+		z-index: 9999;
+		pointer-events: none;
+		opacity: 0.015;
+		background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+		background-repeat: repeat;
+		background-size: 256px 256px;
+	}
+}
+
+/* Gradient mesh for page headers */
+@layer utilities {
+	.gradient-mesh {
+		background:
+			radial-gradient(ellipse at 20% 50%, rgba(0, 122, 255, 0.04) 0%, transparent 50%),
+			radial-gradient(ellipse at 80% 20%, rgba(175, 82, 222, 0.03) 0%, transparent 50%),
+			radial-gradient(ellipse at 50% 80%, rgba(52, 199, 89, 0.03) 0%, transparent 50%);
+	}
+	.dark .gradient-mesh {
+		background:
+			radial-gradient(ellipse at 20% 50%, rgba(10, 132, 255, 0.06) 0%, transparent 50%),
+			radial-gradient(ellipse at 80% 20%, rgba(191, 90, 242, 0.04) 0%, transparent 50%),
+			radial-gradient(ellipse at 50% 80%, rgba(48, 209, 88, 0.04) 0%, transparent 50%);
+	}
+}
+
+/* Active press effect for buttons */
+@layer utilities {
+	.press-effect {
+		transition: transform 0.1s cubic-bezier(0.25, 0.1, 0.25, 1);
+	}
+	.press-effect:active {
+		transform: scale(0.97);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.fade-in-up {
+		animation: none;
+	}
+	.card-hover:hover {
+		transform: none;
+	}
+	.press-effect:active {
+		transform: none;
 	}
 }

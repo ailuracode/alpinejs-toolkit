@@ -7,7 +7,7 @@ const extendedGroups = PLUGIN_NAV_GROUPS.filter((group) => group.id !== "essenti
 const moduleCount = PLUGIN_NAV_ITEMS.length;
 ---
 
-<header class="mb-8 scroll-mt-20">
+<header class="mb-8 scroll-mt-20 gradient-mesh rounded-[var(--ios-radius-xl)] p-6 -mx-6 fade-in-up">
 	<p class="text-sm font-semibold tracking-wide text-[var(--ios-blue)]">Interactive demos</p>
 	<h1 class="mt-1 text-4xl font-bold tracking-tight text-balance">Playground</h1>
 	<p class="mt-2 max-w-2xl text-sm leading-relaxed text-[var(--ios-label-secondary)] text-pretty">
@@ -16,19 +16,19 @@ const moduleCount = PLUGIN_NAV_ITEMS.length;
 		stacks.
 	</p>
 	<dl class="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
-		<div class="rounded-[var(--ios-radius-lg)] bg-[var(--ios-bg-secondary)] px-4 py-3 shadow-sm shadow-black/5 dark:shadow-black/20">
+		<div class="card-hover rounded-[var(--ios-radius-lg)] bg-[var(--ios-bg-secondary)] px-4 py-3 shadow-sm shadow-black/5 dark:shadow-black/20 fade-in-up fade-in-up-delay-1">
 			<dt class="text-[10px] font-semibold uppercase tracking-wider text-[var(--ios-label-tertiary)]">Modules</dt>
 			<dd class="mt-1 text-xl font-bold tabular-nums">{moduleCount}</dd>
 		</div>
-		<div class="rounded-[var(--ios-radius-lg)] bg-[var(--ios-bg-secondary)] px-4 py-3 shadow-sm shadow-black/5 dark:shadow-black/20">
+		<div class="card-hover rounded-[var(--ios-radius-lg)] bg-[var(--ios-bg-secondary)] px-4 py-3 shadow-sm shadow-black/5 dark:shadow-black/20 fade-in-up fade-in-up-delay-2">
 			<dt class="text-[10px] font-semibold uppercase tracking-wider text-[var(--ios-label-tertiary)]">Essentials</dt>
 			<dd class="mt-1 text-xl font-bold tabular-nums">{essentialItems.length}</dd>
 		</div>
-		<div class="rounded-[var(--ios-radius-lg)] bg-[var(--ios-bg-secondary)] px-4 py-3 shadow-sm shadow-black/5 dark:shadow-black/20">
+		<div class="card-hover rounded-[var(--ios-radius-lg)] bg-[var(--ios-bg-secondary)] px-4 py-3 shadow-sm shadow-black/5 dark:shadow-black/20 fade-in-up fade-in-up-delay-3">
 			<dt class="text-[10px] font-semibold uppercase tracking-wider text-[var(--ios-label-tertiary)]">Groups</dt>
 			<dd class="mt-1 text-xl font-bold tabular-nums">{PLUGIN_NAV_GROUPS.length}</dd>
 		</div>
-		<div class="rounded-[var(--ios-radius-lg)] bg-[var(--ios-bg-secondary)] px-4 py-3 shadow-sm shadow-black/5 dark:shadow-black/20">
+		<div class="card-hover rounded-[var(--ios-radius-lg)] bg-[var(--ios-bg-secondary)] px-4 py-3 shadow-sm shadow-black/5 dark:shadow-black/20 fade-in-up fade-in-up-delay-4">
 			<dt class="text-[10px] font-semibold uppercase tracking-wider text-[var(--ios-label-tertiary)]">Stack</dt>
 			<dd class="mt-1 text-sm font-bold leading-tight">Alpine · Astro</dd>
 		</div>
