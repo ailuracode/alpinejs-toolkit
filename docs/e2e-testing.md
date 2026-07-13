@@ -1,3 +1,8 @@
+---
+title: "E2E testing"
+description: "Per-package Playwright E2E infrastructure, local commands, CI policy, and anti-flake rules."
+---
+
 # Playwright E2E testing
 
 End-to-end tests use **Playwright directly** (not Vitest browser mode). Each package that needs real-browser coverage owns its scenarios under `packages/<name>/e2e/` and exposes an independent `test:e2e` script.
