@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ailuracode/alpine-theme E2E fixture</title>
+  </head>
+  <body>
+    <main id="app" data-e2e-ready="true" x-data x-init>
+      <h1>Theme E2E fixture</h1>
+      <p>
+        Resolved theme:
+        <output id="resolved-theme" x-text="$store.theme.resolved"></output>
+      </p>
+      <button id="toggle-theme" type="button" @click="$store.theme.toggle()">
+        Toggle theme
+      </button>
+    </main>
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>
