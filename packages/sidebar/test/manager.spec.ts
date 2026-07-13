@@ -121,6 +121,149 @@ describe("SidebarController — toggle", () => {
   });
 });
 
+describe("SidebarController — breakpoint snapshots (ALP-102)", () => {
+  it("reports the true previous matchesBreakpoint on keep mismatch", async () => {
+    setMatchMedia(MIN_WIDTH_1024, true);
+    const controller = createSidebar({
+      breakpoint: { query: MIN_WIDTH_1024, onMismatch: "keep" },
+    });
+    const events: SidebarChangeDetail[] = [];
+    controller.on("change", (detail) => events.push(detail));
+    await Promise.resolve();
+
+    setMatchMedia(MIN_WIDTH_1024, false);
+    const breakpointEvent = events.find((e) => e.source === "breakpoint");
+    expect(breakpointEvent?.matchesBreakpoint).toBe(false);
+    expect(breakpointEvent?.previous?.matchesBreakpoint).toBe(true);
+    expect(breakpointEvent?.previous?.visible).toBe(false);
+    controller.destroy();
+  });
+
+  it("reports the true previous matchesBreakpoint on hide mismatch", async () => {
+    setMatchMedia(MIN_WIDTH_1024, true);
+    const controller = createSidebar({
+      breakpoint: { query: MIN_WIDTH_1024, onMismatch: "hide" },
+    });
+    const events: SidebarChangeDetail[] = [];
+    controller.on("change", (detail) => events.push(detail));
+    await Promise.resolve();
+
+    controller.show();
+    events.length = 0;
+    setMatchMedia(MIN_WIDTH_1024, false);
+    await Promise.resolve();
+
+    const breakpointEvents = events.filter((e) => e.source === "breakpoint");
+    expect(breakpointEvents).toHaveLength(1);
+    expect(breakpointEvents[0]?.matchesBreakpoint).toBe(false);
+    expect(breakpointEvents[0]?.previous?.matchesBreakpoint).toBe(true);
+    expect(breakpointEvents[0]?.previous?.visible).toBe(true);
+    expect(breakpointEvents[0]?.visible).toBe(false);
+    controller.destroy();
+  });
+
+  it("re-match reports the true previous matchesBreakpoint without auto-show", async () => {
+    setMatchMedia(MIN_WIDTH_1024, true);
+    const controller = createSidebar({
+      breakpoint: { query: MIN_WIDTH_1024, onMismatch: "hide" },
+    });
+    const events: SidebarChangeDetail[] = [];
+    controller.on("change", (detail) => events.push(detail));
+    await Promise.resolve();
+
+    controller.show();
+    setMatchMedia(MIN_WIDTH_1024, false);
+    await Promise.resolve();
+    events.length = 0;
+
+    setMatchMedia(MIN_WIDTH_1024, true);
+    await Promise.resolve();
+
+    const breakpointEvent = events.find((e) => e.source === "breakpoint");
+    expect(breakpointEvent?.matchesBreakpoint).toBe(true);
+    expect(breakpointEvent?.previous?.matchesBreakpoint).toBe(false);
+    expect(breakpointEvent?.visible).toBe(false);
+    controller.destroy();
+  });
+
+  it("initialization snapshot reflects the seeded matchesBreakpoint", async () => {
+    setMatchMedia(MIN_WIDTH_1024, true);
+    const controller = createSidebar({
+      breakpoint: { query: MIN_WIDTH_1024, onMismatch: "hide" },
+    });
+    const events: SidebarChangeDetail[] = [];
+    controller.on("change", (detail) => events.push(detail));
+    await Promise.resolve();
+
+    const init = events.find((e) => e.source === "initialization");
+    expect(init?.matchesBreakpoint).toBe(true);
+    expect(init?.previous).toBeNull();
+    controller.destroy();
+  });
+});
+
+describe("SidebarController — reset snapshots (ALP-102)", () => {
+  it("emits once when only breakpoint state changes", async () => {
+    setMatchMedia(MIN_WIDTH_1024, true);
+    const controller = createSidebar({
+      breakpoint: { query: MIN_WIDTH_1024, onMismatch: "keep" },
+    });
+    const events: SidebarChangeDetail[] = [];
+    controller.on("change", (detail) => events.push(detail));
+    await Promise.resolve();
+
+    setMatchMedia(MIN_WIDTH_1024, false);
+    await Promise.resolve();
+    events.length = 0;
+
+    controller.reset();
+    expect(events).toHaveLength(1);
+    expect(events[0]).toEqual({
+      visible: false,
+      matchesBreakpoint: true,
+      source: "reset",
+      previous: { visible: false, matchesBreakpoint: false },
+    });
+    controller.destroy();
+  });
+
+  it("is a no-op when neither visible nor matchesBreakpoint changes", async () => {
+    setMatchMedia(MIN_WIDTH_1024, true);
+    const controller = createSidebar({
+      breakpoint: { query: MIN_WIDTH_1024, onMismatch: "keep" },
+    });
+    const events: SidebarChangeDetail[] = [];
+    controller.on("change", (detail) => events.push(detail));
+    await Promise.resolve();
+    events.length = 0;
+
+    controller.reset();
+    expect(events).toHaveLength(0);
+    controller.destroy();
+  });
+
+  it("emits once when both visible and breakpoint state change", () => {
+    setMatchMedia(MIN_WIDTH_1024, true);
+    const controller = createSidebar({
+      breakpoint: { query: MIN_WIDTH_1024, onMismatch: "keep" },
+    });
+    const events: SidebarChangeDetail[] = [];
+    controller.on("change", (detail) => events.push(detail));
+
+    controller.show();
+    setMatchMedia(MIN_WIDTH_1024, false);
+    events.length = 0;
+
+    controller.reset();
+    expect(events).toHaveLength(1);
+    expect(events[0]?.source).toBe("reset");
+    expect(events[0]?.visible).toBe(false);
+    expect(events[0]?.matchesBreakpoint).toBe(true);
+    expect(events[0]?.previous).toEqual({ visible: true, matchesBreakpoint: false });
+    controller.destroy();
+  });
+});
+
 describe("SidebarController — breakpoint", () => {
   it("onMismatch:'hide' hides the sidebar when the query stops matching", async () => {
     setMatchMedia(MIN_WIDTH_1024, true);

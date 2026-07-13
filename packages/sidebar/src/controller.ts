@@ -141,7 +141,10 @@ export class SidebarController extends BaseController<SidebarEvents> implements 
    */
   readonly #toggle: ToggleController<true, false, undefined, boolean>;
 
-  /** Snapshot used to build the `previous` field on the sidebar emit. */
+  /** Current breakpoint match state exposed via the getter. */
+  #matchesBreakpoint = false;
+
+  /** Snapshots used to build the `previous` field on the sidebar emit. */
   #lastVisible = false;
   #lastMatchesBreakpoint = false;
 
@@ -245,7 +248,7 @@ export class SidebarController extends BaseController<SidebarEvents> implements 
    * observer short-circuits to a no-op).
    */
   get matchesBreakpoint(): boolean {
-    return this.#lastMatchesBreakpoint;
+    return this.#matchesBreakpoint;
   }
 
   // ── Public commands ─────────────────────────────────────────────
@@ -287,10 +290,26 @@ export class SidebarController extends BaseController<SidebarEvents> implements 
     if (this.isDestroyed) {
       return;
     }
+    const breakpointWillChange = this.#matchesBreakpoint !== this.#initialMatchesBreakpoint;
+    const visibleWillChange = this.#toggle.value !== this.#initial;
+
+    if (!(breakpointWillChange || visibleWillChange)) {
+      return;
+    }
+
     this.#pendingSource = "reset";
     this.#pendingEvent = undefined;
-    this.#lastMatchesBreakpoint = this.#initialMatchesBreakpoint;
-    this.#toggle.reset();
+
+    if (breakpointWillChange) {
+      this.#matchesBreakpoint = this.#initialMatchesBreakpoint;
+    }
+
+    if (visibleWillChange) {
+      this.#toggle.reset();
+      return;
+    }
+
+    this.#emitChange();
   }
 
   // ── Lifecycle ───────────────────────────────────────────────────
@@ -357,7 +376,7 @@ export class SidebarController extends BaseController<SidebarEvents> implements 
     if (this.#breakpointOption) {
       const initialMedia = safeMatchMedia(this.#breakpointOption.query);
       if (initialMedia !== null) {
-        this.#lastMatchesBreakpoint = initialMedia.matches;
+        this.#matchesBreakpoint = initialMedia.matches;
         this.#initialMatchesBreakpoint = initialMedia.matches;
       }
     }
@@ -384,7 +403,7 @@ export class SidebarController extends BaseController<SidebarEvents> implements 
         if (this.isDestroyed) {
           return;
         }
-        this.#lastMatchesBreakpoint = event.matches;
+        this.#matchesBreakpoint = event.matches;
         this.#pendingSource = "breakpoint";
         this.#pendingEvent = event;
 
@@ -607,7 +626,7 @@ export class SidebarController extends BaseController<SidebarEvents> implements 
     }
 
     const visible = this.#toggle.value;
-    const matchesBreakpoint = this.#lastMatchesBreakpoint;
+    const matchesBreakpoint = this.#matchesBreakpoint;
     const source: SidebarChangeSource = this.#pendingSource ?? "user";
     const previous: SidebarChangeDetail["previous"] =
       source === "initialization"
