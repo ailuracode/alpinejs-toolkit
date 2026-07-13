@@ -53,6 +53,7 @@ State and behavior only — you provide markup and CSS.
 | [Accordion](./plugins/accordion.md) | `$store.accordion` | Expand/collapse sections |
 | [Command](./plugins/command.md) | `$store.command` | Command palette / Spotlight |
 | [Carousel](./plugins/carousel.md) | `$store.carousel` | Slideshows and carousels |
+| [Gesture](./plugins/gesture.md) | `$store.gesture` / `x-gesture` | Tap, swipe, pan, pinch via pointer events |
 
 ## Extended & advanced
 
