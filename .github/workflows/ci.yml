@@ -68,13 +68,17 @@ jobs:
       summary: ${{ steps.changes.outputs.summary }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+        run: |
+          set -euo pipefail
 
-      - name: Fetch base branch
-        if: github.event_name == 'pull_request'
-        run: git fetch --no-tags origin "${{ github.base_ref }}"
+          git init
+          git remote add origin "https://github.com/${GITHUB_REPOSITORY}.git"
+          git fetch --no-tags origin "${GITHUB_SHA}"
+          git checkout FETCH_HEAD
+
+          if [ "${GITHUB_EVENT_NAME}" = "pull_request" ]; then
+            git fetch --no-tags origin "${GITHUB_BASE_REF}"
+          fi
 
       - name: Detect changes
         id: changes
@@ -96,7 +100,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        run: |
+          set -euo pipefail
+          git init
+          git remote add origin "https://github.com/${GITHUB_REPOSITORY}.git"
+          git fetch --depth=1 --no-tags origin "${GITHUB_SHA}"
+          git checkout FETCH_HEAD
 
       - uses: ./.github/actions/setup
 
@@ -189,20 +198,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        run: |
+          set -euo pipefail
+          git init
+          git remote add origin "https://github.com/${GITHUB_REPOSITORY}.git"
+          git fetch --depth=1 --no-tags origin "${GITHUB_SHA}"
+          git checkout FETCH_HEAD
 
       - uses: ./.github/actions/setup
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-
-      - name: Cache Playwright browsers
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/ms-playwright
-          key: playwright-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
-          restore-keys: |
-            playwright-${{ runner.os }}-
 
       - name: Install Playwright browsers
         run: |
@@ -229,23 +235,18 @@ jobs:
             pnpm run test:e2e:affected
           fi
 
-      - name: Upload Playwright report
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: playwright-report
-          path: |
-            packages/*/e2e/playwright-report/**
-            packages/*/e2e/test-results/**
-          if-no-files-found: ignore
-
   audit:
     needs: detect
     if: needs.detect.outputs.run_audit == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        run: |
+          set -euo pipefail
+          git init
+          git remote add origin "https://github.com/${GITHUB_REPOSITORY}.git"
+          git fetch --depth=1 --no-tags origin "${GITHUB_SHA}"
+          git checkout FETCH_HEAD
 
       - uses: ./.github/actions/setup
 
