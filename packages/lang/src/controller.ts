@@ -32,9 +32,9 @@
 
 import {
   BaseController,
-  clearSingleton,
   createSingleton,
   generateId,
+  releaseSingleton,
 } from "@ailuracode/alpine-core";
 import type { LangEvents } from "./events";
 import { normalizeLanguageTag, parseLanguageTag } from "./language-tag";
@@ -70,11 +70,16 @@ const LANG_SINGLETON_KEY = "@ailuracode/alpine-lang/default";
  * `createLang()` factory enforces uniqueness.
  */
 export function createLang(options: CreateLangOptions = {}): LangController {
-  return createSingleton(LANG_SINGLETON_KEY, () => {
-    const controller = new LangController(options);
-    controller.mount();
-    return controller;
-  });
+  const { scope, ...factoryOptions } = options;
+  return createSingleton(
+    LANG_SINGLETON_KEY,
+    () => {
+      const controller = new LangController(factoryOptions);
+      controller.mount();
+      return controller;
+    },
+    { scope, options: factoryOptions }
+  );
 }
 
 /**
@@ -163,7 +168,7 @@ export class LangController extends BaseController<LangEvents> implements LangMa
       return;
     }
     super.destroy();
-    clearSingleton(LANG_SINGLETON_KEY);
+    releaseSingleton(LANG_SINGLETON_KEY, this);
   }
 
   // ── Public state surface ────────────────────────────────────────

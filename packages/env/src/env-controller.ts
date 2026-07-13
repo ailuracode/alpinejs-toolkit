@@ -1,10 +1,11 @@
-import { BaseController, clearSingleton, createSingleton } from "@ailuracode/alpine-core";
+import { BaseController, createSingleton, releaseSingleton } from "@ailuracode/alpine-core";
 import { type BatteryManagerLike, readBatteryState } from "./internal/battery.js";
 import { readNetworkState } from "./internal/network.js";
 import { readPlatformState } from "./internal/platform.js";
 import { readVisibilityState } from "./internal/visibility.js";
 import type {
   BatteryMagic,
+  CreateEnvOptions,
   EnvEvents,
   EnvState,
   NetworkMagic,
@@ -181,7 +182,7 @@ export class EnvController extends BaseController<EnvEvents> {
     }
 
     super.destroy();
-    clearSingleton(ENV_SINGLETON_KEY);
+    releaseSingleton(ENV_SINGLETON_KEY, this);
   }
 
   #emitChange(): void {
@@ -189,10 +190,15 @@ export class EnvController extends BaseController<EnvEvents> {
   }
 }
 
-export function createEnv(): EnvController {
-  return createSingleton(ENV_SINGLETON_KEY, () => {
-    const controller = new EnvController();
-    controller.mount();
-    return controller;
-  });
+export function createEnv(options: CreateEnvOptions = {}): EnvController {
+  const { scope } = options;
+  return createSingleton(
+    ENV_SINGLETON_KEY,
+    () => {
+      const controller = new EnvController();
+      controller.mount();
+      return controller;
+    },
+    { scope, options }
+  );
 }

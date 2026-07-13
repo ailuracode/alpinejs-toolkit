@@ -35,9 +35,9 @@
 
 import {
   BaseController,
-  clearSingleton,
   createSingleton,
   generateId,
+  releaseSingleton,
 } from "@ailuracode/alpine-core";
 import type { ToastEvents } from "./events";
 import type {
@@ -99,11 +99,16 @@ export function createToastController<
 >(
   options: CreateToastControllerOptions<TPositions, TContent> = {}
 ): ToastController<TPositions, TContent> {
-  return createSingleton(TOAST_SINGLETON_KEY, () => {
-    const controller = new ToastController<TPositions, TContent>(options);
-    controller.mount();
-    return controller;
-  }) as ToastController<TPositions, TContent>;
+  const { scope, ...factoryOptions } = options;
+  return createSingleton(
+    TOAST_SINGLETON_KEY,
+    () => {
+      const controller = new ToastController<TPositions, TContent>(factoryOptions);
+      controller.mount();
+      return controller;
+    },
+    { scope, options: factoryOptions }
+  ) as ToastController<TPositions, TContent>;
 }
 
 /**
@@ -166,7 +171,7 @@ export class ToastController<
     }
     super.destroy();
     this.#clearAllTimers();
-    clearSingleton(TOAST_SINGLETON_KEY);
+    releaseSingleton(TOAST_SINGLETON_KEY, this);
   }
 
   /**

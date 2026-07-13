@@ -97,12 +97,20 @@ export {
   setRegistryDebugSink,
   unregisterPlugin,
 } from "./registry";
+export type { SingletonInitOptions, SingletonScope } from "./singleton";
 // --- Singleton helper (intended for toolkit-internal singleton feature controllers) ---
 export {
+  attachSingletonScope,
   clearAllSingletons,
   clearSingleton,
   createSingleton,
+  createSingletonScope,
   getSingleton,
+  readSingletonScope,
+  releaseSingleton,
+  resolveInstanceSingletonScope,
+  resolveSingletonScope,
+  runWithSingletonScope,
   setSingleton,
 } from "./singleton";
 // --- Public types --------------------------------------------------------
