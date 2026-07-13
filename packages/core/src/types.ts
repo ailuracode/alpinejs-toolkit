@@ -7,14 +7,29 @@ import type { Alpine as AlpineBase } from "alpinejs";
 /** Alpine.js plugin callback registered with `Alpine.plugin()`. */
 export type AlpinePluginCallback = (alpine: AlpineBase) => void;
 
+/** Direct Alpine callback registered with `Alpine.plugin()` as-is. */
+export type PluginCallbackSource = {
+  readonly source: "callback";
+  readonly callback: AlpinePluginCallback;
+};
+
+/** Lazy loader invoked by `initPlugins()` to obtain an Alpine callback. */
+export type PluginLoaderSource = {
+  readonly source: "loader";
+  readonly load: () => AlpinePluginCallback | Promise<AlpinePluginCallback>;
+};
+
 /**
- * Lazy plugin source. Resolved only when `initPlugins()` runs — never at import time.
- * Supports sync callbacks, lazy factories, and dynamic `import()` loaders.
+ * Explicit plugin source. Use {@link pluginCallback} for direct callbacks and
+ * {@link pluginLoader} for deferred sync or async resolution.
  */
-export type PluginLoader =
-  | AlpinePluginCallback
-  | (() => AlpinePluginCallback)
-  | (() => Promise<AlpinePluginCallback>);
+export type PluginSource = PluginCallbackSource | PluginLoaderSource;
+
+/**
+ * @deprecated Use {@link PluginSource} with {@link pluginCallback} or
+ * {@link pluginLoader} instead of passing bare factory functions.
+ */
+export type PluginLoader = PluginSource;
 
 /**
  * Alpine extension points a plugin can register.
@@ -49,7 +64,7 @@ export type PluginNames =
 export interface PluginDefinition {
   readonly kinds: readonly PluginKind[];
   readonly names: PluginNames;
-  readonly plugin: PluginLoader;
+  readonly plugin: PluginSource | AlpinePluginCallback;
   /**
    * Allow the same name to appear under multiple kinds of this plugin.
    * Default `false` — duplicate names raise `PLUGIN_INVALID_DEFINITION`.

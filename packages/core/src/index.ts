@@ -60,7 +60,13 @@ export {
   initPluginsSync,
 } from "./init";
 // --- Errors --------------------------------------------------------------
-export { PluginLoaderError } from "./loader";
+export {
+  isPluginSource,
+  normalizePluginInput,
+  PluginLoaderError,
+  pluginCallback,
+  pluginLoader,
+} from "./loader";
 // --- Plugin registry -----------------------------------------------------
 export {
   getRegisteredPlugin,
@@ -86,10 +92,13 @@ export {
 // --- Public types --------------------------------------------------------
 export type {
   AlpinePluginCallback,
+  PluginCallbackSource,
   PluginDefinition,
   PluginKind,
   PluginLoader,
+  PluginLoaderSource,
   PluginNames,
   PluginRegistryEntry,
+  PluginSource,
   RegisteredPlugin,
 } from "./types";

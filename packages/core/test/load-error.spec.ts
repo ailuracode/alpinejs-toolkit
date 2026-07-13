@@ -16,11 +16,13 @@ import {
   getRegistryDebugSink,
   initPlugins,
   initPluginsSync,
+  pluginLoader,
   type RegistryEventLike,
   registerPlugin,
   resetPluginRegistry,
   setRegistryDebugSink,
 } from "../src/index";
+import type { AlpinePluginCallback } from "../src/types";
 
 /** Matches the loader-error reason emitted for a non-function return value. */
 const LOADER_ERROR_REGEX = /function/;
@@ -74,7 +76,7 @@ describe("registry load-error events", () => {
       "broken",
       definePlugin(["magic"], {
         names: ["broken"],
-        plugin: () => ({}) as never,
+        plugin: pluginLoader((() => ({})) as () => AlpinePluginCallback),
       })
     );
 
@@ -97,9 +99,9 @@ describe("registry load-error events", () => {
       "broken",
       definePlugin(["magic"], {
         names: ["broken"],
-        plugin: () => {
+        plugin: pluginLoader(() => {
           throw new Error("boom");
-        },
+        }),
       })
     );
 
@@ -122,7 +124,7 @@ describe("registry load-error events", () => {
       "broken",
       definePlugin(["magic"], {
         names: ["broken"],
-        plugin: () => Promise.resolve({}) as never,
+        plugin: pluginLoader(() => Promise.resolve({}) as unknown as AlpinePluginCallback),
       })
     );
 
@@ -145,7 +147,7 @@ describe("registry load-error events", () => {
       "share",
       definePlugin(["magic"], {
         names: ["share"],
-        plugin: () => () => undefined,
+        plugin: pluginLoader(() => () => undefined),
       })
     );
 
@@ -163,7 +165,7 @@ describe("registry load-error events", () => {
       "broken",
       definePlugin(["magic"], {
         names: ["broken"],
-        plugin: () => ({}) as never,
+        plugin: pluginLoader((() => ({})) as () => AlpinePluginCallback),
       })
     );
 
@@ -180,7 +182,7 @@ describe("registry load-error events", () => {
       "broken",
       definePlugin(["magic"], {
         names: ["broken"],
-        plugin: () => ({}) as never,
+        plugin: pluginLoader((() => ({})) as () => AlpinePluginCallback),
       })
     );
 
