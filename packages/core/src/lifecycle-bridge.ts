@@ -163,3 +163,24 @@ export function bridgeControllerStore<TStore, TController extends Destroyable>(
 
   return { reactiveStore };
 }
+
+/**
+ * Mirrors a string-keyed snapshot onto a mutable record for Alpine reactivity.
+ *
+ * Keys present in `snapshot` are copied onto `target`. Keys that exist on
+ * `target` but not in `snapshot` are removed so stale instances do not linger.
+ */
+export function syncRecordFromSnapshot<T extends Record<string, unknown>>(
+  target: Record<string, unknown>,
+  snapshot: T
+): void {
+  for (const key of Object.keys(snapshot)) {
+    target[key] = snapshot[key];
+  }
+
+  for (const key of Object.keys(target)) {
+    if (!(key in snapshot)) {
+      Reflect.deleteProperty(target, key);
+    }
+  }
+}

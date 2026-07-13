@@ -72,6 +72,7 @@ export {
   bridgeControllerStore,
   registerReactiveStore,
   registerStoreMagic,
+  syncRecordFromSnapshot,
   wireControllerLifecycle,
 } from "./lifecycle-bridge";
 // --- Errors --------------------------------------------------------------

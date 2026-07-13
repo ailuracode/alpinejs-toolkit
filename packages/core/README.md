@@ -235,6 +235,7 @@ feature package.
 | `bridgeControllerStore(options)` | Registers the store proxy, magic accessor, subscription cleanup, and `controller.destroy()` |
 | `registerReactiveStore(alpine, key, store)` | Registers a store and returns Alpine's reactive proxy |
 | `registerStoreMagic(alpine, key, accessor)` | Registers a magic that returns a stable reference |
+| `syncRecordFromSnapshot(target, snapshot)` | Mirrors keyed instance registries onto reactive stores |
 | `wireControllerLifecycle(alpine, controller, options)` | Forwards teardown through `Alpine.cleanup` |
 
 **Cleanup order** (documented and tested):

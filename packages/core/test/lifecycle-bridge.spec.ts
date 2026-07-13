@@ -11,6 +11,7 @@ import {
   bridgeControllerStore,
   registerReactiveStore,
   registerStoreMagic,
+  syncRecordFromSnapshot,
   wireControllerLifecycle,
 } from "../src/lifecycle-bridge";
 
@@ -72,6 +73,21 @@ function createFakeController(): FakeController {
   };
   return controller;
 }
+
+describe("syncRecordFromSnapshot", () => {
+  it("copies snapshot keys onto the target record", () => {
+    const target: Record<string, unknown> = {};
+    syncRecordFromSnapshot(target, { a: 1, b: 2 });
+    assert.deepEqual(target, { a: 1, b: 2 });
+  });
+
+  it("removes stale keys that are absent from the snapshot", () => {
+    const target: Record<string, unknown> = { keep: true, stale: true };
+    syncRecordFromSnapshot(target, { keep: true, fresh: 1 });
+    assert.deepEqual(target, { keep: true, fresh: 1 });
+    assert.equal("stale" in target, false);
+  });
+});
 
 describe("registerReactiveStore", () => {
   it("registers the store and returns the reactive proxy", () => {
