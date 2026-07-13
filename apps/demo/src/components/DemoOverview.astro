@@ -36,7 +36,7 @@ const moduleCount = PLUGIN_NAV_ITEMS.length;
 </header>
 
 <section aria-labelledby="essentials-heading" class="mb-10">
-	<div class="mb-4 flex items-end justify-between gap-3">
+	<div class="mb-4 flex items-end justify-between gap-3 fade-in-up">
 		<div>
 			<h2 id="essentials-heading" class="text-xl font-bold tracking-tight text-balance">Essentials</h2>
 			<p class="text-sm text-[var(--ios-label-secondary)]">Recommended starting point for most apps</p>
@@ -50,7 +50,7 @@ const moduleCount = PLUGIN_NAV_ITEMS.length;
 {
 	extendedGroups.map((group) => (
 		<section aria-labelledby={`group-${group.id}`} class="mb-10 last:mb-0">
-			<div class="mb-4">
+			<div class="mb-4 fade-in-up">
 				<h2 id={`group-${group.id}`} class="text-xl font-bold tracking-tight text-balance">
 					{group.label}
 				</h2>

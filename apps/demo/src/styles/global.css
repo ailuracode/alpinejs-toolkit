@@ -336,6 +336,15 @@
 .grid > .fade-in-up:nth-child(6) { animation-delay: 0.3s; }
 .grid > .fade-in-up:nth-child(n+7) { animation-delay: 0.35s; }
 
+/* Stagger section headers */
+section:nth-child(1) > .fade-in-up { animation-delay: 0.05s; }
+section:nth-child(2) > .fade-in-up { animation-delay: 0.1s; }
+section:nth-child(3) > .fade-in-up { animation-delay: 0.15s; }
+section:nth-child(4) > .fade-in-up { animation-delay: 0.2s; }
+section:nth-child(5) > .fade-in-up { animation-delay: 0.25s; }
+section:nth-child(6) > .fade-in-up { animation-delay: 0.3s; }
+section:nth-child(7) > .fade-in-up { animation-delay: 0.35s; }
+
 @keyframes fadeInUp {
 	from {
 		opacity: 0;
