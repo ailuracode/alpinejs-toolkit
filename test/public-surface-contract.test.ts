@@ -26,9 +26,11 @@ describe("core public surface", () => {
   });
 
   describe("plugin definition", () => {
-    it("exports definePlugin / lazyPlugin", () => {
+    it("exports definePlugin / lazyPlugin / pluginCallback / pluginLoader", () => {
       expect(typeof core.definePlugin).toBe("function");
       expect(typeof core.lazyPlugin).toBe("function");
+      expect(typeof core.pluginCallback).toBe("function");
+      expect(typeof core.pluginLoader).toBe("function");
     });
   });
 

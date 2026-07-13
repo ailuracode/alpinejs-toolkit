@@ -14,9 +14,11 @@ import {
   initPluginsSync,
   isPluginInitialized,
   PluginLoaderError,
+  pluginLoader,
   registerPlugin,
   resetPluginRegistry,
 } from "../src/index";
+import type { AlpinePluginCallback } from "../src/types";
 
 const MISSING_PLUGIN_REGEX = /Plugin "missing" is not registered/;
 
@@ -122,18 +124,21 @@ describe("initPlugins — selection", () => {
 
 describe("initPlugins — loaders", () => {
   it("supports lazy factories and dynamic imports", async () => {
-    const share = (): void => undefined;
-    const theme = (): void => undefined;
+    const share = (_alpine: Alpine): void => undefined;
+    const theme = (_alpine: Alpine): void => undefined;
 
     registerPlugin(
       "share",
-      definePlugin(["magic"], { names: ["share"], plugin: (_alpine) => share })
+      definePlugin(["magic"], {
+        names: ["share"],
+        plugin: pluginLoader(() => share),
+      })
     );
     registerPlugin(
       "theme",
       definePlugin(["store"], {
         names: ["theme"],
-        plugin: (_alpine) => Promise.resolve(theme),
+        plugin: pluginLoader(() => Promise.resolve(theme)),
       })
     );
 
@@ -168,11 +173,13 @@ describe("initPlugins — errors", () => {
     await assert.rejects(() => initPlugins(asAlpine(Alpine), "missing"), MISSING_PLUGIN_REGEX);
   });
 
-  it("rejects with PluginLoaderError when a 0-arg factory resolves to a non-function", async () => {
-    // The 0-arg-then-non-function path is the canonical "factory returns non-callback".
+  it("rejects with PluginLoaderError when a loader resolves to a non-function", async () => {
     registerPlugin(
       "broken",
-      definePlugin(["magic"], { names: ["broken"], plugin: (): unknown => ({}) as never })
+      definePlugin(["magic"], {
+        names: ["broken"],
+        plugin: pluginLoader((() => ({})) as () => AlpinePluginCallback),
+      })
     );
 
     const Alpine = createMockAlpine();
@@ -194,13 +201,11 @@ describe("initPluginsSync", () => {
   });
 
   it("throws PluginLoaderError for async factory loaders", () => {
-    // A zero-arg factory that returns a Promise IS a lazy async factory;
-    // initPluginsSync must reject it because it cannot await.
     registerPlugin(
       "theme",
       definePlugin(["store"], {
         names: ["theme"],
-        plugin: (): Promise<() => void> => Promise.resolve(() => undefined),
+        plugin: pluginLoader(() => Promise.resolve(() => undefined)),
       })
     );
 

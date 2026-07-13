@@ -44,17 +44,40 @@ pnpm add @ailuracode/alpine-core alpinejs
 
 ```ts
 import Alpine from 'alpinejs';
-import { createAlpinePlugin, definePlugin, registerPlugin } from '@ailuracode/alpine-core';
+import {
+  createAlpinePlugin,
+  definePlugin,
+  pluginLoader,
+  registerPlugin,
+} from '@ailuracode/alpine-core';
 import { themePlugin } from '@ailuracode/alpine-theme';
 
 registerPlugin(
   'theme',
-  definePlugin(['store'], { names: ['theme'], plugin: () => themePlugin() })
+  definePlugin(['store'], {
+    names: ['theme'],
+    plugin: pluginLoader(() => themePlugin()),
+  }),
 );
 
 // Sync entry — every loader is pre-resolved.
 Alpine.plugin(createAlpinePlugin(['theme']));
 Alpine.start();
+```
+
+Direct Alpine callbacks can be passed without wrapping:
+
+```ts
+definePlugin(['magic'], { names: ['share'], plugin: (Alpine) => { /* ... */ } });
+```
+
+Lazy sync or async factories **must** use `pluginLoader()`:
+
+```ts
+definePlugin(['store'], {
+  names: ['theme'],
+  plugin: pluginLoader(() => themePlugin()),
+});
 ```
 
 A plugin can register multiple kinds at once — pass the kind list and an
@@ -63,8 +86,7 @@ object mapping each kind to its names:
 ```ts
 definePlugin(['magic', 'store'], {
   names: { magic: ['wakelock'], store: ['attention'] },
-  plugin: () => {
-    const Alpine = /* ... */;
+  plugin: (Alpine) => {
     Alpine.magic('wakelock', () => ({ request: /* ... */ }));
     Alpine.store('attention', { /* ... */ });
   },
@@ -112,9 +134,9 @@ registerPlugin(
   'share',
   lazyPlugin(['magic'], {
     names: ['share'],
-    // The imported module's `default` export MUST itself be a PluginLoader
-    // — either a direct `AlpinePluginCallback` or a 0-arg factory returning
-    // one (sync or async). `initPlugins()` resolves the loader later.
+    // The imported module's `default` export is a direct callback or an
+    // explicit `pluginLoader()` / `pluginCallback()` source.
+    // `initPlugins()` resolves the loader later.
     import: () => import('@ailuracode/alpine-transfer'),
   }),
 );
@@ -160,6 +182,8 @@ Alpine.start();
 | ------------------------------ | ------------------------------------------------------------------------------------------ |
 | `definePlugin(kinds, options)` | Build a typed plugin definition; `kinds` is `readonly ('magic' \| 'store' \| 'directive')[]` |
 | `lazyPlugin(kinds, options)`   | Same as `definePlugin` but with a deferred `import()` loader                               |
+| `pluginCallback(callback)`     | Mark a direct Alpine callback (optional — raw callbacks are accepted)                      |
+| `pluginLoader(load)`           | Mark a lazy sync or async factory that returns an Alpine callback                          |
 
 Both `definePlugin` and `lazyPlugin` accept a `kinds` array and a
 `names` field whose shape depends on `kinds`:

@@ -61,6 +61,13 @@ export {
 } from "./init";
 // --- Errors --------------------------------------------------------------
 export { PluginLoaderError } from "./loader";
+// --- Plugin source helpers -----------------------------------------------
+export {
+  isPluginSource,
+  normalizePluginInput,
+  pluginCallback,
+  pluginLoader,
+} from "./plugin-source";
 // --- Plugin registry -----------------------------------------------------
 export {
   getRegisteredPlugin,
@@ -86,10 +93,13 @@ export {
 // --- Public types --------------------------------------------------------
 export type {
   AlpinePluginCallback,
+  PluginCallbackSource,
   PluginDefinition,
   PluginKind,
   PluginLoader,
+  PluginLoaderSource,
   PluginNames,
   PluginRegistryEntry,
+  PluginSource,
   RegisteredPlugin,
 } from "./types";
