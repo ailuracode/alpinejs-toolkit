@@ -2,7 +2,7 @@
 
 Modular **Alpine.js toolkit** — lazy plugin init, headless stores and magics, TypeScript-first DX. Framework-agnostic: works with Vite, Astro, static HTML, or any ESM bundler.
 
-Built by **ailuracode**. 32 independent npm packages; install only what you need.
+Built by **ailuracode**. 33 independent npm packages; install only what you need.
 
 
 ## Why this exists

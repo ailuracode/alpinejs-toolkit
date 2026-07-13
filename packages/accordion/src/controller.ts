@@ -195,6 +195,9 @@ export class AccordionController extends BaseController<AccordionEvents> {
   }
 
   toggle(accordionId: string, itemId: string): void {
+    if (!this.#groups[accordionId]) {
+      return;
+    }
     if (this.isOpen(accordionId, itemId)) {
       this.close(accordionId, itemId);
     } else {
@@ -203,11 +206,17 @@ export class AccordionController extends BaseController<AccordionEvents> {
   }
 
   isOpen(accordionId: string, itemId: string): boolean {
+    if (!this.#groups[accordionId]) {
+      return false;
+    }
     return this.#selection.isSelected(accordionId, itemId);
   }
 
   openIds(accordionId: string): string[] {
-    return [...this.#selection.getSnapshot(accordionId).selectedKeys];
+    if (!this.#groups[accordionId]) {
+      return [];
+    }
+    return [...this.#selection.getSnapshot(accordionId).selectedKeys].map(String);
   }
 
   activeItem(accordionId: string): string | null {

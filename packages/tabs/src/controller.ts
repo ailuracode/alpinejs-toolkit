@@ -216,8 +216,26 @@ export class TabsController extends BaseController<TabsEvents> {
       return;
     }
 
+    const wasActive = this.active(groupId) === tabId;
     group.items = group.items.filter((item) => item.id !== tabId);
     this.#syncSelection(groupId);
+
+    if (wasActive && group.items.length > 0) {
+      const next = group.items.find((item) => !item.disabled);
+      if (next) {
+        this.#selection.replace(groupId, next.id);
+        this.#selection.setActive(groupId, next.id);
+        group.activeTabId = next.id;
+        return;
+      }
+    }
+
+    if (wasActive && group.items.length === 0) {
+      this.#selection.clear(groupId);
+      group.activeTabId = null;
+      return;
+    }
+
     const active = this.active(groupId);
     group.activeTabId = active;
   }
@@ -234,7 +252,13 @@ export class TabsController extends BaseController<TabsEvents> {
   }
 
   active(groupId: string): string | null {
-    const value = this.#selection.getSnapshot(groupId).value;
+    const snapshot = this.#selection.getSnapshot(groupId);
+    const group = this.#groups[groupId];
+    if (group?.activation === "manual") {
+      const focused = snapshot.activeKey ?? snapshot.value;
+      return typeof focused === "string" || typeof focused === "number" ? String(focused) : null;
+    }
+    const value = snapshot.value;
     return typeof value === "string" || typeof value === "number" ? String(value) : null;
   }
 
