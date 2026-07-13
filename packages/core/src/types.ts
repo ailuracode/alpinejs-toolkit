@@ -64,7 +64,7 @@ export type PluginNames =
 export interface PluginDefinition {
   readonly kinds: readonly PluginKind[];
   readonly names: PluginNames;
-  readonly plugin: PluginSource;
+  readonly plugin: PluginSource | AlpinePluginCallback;
   /**
    * Allow the same name to appear under multiple kinds of this plugin.
    * Default `false` — duplicate names raise `PLUGIN_INVALID_DEFINITION`.

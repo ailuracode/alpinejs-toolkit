@@ -33,8 +33,7 @@
 
 import { typeIs } from "./core/utils";
 import { assertValidDefinition } from "./internal/assert";
-import { resolvePluginLoader } from "./loader";
-import { normalizePluginInput, pluginLoader } from "./plugin-source";
+import { pluginLoader, resolvePluginLoader } from "./loader";
 import type {
   AlpinePluginCallback,
   PluginDefinition,
@@ -81,7 +80,7 @@ export const definePlugin = (
   assertValidDefinition({
     kinds,
     names: options.names,
-    plugin: normalizePluginInput(options.plugin),
+    plugin: options.plugin,
     allowNameCrossKind: options.allowNameCrossKind,
   });
 
@@ -115,9 +114,7 @@ const resolveImportedPlugin = async (
 };
 
 const buildAsyncLoader = (importFn: AsyncImportFn): PluginSource =>
-  pluginLoader(async () =>
-    resolvePluginLoader(normalizePluginInput(await resolveImportedPlugin(importFn)))
-  );
+  pluginLoader(async () => resolvePluginLoader(await resolveImportedPlugin(importFn)));
 
 /**
  * Async import-style: accepts an async function that returns the plugin loader.
@@ -147,8 +144,6 @@ export function lazyPlugin(
   const options = maybeOptions as LazyPluginOptions;
   return definePlugin(kindsOrOptions, {
     names: options.names,
-    plugin: pluginLoader(async () =>
-      resolvePluginLoader(normalizePluginInput((await options.import()).default))
-    ),
+    plugin: pluginLoader(async () => resolvePluginLoader((await options.import()).default)),
   });
 }

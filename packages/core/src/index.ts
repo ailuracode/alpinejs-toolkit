@@ -60,14 +60,13 @@ export {
   initPluginsSync,
 } from "./init";
 // --- Errors --------------------------------------------------------------
-export { PluginLoaderError } from "./loader";
-// --- Plugin source helpers -----------------------------------------------
 export {
   isPluginSource,
   normalizePluginInput,
+  PluginLoaderError,
   pluginCallback,
   pluginLoader,
-} from "./plugin-source";
+} from "./loader";
 // --- Plugin registry -----------------------------------------------------
 export {
   getRegisteredPlugin,
