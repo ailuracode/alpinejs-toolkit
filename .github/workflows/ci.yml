@@ -210,14 +210,6 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Cache Playwright browsers
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/ms-playwright
-          key: playwright-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
-          restore-keys: |
-            playwright-${{ runner.os }}-
-
       - name: Install Playwright browsers
         run: |
           set -euo pipefail
@@ -242,16 +234,6 @@ jobs:
           else
             pnpm run test:e2e:affected
           fi
-
-      - name: Upload Playwright report
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: playwright-report
-          path: |
-            packages/*/e2e/playwright-report/**
-            packages/*/e2e/test-results/**
-          if-no-files-found: ignore
 
   audit:
     needs: detect
