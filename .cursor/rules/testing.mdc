@@ -1,6 +1,6 @@
 ---
 description: Testing patterns and harnesses for Alpine.js plugins
-globs: packages/*/test/**/*.test.ts,packages/*/test/**/*.spec.ts
+globs: packages/*/test/**/*.test.ts,packages/*/test/**/*.spec.ts,packages/*/e2e/**/*.spec.ts
 alwaysApply: false
 ---
 
@@ -10,6 +10,8 @@ alwaysApply: false
 
 - Vitest + happy-dom (root `vitest.config.ts`)
 - Include pattern: `packages/*/test/**/*.{test,spec}.ts`
+- Playwright E2E (root `e2e/playwright.base.ts`, per-package `playwright.config.ts`)
+- E2E include pattern: `packages/*/e2e/**/*.spec.ts`
 
 ## Harnesses
 
@@ -17,6 +19,7 @@ alwaysApply: false
 - Magic plugins: use `createMagicHarness()` from `test/mock-alpine.ts`.
 - Query cache: use `createQueryClient()` with `vanillaQueryAdapter`.
 - `matchMedia`: use `setMatchMedia()` from `test/setup.ts`.
+- Playwright E2E: use `e2e/fixtures.ts` and package `e2e/fixture/` harnesses.
 
 ## Patterns
 
@@ -34,8 +37,11 @@ Tests MUST be split by layer:
 - **Integration tests**: real external dependencies (Embla initialization/destruction, Floating UI cleanup, browser observers).
 - **Contract tests**: import the package entrypoint (`../src/index.js`) or built surface to verify the published API, SSR-safe imports, plugin registration, lifecycle contracts, and multiple independent instances.
 - **Packed consumer tests**: import the built `dist/` output the way npm consumers do.
+- **E2E tests (Playwright)**: real browser markup and interaction for focus traps, keyboard navigation, portals, scroll locking, layout-sensitive behavior, and browser APIs that happy-dom cannot model faithfully.
 
 Controller-focused files (`controller.spec.ts`, `controller.test.ts`) MUST NOT import `src/index.ts`. Contract, integration, encapsulation, and inference tests MAY import the entrypoint.
+
+E2E specs live in `packages/<name>/e2e/**/*.spec.ts`, are excluded from Vitest, and run with `pnpm --filter @ailuracode/alpine-<name> test:e2e`. See `docs/e2e-testing.md`.
 
 ## Thresholds
 
@@ -53,5 +59,7 @@ Every behavior change MUST include tests. Global thresholds MUST NOT be lowered.
 | Tests leak `localStorage` / DOM state | Rely on `test/setup.ts` `beforeEach` — don't skip cleanup |
 | Import test helpers without `.js` | `import { startAlpine } from "../../../test/helpers.js"` |
 | Assert Alpine reactivity without real Alpine | Magic harness uses plain objects — no reactivity there |
+| Put E2E specs in Vitest `test/` | Use `packages/<name>/e2e/*.spec.ts` with Playwright |
+| Use `page.waitForTimeout()` in E2E | Prefer Playwright auto-waiting and `expect(locator)` |
 
 Run `pnpm test` and `pnpm run lint` before finishing.
