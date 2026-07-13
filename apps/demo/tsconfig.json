@@ -22,6 +22,7 @@
       "@ailuracode/alpine-carousel": ["../../packages/carousel/src/index.ts"],
       "@ailuracode/alpine-virtual": ["../../packages/virtual/src/index.ts"],
       "@ailuracode/alpine-selection": ["../../packages/selection/src/index.ts"],
+      "@ailuracode/alpine-core/alpine": ["../../packages/core/src/alpine/index.ts"],
       "@ailuracode/alpine-core": ["../../packages/core/src/index.ts"],
       "@ailuracode/alpine-toast": ["../../packages/toast/src/index.ts"],
       "@ailuracode/alpine-geo": ["../../packages/geo/src/index.ts"],

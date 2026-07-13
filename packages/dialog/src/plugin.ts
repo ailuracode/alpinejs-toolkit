@@ -5,9 +5,10 @@
  * `$store.dialog` and the `$dialog` magic.
  */
 
+import { bindControllerStore, syncRecordFromSnapshot } from "@ailuracode/alpine-core/alpine";
 import type { Alpine } from "alpinejs";
 import { DialogController } from "./controller.js";
-import { createDialogStoreFromController, syncInstanceRegistry } from "./store.js";
+import { createDialogStoreFromController } from "./store.js";
 import type { CreateDialogOptions, DialogAlpine, DialogPluginCallback } from "./types.js";
 
 /** Key under which the dialog store is registered on `$store`. */
@@ -31,23 +32,18 @@ export function dialogPlugin(options: CreateDialogOptions = {}): DialogPluginCal
       options.id
     );
 
-    const store = createDialogStoreFromController(controller);
-    Alpine.store(DIALOG_STORE_KEY, store);
-    const reactiveStore = Alpine.store(DIALOG_STORE_KEY);
-
-    const syncReactiveInstances = () => {
-      syncInstanceRegistry(reactiveStore.instances, controller.snapshotInstances());
-    };
-
-    controller.on("change", syncReactiveInstances);
-
-    reactiveStore.isOpen = (id: string) => reactiveStore.instances?.[id]?.open ?? false;
-
-    Alpine.magic(DIALOG_STORE_KEY, () => reactiveStore);
-
-    if (typeof Alpine.cleanup === "function") {
-      Alpine.cleanup(() => controller.destroy());
-    }
+    bindControllerStore({
+      alpine: Alpine,
+      storeKey: DIALOG_STORE_KEY,
+      store: createDialogStoreFromController(controller),
+      controller,
+      sync: (reactiveStore) => {
+        syncRecordFromSnapshot(reactiveStore.instances, controller.snapshotInstances());
+      },
+      onReactiveStore: (reactiveStore) => {
+        reactiveStore.isOpen = (id: string) => reactiveStore.instances?.[id]?.open ?? false;
+      },
+    });
   };
 }
 

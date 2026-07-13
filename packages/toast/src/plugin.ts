@@ -6,6 +6,7 @@
  * (see `AGENTS.md` for the integration contract).
  */
 
+import { bindControllerStore } from "@ailuracode/alpine-core/alpine";
 import type { Alpine } from "alpinejs";
 import {
   type CreateToastControllerOptions,
@@ -18,6 +19,7 @@ import type {
   ResolvedPromiseConfig,
   ResolvedToastPluginConfig,
   ToastAlpine,
+  ToastChangeDetail,
   ToastDuration,
   ToastEventPayload,
   ToastMagic,
@@ -170,26 +172,18 @@ export function toastPlugin<
     const controller = createToastController<TPositions, TContent>(controllerOptions);
     const config = resolveToastPluginConfig(options);
     const store = wrapToastStore<TPositions, TContent>(controller);
-    // Cast to the canonical `ToastStore` shape (no generic positions
-    // / content) — Alpine's typed view stores it under the literal
-    // `"toast"` key whose declared type uses `readonly []` /
-    // `unknown`. The runtime shape is identical; the variance is
-    // only a TypeScript limitation.
-    Alpine.store(config.storeKey, store as unknown as ToastStore);
 
-    // Alpine wraps the value in a reactive proxy on registration.
-    // Re-target the subscription so mutations land on the proxy, not
-    // on the unwrapped original — otherwise `x-text` bindings on
-    // `$toast` magic / `$store.toast` never re-render. We cache the
-    // proxy so the `$toast` magic returns the SAME reference instead
-    // of forcing Alpine to re-resolve the store on every access.
-    const reactiveStore = Alpine.store(config.storeKey) as unknown as ToastStore<
-      readonly [],
-      TPositions,
-      TContent
-    >;
-    controller.on("change", (detail) => {
-      reactiveStore.items = [...detail.items];
+    const { reactiveStore } = bindControllerStore({
+      alpine: Alpine,
+      storeKey: config.storeKey,
+      store: store as unknown as ToastStore,
+      controller,
+      sync: (proxy, detail) => {
+        const change = detail as ToastChangeDetail<readonly [], TPositions, TContent>;
+        const mutable = proxy as unknown as ToastStore<readonly [], TPositions, TContent>;
+        mutable.items = [...change.items];
+      },
+      magic: false,
     });
 
     const toast = createToastMagic<TVariants, TPositions, TContent>(
@@ -197,11 +191,6 @@ export function toastPlugin<
       () => reactiveStore as unknown as ToastStore<TVariants, TPositions, TContent>
     );
     Alpine.magic("toast", () => toast);
-
-    // Forward destroy() through Alpine's cleanup mechanism when available.
-    if (typeof Alpine.cleanup === "function") {
-      Alpine.cleanup(() => controller.destroy());
-    }
   };
 }
 

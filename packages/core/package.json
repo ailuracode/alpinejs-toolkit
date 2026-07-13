@@ -35,6 +35,10 @@
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
     },
+    "./alpine": {
+      "types": "./dist/alpine/index.d.ts",
+      "default": "./dist/alpine/index.js"
+    },
     "./global": {
       "types": "./dist/global.d.ts"
     }
@@ -43,7 +47,7 @@
     "access": "public"
   },
   "scripts": {
-    "build": "tsup src/index.ts --format esm --dts --clean --out-dir dist && cp src/global.d.ts dist/global.d.ts",
+    "build": "tsup src/index.ts src/alpine/index.ts --format esm --dts --clean --out-dir dist && cp src/global.d.ts dist/global.d.ts",
     "clean": "rm -rf dist",
     "size": "size-limit",
     "test": "vitest run --config ../../vitest.config.ts packages/core",
@@ -91,6 +95,17 @@
       "gzip": true,
       "brotli": true,
       "limit": "1.1 kB"
+    },
+    {
+      "name": "alpine lifecycle bridge",
+      "path": "dist/alpine/index.js",
+      "import": "{ bindControllerStore, registerAlpineCleanup, syncRecordFromSnapshot }",
+      "ignore": [
+        "alpinejs"
+      ],
+      "gzip": true,
+      "brotli": true,
+      "limit": "600 B"
     },
     {
       "name": "full surface",

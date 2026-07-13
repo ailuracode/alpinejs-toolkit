@@ -2,21 +2,16 @@
  * Store factory for `@ailuracode/alpine-virtual`.
  */
 
+import { syncRecordFromSnapshot } from "@ailuracode/alpine-core/alpine";
 import { VirtualController } from "./controller.js";
 import type { VirtualInstance, VirtualStore } from "./types.js";
 
+/** @deprecated Import `syncRecordFromSnapshot` from `@ailuracode/alpine-core/alpine`. */
 export function syncInstanceRegistry(
   target: Record<string, VirtualInstance>,
   snapshot: Record<string, VirtualInstance>
 ): void {
-  for (const key of Object.keys(snapshot)) {
-    target[key] = snapshot[key];
-  }
-  for (const key of Object.keys(target)) {
-    if (!(key in snapshot)) {
-      delete target[key];
-    }
-  }
+  syncRecordFromSnapshot(target, snapshot);
 }
 
 function syncInstances(

@@ -15,10 +15,27 @@ const packageAliases = Object.fromEntries(
     ])
 );
 
+const subpathAliases: Array<{ find: string | RegExp; replacement: string }> = [
+  {
+    find: "@ailuracode/alpine-core/alpine",
+    replacement: path.resolve(packagesDir, "core/src/alpine/index.ts"),
+  },
+  {
+    find: "@ailuracode/alpine-query-kit/devtools",
+    replacement: path.resolve(packagesDir, "query-kit/src/devtools-entry.ts"),
+  },
+];
+
 export default defineConfig({
   root,
   resolve: {
-    alias: packageAliases,
+    alias: [
+      ...subpathAliases,
+      ...Object.entries(packageAliases).map(([find, replacement]) => ({
+        find,
+        replacement,
+      })),
+    ],
   },
   test: {
     environment: "happy-dom",

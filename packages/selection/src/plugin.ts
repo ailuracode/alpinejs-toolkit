@@ -2,9 +2,10 @@
  * Alpine.js integration for `@ailuracode/alpine-selection`.
  */
 
+import { bindControllerStore, syncRecordFromSnapshot } from "@ailuracode/alpine-core/alpine";
 import type { Alpine } from "alpinejs";
 import { SelectionController } from "./controller.js";
-import { createSelectionStoreFromController, syncInstanceRegistry } from "./store.js";
+import { createSelectionStoreFromController } from "./store.js";
 import type { CreateSelectionOptions, SelectionAlpine, SelectionPluginCallback } from "./types.js";
 
 const SELECTION_STORE_KEY = "selection";
@@ -15,22 +16,18 @@ export function selectionPlugin(options: CreateSelectionOptions = {}): Selection
     const Alpine = alpine as unknown as SelectionAlpine;
     const controller = new SelectionController(options.id);
 
-    const store = createSelectionStoreFromController(controller);
-    Alpine.store(SELECTION_STORE_KEY, store);
-    const reactiveStore = Alpine.store(SELECTION_STORE_KEY);
-
-    const syncReactiveInstances = () => {
-      syncInstanceRegistry(reactiveStore.instances, controller.snapshotInstances());
-    };
-
-    controller.on("change", syncReactiveInstances);
-    syncReactiveInstances();
-
-    Alpine.magic(SELECTION_STORE_KEY, () => reactiveStore);
-
-    if (typeof Alpine.cleanup === "function") {
-      Alpine.cleanup(() => controller.destroy());
-    }
+    bindControllerStore({
+      alpine: Alpine,
+      storeKey: SELECTION_STORE_KEY,
+      store: createSelectionStoreFromController(controller),
+      controller,
+      sync: (reactiveStore) => {
+        syncRecordFromSnapshot(reactiveStore.instances, controller.snapshotInstances());
+      },
+      onReactiveStore: (reactiveStore) => {
+        syncRecordFromSnapshot(reactiveStore.instances, controller.snapshotInstances());
+      },
+    });
   };
 }
 

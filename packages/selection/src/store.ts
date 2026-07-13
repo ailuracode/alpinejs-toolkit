@@ -2,6 +2,7 @@
  * Store factory for `@ailuracode/alpine-selection`.
  */
 
+import { syncRecordFromSnapshot } from "@ailuracode/alpine-core/alpine";
 import { SelectionController } from "./controller.js";
 import { toKeyString } from "./options.js";
 import type { SelectionInstance, SelectionKey, SelectionStore } from "./types.js";
@@ -38,18 +39,12 @@ function snapshotListProps(
   };
 }
 
+/** @deprecated Import `syncRecordFromSnapshot` from `@ailuracode/alpine-core/alpine`. */
 export function syncInstanceRegistry(
   target: Record<string, SelectionInstance>,
   snapshot: Record<string, SelectionInstance>
 ): void {
-  for (const key of Object.keys(snapshot)) {
-    target[key] = snapshot[key];
-  }
-  for (const key of Object.keys(target)) {
-    if (!(key in snapshot)) {
-      delete target[key];
-    }
-  }
+  syncRecordFromSnapshot(target, snapshot);
 }
 
 function syncInstances(

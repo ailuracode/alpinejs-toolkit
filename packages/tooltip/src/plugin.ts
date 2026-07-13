@@ -5,9 +5,10 @@
  * `$store.tooltip` and the `$tooltip` magic.
  */
 
+import { bindControllerStore, syncRecordFromSnapshot } from "@ailuracode/alpine-core/alpine";
 import type { Alpine } from "alpinejs";
 import { TooltipController } from "./controller.js";
-import { createTooltipStoreFromController, syncInstanceRegistry } from "./store.js";
+import { createTooltipStoreFromController } from "./store.js";
 import type { CreateTooltipOptions, TooltipAlpine, TooltipPluginCallback } from "./types.js";
 
 /** Key under which the tooltip store is registered on `$store`. */
@@ -23,23 +24,18 @@ export function tooltipPlugin(options: CreateTooltipOptions = {}): TooltipPlugin
     const Alpine = alpine as unknown as TooltipAlpine;
     const controller = new TooltipController(options.id);
 
-    const store = createTooltipStoreFromController(controller);
-    Alpine.store(TOOLTIP_STORE_KEY, store);
-    const reactiveStore = Alpine.store(TOOLTIP_STORE_KEY);
-
-    const syncReactiveInstances = () => {
-      syncInstanceRegistry(reactiveStore.instances, controller.snapshotInstances());
-    };
-
-    controller.on("change", syncReactiveInstances);
-
-    reactiveStore.isOpen = (id: string) => reactiveStore.instances[id]?.open ?? false;
-
-    Alpine.magic(TOOLTIP_STORE_KEY, () => reactiveStore);
-
-    if (typeof Alpine.cleanup === "function") {
-      Alpine.cleanup(() => controller.destroy());
-    }
+    bindControllerStore({
+      alpine: Alpine,
+      storeKey: TOOLTIP_STORE_KEY,
+      store: createTooltipStoreFromController(controller),
+      controller,
+      sync: (reactiveStore) => {
+        syncRecordFromSnapshot(reactiveStore.instances, controller.snapshotInstances());
+      },
+      onReactiveStore: (reactiveStore) => {
+        reactiveStore.isOpen = (id: string) => reactiveStore.instances[id]?.open ?? false;
+      },
+    });
   };
 }
 

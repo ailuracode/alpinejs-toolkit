@@ -2,6 +2,7 @@
  * Store factory for `@ailuracode/alpine-dialog`.
  */
 
+import { syncRecordFromSnapshot } from "@ailuracode/alpine-core/alpine";
 import { DialogController } from "./controller.js";
 import type { DialogInstance, DialogStore, DialogStoreConfig } from "./types.js";
 
@@ -9,18 +10,12 @@ function syncInstances(target: Record<string, DialogInstance>, controller: Dialo
   syncInstanceRegistry(target, controller.snapshotInstances());
 }
 
+/** @deprecated Import `syncRecordFromSnapshot` from `@ailuracode/alpine-core/alpine`. */
 export function syncInstanceRegistry<T extends Record<string, DialogInstance>>(
   target: Record<string, DialogInstance>,
   snapshot: T
 ): void {
-  for (const key of Object.keys(snapshot)) {
-    target[key] = snapshot[key];
-  }
-  for (const key of Object.keys(target)) {
-    if (!(key in snapshot)) {
-      delete target[key];
-    }
-  }
+  syncRecordFromSnapshot(target, snapshot);
 }
 
 /** Builds a {@link DialogStore} backed by a new {@link DialogController}. */

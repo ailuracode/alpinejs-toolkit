@@ -6,6 +6,7 @@
  * standalone and integrated consumers share one adapter shape.
  */
 
+import { syncRecordFromSnapshot } from "@ailuracode/alpine-core/alpine";
 import { MenuController } from "./controller.js";
 import type { MenuControllerConfig, MenuInstance, MenuStore } from "./types.js";
 
@@ -13,19 +14,12 @@ function syncInstances(target: Record<string, MenuInstance>, controller: MenuCon
   syncInstanceRegistry(target, controller.snapshotInstances());
 }
 
-/** Copies controller snapshots into a target instances record. */
+/** @deprecated Import `syncRecordFromSnapshot` from `@ailuracode/alpine-core/alpine`. */
 export function syncInstanceRegistry<T extends Record<string, MenuInstance>>(
   target: Record<string, MenuInstance>,
   snapshot: T
 ): void {
-  for (const key of Object.keys(snapshot)) {
-    target[key] = snapshot[key];
-  }
-  for (const key of Object.keys(target)) {
-    if (!(key in snapshot)) {
-      delete target[key];
-    }
-  }
+  syncRecordFromSnapshot(target, snapshot);
 }
 
 /**

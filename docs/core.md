@@ -134,3 +134,52 @@ The `./global` subpath re-exports the named-export surface of `@types/alpinejs` 
 | `ToolkitError` | Base error with stable `code` and optional `cause` |
 | `Alpine<Stores>` | Typed view of `Alpine` whose `store()` overloads narrow to `Stores` |
 | `PluginCallback<T>` | Generic `Alpine.plugin()` callback typed against an `Alpine` view |
+
+## Alpine lifecycle bridge (`@ailuracode/alpine-core/alpine`)
+
+Controller-backed feature packages share the same Alpine adapter sequence:
+register a store, re-fetch Alpine's reactive proxy, subscribe to controller
+`change` events, expose a stable magic accessor, and forward teardown through
+`Alpine.cleanup`.
+
+Import the bridge from the dedicated subpath so the main `@ailuracode/alpine-core`
+entry stays tree-shakeable:
+
+```ts
+import {
+  bindControllerStore,
+  registerAlpineCleanup,
+  syncRecordFromSnapshot,
+} from "@ailuracode/alpine-core/alpine";
+```
+
+| Export | Purpose |
+|--------|---------|
+| `bindControllerStore(options)` | Wires store + magic + subscription + cleanup for a controller |
+| `registerAlpineCleanup(alpine, ...teardowns)` | Guarded, ordered `Alpine.cleanup` registration |
+| `syncRecordFromSnapshot(target, snapshot)` | Mirrors keyed instance registries onto reactive stores |
+
+### When to use the bridge
+
+Use `bindControllerStore` when a package follows the standard controller-backed
+store pattern (`theme`, `scroll`, `media`, `dialog`, etc.). Keep package-specific
+logic in the `sync`, `subscribe`, `onReactiveStore`, and `beforeDestroy` hooks.
+
+Prefer a custom adapter when:
+
+- the plugin is magic-only with no `$store` surface (`env`, `calendar`);
+- directives own per-element controller lifecycles (`gesture` `x-gesture`);
+- the magic API is a callable facade unrelated to the store (`toast` uses
+  `magic: false` and registers `$toast` separately).
+
+### Cleanup order
+
+`bindControllerStore` documents and enforces this teardown sequence:
+
+1. `beforeDestroy` callbacks (adapter-owned listeners)
+2. subscription `unsubscribe()`
+3. `controller.destroy()` (releases singleton slots when applicable)
+
+Every migrated adapter MUST retain explicit subscription ownership — do not rely
+solely on `controller.destroy()` to drop bus listeners before HMR-style
+re-registration.
