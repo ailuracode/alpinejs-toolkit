@@ -22,7 +22,7 @@ import scroll from "@ailuracode/alpine-scroll";
 import selection from "@ailuracode/alpine-selection";
 import sidebar from "@ailuracode/alpine-sidebar";
 import tabs from "@ailuracode/alpine-tabs";
-import theme from "@ailuracode/alpine-theme";
+import theme from "@ailuracode/alpine-theme/astro";
 import toast, { toastPositions, toastVariants } from "@ailuracode/alpine-toast";
 import toggle from "@ailuracode/alpine-toggle";
 import tooltip from "@ailuracode/alpine-tooltip";

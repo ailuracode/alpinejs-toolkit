@@ -8,6 +8,7 @@ import { pluginDocsSidebarItems } from "./src/plugin-nav.ts";
 
 const root = fileURLToPath(new URL(".", import.meta.url));
 const pkg = (name: string) => `${root}../../packages/${name}/src/index.ts`;
+const pkgEntry = (name: string, entry: string) => `${root}../../packages/${name}/src/${entry}.ts`;
 
 const site =
   process.env.VERCEL_ENV === "production"
@@ -169,6 +170,7 @@ export default defineConfig({
         "@ailuracode/alpine-media": pkg("media"),
         "@ailuracode/alpine-sidebar": pkg("sidebar"),
         "@ailuracode/alpine-scroll": pkg("scroll"),
+        "@ailuracode/alpine-theme/astro": pkgEntry("theme", "astro"),
         "@ailuracode/alpine-theme": pkg("theme"),
         "@ailuracode/alpine-toggle": pkg("toggle"),
       },

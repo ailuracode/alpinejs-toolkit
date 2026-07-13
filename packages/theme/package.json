@@ -34,6 +34,10 @@
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
     },
+    "./astro": {
+      "types": "./dist/astro.d.ts",
+      "default": "./dist/astro.js"
+    },
     "./global": {
       "types": "./dist/global.d.ts"
     }

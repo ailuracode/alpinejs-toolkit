@@ -117,6 +117,38 @@ Alpine.start();
 
 The plugin registers `$store.theme` and `$theme` (both backed by the same manager instance). It is a thin reactive mirror — every method forwards to the manager.
 
+By default, `themePlugin()` does **not** register navigation listeners. Call `$store.theme.apply()` manually after external `<html>` mutations, or opt into automatic re-apply (see below).
+
+### Astro View Transitions
+
+Astro client navigations can strip the class or attribute the theme strategy applied to `<html>`. Use the Astro adapter subpath:
+
+```ts
+import Alpine from 'alpinejs';
+import { astroThemePlugin } from '@ailuracode/alpine-theme/astro';
+
+Alpine.plugin(astroThemePlugin({ defaultTheme: 'system', strategy: 'class' }));
+Alpine.start();
+```
+
+The adapter registers `astro:after-swap` and `astro:page-load` listeners with symmetric cleanup through Alpine's `cleanup` hook.
+
+### Custom navigation events
+
+Pass `reapplyEvents` to `themePlugin()` for other routers, or call `bindThemeReapplyEvents(manager, events)` when using `createTheme()` without Alpine:
+
+```ts
+import { themePlugin, bindThemeReapplyEvents, createTheme } from '@ailuracode/alpine-theme';
+
+Alpine.plugin(themePlugin({
+  defaultTheme: 'system',
+  reapplyEvents: ['my-router:navigate'],
+}));
+
+const manager = createTheme({ defaultTheme: 'system' });
+const teardown = bindThemeReapplyEvents(manager, ['my-router:navigate']);
+```
+
 ## DOM strategies
 
 `strategy: 'class'` (default) — toggles a class on the target:

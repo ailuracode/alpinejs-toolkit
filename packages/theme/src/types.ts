@@ -162,6 +162,20 @@ export interface CreateThemeOptions {
   readonly crossTab?: boolean;
 }
 
+/**
+ * Options accepted by {@link themePlugin}. Extends
+ * {@link CreateThemeOptions} with optional navigation-event wiring.
+ */
+export interface ThemePluginOptions extends CreateThemeOptions {
+  /**
+   * Document events that trigger `manager.apply()` after external
+   * navigation mutates `<html>`. When omitted, no listeners are
+   * registered. Use `@ailuracode/alpine-theme/astro` for Astro View
+   * Transitions or pass framework-specific event names here.
+   */
+  readonly reapplyEvents?: readonly string[];
+}
+
 /** Public, framework-agnostic manager returned by {@link createTheme}. */
 export interface ThemeManager {
   /** Current user preference. */
@@ -255,3 +269,6 @@ export interface ThemeStore {
  * function body for typed access to the `"theme"` store / magic.
  */
 export type ThemePluginCallback = PluginCallback<AlpineBase>;
+
+/** Document events emitted by Astro View Transitions. */
+export const ASTRO_THEME_REAPPLY_EVENTS = ["astro:after-swap", "astro:page-load"] as const;

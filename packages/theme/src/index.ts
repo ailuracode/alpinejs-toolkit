@@ -36,6 +36,8 @@ export { createLocalStorageThemeStorage } from "./local-storage";
 export { createMemoryThemeStorage } from "./memory-storage";
 // --- Alpine integration ----------------------------------------------
 export { createThemeStore, themePlugin, themePlugin as default } from "./plugin";
+export type { BindThemeReapplyEventsOptions } from "./reapply-events";
+export { bindThemeReapplyEvents } from "./reapply-events";
 // --- System theme helper ---------------------------------------------
 export { readSystemTheme } from "./system-observer";
 // --- Public types (state, contracts, options) -------------------------
@@ -48,6 +50,7 @@ export type {
   ThemeDomStrategy,
   ThemeManager,
   ThemePluginCallback,
+  ThemePluginOptions,
   ThemePreference,
   ThemeState,
   ThemeStorage,
@@ -55,6 +58,7 @@ export type {
 } from "./types";
 // --- Public constants ------------------------------------------------
 export {
+  ASTRO_THEME_REAPPLY_EVENTS,
   DEFAULT_THEME_PREFERENCE,
   DEFAULT_THEME_STORAGE_KEY,
 } from "./types";

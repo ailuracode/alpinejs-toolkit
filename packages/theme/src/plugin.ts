@@ -9,18 +9,21 @@
 import type { Alpine } from "alpinejs";
 import type { ThemeController } from "./controller";
 import { createTheme } from "./controller";
-import type { CreateThemeOptions, ThemeAlpine, ThemePluginCallback, ThemeStore } from "./types";
+import { bindThemeReapplyEvents } from "./reapply-events.js";
+import type { ThemeAlpine, ThemePluginCallback, ThemePluginOptions, ThemeStore } from "./types";
 
 /** Key under which the theme store is registered on `$store`. */
 const THEME_STORE_KEY = "theme";
 
 /**
  * Plugin factory — returns the `Alpine.plugin()` callback. Pass
- * {@link CreateThemeOptions} to configure {@link ThemeController},
- * or `{}` for the package defaults. See `AGENTS.md` for the
- * integration contract.
+ * {@link ThemePluginOptions} to configure {@link ThemeController} and
+ * optional navigation re-apply listeners, or `{}` for the package
+ * defaults. See `AGENTS.md` for the integration contract.
  */
-export function themePlugin(options: CreateThemeOptions = {}): ThemePluginCallback {
+export function themePlugin(options: ThemePluginOptions = {}): ThemePluginCallback {
+  const { reapplyEvents, ...createOptions } = options;
+
   return function registerTheme(alpine: Alpine): void {
     // Narrow the base `Alpine` runtime to the toolkit's typed view.
     // The boundary cast is the only `as unknown as` in this file —
@@ -28,7 +31,7 @@ export function themePlugin(options: CreateThemeOptions = {}): ThemePluginCallba
     const Alpine = alpine as unknown as ThemeAlpine;
     // `createTheme()` already mounts; the controller's constructor
     // stays pure (no `window` / `document` / `localStorage` access).
-    const manager = createTheme(options);
+    const manager = createTheme(createOptions);
     const store = createThemeStore(manager);
     Alpine.store(THEME_STORE_KEY, store);
     // Alpine wraps the value in a reactive proxy on registration.
@@ -45,42 +48,14 @@ export function themePlugin(options: CreateThemeOptions = {}): ThemePluginCallba
     });
     Alpine.magic(THEME_STORE_KEY, () => reactiveStore);
 
-    // Re-apply the theme class/attribute when an external navigation
-    // framework mutates the `<html>` element out from under us.
-    // Most notably: Astro View Transitions preserves `<html>` across
-    // navigations but lets its diff sync attributes against the new
-    // page's `<html>` markup, which strips the `dark` / `light` /
-    // `data-theme` value our strategy set on initial mount. The
-    // strategy's internal cache then thinks the DOM is already in
-    // sync and skips the re-apply on the next `change` event.
-    //
-    // Both events are guarded with `typeof` and `addEventListener`
-    // checks so non-browser / non-Astro consumers pay nothing.
-    const documentRef: Document | undefined =
-      typeof globalThis !== "undefined" && "document" in globalThis
-        ? (globalThis as { document?: Document }).document
-        : undefined;
-    let teardownListeners: () => void = () => undefined;
-    if (documentRef && typeof documentRef.addEventListener === "function") {
-      const reapply = (): void => {
-        manager.apply();
-      };
-      const targets: ReadonlyArray<string> = ["astro:after-swap", "astro:page-load"];
-      const bound: Array<[string, () => void]> = [];
-      for (const type of targets) {
-        documentRef.addEventListener(type, reapply);
-        bound.push([type, reapply]);
-      }
-      teardownListeners = (): void => {
-        for (const [type, listener] of bound) {
-          documentRef.removeEventListener(type, listener);
-        }
-      };
-    }
+    const teardownListeners =
+      reapplyEvents && reapplyEvents.length > 0
+        ? bindThemeReapplyEvents(manager, reapplyEvents)
+        : (): void => undefined;
 
     // Forward destroy() through Alpine's cleanup mechanism when available.
-    // The Astro listener teardown rides the same hook so consumers
-    // don't need to wire two cleanups.
+    // Optional re-apply listener teardown rides the same hook so
+    // consumers don't need to wire two cleanups.
     if (typeof Alpine.cleanup === "function") {
       Alpine.cleanup(() => {
         teardownListeners();

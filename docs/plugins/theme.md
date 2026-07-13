@@ -68,6 +68,8 @@ Alpine.plugin(themePlugin({ strategy: "attribute", attribute: "data-theme" }));
 
 The plugin bootstraps on registration (before `Alpine.start()`) so the resolved theme is in the DOM before first paint.
 
+By default, `themePlugin()` does not register navigation listeners. Astro View Transitions and other client routers that mutate `<html>` need an explicit re-apply integration — see [Navigation re-apply](#navigation-re-apply).
+
 ## Store API
 
 ### State (read directly — no getters required)
@@ -109,6 +111,39 @@ manager.on("change", (detail) => {
 ```
 
 Inside an Alpine x-data, read `$store.theme` reactively instead — Alpine does the subscription for you.
+
+## Navigation re-apply
+
+External navigations (Astro View Transitions, SPA routers, browser extensions) can remove the class or attribute the theme strategy applied to `<html>`. The manager's internal cache then thinks the DOM is already in sync.
+
+Three supported paths:
+
+### Astro View Transitions
+
+```js
+import { astroThemePlugin } from "@ailuracode/alpine-theme/astro";
+
+Alpine.plugin(astroThemePlugin({ strategy: "class" }));
+```
+
+Registers `astro:after-swap` and `astro:page-load` with symmetric cleanup.
+
+### Custom events on `themePlugin()`
+
+```js
+import { themePlugin } from "@ailuracode/alpine-theme";
+
+Alpine.plugin(themePlugin({
+  strategy: "class",
+  reapplyEvents: ["my-router:navigate"],
+}));
+```
+
+### Manual `apply()`
+
+Call `$store.theme.apply()` (or `manager.apply()` in standalone mode) after you know `<html>` was mutated externally. This bypasses the strategy cache without changing persisted state.
+
+For standalone usage, `bindThemeReapplyEvents(manager, events)` returns a teardown function.
 
 ## `resolved` vs `prefersColorScheme`
 

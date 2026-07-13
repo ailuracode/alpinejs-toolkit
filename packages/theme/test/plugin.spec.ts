@@ -9,7 +9,7 @@
 
 import assert from "node:assert/strict";
 import { afterEach, beforeEach, describe, it } from "vitest";
-import { type ThemeStore, themePlugin } from "../src/index";
+import { ASTRO_THEME_REAPPLY_EVENTS, type ThemeStore, themePlugin } from "../src/index";
 import { setMatchMedia } from "./setup";
 
 interface MockAlpine {
@@ -49,6 +49,7 @@ function createMockAlpine(): MockAlpine {
 }
 
 const PREFERS_DARK = "(prefers-color-scheme: dark)";
+const ASTRO_REAPPLY_OPTIONS = { reapplyEvents: ASTRO_THEME_REAPPLY_EVENTS } as const;
 
 describe("themePlugin — registration", () => {
   it("registers the theme store and the $theme magic", () => {
@@ -148,15 +149,6 @@ describe("themePlugin — store surface", () => {
   });
 });
 
-/**
- * Coverage for the DOM re-apply behavior that protects the theme
- * from external mutations (most notably Astro View Transitions
- * re-syncing `<html>` attributes across navigations).
- *
- * jsdom is the host environment here, so `document` is always
- * available — these tests exercise the listener path directly
- * rather than gating it behind a feature-detection probe.
- */
 describe("themePlugin — DOM re-apply on navigation events", () => {
   // jsdom exposes `document` but not `addEventListener` on it as a
   // guardable feature, so we monkey-patch a tiny stub that records
@@ -219,10 +211,18 @@ describe("themePlugin — DOM re-apply on navigation events", () => {
     }
   }
 
+  it("does not register reapply listeners by default", () => {
+    setMatchMedia(PREFERS_DARK, false);
+    const Alpine = createMockAlpine();
+    themePlugin()(Alpine as never);
+    assert.equal(listeners.get("astro:after-swap")?.size ?? 0, 0);
+    assert.equal(listeners.get("astro:page-load")?.size ?? 0, 0);
+  });
+
   it("re-applies the theme class when 'astro:after-swap' fires", () => {
     setMatchMedia(PREFERS_DARK, false);
     const Alpine = createMockAlpine();
-    themePlugin({ defaultTheme: "light" })(Alpine as never);
+    themePlugin({ defaultTheme: "light", ...ASTRO_REAPPLY_OPTIONS })(Alpine as never);
     const store = Alpine.stores.theme as ThemeStore;
     // Toggle to dark — the DOM receives `class="dark"`.
     store.set("dark");
@@ -242,7 +242,7 @@ describe("themePlugin — DOM re-apply on navigation events", () => {
   it("re-applies the theme class when 'astro:page-load' fires", () => {
     setMatchMedia(PREFERS_DARK, false);
     const Alpine = createMockAlpine();
-    themePlugin({ defaultTheme: "dark" })(Alpine as never);
+    themePlugin({ defaultTheme: "dark", ...ASTRO_REAPPLY_OPTIONS })(Alpine as never);
     // Simulate external DOM corruption.
     document.documentElement.classList.remove("dark");
     fire("astro:page-load");
@@ -263,7 +263,7 @@ describe("themePlugin — DOM re-apply on navigation events", () => {
   it("removes the listeners on Alpine cleanup", () => {
     setMatchMedia(PREFERS_DARK, false);
     const Alpine = createMockAlpine();
-    themePlugin()(Alpine as never);
+    themePlugin(ASTRO_REAPPLY_OPTIONS)(Alpine as never);
     assert.ok(listeners.get("astro:after-swap")?.size === 1);
     assert.ok(listeners.get("astro:page-load")?.size === 1);
     Alpine.cleanups[0]();
