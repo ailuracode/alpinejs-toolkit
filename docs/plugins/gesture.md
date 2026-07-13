@@ -63,6 +63,66 @@ Each `x-gesture:<kind>` registers its own controller, so a single element can mi
 </div>
 ```
 
+### Pinch zoom
+
+`pinch` events carry a relative `scale` factor measured from the distance between the two active pointers when recognition starts. The `x-gesture:pinch` handler receives a `GestureRecognizedDetail` as `$event`; read `detail.state.scale` (or `detail.scale` when subscribing to controller `pinch` events directly). Multiply your committed zoom level by that scale on each move, then persist the result when the pointers release:
+
+```html
+<div
+  x-data="{
+    zoom: 1,
+    baseZoom: 1,
+    onPinch(detail) {
+      const scale = detail.state?.scale ?? detail.scale ?? 1;
+      this.zoom = Math.min(3, Math.max(0.5, this.baseZoom * scale));
+    },
+    commitZoom() {
+      this.baseZoom = this.zoom;
+    }
+  }"
+>
+  <div
+    x-gesture:pinch="onPinch"
+    @pointerup="commitZoom()"
+    style="touch-action: none;"
+  >
+    <img
+      src="/photo.jpg"
+      alt="Zoomable photo"
+      :style="'transform: scale(' + zoom + ')'"
+    />
+  </div>
+</div>
+```
+
+`detail.state.scale` is `1` at the start of a pinch and grows above `1` when the pointers spread (zoom in) or shrinks below `1` when they pinch together (zoom out). `detail.state.rotation` reports the angle delta in degrees. Set `touch-action: none` (or `pinch-zoom` where native scrolling should remain) on the target surface so the browser does not steal the gesture.
+
+### Mouse buttons (desktop)
+
+By default only the **primary button** (`button: 0`, left click) starts recognition. Secondary clicks (right click, `button: 2`) are ignored so they do not compete with `tap`, `pan`, or `longpress`.
+
+Touch and pen pointers always report `button: 0`, so mobile behaviour is unchanged unless you customize `mouseButtons`.
+
+```html
+<div
+  x-data="{
+    onTap(d) {
+      if (d.state?.button === 2 || d.button === 2) openContextMenu();
+      else selectItem();
+    }
+  }"
+  x-gesture:tap="onTap"
+></div>
+```
+
+To allow right-click recognition, opt in explicitly:
+
+```ts
+Alpine.plugin(gesture({ mouseButtons: [0, 2] }));
+```
+
+Every gesture detail also exposes `button`, `buttons`, and `pointerType` for custom filtering in handlers.
+
 ## Competing gestures
 
 When several recognisers are active the controller cancels losers deterministically:
@@ -84,6 +144,7 @@ When several recognisers are active the controller cancels losers deterministica
 | `panThreshold` | `10` | Min distance (px) before pan recognition starts |
 | `axisLock` | `"none"` | `"horizontal"` or `"vertical"` locks swipe/pan to one axis |
 | `pinchThreshold` | `10` | Min spread (px) before pinch recognition starts |
+| `mouseButtons` | `[0]` | Mouse buttons allowed to start recognition (`0` = primary/left, `2` = secondary/right). Touch always reports `0`. |
 | `capturePointer` | `true` | Use `setPointerCapture` for reliable off-element tracking |
 | `preventDefault` | `false` | Reserved — currently a no-op marker for future native-event cancellation |
 
@@ -104,6 +165,9 @@ A reactive snapshot of the latest recognised gesture state:
 | `pointerCount` | `number` | Active pointer count (pinch awareness) |
 | `scale` | `number` | Pinch scale factor (`1` when idle) |
 | `rotation` | `number` | Pinch rotation in degrees |
+| `button` | `number` | Pointer button that started the gesture (`0` = primary) |
+| `buttons` | `number` | Active button bitmask |
+| `pointerType` | `string` | `mouse`, `touch`, or `pen` |
 | `direction` | `GestureDirection` | Last resolved direction: `up`, `down`, `left`, `right`, or `none` |
 | `cancel()` | `() => void` | Abort the current gesture |
 

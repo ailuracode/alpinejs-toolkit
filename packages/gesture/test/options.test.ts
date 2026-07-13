@@ -15,6 +15,7 @@ describe("normalizeGestureOptions", () => {
     expect(opts.pinchThreshold).toBe(10);
     expect(opts.preventDefault).toBe(false);
     expect(opts.capturePointer).toBe(true);
+    expect([...opts.mouseButtons]).toEqual([0]);
   });
 
   it("preserves provided values", () => {
@@ -30,6 +31,7 @@ describe("normalizeGestureOptions", () => {
       pinchThreshold: 15,
       preventDefault: true,
       capturePointer: false,
+      mouseButtons: [0, 2],
     });
     expect(opts.id).toBe("my-gesture");
     expect(opts.tapThreshold).toBe(20);
@@ -42,6 +44,7 @@ describe("normalizeGestureOptions", () => {
     expect(opts.pinchThreshold).toBe(15);
     expect(opts.preventDefault).toBe(true);
     expect(opts.capturePointer).toBe(false);
+    expect([...opts.mouseButtons]).toEqual([0, 2]);
   });
 
   it("creates a Set for gestures option", () => {

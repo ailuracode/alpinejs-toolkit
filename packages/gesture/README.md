@@ -44,6 +44,12 @@ When multiple recognisers are active the controller cancels losers:
 - Swipe releases → pan cancels.
 - Longpress timer fires → tap and swipe cancel.
 
+## Plugin options
+
+| Option | Default | Description |
+|--------|---------|-------------|
+| `mouseButtons` | `[0]` | Mouse buttons that may start recognition (`0` = left, `2` = right). Touch always uses `0`. |
+
 ## Headless API
 
 ```ts
@@ -82,5 +88,25 @@ Returns the current gesture state object.
 ```html
 <div x-data="{ onPan(e) { /* … */ } }">
   <div x-gesture:pan="onPan">Drag me</div>
+</div>
+```
+
+### Pinch zoom
+
+```html
+<div
+  x-data="{
+    zoom: 1,
+    baseZoom: 1,
+    onPinch(d) {
+      const scale = d.state?.scale ?? d.scale ?? 1;
+      this.zoom = this.baseZoom * scale;
+    },
+    commitZoom() { this.baseZoom = this.zoom }
+  }"
+>
+  <div x-gesture:pinch="onPinch" @pointerup="commitZoom()" style="touch-action: none;">
+    <div :style="'transform: scale(' + zoom + ')'">Pinch me</div>
+  </div>
 </div>
 ```

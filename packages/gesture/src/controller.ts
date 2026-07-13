@@ -17,8 +17,11 @@ import type { GestureEvents } from "./events";
 import {
   applyAxisLock,
   computeVelocity,
+  normalizeGestureButton,
+  normalizeGesturePointerType,
   type PointerSnapshot,
   resolveDirection,
+  snapshotPointerFromEvent,
 } from "./internal/pointer";
 import {
   DoubleTapRecognizer,
@@ -31,9 +34,14 @@ import {
 } from "./internal/recognizer";
 import { type NormalizedGestureOptions, normalizeGestureOptions } from "./options";
 import type {
+  GestureDetailFor,
   GestureKind,
+  GestureMouseButton,
   GesturePanDetail,
+  GesturePhase,
   GesturePinchDetail,
+  GesturePointerTypeName,
+  GestureRecognizedDetail,
   GestureState,
   GestureSwipeDetail,
 } from "./types";
@@ -42,25 +50,6 @@ import type {
  * Stable registry key for the gesture controller singleton.
  */
 export const GESTURE_SINGLETON_KEY = "@ailuracode/alpine-gesture/default";
-
-/**
- * Creates a snapshot of the current pointer state.
- */
-function snapshotPointer(event: PointerEvent): {
-  id: number;
-  x: number;
-  y: number;
-  timestamp: number;
-  pressure: number;
-} {
-  return {
-    id: event.pointerId,
-    x: event.clientX,
-    y: event.clientY,
-    timestamp: event.timeStamp,
-    pressure: event.pressure,
-  };
-}
 
 function emptyState(): GestureState {
   return {
@@ -77,6 +66,9 @@ function emptyState(): GestureState {
     scale: 1,
     rotation: 0,
     direction: "none",
+    button: 0,
+    buttons: 0,
+    pointerType: "",
   };
 }
 
@@ -92,6 +84,9 @@ export class GestureController extends BaseController<GestureEvents> {
   #activeKind: GestureKind | null = null;
   #initialPinchDistance = 0;
   #initialPinchRotation = 0;
+  #leadingButton: GestureMouseButton = 0;
+  #leadingButtons = 0;
+  #leadingPointerType: GesturePointerTypeName = "";
 
   // Recognizers
   readonly #tapRecognizer = new TapRecognizer();
@@ -265,7 +260,11 @@ export class GestureController extends BaseController<GestureEvents> {
       return;
     }
 
-    const snap = snapshotPointer(event);
+    if (!this.#options.mouseButtons.has(normalizeGestureButton(event.button))) {
+      return;
+    }
+
+    const snap = snapshotPointerFromEvent(event);
     this.#pointers.set(snap.id, snap);
 
     if (this.#pointers.size === 1) {
@@ -286,6 +285,9 @@ export class GestureController extends BaseController<GestureEvents> {
     this.#startX = snap.x;
     this.#startY = snap.y;
     this.#startTimestamp = snap.timestamp;
+    this.#leadingButton = normalizeGestureButton(snap.button);
+    this.#leadingButtons = snap.buttons;
+    this.#leadingPointerType = normalizeGesturePointerType(snap.pointerType);
     this.#cancelAllRecognizers();
 
     const gestures = this.#options.gestures;
@@ -319,7 +321,7 @@ export class GestureController extends BaseController<GestureEvents> {
       return;
     }
 
-    const snap = snapshotPointer(event);
+    const snap = snapshotPointerFromEvent(event);
     this.#pointers.set(snap.id, snap);
 
     if (this.#pointers.size === 1) {
@@ -395,17 +397,20 @@ export class GestureController extends BaseController<GestureEvents> {
     const pinchResult = this.#pinchRecognizer.pointerMove(snap, aggregate, config);
 
     if (pinchResult.recognized && this.#pinchRecognizer.isTracking) {
-      if (this.#activeKind !== "pinch") {
-        this.#cancelCompeting("pinch");
-        this.#activeKind = "pinch";
-        this.#beginGesture("pinch");
-      }
       const scale =
         aggregate.distance > 0 && this.#getInitialPinchDistance() > 0
           ? aggregate.distance / this.#getInitialPinchDistance()
           : 1;
       const rotation = aggregate.rotation - this.#getInitialPinchRotation();
-      this.#emitPinchMove(snap, scale, rotation);
+      const isPinchStart = this.#activeKind !== "pinch";
+      if (isPinchStart) {
+        this.#cancelCompeting("pinch");
+        this.#activeKind = "pinch";
+        this.#beginGesture("pinch");
+        this.#emitPinchMove(snap, scale, rotation, "start");
+      } else {
+        this.#emitPinchMove(snap, scale, rotation, "move");
+      }
     }
 
     if (pinchResult.failed) {
@@ -418,7 +423,7 @@ export class GestureController extends BaseController<GestureEvents> {
       return;
     }
 
-    const snap = snapshotPointer(event);
+    const snap = snapshotPointerFromEvent(event);
     this.#pointers.delete(snap.id);
 
     if (this.#pointers.size === 0) {
@@ -442,7 +447,7 @@ export class GestureController extends BaseController<GestureEvents> {
     if (this.isDestroyed) {
       return;
     }
-    const snap = snapshotPointer(event);
+    const snap = snapshotPointerFromEvent(event);
     this.#pointers.delete(snap.id);
     if (this.#pointers.size === 0) {
       this.#cancelAllRecognizers();
@@ -560,6 +565,47 @@ export class GestureController extends BaseController<GestureEvents> {
 
   // ── Private: emit helpers ───────────────────────────────────────
 
+  #eventBaseFromSnap(
+    snap: Pick<PointerSnapshot, "x" | "y" | "button" | "buttons" | "pointerType">
+  ): {
+    x: number;
+    y: number;
+    target: Element | null;
+    button: GestureMouseButton;
+    buttons: number;
+    pointerType: GesturePointerTypeName;
+  } {
+    const rect = this.#element?.getBoundingClientRect();
+    return {
+      x: snap.x - (rect?.left ?? 0),
+      y: snap.y - (rect?.top ?? 0),
+      target: this.#element,
+      button: normalizeGestureButton(snap.button),
+      buttons: snap.buttons,
+      pointerType: normalizeGesturePointerType(snap.pointerType),
+    };
+  }
+
+  #emitGestureEvent<K extends GestureKind>(
+    detail: GestureDetailFor<K>,
+    originalEvent: PointerEvent | null = null
+  ): void {
+    const payload = {
+      ...detail,
+      state: this.#state,
+      originalEvent,
+    } as GestureRecognizedDetail;
+    this.emit("gesture", payload);
+  }
+
+  #leadingPointerMeta(): Pick<PointerSnapshot, "button" | "buttons" | "pointerType"> {
+    return {
+      button: this.#leadingButton,
+      buttons: this.#leadingButtons,
+      pointerType: this.#leadingPointerType,
+    };
+  }
+
   #beginGesture(kind: GestureKind): void {
     const rect = this.#element?.getBoundingClientRect();
     this.#previousState = { ...this.#state };
@@ -570,6 +616,9 @@ export class GestureController extends BaseController<GestureEvents> {
       x: this.#startX - (rect?.left ?? 0),
       y: this.#startY - (rect?.top ?? 0),
       pointerCount: this.#pointers.size,
+      button: this.#leadingButton,
+      buttons: this.#leadingButtons,
+      pointerType: this.#leadingPointerType,
     };
     this.emit("change", {
       state: this.#state,
@@ -577,52 +626,46 @@ export class GestureController extends BaseController<GestureEvents> {
     });
   }
 
-  #emitTap(snap: { x: number; y: number }): void {
-    const rect = this.#element?.getBoundingClientRect();
+  #emitTap(snap: PointerSnapshot): void {
+    const base = this.#eventBaseFromSnap(snap);
     const detail = {
       kind: "tap" as const,
-      x: snap.x - (rect?.left ?? 0),
-      y: snap.y - (rect?.top ?? 0),
-      target: this.#element,
+      ...base,
     };
     this.#previousState = { ...this.#state };
     this.#state = {
       ...emptyState(),
       x: detail.x,
       y: detail.y,
+      button: detail.button,
+      buttons: detail.buttons,
+      pointerType: detail.pointerType,
     };
     this.emit("tap", detail);
-    this.emit("gesture", {
-      kind: "tap",
-      state: this.#state,
-      originalEvent: null,
-    });
+    this.#emitGestureEvent(detail);
     this.emit("change", {
       state: this.#state,
       previous: this.#previousState,
     });
   }
 
-  #emitDoubleTap(snap: { x: number; y: number }): void {
-    const rect = this.#element?.getBoundingClientRect();
+  #emitDoubleTap(snap: PointerSnapshot): void {
+    const base = this.#eventBaseFromSnap(snap);
     const detail = {
       kind: "doubletap" as const,
-      x: snap.x - (rect?.left ?? 0),
-      y: snap.y - (rect?.top ?? 0),
-      target: this.#element,
+      ...base,
     };
     this.#previousState = { ...this.#state };
     this.#state = {
       ...emptyState(),
       x: detail.x,
       y: detail.y,
+      button: detail.button,
+      buttons: detail.buttons,
+      pointerType: detail.pointerType,
     };
     this.emit("doubletap", detail);
-    this.emit("gesture", {
-      kind: "doubletap",
-      state: this.#state,
-      originalEvent: null,
-    });
+    this.#emitGestureEvent(detail);
     this.emit("change", {
       state: this.#state,
       previous: this.#previousState,
@@ -633,12 +676,13 @@ export class GestureController extends BaseController<GestureEvents> {
     if (this.isDestroyed || !this.#element) {
       return;
     }
-    const rect = this.#element.getBoundingClientRect();
     const detail = {
       kind: "longpress" as const,
-      x: this.#startX - rect.left,
-      y: this.#startY - rect.top,
-      target: this.#element,
+      ...this.#eventBaseFromSnap({
+        x: this.#startX,
+        y: this.#startY,
+        ...this.#leadingPointerMeta(),
+      }),
     };
     this.#previousState = { ...this.#state };
     this.#state = {
@@ -647,13 +691,12 @@ export class GestureController extends BaseController<GestureEvents> {
       kind: "longpress",
       x: detail.x,
       y: detail.y,
+      button: detail.button,
+      buttons: detail.buttons,
+      pointerType: detail.pointerType,
     };
     this.emit("longpress", detail);
-    this.emit("gesture", {
-      kind: "longpress",
-      state: this.#state,
-      originalEvent: null,
-    });
+    this.#emitGestureEvent(detail);
     this.emit("change", {
       state: this.#state,
       previous: this.#previousState,
@@ -670,13 +713,11 @@ export class GestureController extends BaseController<GestureEvents> {
     const locked = applyAxisLock(dx, dy, config.axisLock);
     const vel = computeVelocity(start, snap);
     const direction = resolveDirection(locked.dx, locked.dy);
-    const rect = this.#element?.getBoundingClientRect();
+    const base = this.#eventBaseFromSnap(snap);
 
     const detail: GestureSwipeDetail = {
       kind: "swipe",
-      x: snap.x - (rect?.left ?? 0),
-      y: snap.y - (rect?.top ?? 0),
-      target: this.#element,
+      ...base,
       direction,
       velocityX: vel.velocityX,
       velocityY: vel.velocityY,
@@ -690,13 +731,12 @@ export class GestureController extends BaseController<GestureEvents> {
       direction,
       velocityX: vel.velocityX,
       velocityY: vel.velocityY,
+      button: detail.button,
+      buttons: detail.buttons,
+      pointerType: detail.pointerType,
     };
     this.emit("swipe", detail);
-    this.emit("gesture", {
-      kind: "swipe",
-      state: this.#state,
-      originalEvent: null,
-    });
+    this.#emitGestureEvent(detail);
     this.emit("change", {
       state: this.#state,
       previous: this.#previousState,
@@ -706,20 +746,27 @@ export class GestureController extends BaseController<GestureEvents> {
   #emitPanMove(
     snap: PointerSnapshot,
     locked: { dx: number; dy: number },
-    phase: "start" | "move" = "move"
+    phase: GesturePhase = "move"
   ): void {
     const vel = computeVelocity(
-      { id: 0, x: this.#startX, y: this.#startY, timestamp: this.#startTimestamp, pressure: 0 },
-      { id: 0, x: snap.x, y: snap.y, timestamp: snap.timestamp, pressure: 0 }
+      {
+        id: 0,
+        x: this.#startX,
+        y: this.#startY,
+        timestamp: this.#startTimestamp,
+        pressure: 0,
+        button: this.#leadingButton,
+        buttons: this.#leadingButtons,
+        pointerType: this.#leadingPointerType,
+      },
+      snap
     );
     const direction = resolveDirection(locked.dx, locked.dy);
-    const rect = this.#element?.getBoundingClientRect();
+    const base = this.#eventBaseFromSnap(snap);
 
     const detail: GesturePanDetail = {
       kind: "pan",
-      x: snap.x - (rect?.left ?? 0),
-      y: snap.y - (rect?.top ?? 0),
-      target: this.#element,
+      ...base,
       phase,
       distanceX: locked.dx,
       distanceY: locked.dy,
@@ -738,6 +785,9 @@ export class GestureController extends BaseController<GestureEvents> {
       direction,
       x: detail.x,
       y: detail.y,
+      button: detail.button,
+      buttons: detail.buttons,
+      pointerType: detail.pointerType,
     };
 
     if (this.#options.preventDefault) {
@@ -745,25 +795,19 @@ export class GestureController extends BaseController<GestureEvents> {
     }
 
     this.emit("pan", detail);
-    this.emit("gesture", {
-      kind: "pan",
-      state: this.#state,
-      originalEvent: null,
-    });
+    this.#emitGestureEvent(detail);
   }
 
-  #emitPanEnd(snap: { x: number; y: number }): void {
-    const rect = this.#element?.getBoundingClientRect();
+  #emitPanEnd(snap: PointerSnapshot): void {
     const dx = snap.x - this.#startX;
     const dy = snap.y - this.#startY;
     const locked = applyAxisLock(dx, dy, this.#getRecognizerConfig().axisLock);
     const direction = resolveDirection(locked.dx, locked.dy);
+    const base = this.#eventBaseFromSnap(snap);
 
     const detail: GesturePanDetail = {
       kind: "pan",
-      x: snap.x - (rect?.left ?? 0),
-      y: snap.y - (rect?.top ?? 0),
-      target: this.#element,
+      ...base,
       phase: "end",
       distanceX: locked.dx,
       distanceY: locked.dy,
@@ -778,56 +822,71 @@ export class GestureController extends BaseController<GestureEvents> {
       x: detail.x,
       y: detail.y,
       direction,
+      button: detail.button,
+      buttons: detail.buttons,
+      pointerType: detail.pointerType,
     };
     this.emit("pan", detail);
-    this.emit("gesture", {
-      kind: "pan",
-      state: this.#state,
-      originalEvent: null,
-    });
+    this.#emitGestureEvent(detail);
     this.emit("change", {
       state: this.#state,
       previous: this.#previousState,
     });
   }
 
-  #emitPinchMove(snap: { x: number; y: number }, scale: number, rotation: number): void {
-    const rect = this.#element?.getBoundingClientRect();
+  #emitPinchMove(
+    snap: PointerSnapshot,
+    scale: number,
+    rotation: number,
+    phase: GesturePhase = "move"
+  ): void {
+    const base = this.#eventBaseFromSnap(snap);
     this.#state = {
       ...this.#state,
       scale,
       rotation,
-      x: snap.x - (rect?.left ?? 0),
-      y: snap.y - (rect?.top ?? 0),
+      x: base.x,
+      y: base.y,
+      button: base.button,
+      buttons: base.buttons,
+      pointerType: base.pointerType,
     };
 
     const detail: GesturePinchDetail = {
       kind: "pinch",
-      x: this.#state.x,
-      y: this.#state.y,
-      target: this.#element,
-      phase: "move",
+      ...base,
+      phase,
       scale,
       rotation,
       distanceX: this.#state.distanceX,
       distanceY: this.#state.distanceY,
     };
     this.emit("pinch", detail);
-    this.emit("gesture", {
-      kind: "pinch",
-      state: this.#state,
-      originalEvent: null,
-    });
+    this.#emitGestureEvent(detail);
   }
 
-  #emitPinchEnd(snap: { x: number; y: number }): void {
-    const rect = this.#element?.getBoundingClientRect();
+  #emitPinchEnd(snap: PointerSnapshot): void {
+    const base = this.#eventBaseFromSnap(snap);
+    const detail: GesturePinchDetail = {
+      kind: "pinch",
+      ...base,
+      phase: "end",
+      scale: this.#state.scale,
+      rotation: this.#state.rotation,
+      distanceX: this.#state.distanceX,
+      distanceY: this.#state.distanceY,
+    };
     this.#previousState = { ...this.#state };
     this.#state = {
       ...emptyState(),
-      x: snap.x - (rect?.left ?? 0),
-      y: snap.y - (rect?.top ?? 0),
+      x: base.x,
+      y: base.y,
+      button: base.button,
+      buttons: base.buttons,
+      pointerType: base.pointerType,
     };
+    this.emit("pinch", detail);
+    this.#emitGestureEvent(detail);
     this.emit("change", {
       state: this.#state,
       previous: this.#previousState,

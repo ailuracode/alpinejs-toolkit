@@ -488,4 +488,108 @@ describe("GestureController", () => {
       expect(moveEvents[0].distanceY).toBe(100);
     });
   });
+
+  describe("mouse button filtering", () => {
+    it("ignores secondary-button pointers by default", () => {
+      controller = new GestureController({ id: "test-mouse-default" });
+      controller.attach(element);
+      controller.mount();
+
+      const tapEvents: GestureEvents["tap"][] = [];
+      controller.on("tap", (detail) => tapEvents.push(detail));
+
+      element.dispatchEvent(
+        createPointerEvent("pointerdown", 50, 50, {
+          button: 2,
+          buttons: 2,
+          pointerType: "mouse",
+        })
+      );
+      element.dispatchEvent(
+        createPointerEvent("pointerup", 50, 50, {
+          button: 2,
+          buttons: 0,
+          pointerType: "mouse",
+        })
+      );
+
+      expect(tapEvents).toHaveLength(0);
+    });
+
+    it("exposes pointer metadata on recognized primary-button taps", () => {
+      controller = new GestureController({ id: "test-mouse-primary" });
+      controller.attach(element);
+      controller.mount();
+
+      const tapEvents: GestureEvents["tap"][] = [];
+      controller.on("tap", (detail) => tapEvents.push(detail));
+
+      element.dispatchEvent(
+        createPointerEvent("pointerdown", 50, 50, {
+          button: 0,
+          buttons: 1,
+          pointerType: "mouse",
+        })
+      );
+      element.dispatchEvent(
+        createPointerEvent("pointerup", 50, 50, {
+          button: 0,
+          buttons: 0,
+          pointerType: "mouse",
+        })
+      );
+
+      expect(tapEvents).toHaveLength(1);
+      expect(tapEvents[0].button).toBe(0);
+      expect(tapEvents[0].buttons).toBe(0);
+      expect(tapEvents[0].pointerType).toBe("mouse");
+    });
+
+    it("recognizes secondary-button taps when mouseButtons includes 2", () => {
+      controller = new GestureController({
+        id: "test-mouse-secondary",
+        mouseButtons: [0, 2],
+      });
+      controller.attach(element);
+      controller.mount();
+
+      const tapEvents: GestureEvents["tap"][] = [];
+      controller.on("tap", (detail) => tapEvents.push(detail));
+
+      element.dispatchEvent(
+        createPointerEvent("pointerdown", 50, 50, {
+          button: 2,
+          buttons: 2,
+          pointerType: "mouse",
+        })
+      );
+      element.dispatchEvent(
+        createPointerEvent("pointerup", 50, 50, {
+          button: 2,
+          buttons: 0,
+          pointerType: "mouse",
+        })
+      );
+
+      expect(tapEvents).toHaveLength(1);
+      expect(tapEvents[0].button).toBe(2);
+      expect(tapEvents[0].pointerType).toBe("mouse");
+    });
+
+    it("still recognizes touch pointers with the default mouseButtons filter", () => {
+      controller = new GestureController({ id: "test-touch-default" });
+      controller.attach(element);
+      controller.mount();
+
+      const tapEvents: GestureEvents["tap"][] = [];
+      controller.on("tap", (detail) => tapEvents.push(detail));
+
+      element.dispatchEvent(createPointerEvent("pointerdown", 50, 50));
+      element.dispatchEvent(createPointerEvent("pointerup", 50, 50));
+
+      expect(tapEvents).toHaveLength(1);
+      expect(tapEvents[0].button).toBe(0);
+      expect(tapEvents[0].pointerType).toBe("touch");
+    });
+  });
 });

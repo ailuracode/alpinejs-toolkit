@@ -4,35 +4,35 @@
 
 import type {
   GestureChangeDetail,
-  GestureDoubleTapDetail,
-  GestureLongPressDetail,
-  GesturePanDetail,
-  GesturePinchDetail,
+  GestureDetailFor,
+  GestureDetailMap,
+  GestureKind,
   GestureRecognizedDetail,
-  GestureSwipeDetail,
-  GestureTapDetail,
 } from "./types";
 
 /**
  * Event map consumed by `BaseController<GestureEvents>`.
  */
-export interface GestureEvents extends Record<string, unknown> {
+export interface GestureEvents extends GestureDetailMap, Record<string, unknown> {
   change: GestureChangeDetail;
-  tap: GestureTapDetail;
-  doubletap: GestureDoubleTapDetail;
-  longpress: GestureLongPressDetail;
-  swipe: GestureSwipeDetail;
-  pan: GesturePanDetail;
-  pinch: GesturePinchDetail;
   gesture: GestureRecognizedDetail;
 }
 
-/** Subscriber callback shapes per event. */
-export type GestureChangeListener = (detail: GestureChangeDetail) => void;
-export type GestureTapListener = (detail: GestureTapDetail) => void;
-export type GestureDoubleTapListener = (detail: GestureDoubleTapDetail) => void;
-export type GestureLongPressListener = (detail: GestureLongPressDetail) => void;
-export type GestureSwipeListener = (detail: GestureSwipeDetail) => void;
-export type GesturePanListener = (detail: GesturePanDetail) => void;
-export type GesturePinchListener = (detail: GesturePinchDetail) => void;
-export type GestureRecognizedListener = (detail: GestureRecognizedDetail) => void;
+/** Subscriber callback for a gesture kind or lifecycle event. */
+export type GestureListener<K extends keyof GestureEvents> = (detail: GestureEvents[K]) => void;
+
+/** Subscriber callback shapes per event (backward-compatible aliases). */
+export type GestureChangeListener = GestureListener<"change">;
+export type GestureTapListener = GestureListener<"tap">;
+export type GestureDoubleTapListener = GestureListener<"doubletap">;
+export type GestureLongPressListener = GestureListener<"longpress">;
+export type GestureSwipeListener = GestureListener<"swipe">;
+export type GesturePanListener = GestureListener<"pan">;
+export type GesturePinchListener = GestureListener<"pinch">;
+export type GestureRecognizedListener = GestureListener<"gesture">;
+
+/** Resolves the controller event name for a gesture kind. */
+export type GestureEventNameFor<K extends GestureKind> = K;
+
+/** Resolves the detail payload emitted on the named gesture channel. */
+export type GestureChannelDetailFor<K extends GestureKind> = GestureDetailFor<K>;
