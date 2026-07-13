@@ -336,6 +336,12 @@
 .grid > .fade-in-up:nth-child(6) { animation-delay: 0.3s; }
 .grid > .fade-in-up:nth-child(n+7) { animation-delay: 0.35s; }
 
+/* Stagger siblings in playground content (header + demo sections) */
+main > .fade-in-up:nth-child(1) { animation-delay: 0.05s; }
+main > .fade-in-up:nth-child(2) { animation-delay: 0.15s; }
+main > .fade-in-up:nth-child(3) { animation-delay: 0.25s; }
+main > .fade-in-up:nth-child(4) { animation-delay: 0.35s; }
+
 /* Stagger section headers */
 section:nth-child(1) > .fade-in-up { animation-delay: 0.05s; }
 section:nth-child(2) > .fade-in-up { animation-delay: 0.1s; }
