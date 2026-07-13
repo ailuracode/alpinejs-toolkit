@@ -1,0 +1,66 @@
+---
+import { badgeVariants } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
+import { getPluginNavItem } from "../../plugin-nav";
+import DemoSection from "../DemoSection.astro";
+
+const plugin = getPluginNavItem("gesture")!;
+---
+
+<DemoSection id={plugin.id} title={plugin.title} api={plugin.api} description={plugin.description}>
+	<div class="grid gap-4">
+		<div
+			x-data="{
+				lastGesture: 'none',
+				panX: 0,
+				panY: 0,
+				handleTap(d) { this.lastGesture = 'tap' },
+				handleDoubleTap(d) { this.lastGesture = 'doubletap' },
+				handleLongPress(d) { this.lastGesture = 'longpress' },
+				handleSwipe(d) { this.lastGesture = 'swipe ' + (d.state ? d.state.direction : d.direction) },
+				handlePan(d) {
+					const s = d.state || d;
+					if (s.active && s.kind === 'pan' && this.lastGesture !== 'pan move') {
+						this.lastGesture = 'pan move';
+					}
+					this.panX = s.distanceX || 0;
+					this.panY = s.distanceY || 0;
+					if (!s.active && this.lastGesture.startsWith('pan')) {
+						this.lastGesture = 'pan end';
+					}
+				}
+			}"
+			class="rounded-lg border bg-card p-6"
+		>
+			<p class="text-sm font-medium mb-4">Try the gestures below on the touch area:</p>
+
+			<div
+				x-gesture:tap="handleTap"
+				x-gesture:doubletap="handleDoubleTap"
+				x-gesture:longpress="handleLongPress"
+				x-gesture:swipe="handleSwipe"
+				x-gesture:pan="handlePan"
+				class="flex h-40 select-none items-center justify-center rounded-md border-2 border-dashed text-sm text-muted-foreground touch-none"
+			>
+				Interact here
+			</div>
+
+			<div class="mt-3 flex flex-wrap items-center gap-2">
+				<span class="text-sm">Last:</span>
+				<span
+					class={cn(badgeVariants({ variant: "outline" }))}
+					x-text="lastGesture"
+				></span>
+				<template x-if="lastGesture === 'pan move'">
+					<span class="text-xs text-muted-foreground flex flex-col gap-0.5">
+						<span>dx=<span x-text="panX.toFixed(4)"></span></span>
+						<span>dy=<span x-text="panY.toFixed(4)"></span></span>
+					</span>
+				</template>
+			</div>
+		</div>
+	</div>
+	<p class="text-xs text-muted-foreground mt-3">
+		Package: <code>{plugin.package}</code>
+	</p>
+</DemoSection>

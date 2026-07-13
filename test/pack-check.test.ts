@@ -12,8 +12,7 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 describe("pack:check", () => {
   it("discovers every non-private package dynamically", () => {
     const packages = discoverPublishablePackages(root);
-
-    expect(packages.length).toBe(32);
+    expect(packages.length).toBe(33);
     expect(packages.every((pkg) => pkg.isPrivate === false)).toBe(true);
   });
 
@@ -74,6 +73,6 @@ describe("pack:check", () => {
 
     expect(result.ok).toBe(true);
     expect(result.errors).toEqual([]);
-    expect(result.packageCount).toBe(32);
+    expect(result.packageCount).toBe(33);
   }, 120_000);
 });
