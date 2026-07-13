@@ -1,10 +1,55 @@
-import type { GestureStore } from "./index.js";
+/// <reference types="@types/alpinejs" />
 
-declare module "@ailuracode/alpine-core" {
-  interface AlpineStores {
-    gesture: GestureStore;
-  }
-  interface AlpineMagics {
-    gesture: GestureStore;
+import type { GestureOptions, GesturePluginCallback, GestureState, GestureStore } from "./types";
+
+export type {
+  GestureAlpine,
+  GestureChangeDetail,
+  GestureDoubleTapDetail,
+  GestureKind,
+  GestureLongPressDetail,
+  GestureOptions,
+  GesturePanDetail,
+  GesturePinchDetail,
+  GesturePluginCallback,
+  GestureRecognizedDetail,
+  GestureState,
+  GestureStore,
+  GestureSwipeDetail,
+  GestureTapDetail,
+} from "./types";
+
+export interface GestureStoreShape {
+  readonly active: boolean;
+  readonly kind: GestureState["kind"];
+  readonly x: number;
+  readonly y: number;
+  readonly distanceX: number;
+  readonly distanceY: number;
+  readonly totalDistance: number;
+  readonly velocityX: number;
+  readonly velocityY: number;
+  readonly pointerCount: number;
+  readonly scale: number;
+  readonly rotation: number;
+  readonly direction: GestureState["direction"];
+  cancel(): void;
+}
+
+export function createGesture(
+  element: Element,
+  options?: GestureOptions
+): import("./controller").GestureController;
+
+export default function gesturePlugin(options?: GestureOptions): GesturePluginCallback;
+
+declare global {
+  namespace Alpine {
+    interface Stores {
+      gesture: GestureStore;
+    }
+    interface Magics<T> {
+      $gesture: GestureStore;
+    }
   }
 }

@@ -1,18 +1,27 @@
 /**
  * Public entrypoint for `@ailuracode/alpine-gesture`.
  *
- * Exposes:
- * - `GestureController` — headless controller class.
- * - `gesturePlugin(options)` — Alpine adapter factory.
- * - `createGesture(element, options)` — standalone helper.
- * - All public types.
+ * Per `.cursor/rules/new-package.mdc`, this file MUST only contain
+ * re-exports. The framework-agnostic controller lives in
+ * `./controller.ts`, the Alpine integration in `./plugin.ts`, and the
+ * supporting types in `./types.ts` and `./events.ts`.
+ *
+ * Two ways to consume the package:
+ *
+ * 1. Standalone — `createGesture(element, options)` returns a mounted
+ *    framework-agnostic controller. Use this in vanilla TypeScript or
+ *    backend-rendered templates without Alpine.
+ * 2. Alpine — `gesturePlugin(options)` returns an `Alpine.plugin()`
+ *    callback that wires the controller into `$store.gesture`,
+ *    `$gesture`, and the `x-gesture` directive.
  */
 
-export { createGestureStore } from "./alpine/store.js";
+export type { Unsubscribe } from "@ailuracode/alpine-core";
+// --- Controller (framework-agnostic) ---------------------------------
 export { GESTURE_SINGLETON_KEY, GestureController } from "./controller.js";
 export type { GestureErrorCode } from "./error.js";
 // --- Error surface ---------------------------------------------------
-export { GestureError, isGestureErrorCode } from "./error.js";
+export { GestureError } from "./error.js";
 // --- Event surface ---------------------------------------------------
 export type {
   GestureChangeListener,
@@ -25,8 +34,9 @@ export type {
   GestureSwipeListener,
   GestureTapListener,
 } from "./events.js";
+// --- Alpine integration ----------------------------------------------
 export { createGesture, gesturePlugin, gesturePlugin as default } from "./plugin.js";
-// --- Public types ----------------------------------------------------
+// --- Public types (state, contracts, options) ------------------------
 export type {
   GestureAlpine,
   GestureAxisLock,

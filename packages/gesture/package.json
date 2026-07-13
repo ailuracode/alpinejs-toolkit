@@ -34,7 +34,10 @@
   ],
   "scripts": {
     "build": "tsup src/index.ts --format esm --dts --clean --out-dir dist && cp src/global.d.ts dist/global.d.ts",
-    "size": "size-limit"
+    "size": "size-limit",
+    "test": "vitest run",
+    "test:e2e": "playwright test --config playwright.config.ts",
+    "test:e2e:report": "playwright show-report e2e/playwright-report"
   },
   "peerDependencies": {
     "alpinejs": "^3.0.0",
@@ -42,6 +45,7 @@
   },
   "devDependencies": {
     "@ailuracode/alpine-core": "workspace:*",
+    "@playwright/test": "^1.56.1",
     "@types/alpinejs": "^3.13.10"
   },
   "toolkit": {

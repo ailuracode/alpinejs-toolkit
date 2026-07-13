@@ -401,6 +401,9 @@ importers:
       '@ailuracode/alpine-core':
         specifier: workspace:*
         version: link:../core
+      '@playwright/test':
+        specifier: ^1.56.1
+        version: 1.61.1
       '@types/alpinejs':
         specifier: ^3.13.10
         version: 3.13.11

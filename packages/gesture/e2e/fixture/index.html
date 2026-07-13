@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ailuracode/alpine-gesture E2E fixture</title>
+  </head>
+  <body>
+    <main
+      id="app"
+      data-e2e-ready="true"
+      x-data="{ last: null, swipeDir: null }"
+    >
+      <h1>Gesture E2E fixture</h1>
+      <p>
+        Last gesture:
+        <output id="last-gesture" data-testid="last-gesture" x-text="$store.gesture.kind ?? 'none'"></output>
+      </p>
+
+      <section>
+        <h2>Tap</h2>
+        <button
+          id="tap-target"
+          type="button"
+          x-gesture:tap="last = 'tap'"
+        >Tap me</button>
+        <output id="tap-result" data-testid="tap-result" x-text="last ?? 'untouched'"></output>
+      </section>
+
+      <section>
+        <h2>Swipe</h2>
+        <div
+          id="swipe-target"
+          role="region"
+          aria-label="Swipe target"
+          tabindex="0"
+          style="width: 200px; height: 60px; background: #eee; user-select: none; touch-action: none;"
+          x-gesture:swipe="swipeDir = $event.state.direction"
+        >Swipe me</div>
+        <output id="swipe-result" data-testid="swipe-result" x-text="swipeDir ?? 'none'"></output>
+      </section>
+
+      <section>
+        <h2>Long press</h2>
+        <button
+          id="longpress-target"
+          type="button"
+          x-gesture:longpress="last = 'longpress'"
+        >Long press me</button>
+      </section>
+    </main>
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>

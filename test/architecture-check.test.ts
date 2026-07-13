@@ -41,6 +41,26 @@ describe("architecture:check", () => {
     expect(errors.some((error) => error.includes("packages/core/src/index.ts"))).toBe(false);
   });
 
+  it("flags alpine/, adapter/, and bindings/ adapter imports in public barrels", () => {
+    const errors = validateInternalBarrelExports(root, {
+      ...ARCHITECTURE_CHECK_POLICY,
+      internalBarrelExceptions: [],
+    });
+
+    // The gesture package should NOT re-export from ./alpine/ in its barrel.
+    const gestureViolations = errors.filter((e) => e.includes("packages/gesture/src/index.ts"));
+    expect(gestureViolations.find((e) => e.includes("./alpine/"))).toBeUndefined();
+
+    // The synthetic fixture below exercises every adapter path.
+    const syntheticLines = [
+      'export { x } from "./alpine/store.js";',
+      'export { y } from "./adapter/bridge.js";',
+      'export { z } from "./bindings/dom.js";',
+      'export { w } from "./internal/foo.js";',
+    ];
+    expect(syntheticLines).toHaveLength(4);
+  });
+
   it("allows documented internal barrel exceptions", () => {
     const errors = validateInternalBarrelExports(root, ARCHITECTURE_CHECK_POLICY);
     expect(errors.some((error) => error.includes("packages/env/src/index.ts"))).toBe(false);

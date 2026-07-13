@@ -10,6 +10,10 @@ export type GestureErrorCode =
   | "GESTURE_CONTROLLER_DESTROYED"
   | "GESTURE_NO_ELEMENT";
 
+/**
+ * Type guard for {@link GestureErrorCode}. Not part of the public
+ * surface — kept here so unit tests can validate error narrowing.
+ */
 export function isGestureErrorCode(value: unknown): value is GestureErrorCode {
   return (
     typeof value === "string" &&
