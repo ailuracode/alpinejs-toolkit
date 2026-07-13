@@ -12,6 +12,7 @@ export type {
   QueryDevtoolsEntry,
   QueryDevtoolsSnapshot,
 } from "./devtools.js";
+export { QueryCacheDestroyedError } from "./errors.js";
 export type { ResponseParser, TypedFetchInit } from "./fetch.js";
 export { HttpError, typedFetch } from "./fetch.js";
 export { mutationOptions, queryFn, queryKey, queryOptions } from "./options.js";

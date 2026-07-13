@@ -180,6 +180,8 @@ export interface QueryStore {
   reset(): void;
   resetQueries(key?: QueryKey | QueryKey[]): void;
   clearMutations(): void;
+  /** Tear down global listeners, timers, in-flight requests, and adapter handles. Idempotent. */
+  destroy(): void;
   mutate<TData, TVariables = void, TContext = unknown>(
     options: MutationOptions<TData, TVariables, TContext>
   ): MutationState<QueryData<TData>, QueryData<TVariables>>;

@@ -190,6 +190,9 @@ export function createQueryStore(cache: QueryCache): QueryStore {
     clearMutations() {
       cache.getDevtools().clearMutations();
     },
+    destroy() {
+      cache.destroy();
+    },
     mutate(mutationOptions) {
       return cache.mutate(mutationOptions);
     },

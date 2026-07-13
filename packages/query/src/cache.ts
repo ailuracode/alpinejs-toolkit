@@ -1,6 +1,7 @@
 import type { QueryStateAdapter } from "./adapters/types.js";
 import type { QueryEntry } from "./cache-internals.js";
 import { DevtoolsRegistry } from "./devtools-registry.js";
+import { QueryCacheDestroyedError } from "./errors.js";
 import type {
   MutationOptions,
   MutationState,
@@ -28,10 +29,33 @@ export class QueryCache {
   private readonly adapter: QueryStateAdapter;
   private readonly devtools = new DevtoolsRegistry();
   private focusListenerAttached = false;
+  private destroyed = false;
+  private onWindowFocus: (() => void) | null = null;
+  private onDocumentVisibilityChange: (() => void) | null = null;
 
   constructor(options: QueryCacheOptions) {
     this.config = options;
     this.adapter = options.adapter;
+  }
+
+  get isDestroyed(): boolean {
+    return this.destroyed;
+  }
+
+  destroy(): void {
+    if (this.destroyed) {
+      return;
+    }
+
+    for (const entry of this.entries.values()) {
+      this.disposeEntryHandle(entry);
+      this.clearTimers(entry);
+    }
+
+    this.entries.clear();
+    this.detachFocusListeners();
+    this.devtools.destroy();
+    this.destroyed = true;
   }
 
   getDevtools() {
@@ -91,6 +115,7 @@ export class QueryCache {
     queryFn: QueryFunction<TData>,
     options?: QueryOptions<TData>
   ): QueryState<TData> & { destroy(): void } {
+    this.assertNotDestroyed();
     const entry = this.ensureEntry(key, queryFn, options);
     this.subscribe(entry);
     void this.fetchEntry(entry);
@@ -107,6 +132,7 @@ export class QueryCache {
     queryFn: QueryFunction<TData>,
     options?: QueryOptions<TData>
   ): QueryState<TData> {
+    this.assertNotDestroyed();
     const entry = this.ensureEntry(key, queryFn, options);
     void this.fetchEntry(entry);
     return entry.state;
@@ -121,11 +147,13 @@ export class QueryCache {
     queryFn: QueryFunction<TData>,
     options?: QueryOptions<TData>
   ): Promise<void> {
+    this.assertNotDestroyed();
     const entry = this.ensureEntry(key, queryFn, options);
     await this.fetchEntry(entry);
   }
 
   invalidate(key?: QueryKey | QueryKey[]): void {
+    this.assertNotDestroyed();
     const targets = this.resolveTargets(key);
 
     for (const entry of targets) {
@@ -139,6 +167,7 @@ export class QueryCache {
   }
 
   remove(key?: QueryKey | QueryKey[]): void {
+    this.assertNotDestroyed();
     const targets = this.resolveTargets(key);
 
     for (const entry of targets) {
@@ -151,6 +180,7 @@ export class QueryCache {
   }
 
   setData<TData>(key: QueryKey, data: TData | ((current: TData | undefined) => TData)): void {
+    this.assertNotDestroyed();
     const entry = this.entries.get(hashKey(key)) as QueryEntry<TData> | undefined;
     if (!entry) {
       return;
@@ -164,6 +194,7 @@ export class QueryCache {
   }
 
   cancel(key: QueryKey): void {
+    this.assertNotDestroyed();
     const entry = this.entries.get(hashKey(key));
     if (!entry) {
       return;
@@ -177,6 +208,7 @@ export class QueryCache {
   }
 
   reset(): void {
+    this.assertNotDestroyed();
     for (const entry of this.entries.values()) {
       this.disposeEntryHandle(entry);
       this.clearTimers(entry);
@@ -185,9 +217,11 @@ export class QueryCache {
     this.entries.clear();
     this.devtools.clearMutations();
     this.devtools.notify();
+    this.syncFocusListeners();
   }
 
   resetQueries(key?: QueryKey | QueryKey[]): void {
+    this.assertNotDestroyed();
     const targets = key ? this.resolveTargets(key) : [...this.entries.values()];
 
     for (const entry of targets) {
@@ -213,6 +247,7 @@ export class QueryCache {
   mutate<TData, TVariables, TContext>(
     options: MutationOptions<TData, TVariables, TContext>
   ): MutationState<TData, TVariables> {
+    this.assertNotDestroyed();
     const handle = this.adapter.createMutationState<TData, TVariables>({
       mutate: async (variables: TVariables) => {
         handle.patch({ status: "pending", error: null });
@@ -332,6 +367,7 @@ export class QueryCache {
       this.clearRefetchInterval(entry);
     }
 
+    this.syncFocusListeners();
     this.devtools.notify();
   }
 
@@ -385,11 +421,11 @@ export class QueryCache {
   }
 
   private ensureFocusListener(): void {
-    if (this.focusListenerAttached || typeof window === "undefined") {
+    if (this.destroyed || this.focusListenerAttached || typeof window === "undefined") {
       return;
     }
 
-    const onFocus = () => {
+    this.onWindowFocus = () => {
       for (const entry of this.entries.values()) {
         if (
           entry.observers > 0 &&
@@ -402,14 +438,62 @@ export class QueryCache {
       }
     };
 
-    window.addEventListener("focus", onFocus);
-    document.addEventListener("visibilitychange", () => {
-      if (document.visibilityState === "visible") {
-        onFocus();
+    this.onDocumentVisibilityChange = () => {
+      if (document.visibilityState === "visible" && this.onWindowFocus) {
+        this.onWindowFocus();
       }
-    });
+    };
 
+    window.addEventListener("focus", this.onWindowFocus);
+    document.addEventListener("visibilitychange", this.onDocumentVisibilityChange);
     this.focusListenerAttached = true;
+  }
+
+  private detachFocusListeners(): void {
+    if (!this.focusListenerAttached || typeof window === "undefined") {
+      return;
+    }
+
+    if (this.onWindowFocus) {
+      window.removeEventListener("focus", this.onWindowFocus);
+    }
+
+    if (this.onDocumentVisibilityChange) {
+      document.removeEventListener("visibilitychange", this.onDocumentVisibilityChange);
+    }
+
+    this.onWindowFocus = null;
+    this.onDocumentVisibilityChange = null;
+    this.focusListenerAttached = false;
+  }
+
+  private hasActiveObservers(): boolean {
+    for (const entry of this.entries.values()) {
+      if (entry.observers > 0) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  private syncFocusListeners(): void {
+    if (this.destroyed) {
+      return;
+    }
+
+    if (this.hasActiveObservers()) {
+      this.ensureFocusListener();
+      return;
+    }
+
+    this.detachFocusListeners();
+  }
+
+  private assertNotDestroyed(): void {
+    if (this.destroyed) {
+      throw new QueryCacheDestroyedError();
+    }
   }
 
   private isStale<TData>(entry: QueryEntry<TData>): boolean {
