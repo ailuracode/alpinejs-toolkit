@@ -56,7 +56,7 @@ function createToastHarness<
     ...options,
   } as Parameters<typeof toastPlugin<TVariants, TPositions>>[0]);
   if (typeof register === "function") {
-    register(Alpine as unknown as AlpineType.Alpine);
+    register(Alpine as any as AlpineType.Alpine);
   }
 
   return {
@@ -717,7 +717,7 @@ describe("@ailuracode/alpine-toast", () => {
     const config = resolveToastPluginConfig({ variants: toastVariants(["success"] as const) });
     const toast = createToastMagic(
       config,
-      () => store as unknown as ToastStore<typeof config.variants, typeof config.positions>
+      () => store as any as ToastStore<typeof config.variants, typeof config.positions>
     );
     const id = toast.success("Standalone");
 

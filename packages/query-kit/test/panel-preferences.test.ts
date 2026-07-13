@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
   createPanelPreferences,
   DEFAULT_PREFERENCES_STORAGE_KEY,
@@ -47,5 +47,36 @@ describe("query devtools panel preferences", () => {
     expect(loadPanelPreferences(DEFAULT_PREFERENCES_STORAGE_KEY, { filter: "seed" })).toEqual(
       createPanelPreferences({ filter: "seed" })
     );
+  });
+
+  it("falls back to defaults when localStorage is undefined", () => {
+    const original = globalThis.localStorage;
+    // @ts-expect-error: simulating SSR
+    delete globalThis.localStorage;
+    expect(loadPanelPreferences(DEFAULT_PREFERENCES_STORAGE_KEY, { filter: "seed" })).toEqual(
+      createPanelPreferences({ filter: "seed" })
+    );
+    savePanelPreferences(DEFAULT_PREFERENCES_STORAGE_KEY, createPanelPreferences());
+    globalThis.localStorage = original;
+  });
+
+  it("handles localStorage throwing on get", () => {
+    const original = localStorage.getItem;
+    localStorage.getItem = vi.fn(() => {
+      throw new Error("quota");
+    }) as typeof original;
+    expect(loadPanelPreferences(DEFAULT_PREFERENCES_STORAGE_KEY, { filter: "seed" })).toEqual(
+      createPanelPreferences({ filter: "seed" })
+    );
+    localStorage.getItem = original;
+  });
+
+  it("handles localStorage throwing on set", () => {
+    const original = localStorage.setItem;
+    localStorage.setItem = vi.fn(() => {
+      throw new Error("quota");
+    }) as typeof original;
+    savePanelPreferences(DEFAULT_PREFERENCES_STORAGE_KEY, createPanelPreferences());
+    localStorage.setItem = original;
   });
 });
