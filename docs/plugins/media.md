@@ -135,7 +135,7 @@ media.on("change", (detail: MediaChangeDetail) => {
 
 `prefersColorScheme` reports the **operating system** preference from `(prefers-color-scheme: dark)`. It does not reflect a manual theme override in your app.
 
-For **app styling**, use [`@ailuracode/alpine-theme`](./theme.md) and read `$store.theme.resolved`. That value accounts for user choice (`light`, `dark`, or follow system via `mode: 'system'`).
+For **app styling**, use [`@ailuracode/alpine-theme`](./theme.md) and read `$store.theme.resolved`. That value accounts for user choice (`light`, `dark`, or follow system via `current === 'system'`).
 
 | Question                              | Use                              |
 | ------------------------------------- | -------------------------------- |
@@ -144,10 +144,10 @@ For **app styling**, use [`@ailuracode/alpine-theme`](./theme.md) and read `$sto
 
 ```html
 <!-- Apply styles -->
-<div :class="{ 'dark-ui': $store.theme.isResolvedDark }">...</div>
+<div :class="{ 'dark-ui': $store.theme.resolved === 'dark' }">…</div>
 
 <!-- OS signal (e.g. when user chose "system") -->
-<p x-show="$store.theme.isSystem">
+<p x-show="$store.theme.current === 'system'">
   Following system: <span x-text="$store.media.prefersColorScheme"></span>
 </p>
 ```
