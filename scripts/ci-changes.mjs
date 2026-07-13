@@ -378,6 +378,10 @@ export function vitestPathsForFolders(folders) {
  * @returns {CiChangesResult}
  */
 function createFullCiResult(summary, overrides = {}) {
+  const allPackages = discoverPackages(path.join(root, "packages"));
+  const allFolders = allPackages.map((pkg) => pkg.folder);
+  const testPaths = vitestPathsForFolders(allFolders);
+
   return {
     docsOnly: false,
     runFull: true,
@@ -390,11 +394,11 @@ function createFullCiResult(summary, overrides = {}) {
     runDemo: true,
     runE2e: true,
     changedFolders: [],
-    buildFolders: [],
-    testFolders: [],
+    buildFolders: allFolders,
+    testFolders: allFolders,
     packFolders: [],
     buildFilters: [],
-    testPaths: [],
+    testPaths,
     e2eFolders: [],
     summary,
     ...overrides,
