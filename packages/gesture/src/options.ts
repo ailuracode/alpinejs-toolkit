@@ -20,6 +20,7 @@ export interface NormalizedGestureOptions {
   readonly pinchThreshold: number;
   readonly preventDefault: boolean;
   readonly capturePointer: boolean;
+  readonly mouseButtons: ReadonlySet<number>;
 }
 
 const ALL_GESTURES: readonly GestureKind[] = [
@@ -44,6 +45,7 @@ export const DEFAULT_GESTURE_OPTIONS: NormalizedGestureOptions = {
   pinchThreshold: 10,
   preventDefault: false,
   capturePointer: true,
+  mouseButtons: new Set([0]),
 };
 
 export function normalizeGestureOptions(options: GestureOptions = {}): NormalizedGestureOptions {
@@ -60,5 +62,8 @@ export function normalizeGestureOptions(options: GestureOptions = {}): Normalize
     pinchThreshold: options.pinchThreshold ?? DEFAULT_GESTURE_OPTIONS.pinchThreshold,
     preventDefault: options.preventDefault ?? DEFAULT_GESTURE_OPTIONS.preventDefault,
     capturePointer: options.capturePointer ?? DEFAULT_GESTURE_OPTIONS.capturePointer,
+    mouseButtons: options.mouseButtons
+      ? new Set(options.mouseButtons)
+      : DEFAULT_GESTURE_OPTIONS.mouseButtons,
   };
 }

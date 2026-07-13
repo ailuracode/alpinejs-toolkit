@@ -23,6 +23,15 @@ export type GestureDirection = "up" | "down" | "left" | "right" | "none";
 /** Axis lock for pan and swipe recognition. */
 export type GestureAxisLock = "none" | "horizontal" | "vertical";
 
+/**
+ * Pointer button index from `PointerEvent.button`.
+ * `0` = primary (left), `1` = auxiliary (middle), `2` = secondary (right).
+ */
+export type GestureMouseButton = 0 | 1 | 2 | 3 | 4;
+
+/** `PointerEvent.pointerType` — touch input always reports button `0`. */
+export type GesturePointerType = "mouse" | "touch" | "pen";
+
 /* -------------------------------------------------------------------------- */
 /*                              Gesture state                                 */
 /* -------------------------------------------------------------------------- */
@@ -55,6 +64,12 @@ export interface GestureState {
   readonly rotation: number;
   /** Swipe direction when recognized. */
   readonly direction: GestureDirection;
+  /** Button that initiated the active gesture (`PointerEvent.button`). */
+  readonly button: number;
+  /** Active button bitmask (`PointerEvent.buttons`). */
+  readonly buttons: number;
+  /** Pointer modality (`PointerEvent.pointerType`). */
+  readonly pointerType: string;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -92,6 +107,12 @@ export interface GestureOptions {
   readonly preventDefault?: boolean;
   /** Whether to capture the pointer for reliable tracking. Default: `true`. */
   readonly capturePointer?: boolean;
+  /**
+   * Mouse buttons that may start gesture recognition. Default: `[0]` (primary /
+   * left only). Touch and pen pointers always report button `0`, so the default
+   * includes mobile input without extra configuration.
+   */
+  readonly mouseButtons?: readonly GestureMouseButton[];
 }
 
 /* -------------------------------------------------------------------------- */
@@ -104,6 +125,9 @@ export interface GestureEventBase {
   readonly x: number;
   readonly y: number;
   readonly target: EventTarget | null;
+  readonly button: number;
+  readonly buttons: number;
+  readonly pointerType: string;
 }
 
 /** Detail payload for tap events. */
@@ -188,6 +212,9 @@ export interface GestureStore {
   scale: number;
   rotation: number;
   direction: GestureDirection;
+  button: number;
+  buttons: number;
+  pointerType: string;
   /** Manually cancel the current gesture. */
   cancel(): void;
 }

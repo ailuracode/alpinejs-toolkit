@@ -47,6 +47,9 @@ interface MutableGestureStore extends GestureStore {
   scale: number;
   rotation: number;
   direction: GestureState["direction"];
+  button: number;
+  buttons: number;
+  pointerType: string;
 }
 
 /**
@@ -69,6 +72,9 @@ function createGestureStore(controller: GestureController): GestureStore {
     scale: initial.scale,
     rotation: initial.rotation,
     direction: initial.direction,
+    button: initial.button,
+    buttons: initial.buttons,
+    pointerType: initial.pointerType,
     cancel() {
       controller.cancel();
     },
@@ -93,6 +99,9 @@ function syncGestureStore(store: GestureStore, state: GestureState): void {
   mutable.scale = state.scale;
   mutable.rotation = state.rotation;
   mutable.direction = state.direction;
+  mutable.button = state.button;
+  mutable.buttons = state.buttons;
+  mutable.pointerType = state.pointerType;
 }
 
 /**

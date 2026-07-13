@@ -33,6 +33,9 @@ export interface GestureStoreShape {
   readonly scale: number;
   readonly rotation: number;
   readonly direction: GestureState["direction"];
+  readonly button: number;
+  readonly buttons: number;
+  readonly pointerType: string;
   cancel(): void;
 }
 

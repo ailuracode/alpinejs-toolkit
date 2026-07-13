@@ -44,6 +44,12 @@ When multiple recognisers are active the controller cancels losers:
 - Swipe releases → pan cancels.
 - Longpress timer fires → tap and swipe cancel.
 
+## Plugin options
+
+| Option | Default | Description |
+|--------|---------|-------------|
+| `mouseButtons` | `[0]` | Mouse buttons that may start recognition (`0` = left, `2` = right). Touch always uses `0`. |
+
 ## Headless API
 
 ```ts

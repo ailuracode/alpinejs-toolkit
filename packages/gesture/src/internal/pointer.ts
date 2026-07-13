@@ -12,6 +12,9 @@ export interface PointerSnapshot {
   readonly y: number;
   readonly timestamp: number;
   readonly pressure?: number;
+  readonly button: number;
+  readonly buttons: number;
+  readonly pointerType: string;
 }
 
 /** Aggregated pointer state across all active pointers. */
@@ -21,6 +24,22 @@ export interface PointerAggregate {
   readonly count: number;
   readonly distance: number;
   readonly rotation: number;
+}
+
+/**
+ * Captures a pointer snapshot from a DOM `PointerEvent`.
+ */
+export function snapshotPointerFromEvent(event: PointerEvent): PointerSnapshot {
+  return {
+    id: event.pointerId,
+    x: event.clientX,
+    y: event.clientY,
+    timestamp: event.timeStamp,
+    pressure: event.pressure,
+    button: event.button,
+    buttons: event.buttons,
+    pointerType: event.pointerType,
+  };
 }
 
 /**
