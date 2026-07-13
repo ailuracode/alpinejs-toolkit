@@ -7,7 +7,7 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-[var(--ios-blue)] text-white hover:bg-[var(--ios-blue)]/90 shadow-sm",
+        default: "bg-[var(--ios-blue)] text-white hover:bg-[var(--ios-blue)]/80 shadow-sm",
         outline:
           "border-[var(--ios-separator)] bg-[var(--ios-bg-secondary)] hover:bg-[var(--ios-fill-quaternary)] hover:text-[var(--ios-label)] aria-expanded:bg-[var(--ios-fill-tertiary)] aria-expanded:text-[var(--ios-label)]",
         secondary:

@@ -24,13 +24,13 @@ const plugin = getPluginNavItem("json-api")!;
 		<DemoButton x-show="selectedId" x-cloak @click="clearDetail()">Clear Detail</DemoButton>
 	</div>
 
-	<p class="text-sm text-muted-foreground" x-show="query?.isLoading" x-cloak aria-live="polite">Loading articles…</p>
-	<p class="text-sm text-destructive" x-show="query?.isError" x-cloak x-text="query?.error?.message" role="alert"></p>
+	<p class="text-sm text-[var(--ios-label-secondary)]" x-show="query?.isLoading" x-cloak aria-live="polite">Loading articles…</p>
+	<p class="text-sm text-[var(--ios-red)]" x-show="query?.isError" x-cloak x-text="query?.error?.message" role="alert"></p>
 
 	<div class="relative w-full overflow-x-auto rounded-xl ring-1 ring-foreground/10" x-show="query?.isSuccess" x-cloak>
 		<table class="w-full caption-bottom text-sm">
 			<thead class="[&_tr]:border-b">
-				<tr class="border-b transition-colors hover:bg-muted/50">
+				<tr class="border-b transition-colors hover:bg-[var(--ios-fill-quaternary)]/50">
 					<th scope="col" class="h-10 px-2 text-left align-middle font-medium whitespace-nowrap">ID</th>
 					<th scope="col" class="h-10 px-2 text-left align-middle font-medium whitespace-nowrap">Title</th>
 					<th scope="col" class="h-10 px-2 text-left align-middle font-medium whitespace-nowrap">Author</th>
@@ -39,8 +39,8 @@ const plugin = getPluginNavItem("json-api")!;
 			<tbody class="[&_tr:last-child]:border-0">
 				<template x-for="row in rows" :key="row.id">
 					<tr
-						class="cursor-pointer border-b transition-colors hover:bg-muted/50"
-						x-bind:class="{ 'bg-primary/10': selectedId === row.id }"
+						class="cursor-pointer border-b transition-colors hover:bg-[var(--ios-fill-quaternary)]/50"
+						x-bind:class="{ 'bg-[var(--ios-blue)]/10': selectedId === row.id }"
 						@click="selectArticle(row.id)"
 					>
 						<td class="p-2 align-middle tabular-nums" x-text="row.id"></td>
@@ -57,13 +57,13 @@ const plugin = getPluginNavItem("json-api")!;
 			<CardTitle class="text-sm">jsonApiFindOneQueryOptions</CardTitle>
 		</CardHeader>
 		<CardContent class="space-y-2">
-			<p class="text-sm text-muted-foreground" x-show="detailQuery?.isLoading" aria-live="polite">Loading article…</p>
+			<p class="text-sm text-[var(--ios-label-secondary)]" x-show="detailQuery?.isLoading" aria-live="polite">Loading article…</p>
 			<template x-if="detailQuery?.isSuccess">
 				<div class="space-y-1 text-sm">
 					<p>
 						<strong x-text="detailQuery.data.data.attributes.title"></strong>
 					</p>
-					<p class="text-muted-foreground text-pretty" x-text="detailQuery.data.data.attributes.body"></p>
+					<p class="text-[var(--ios-label-secondary)] text-pretty" x-text="detailQuery.data.data.attributes.body"></p>
 					<p>
 						Author:
 						<strong x-text="detailQuery.data.data.relationships?.author?.resolved?.attributes.name ?? 'Unknown'"></strong>
@@ -73,8 +73,8 @@ const plugin = getPluginNavItem("json-api")!;
 		</CardContent>
 	</Card>
 
-	<p class="text-xs text-muted-foreground">
-		Package: <code class="rounded bg-muted px-1 py-0.5 font-mono">{plugin.package}</code>
+	<p class="text-xs text-[var(--ios-label-secondary)]">
+		Package: <code class="rounded bg-[var(--ios-fill-quaternary)] px-1 py-0.5 font-mono">{plugin.package}</code>
 		<span aria-hidden="true"> · </span>
 		Click a row for <code>findOne</code> with <code>include: ['author']</code>
 		<span aria-hidden="true"> · </span>

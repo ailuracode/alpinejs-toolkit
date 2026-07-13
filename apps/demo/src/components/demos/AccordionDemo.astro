@@ -4,7 +4,7 @@ import DemoSection from "../DemoSection.astro";
 
 const plugin = getPluginNavItem("accordion")!;
 const triggerClasses =
-  "flex w-full items-center justify-between rounded-md border px-4 py-3 text-left text-sm font-medium hover:bg-accent";
+  "flex w-full items-center justify-between rounded-md border px-4 py-3 text-left text-sm font-medium hover:bg-[var(--ios-fill-quaternary)]";
 ---
 
 <DemoSection id={plugin.id} title={plugin.title} api={plugin.api} description={plugin.description}>
@@ -21,7 +21,7 @@ const triggerClasses =
 			@keydown="$store.accordion.handleKeydown('single-default', $event)"
 		>
 			<h3 class="text-sm font-medium mb-2">Single mode · default open</h3>
-			<p class="text-xs text-muted-foreground mb-3">
+			<p class="text-xs text-[var(--ios-label-secondary)] mb-3">
 				Mode: <strong>single</strong> · Open:
 				<strong x-text="$store.accordion.openIds('single-default').join(', ') || '—'"></strong>
 			</p>
@@ -44,7 +44,7 @@ const triggerClasses =
 							x-collapse
 							x-bind="$store.accordion.panelProps('single-default', id)"
 						>
-							<div class="px-4 py-3 text-sm text-muted-foreground">
+							<div class="px-4 py-3 text-sm text-[var(--ios-label-secondary)]">
 								Only one panel stays open. <code>defaultOpen: 'shipping'</code> expands on init.
 							</div>
 						</div>
@@ -62,7 +62,7 @@ const triggerClasses =
 			@keydown="$store.accordion.handleKeydown('single', $event)"
 		>
 			<h3 class="text-sm font-medium mb-2">Single mode · collapsed</h3>
-			<p class="text-xs text-muted-foreground mb-3">
+			<p class="text-xs text-[var(--ios-label-secondary)] mb-3">
 				Open:
 				<strong x-text="$store.accordion.openIds('single').join(', ') || '—'"></strong>
 			</p>
@@ -85,7 +85,7 @@ const triggerClasses =
 							x-collapse
 							x-bind="$store.accordion.panelProps('single', id)"
 						>
-							<div class="px-4 py-3 text-sm text-muted-foreground">
+							<div class="px-4 py-3 text-sm text-[var(--ios-label-secondary)]">
 								Opening another panel closes the previous one.
 							</div>
 						</div>
@@ -106,7 +106,7 @@ const triggerClasses =
 			@keydown="$store.accordion.handleKeydown('multiple-default', $event)"
 		>
 			<h3 class="text-sm font-medium mb-2">Multiple mode · default open</h3>
-			<p class="text-xs text-muted-foreground mb-3">
+			<p class="text-xs text-[var(--ios-label-secondary)] mb-3">
 				Mode: <strong>multiple</strong> · Open:
 				<strong x-text="$store.accordion.openIds('multiple-default').join(', ') || '—'"></strong>
 			</p>
@@ -129,7 +129,7 @@ const triggerClasses =
 							x-collapse
 							x-bind="$store.accordion.panelProps('multiple-default', id)"
 						>
-							<div class="px-4 py-3 text-sm text-muted-foreground">
+							<div class="px-4 py-3 text-sm text-[var(--ios-label-secondary)]">
 								Several panels can stay open. Defaults:
 								<code>['notifications', 'integrations']</code>.
 							</div>
@@ -141,7 +141,7 @@ const triggerClasses =
 
 		<div>
 			<h3 class="text-sm font-medium mb-2">Accessibility</h3>
-			<p class="text-xs text-muted-foreground">
+			<p class="text-xs text-[var(--ios-label-secondary)]">
 				<code>triggerProps()</code> sets <code>aria-expanded</code> and roving <code>tabindex</code>.
 				Arrow keys move between triggers when the group is focused. Animate panels with the official
 				<a href="https://alpinejs.dev/plugins/collapse" class="underline hover:text-foreground">@alpinejs/collapse</a>
@@ -150,5 +150,5 @@ const triggerClasses =
 		</div>
 	</div>
 
-	<p class="text-xs text-muted-foreground mt-6">Package: <code>{plugin.package}</code></p>
+	<p class="text-xs text-[var(--ios-label-secondary)] mt-6">Package: <code>{plugin.package}</code></p>
 </DemoSection>

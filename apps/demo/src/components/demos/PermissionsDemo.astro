@@ -8,7 +8,7 @@ const plugin = getPluginNavItem("permissions")!;
 ---
 
 <DemoSection id={plugin.id} title={plugin.title} api={plugin.api} description={plugin.description}>
-	<p class="text-sm text-muted-foreground mb-4">
+	<p class="text-sm text-[var(--ios-label-secondary)] mb-4">
 		Snapshots sync on load via <code>query()</code> and <code>watch()</code> — no prompts until you call <code>request()</code>.
 		Bind to <code>$permissions.registry[name]</code> for reactive updates.
 	</p>
@@ -42,7 +42,7 @@ const plugin = getPluginNavItem("permissions")!;
 			</div>
 		</template>
 	</div>
-	<p class="text-xs text-muted-foreground mt-3">
+	<p class="text-xs text-[var(--ios-label-secondary)] mt-3">
 		Package: <code>{plugin.package}</code>
 	</p>
 </DemoSection>

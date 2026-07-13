@@ -31,7 +31,7 @@ const langBtnActive = segmentButtonActiveClass;
 	</div>
 
 	<div class="rounded-md border p-3 mt-3 space-y-1">
-		<p class="text-xs uppercase tracking-wide text-muted-foreground">Reactive translations</p>
+		<p class="text-xs uppercase tracking-wide text-[var(--ios-label-secondary)]">Reactive translations</p>
 		<p x-show="$store.lang.is('es')" x-cloak>Hola mundo</p>
 		<p x-show="$store.lang.is('en')" x-cloak>Hello world</p>
 		<p x-show="$store.lang.is('fr')" x-cloak>Bonjour le monde</p>
@@ -39,7 +39,7 @@ const langBtnActive = segmentButtonActiveClass;
 	</div>
 
 	<div class="rounded-md border p-3 mt-3 space-y-1 text-sm">
-		<p class="text-xs uppercase tracking-wide text-muted-foreground">is() / includes()</p>
+		<p class="text-xs uppercase tracking-wide text-[var(--ios-label-secondary)]">is() / includes()</p>
 		<li>is('es') → <strong x-text="$store.lang.is('es')"></strong></li>
 		<li>is('es-EC') → <strong x-text="$store.lang.is('es-EC')"></strong></li>
 		<li>is('fr') → <strong x-text="$store.lang.is('fr')"></strong></li>
@@ -48,7 +48,7 @@ const langBtnActive = segmentButtonActiveClass;
 		<li>includes('fr') → <strong x-text="$store.lang.includes('fr')"></strong></li>
 	</div>
 
-	<p class="text-xs text-muted-foreground mt-3">
+	<p class="text-xs text-[var(--ios-label-secondary)] mt-3">
 		Package: <code>{plugin.package}</code> — does not translate content; pair with your i18n library.
 	</p>
 </DemoSection>

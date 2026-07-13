@@ -19,10 +19,10 @@ const plugin = getPluginNavItem("transfer")!;
 			Export file
 		</DemoButton>
 	</div>
-	<p class="text-xs text-muted-foreground mt-3" x-show="!$share.isSupported" x-cloak>
+	<p class="text-xs text-[var(--ios-label-secondary)] mt-3" x-show="!$share.isSupported" x-cloak>
 		Web Share API is not available in this browser.
 	</p>
-	<p class="text-xs text-muted-foreground mt-3">
+	<p class="text-xs text-[var(--ios-label-secondary)] mt-3">
 		Package: <code>{plugin.package}</code>
 	</p>
 </DemoSection>

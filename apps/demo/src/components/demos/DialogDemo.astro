@@ -6,7 +6,7 @@ import DemoSection from "../DemoSection.astro";
 
 const plugin = getPluginNavItem("dialog")!;
 const buttonClasses =
-  "inline-flex items-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium hover:bg-accent";
+  "inline-flex items-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium hover:bg-[var(--ios-fill-quaternary)]";
 ---
 
 <DemoSection id={plugin.id} title={plugin.title} api={plugin.api} description={plugin.description}>
@@ -50,7 +50,7 @@ const buttonClasses =
 	>
 		<div>
 			<h3 class="text-sm font-medium mb-2">Basic modal</h3>
-			<p class="text-xs text-muted-foreground mb-3">
+			<p class="text-xs text-[var(--ios-label-secondary)] mb-3">
 				Open state: <strong x-text="$store.dialog.isOpen('settings')"></strong>
 			</p>
 			<button type="button" class={buttonClasses} @click="$store.dialog.open('settings', { trigger: $event.target })">
@@ -75,7 +75,7 @@ const buttonClasses =
 						x-init="$store.dialog.bindContainer('settings', $el)"
 					>
 						<h2 id="dialog-title" class="text-lg font-semibold">Settings</h2>
-						<p id="dialog-desc" class="text-sm text-muted-foreground mt-1">
+						<p id="dialog-desc" class="text-sm text-[var(--ios-label-secondary)] mt-1">
 							Escape, overlay click, or the button below closes this dialog. Focus is trapped inside.
 						</p>
 						<div class="mt-4 flex gap-2">
@@ -89,7 +89,7 @@ const buttonClasses =
 
 		<div>
 			<h3 class="text-sm font-medium mb-2">Keyboard &amp; accessibility</h3>
-			<ul class="text-xs text-muted-foreground list-disc pl-5 space-y-1">
+			<ul class="text-xs text-[var(--ios-label-secondary)] list-disc pl-5 space-y-1">
 				<li><Kbd>Escape</Kbd> closes when <code>closeOnEscape</code> is enabled</li>
 				<li>Scroll lock wired in the demo via <code>onOpen</code>/<code>onClose</code> + <code>$store.scroll</code></li>
 				<li>The unlock is deferred 200ms to wait for the leave transition</li>
@@ -99,11 +99,11 @@ const buttonClasses =
 
 		<div>
 			<h3 class="text-sm font-medium mb-2">Snippet</h3>
-			<pre class="text-xs bg-muted p-3 rounded-md overflow-x-auto"><code>$store.dialog.open('settings')
+			<pre class="text-xs bg-[var(--ios-fill-quaternary)] p-3 rounded-md overflow-x-auto"><code>$store.dialog.open('settings')
 $store.dialog.close('settings')
 $store.dialog.dialogProps('settings')</code></pre>
 		</div>
 	</div>
 
-	<p class="text-xs text-muted-foreground mt-6">Package: <code>{plugin.package}</code></p>
+	<p class="text-xs text-[var(--ios-label-secondary)] mt-6">Package: <code>{plugin.package}</code></p>
 </DemoSection>

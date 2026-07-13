@@ -20,10 +20,10 @@ const plugin = getPluginNavItem("sidebar")!;
 		<DemoButton @click="$store.sidebar.toggle()">toggle()</DemoButton>
 	</div>
 
-	<p class="text-sm text-muted-foreground mt-3">
+	<p class="text-sm text-[var(--ios-label-secondary)] mt-3">
 		On mobile, overlay click and Escape close the drawer. Opening the sidebar locks body scroll through <code>$store.scroll</code>.
 	</p>
-	<p class="text-xs text-muted-foreground mt-3">
+	<p class="text-xs text-[var(--ios-label-secondary)] mt-3">
 		Package: <code>{plugin.package}</code>
 	</p>
 </DemoSection>

@@ -19,16 +19,16 @@ const { dataName, title, badgeClass = "" } = Astro.props;
 				{title}
 				<Badge
 					class:list={["shrink-0", badgeClass]}
-					x-bind:class="{ 'bg-primary text-primary-foreground': query?.isSuccess }"
+					x-bind:class="{ 'bg-[var(--ios-blue)] text-white': query?.isSuccess }"
 					x-text="badge"
 				/>
 			</CardTitle>
 		</CardHeader>
 		<CardContent class="space-y-3">
-			<p class="text-sm text-destructive" x-show="query?.isError" x-text="query?.error?.message" role="alert"></p>
+			<p class="text-sm text-[var(--ios-red)]" x-show="query?.isError" x-text="query?.error?.message" role="alert"></p>
 
 			<div
-				class="query-table-wrap relative min-h-90 overflow-auto rounded-xl ring-1 ring-foreground/10 bg-card"
+				class="query-table-wrap relative min-h-90 overflow-auto rounded-xl ring-1 ring-foreground/10 bg-[var(--ios-bg-secondary)]"
 				x-bind:class="{
 					'is-fetching': query?.isFetching && hasCachedPage,
 					'is-awaiting-data': isAwaitingData,
@@ -44,8 +44,8 @@ const { dataName, title, badgeClass = "" } = Astro.props;
 					</thead>
 					<tbody class="[&_tr:last-child]:border-0">
 						<template x-for="row in tableRows" :key="page + '-' + row.id">
-							<tr class="border-b transition-colors hover:bg-muted/50" x-bind:class="{ 'is-loading': row.loading }">
-								<td class="w-14 p-2 align-middle font-variant-numeric tabular-nums text-muted-foreground">
+							<tr class="border-b transition-colors hover:bg-[var(--ios-fill-quaternary)]/50" x-bind:class="{ 'is-loading': row.loading }">
+								<td class="w-14 p-2 align-middle font-variant-numeric tabular-nums text-[var(--ios-label-secondary)]">
 									<span
 										class="query-table-skeleton"
 										x-show="row.loading"

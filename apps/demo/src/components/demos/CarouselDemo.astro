@@ -5,12 +5,12 @@ import DemoSection from "../DemoSection.astro";
 
 const plugin = getPluginNavItem("carousel")!;
 const navButton =
-  "inline-flex items-center rounded-md border border-input bg-background px-3 py-1.5 text-xs font-medium hover:bg-accent disabled:opacity-40";
+  "inline-flex items-center rounded-md border border-input bg-background px-3 py-1.5 text-xs font-medium hover:bg-[var(--ios-fill-quaternary)] disabled:opacity-40";
 const viewportClass = "min-w-0 w-full max-w-full overflow-hidden rounded-lg border";
 const containerH = "flex touch-pan-y pinch-zoom";
 const containerV = "flex h-full touch-pan-x pinch-zoom flex-col";
 const slideCard =
-  "flex min-h-32 items-center justify-center rounded-lg border bg-muted/40 text-sm font-medium";
+  "flex min-h-32 items-center justify-center rounded-lg border bg-[var(--ios-fill-quaternary)]/40 text-sm font-medium";
 const slideH = `${slideCard} min-w-0 shrink-0 grow-0 [flex:0_0_var(--slide-size,100%)]`;
 const slideV = `${slideCard} min-h-0 min-w-0 shrink-0 grow-0 [flex:0_0_var(--slide-size,100%)]`;
 ---
@@ -53,7 +53,7 @@ const slideV = `${slideCard} min-h-0 min-w-0 shrink-0 grow-0 [flex:0_0_var(--sli
 		<!-- Basic -->
 		<div class="min-w-0" x-init="bindCarousel($el, 'basic')">
 			<h3 class="text-sm font-medium mb-2">Basic</h3>
-			<p class="text-xs text-muted-foreground mb-3" x-text="stateLine('basic')"></p>
+			<p class="text-xs text-[var(--ios-label-secondary)] mb-3" x-text="stateLine('basic')"></p>
 			<section class="min-w-0 w-full" x-bind="$store.carousel.carouselProps('basic', { label: 'Basic carousel' })">
 				<div
 					data-carousel-viewport="basic"
@@ -77,7 +77,7 @@ const slideV = `${slideCard} min-h-0 min-w-0 shrink-0 grow-0 [flex:0_0_var(--sli
 		<!-- Loop -->
 		<div class="min-w-0" x-init="bindCarousel($el, 'loop', { loop: true })">
 			<h3 class="text-sm font-medium mb-2">Loop</h3>
-			<p class="text-xs text-muted-foreground mb-3" x-text="stateLine('loop')"></p>
+			<p class="text-xs text-[var(--ios-label-secondary)] mb-3" x-text="stateLine('loop')"></p>
 			<section class="min-w-0 w-full" x-bind="$store.carousel.carouselProps('loop', { label: 'Loop carousel' })">
 				<div data-carousel-viewport="loop" x-bind="$store.carousel.viewportProps('loop')" class={viewportClass} @keydown="$store.carousel.handleKeydown('loop', $event)">
 					<div class={containerH}>
@@ -96,12 +96,12 @@ const slideV = `${slideCard} min-h-0 min-w-0 shrink-0 grow-0 [flex:0_0_var(--sli
 		<!-- Autoplay -->
 		<div class="min-w-0" x-init="bindCarousel($el, 'autoplay', { autoplay: true, autoplayOptions: { delay: 2500, stopOnMouseEnter: false } })">
 			<h3 class="text-sm font-medium mb-2">Autoplay</h3>
-			<p class="text-xs text-muted-foreground mb-3" x-text="stateLine('autoplay')"></p>
+			<p class="text-xs text-[var(--ios-label-secondary)] mb-3" x-text="stateLine('autoplay')"></p>
 			<section class="min-w-0 w-full" x-bind="$store.carousel.carouselProps('autoplay', { label: 'Autoplay carousel' })">
 				<div data-carousel-viewport="autoplay" x-bind="$store.carousel.viewportProps('autoplay')" class={viewportClass}>
 					<div class={containerH}>
 						<template x-for="n in 3" :key="n">
-							<div x-bind="$store.carousel.slideProps('autoplay', n - 1)" class={`${slideH} bg-primary/10`} x-text="'Auto ' + n"></div>
+							<div x-bind="$store.carousel.slideProps('autoplay', n - 1)" class={`${slideH} bg-[var(--ios-blue)]/10`} x-text="'Auto ' + n"></div>
 						</template>
 					</div>
 				</div>
@@ -115,7 +115,7 @@ const slideV = `${slideCard} min-h-0 min-w-0 shrink-0 grow-0 [flex:0_0_var(--sli
 		<!-- Autoplay + hover pause -->
 		<div class="min-w-0" x-init="bindCarousel($el, 'autoplay-hover', { autoplay: true, autoplayOptions: { delay: 2000, stopOnMouseEnter: true } })">
 			<h3 class="text-sm font-medium mb-2">Autoplay with hover pause</h3>
-			<p class="text-xs text-muted-foreground mb-3">Hover the viewport to pause. <span x-text="stateLine('autoplay-hover')"></span></p>
+			<p class="text-xs text-[var(--ios-label-secondary)] mb-3">Hover the viewport to pause. <span x-text="stateLine('autoplay-hover')"></span></p>
 			<section class="min-w-0 w-full" x-bind="$store.carousel.carouselProps('autoplay-hover', { label: 'Autoplay hover pause' })">
 				<div data-carousel-viewport="autoplay-hover" x-bind="$store.carousel.viewportProps('autoplay-hover')" class={viewportClass}>
 					<div class={containerH}>
@@ -130,7 +130,7 @@ const slideV = `${slideCard} min-h-0 min-w-0 shrink-0 grow-0 [flex:0_0_var(--sli
 		<!-- Indicators -->
 		<div class="min-w-0" x-init="bindCarousel($el, 'indicators')">
 			<h3 class="text-sm font-medium mb-2">Indicators</h3>
-			<p class="text-xs text-muted-foreground mb-3" x-text="stateLine('indicators')"></p>
+			<p class="text-xs text-[var(--ios-label-secondary)] mb-3" x-text="stateLine('indicators')"></p>
 			<section class="min-w-0 w-full" x-bind="$store.carousel.carouselProps('indicators', { label: 'Carousel with indicators' })">
 				<div data-carousel-viewport="indicators" x-bind="$store.carousel.viewportProps('indicators')" class={viewportClass} @keydown="$store.carousel.handleKeydown('indicators', $event)">
 					<div class={containerH}>
@@ -145,7 +145,7 @@ const slideV = `${slideCard} min-h-0 min-w-0 shrink-0 grow-0 [flex:0_0_var(--sli
 							type="button"
 							x-bind="$store.carousel.indicatorProps('indicators', n - 1)"
 							class="size-3 shrink-0 rounded-full border-2 transition-colors"
-							:class="$store.carousel.instances.indicators?.currentIndex === n - 1 ? 'bg-primary border-primary' : 'bg-muted border-muted-foreground/60'"
+							:class="$store.carousel.instances.indicators?.currentIndex === n - 1 ? 'bg-[var(--ios-blue)] border-[var(--ios-blue)]' : 'bg-[var(--ios-fill-quaternary)] border-[var(--ios-label-tertiary)]/60'"
 							@click="$store.carousel.goTo('indicators', n - 1)"
 						></button>
 					</template>
@@ -156,7 +156,7 @@ const slideV = `${slideCard} min-h-0 min-w-0 shrink-0 grow-0 [flex:0_0_var(--sli
 		<!-- Thumbnails -->
 		<div class="min-w-0" x-init="bindCarousel($el, 'thumbnails')">
 			<h3 class="text-sm font-medium mb-2">Thumbnails</h3>
-			<p class="text-xs text-muted-foreground mb-3" x-text="stateLine('thumbnails')"></p>
+			<p class="text-xs text-[var(--ios-label-secondary)] mb-3" x-text="stateLine('thumbnails')"></p>
 			<section class="min-w-0 w-full" x-bind="$store.carousel.carouselProps('thumbnails', { label: 'Carousel with thumbnails' })">
 				<div data-carousel-viewport="thumbnails" x-bind="$store.carousel.viewportProps('thumbnails')" class={viewportClass}>
 					<div class={containerH}>
@@ -191,7 +191,7 @@ const slideV = `${slideCard} min-h-0 min-w-0 shrink-0 grow-0 [flex:0_0_var(--sli
 		<!-- Vertical -->
 		<div class="min-w-0" x-init="bindCarousel($el, 'vertical', { axis: 'y' })">
 			<h3 class="text-sm font-medium mb-2">Vertical orientation</h3>
-			<p class="text-xs text-muted-foreground mb-3" x-text="stateLine('vertical')"></p>
+			<p class="text-xs text-[var(--ios-label-secondary)] mb-3" x-text="stateLine('vertical')"></p>
 			<section class="min-w-0 w-full" x-bind="$store.carousel.carouselProps('vertical', { label: 'Vertical carousel' })">
 				<div data-carousel-viewport="vertical" x-bind="$store.carousel.viewportProps('vertical')" class={`${viewportClass} h-40`} @keydown="$store.carousel.handleKeydown('vertical', $event)">
 					<div class={containerV}>
@@ -210,7 +210,7 @@ const slideV = `${slideCard} min-h-0 min-w-0 shrink-0 grow-0 [flex:0_0_var(--sli
 		<!-- Images -->
 		<div class="min-w-0" x-init="bindCarousel($el, 'images', { loop: true })">
 			<h3 class="text-sm font-medium mb-2">Images</h3>
-			<p class="text-xs text-muted-foreground mb-3" x-text="stateLine('images')"></p>
+			<p class="text-xs text-[var(--ios-label-secondary)] mb-3" x-text="stateLine('images')"></p>
 			<section class="min-w-0 w-full" x-bind="$store.carousel.carouselProps('images', { label: 'Image gallery' })">
 				<div data-carousel-viewport="images" x-bind="$store.carousel.viewportProps('images')" class={viewportClass}>
 					<div class={containerH}>
@@ -227,16 +227,16 @@ const slideV = `${slideCard} min-h-0 min-w-0 shrink-0 grow-0 [flex:0_0_var(--sli
 		<!-- Cards -->
 		<div class="min-w-0" x-init="bindCarousel($el, 'cards', { align: 'start' })">
 			<h3 class="text-sm font-medium mb-2">Cards</h3>
-			<p class="text-xs text-muted-foreground mb-3" x-text="stateLine('cards')"></p>
+			<p class="text-xs text-[var(--ios-label-secondary)] mb-3" x-text="stateLine('cards')"></p>
 			<section class="min-w-0 w-full" x-bind="$store.carousel.carouselProps('cards', { label: 'Pricing cards carousel' })">
 				<div data-carousel-viewport="cards" x-bind="$store.carousel.viewportProps('cards', { slideSize: false })" class="min-w-0 w-full max-w-full overflow-hidden rounded-lg [--slide-size:85%] sm:[--slide-size:45%]">
 					<div class="flex gap-3 touch-pan-y pinch-zoom">
 						<template x-for="slide in cardSlides" :key="'card-' + slide.id">
 							<div x-bind="$store.carousel.slideProps('cards', slide.id - 1)" class="min-w-0 shrink-0 grow-0 [flex:0_0_var(--slide-size)]">
-								<div class="rounded-lg border bg-card p-4 shadow-sm">
+								<div class="rounded-lg border bg-[var(--ios-bg-secondary)] p-4 shadow-sm">
 									<h4 class="font-semibold" x-text="slide.title"></h4>
 									<p class="text-2xl font-bold mt-1" x-text="slide.price"></p>
-									<p class="text-xs text-muted-foreground mt-2" x-text="slide.detail"></p>
+									<p class="text-xs text-[var(--ios-label-secondary)] mt-2" x-text="slide.detail"></p>
 								</div>
 							</div>
 						</template>
@@ -248,7 +248,7 @@ const slideV = `${slideCard} min-h-0 min-w-0 shrink-0 grow-0 [flex:0_0_var(--sli
 		<!-- Keyboard -->
 		<div class="min-w-0" x-init="bindCarousel($el, 'keyboard')">
 			<h3 class="text-sm font-medium mb-2">Keyboard navigation</h3>
-			<p class="text-xs text-muted-foreground mb-3">
+			<p class="text-xs text-[var(--ios-label-secondary)] mb-3">
 				Focus the viewport and use arrow keys, Home, or End. <span x-text="stateLine('keyboard')"></span>
 			</p>
 			<section class="min-w-0 w-full" x-bind="$store.carousel.carouselProps('keyboard', { label: 'Keyboard carousel' })">
@@ -265,7 +265,7 @@ const slideV = `${slideCard} min-h-0 min-w-0 shrink-0 grow-0 [flex:0_0_var(--sli
 					</div>
 				</div>
 			</section>
-			<ul class="mt-2 text-xs text-muted-foreground list-disc pl-5 space-y-1">
+			<ul class="mt-2 text-xs text-[var(--ios-label-secondary)] list-disc pl-5 space-y-1">
 				<li><Kbd>←</Kbd> <Kbd>↑</Kbd> previous</li>
 				<li><Kbd>→</Kbd> <Kbd>↓</Kbd> next</li>
 				<li><Kbd>Home</Kbd> / <Kbd>End</Kbd> first / last</li>

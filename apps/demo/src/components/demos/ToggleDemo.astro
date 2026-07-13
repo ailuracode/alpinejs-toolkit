@@ -16,7 +16,7 @@ const plugin = getPluginNavItem("toggle")!;
 				<DemoButton @click="power.next()">next()</DemoButton>
 				<DemoButton @click="power.reset()">reset()</DemoButton>
 				<Badge
-					x-bind:class="{ 'bg-primary text-primary-foreground': power.is(power.states.on), 'text-muted-foreground': power.is(power.states.off) }"
+					x-bind:class="{ 'bg-[var(--ios-blue)] text-white': power.is(power.states.on), 'text-[var(--ios-label-secondary)]': power.is(power.states.off) }"
 					x-text="power.value"
 				></Badge>
 			</div>
@@ -34,7 +34,7 @@ const plugin = getPluginNavItem("toggle")!;
 			</div>
 		</div>
 	</div>
-	<p class="text-xs text-muted-foreground mt-3">
+	<p class="text-xs text-[var(--ios-label-secondary)] mt-3">
 		Package: <code>{plugin.package}</code>
 	</p>
 </DemoSection>

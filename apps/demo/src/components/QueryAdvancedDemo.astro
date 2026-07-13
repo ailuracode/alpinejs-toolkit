@@ -39,7 +39,7 @@ import DemoButton from "./astro/DemoButton.astro";
 							<Badge variant="destructive" x-show="retryQuery?.isError" x-cloak>Error</Badge>
 							<Badge class="bg-green-600 text-white" x-show="retryQuery?.isSuccess" x-cloak>Success</Badge>
 						</div>
-						<p class="text-sm text-destructive" x-show="retryQuery?.isError" x-text="retryQuery?.error?.message" role="alert"></p>
+						<p class="text-sm text-[var(--ios-red)]" x-show="retryQuery?.isError" x-text="retryQuery?.error?.message" role="alert"></p>
 						<p class="text-sm" x-show="retryQuery?.isSuccess" x-cloak>
 							Succeeded after <strong class="tabular-nums" x-text="retryQuery?.data?.attempts"></strong> attempts
 						</p>
@@ -59,7 +59,7 @@ import DemoButton from "./astro/DemoButton.astro";
 								x-text="pollQuery?.data?.fetchedAt ? new Date(pollQuery.data.fetchedAt).toLocaleTimeString() : '—'"
 							></strong>
 						</p>
-						<p class="text-xs text-muted-foreground">Polls every 3s while this panel is mounted.</p>
+						<p class="text-xs text-[var(--ios-label-secondary)]">Polls every 3s while this panel is mounted.</p>
 					</CardContent>
 				</Card>
 			</div>
