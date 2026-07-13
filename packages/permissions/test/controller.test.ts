@@ -213,5 +213,141 @@ describe("@ailuracode/alpine-permissions", () => {
       first.destroy();
       second.destroy();
     });
+
+    it("throws when registering duplicate adapter", () => {
+      controller.register(createTestAdapter());
+      expect(() => controller.register(createTestAdapter())).toThrow(/already registered/);
+    });
+
+    it("throws when registering after destroy", () => {
+      controller.destroy();
+      expect(() => controller.register(createTestAdapter())).toThrow(/after destroy/);
+    });
+
+    it("unregister returns false for unknown adapter", () => {
+      expect(controller.unregister("nonexistent")).toBe(false);
+    });
+
+    it("defaults requiresUserGesture to true when not specified", () => {
+      const adapter: PermissionAdapter<"no-gesture"> = {
+        name: "no-gesture",
+        isSupported: () => true,
+        getAvailability: () => "available",
+        query: async () => "prompt",
+        request: async () => ({ permission: "granted" as const }),
+      };
+      controller.register(adapter);
+      expect(controller.get("no-gesture")?.requiresUserGesture).toBe(true);
+    });
+
+    it("throws when querying after destroy", () => {
+      controller.register(createTestAdapter());
+      controller.destroy();
+      expect(() => controller.query("test")).toThrow(/destroyed/);
+    });
+
+    it("request returns denied snapshot when not canRequest and denied", async () => {
+      controller.register(
+        createTestAdapter({
+          query: async () => "denied",
+          request: vi.fn(),
+        })
+      );
+      await controller.query("test");
+      const snapshot = await controller.request("test");
+      expect(snapshot.permission).toBe("denied");
+    });
+
+    it("request handles unavailable availability", async () => {
+      const adapter = createTestAdapter({
+        getAvailability: () => "unsupported",
+      });
+      controller.register(adapter);
+      const snapshot = await controller.request("test");
+      expect(snapshot.availability).toBe("unsupported");
+      expect(snapshot.permission).toBe("denied");
+    });
+
+    it("request handles unsupported adapter", async () => {
+      controller.register(
+        createTestAdapter({
+          isSupported: () => false,
+          getAvailability: () => "available",
+        })
+      );
+      const snapshot = await controller.request("test");
+      expect(snapshot.availability).toBe("unsupported");
+      expect(snapshot.error?.code).toBe("PERMISSION_UNSUPPORTED");
+    });
+
+    it("request handles query error", async () => {
+      controller.register(
+        createTestAdapter({
+          query: () => Promise.reject(new Error("query failed")),
+        })
+      );
+      const snapshot = await controller.query("test");
+      expect(snapshot.permission).toBe("unknown");
+      expect(snapshot.requestState).toBe("failed");
+    });
+
+    it("request handles request error", async () => {
+      controller.register(
+        createTestAdapter({
+          request: () => Promise.reject(new Error("request failed")),
+        })
+      );
+      const snapshot = await controller.request("test");
+      expect(snapshot.permission).toBe("denied");
+      expect(snapshot.requestState).toBe("failed");
+      expect(snapshot.error?.message).toBe("request failed");
+    });
+
+    it("watch returns existing unsubscribe when already watching", async () => {
+      let firstUnsubscribe = false;
+      let subscribeCallCount = 0;
+      const subscribe = vi.fn(() => {
+        subscribeCallCount++;
+        return () => {
+          firstUnsubscribe = true;
+        };
+      });
+      controller.register(createTestAdapter({ subscribe }));
+      const first = await controller.watch("test");
+      const second = await controller.watch("test");
+      expect(subscribeCallCount).toBe(1);
+      expect(second).toBe(first);
+
+      first();
+      expect(firstUnsubscribe).toBe(true);
+    });
+
+    it("watch returns no-op when adapter has no subscribe", async () => {
+      const adapter: PermissionAdapter<"no-sub"> = {
+        name: "no-sub",
+        isSupported: () => true,
+        getAvailability: () => "available",
+        query: async () => "prompt",
+        request: async () => ({ permission: "granted" as const }),
+      };
+      controller.register(adapter);
+      const dispose = await controller.watch("no-sub");
+      expect(dispose).toBeInstanceOf(Function);
+    });
+
+    it("getRegistry returns all registered permissions", () => {
+      const adapter2: PermissionAdapter<"test2"> = {
+        name: "test2",
+        isSupported: () => true,
+        getAvailability: () => "available",
+        query: async () => "prompt",
+        request: async () => ({ permission: "granted" as const }),
+      };
+      controller.register(createTestAdapter());
+      controller.register(adapter2);
+      const registry = controller.getRegistry();
+      expect(Object.keys(registry)).toContain("test");
+      expect(Object.keys(registry)).toContain("test2");
+    });
   });
 });

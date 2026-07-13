@@ -117,4 +117,103 @@ describe("@ailuracode/alpine-accordion", () => {
     accordion.open("demo", "one");
     expect(accordion.isOpen("demo", "one")).toBe(true);
   });
+
+  it("handles open on unknown group", () => {
+    store.open("nonexistent", "item");
+  });
+
+  it("handles open on unknown item", () => {
+    store.open("faq", "nonexistent");
+  });
+
+  it("handles close on unknown group", () => {
+    store.close("nonexistent", "item");
+  });
+
+  it("handles close on unknown item", () => {
+    store.close("faq", "nonexistent");
+  });
+
+  it("handles toggle on unknown group", () => {
+    store.toggle("nonexistent", "item");
+  });
+
+  it("handles isOpen on unknown group", () => {
+    expect(store.isOpen("nonexistent", "item")).toBe(false);
+  });
+
+  it("handles openIds on unknown group", () => {
+    expect(store.openIds("nonexistent")).toEqual([]);
+  });
+
+  it("handles activeItem on unknown group", () => {
+    expect(store.activeItem("nonexistent")).toBeNull();
+  });
+
+  it("handles setActiveItem on unknown group", () => {
+    store.setActiveItem("nonexistent", "item");
+  });
+
+  it("handles setActiveItem to null", () => {
+    store.setActiveItem("faq", null);
+    expect(store.activeItem("faq")).toBeNull();
+  });
+
+  it("handles ArrowUp keyboard navigation", () => {
+    store.setActiveItem("faq", "item-2");
+    store.handleKeydown("faq", new KeyboardEvent("keydown", { key: "ArrowUp" }));
+    expect(store.activeItem("faq")).toBe("item-1");
+  });
+
+  it("handles Home and End keys", () => {
+    store.handleKeydown("faq", new KeyboardEvent("keydown", { key: "End" }));
+    expect(store.activeItem("faq")).toBe("item-3");
+
+    store.handleKeydown("faq", new KeyboardEvent("keydown", { key: "Home" }));
+    expect(store.activeItem("faq")).toBe("item-1");
+  });
+
+  it("handles wrap-around in navigation", () => {
+    store.setActiveItem("faq", "item-3");
+    store.handleKeydown("faq", new KeyboardEvent("keydown", { key: "ArrowDown" }));
+    expect(store.activeItem("faq")).toBe("item-1");
+  });
+
+  it("handles Enter key (no-op for navigation-only)", () => {
+    store.setActiveItem("faq", "item-1");
+    store.handleKeydown("faq", new KeyboardEvent("keydown", { key: "Enter" }));
+    // Enter doesn't toggle items in accordion
+  });
+
+  it("unregisterItem removes item", () => {
+    store.unregisterItem("faq", "item-1");
+    expect(store.isOpen("faq", "item-1")).toBe(false);
+  });
+
+  it("unregisterItem handles unknown group", () => {
+    store.unregisterItem("nonexistent", "item");
+  });
+
+  it("unregister removes group", () => {
+    store.unregister("faq");
+    expect(store.isOpen("faq", "item-1")).toBe(false);
+  });
+
+  it("triggerProps for closed item", () => {
+    const props = store.triggerProps("faq", "item-1");
+    expect(props["aria-expanded"]).toBe(false);
+  });
+
+  it("panelProps for open item has no aria-hidden", () => {
+    store.open("faq", "item-1");
+    const props = store.panelProps("faq", "item-1");
+    expect(props["aria-hidden"]).toBeUndefined();
+  });
+
+  it("handles multiple open in single mode via toggle", () => {
+    store.toggle("faq", "item-1");
+    store.toggle("faq", "item-2");
+    expect(store.isOpen("faq", "item-1")).toBe(false);
+    expect(store.isOpen("faq", "item-2")).toBe(true);
+  });
 });

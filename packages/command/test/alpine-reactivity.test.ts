@@ -1,9 +1,12 @@
 import commandPlugin from "@ailuracode/alpine-command";
 import Alpine from "alpinejs";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { startAlpine } from "../../../test/helpers.js";
 
 describe("command alpine reactivity", () => {
   beforeEach(() => {
+    startAlpine(commandPlugin());
+
     document.body.innerHTML = `
       <div x-data>
         <span id="count" x-text="$store.command.visibleItems.length"></span>
@@ -12,9 +15,6 @@ describe("command alpine reactivity", () => {
         <input id="search" x-model="$store.command.search" />
       </div>
     `;
-
-    Alpine.plugin(commandPlugin());
-    Alpine.start();
 
     const command = Alpine.store("command") as {
       register(item: { id: string; label: string; action: () => void }): void;

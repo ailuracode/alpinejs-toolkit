@@ -30,6 +30,36 @@ describe("query devtools theme", () => {
     expect(resolveHostTheme()).toBe("dark");
   });
 
+  it("resolveHostTheme() falls back to prefers-color-scheme when no data-theme or .dark", () => {
+    vi.spyOn(window, "matchMedia").mockReturnValue({
+      matches: true,
+      media: "(prefers-color-scheme: dark)",
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+      dispatchEvent: vi.fn(),
+      onchange: null,
+    } as MediaQueryList);
+
+    expect(resolveHostTheme()).toBe("dark");
+  });
+
+  it("resolveHostTheme() returns light when prefers-color-scheme does not match", () => {
+    vi.spyOn(window, "matchMedia").mockReturnValue({
+      matches: false,
+      media: "(prefers-color-scheme: dark)",
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+      dispatchEvent: vi.fn(),
+      onchange: null,
+    } as MediaQueryList);
+
+    expect(resolveHostTheme()).toBe("light");
+  });
+
   it("resolveDevtoolsTheme() honors forced theme options", () => {
     document.documentElement.dataset.theme = "dark";
     expect(resolveDevtoolsTheme("light")).toBe("light");

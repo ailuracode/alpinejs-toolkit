@@ -72,4 +72,118 @@ describe("panel-resize", () => {
     panel.remove();
     handle.remove();
   });
+
+  it("ignores non-primary button on pointerdown", () => {
+    const panel = document.createElement("section");
+    document.body.append(panel);
+    const handle = document.createElement("div");
+    handle.setPointerCapture = vi.fn();
+    handle.releasePointerCapture = vi.fn();
+    handle.hasPointerCapture = vi.fn().mockReturnValue(false);
+    document.body.append(handle);
+
+    const unbind = bindMobilePanelResize({
+      panel,
+      handle,
+      onResize: vi.fn(),
+    });
+
+    // Right click — should be ignored
+    handle.dispatchEvent(
+      new PointerEvent("pointerdown", { bubbles: true, clientY: 300, button: 2, pointerId: 1 })
+    );
+
+    expect(handle.setPointerCapture).not.toHaveBeenCalled();
+    unbind();
+    panel.remove();
+    handle.remove();
+  });
+
+  it("pointermove without dragging is ignored", () => {
+    const panel = document.createElement("section");
+    document.body.append(panel);
+    const handle = document.createElement("div");
+    handle.setPointerCapture = vi.fn();
+    handle.releasePointerCapture = vi.fn();
+    handle.hasPointerCapture = vi.fn().mockReturnValue(false);
+    document.body.append(handle);
+
+    const onResize = vi.fn();
+    const unbind = bindMobilePanelResize({
+      panel,
+      handle,
+      onResize,
+    });
+
+    // pointermove without prior pointerdown — should be ignored
+    window.dispatchEvent(
+      new PointerEvent("pointermove", { bubbles: true, clientY: 260, pointerId: 1 })
+    );
+
+    expect(onResize).not.toHaveBeenCalled();
+    unbind();
+    panel.remove();
+    handle.remove();
+  });
+
+  it("pointerup without dragging is ignored", () => {
+    const panel = document.createElement("section");
+    document.body.append(panel);
+    const handle = document.createElement("div");
+    handle.setPointerCapture = vi.fn();
+    handle.releasePointerCapture = vi.fn();
+    handle.hasPointerCapture = vi.fn().mockReturnValue(false);
+    document.body.append(handle);
+
+    const unbind = bindMobilePanelResize({
+      panel,
+      handle,
+      onResize: vi.fn(),
+    });
+
+    // pointerup without prior pointerdown — should be ignored
+    window.dispatchEvent(new PointerEvent("pointerup", { bubbles: true, pointerId: 1 }));
+
+    expect(handle.releasePointerCapture).not.toHaveBeenCalled();
+    unbind();
+    panel.remove();
+    handle.remove();
+  });
+
+  it("getDefaultMobilePanelHeight returns minimum when window is undefined", async () => {
+    const originalWindow = globalThis.window;
+    (globalThis as Record<string, unknown>).window = undefined;
+    const { getDefaultMobilePanelHeight } = await import("../src/devtools/panel-resize.js");
+    expect(getDefaultMobilePanelHeight()).toBe(MOBILE_PANEL_MIN_HEIGHT);
+    globalThis.window = originalWindow;
+  });
+
+  it("endDrag handles missing pointer capture", () => {
+    const panel = document.createElement("section");
+    document.body.append(panel);
+    const handle = document.createElement("div");
+    handle.setPointerCapture = vi.fn();
+    handle.releasePointerCapture = vi.fn();
+    handle.hasPointerCapture = vi.fn().mockReturnValue(false);
+    document.body.append(handle);
+
+    vi.spyOn(panel, "getBoundingClientRect").mockReturnValue({ height: 500 } as DOMRect);
+
+    const unbind = bindMobilePanelResize({
+      panel,
+      handle,
+      onResize: vi.fn(),
+    });
+
+    handle.dispatchEvent(
+      new PointerEvent("pointerdown", { bubbles: true, clientY: 300, button: 0, pointerId: 1 })
+    );
+    // hasPointerCapture returns false, so releasePointerCapture should not be called
+    window.dispatchEvent(new PointerEvent("pointerup", { bubbles: true, pointerId: 1 }));
+
+    expect(handle.releasePointerCapture).not.toHaveBeenCalled();
+    unbind();
+    panel.remove();
+    handle.remove();
+  });
 });

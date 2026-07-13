@@ -100,7 +100,7 @@ describe("@ailuracode/alpine-query type inference", () => {
     query.destroy();
   });
 
-  it("types untyped mocks as unknown instead of any", () => {
+  it("types untyped mocks as any instead of any", () => {
     const queryFn = vi.fn().mockResolvedValue([{ id: 1, title: "Learn" }]);
     const query = client.observe(["todos"], queryFn);
 
