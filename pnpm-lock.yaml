@@ -283,9 +283,6 @@ importers:
       '@ailuracode/alpine-core':
         specifier: workspace:*
         version: link:../core
-      '@ailuracode/alpine-selection':
-        specifier: workspace:*
-        version: link:../selection
 
   packages/carousel:
     dependencies:

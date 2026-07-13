@@ -1,27 +1,42 @@
 /**
  * Calendar ↔ selection primitive bridge.
+ *
+ * Works with a plain `{ mode, value }` state object — no SelectionController
+ * overhead.
  */
 
-import type {
-  SelectionController,
-  SelectionMode,
-  SelectionValue,
-} from "@ailuracode/alpine-selection";
-import { format, parse } from "date-fns";
+import { format } from "date-fns";
 import type { ResolvedDateFnsContext } from "../context.js";
 import type { CalendarDateRange, CalendarMode, CalendarSelection } from "../types.js";
 import { normalizeDate } from "./grid.js";
 import { selectRangeDate } from "./selection.js";
 
-const CALENDAR_SELECTION_ID = "calendar";
+/** Lightweight selection value — mirrors @ailuracode/alpine-selection's SelectionValue. */
+type SelectionValue =
+  | string
+  | number
+  | null
+  | readonly (string | number)[]
+  | { from: string | number; to?: string | number }
+  | null;
+
+export interface CalendarSelectionState {
+  mode: CalendarMode;
+  value: SelectionValue;
+}
+
+// ── Key conversion ──────────────────────────────────────────────────
 
 export function dateToSelectionKey(date: Date, context: ResolvedDateFnsContext): string {
   return format(normalizeDate(date, context), "yyyy-MM-dd", context);
 }
 
 export function selectionKeyToDate(key: string, context: ResolvedDateFnsContext): Date {
-  return normalizeDate(parse(key, "yyyy-MM-dd", new Date()), context);
+  const [y, m, d] = key.split("-").map(Number);
+  return normalizeDate(new Date(y, m - 1, d), context);
 }
+
+// ── Value conversion ────────────────────────────────────────────────
 
 export function calendarSelectionToValue(
   selection: CalendarSelection,
@@ -87,82 +102,107 @@ export function valueToCalendarSelection(
   };
 }
 
-export function selectionModeForCalendar(mode: CalendarMode): SelectionMode {
-  return mode;
-}
+// ── State operations ────────────────────────────────────────────────
 
 export function ensureCalendarSelection(
-  controller: SelectionController,
+  state: CalendarSelectionState,
   mode: CalendarMode,
   selected: CalendarSelection,
   context: ResolvedDateFnsContext
 ): void {
-  if (!controller.hasInstance(CALENDAR_SELECTION_ID)) {
-    controller.create(CALENDAR_SELECTION_ID, {
-      mode: selectionModeForCalendar(mode),
-      defaultValue: calendarSelectionToValue(selected, mode, context),
-      keys: [],
-    });
-    return;
-  }
-  controller.setMode(CALENDAR_SELECTION_ID, selectionModeForCalendar(mode));
-  controller.setValue(CALENDAR_SELECTION_ID, calendarSelectionToValue(selected, mode, context));
+  state.mode = mode;
+  state.value = calendarSelectionToValue(selected, mode, context);
 }
 
 export function readCalendarSelection(
-  controller: SelectionController,
-  mode: CalendarMode,
+  state: CalendarSelectionState,
   context: ResolvedDateFnsContext
 ): CalendarSelection {
-  return valueToCalendarSelection(
-    controller.getSnapshot(CALENDAR_SELECTION_ID).value,
-    mode,
-    context
-  );
+  return valueToCalendarSelection(state.value, state.mode, context);
 }
 
 export function selectCalendarDate(
-  controller: SelectionController,
+  state: CalendarSelectionState,
   current: CalendarSelection,
   day: Date,
-  mode: CalendarMode,
   context: ResolvedDateFnsContext
 ): CalendarSelection {
   const key = dateToSelectionKey(day, context);
 
-  if (mode === "single") {
-    controller.replace(CALENDAR_SELECTION_ID, key);
-    return readCalendarSelection(controller, mode, context);
+  if (state.mode === "single") {
+    state.value = key;
+    return readCalendarSelection(state, context);
   }
 
-  if (mode === "multiple") {
-    controller.toggle(CALENDAR_SELECTION_ID, key);
-    return readCalendarSelection(controller, mode, context);
+  if (state.mode === "multiple") {
+    const keys = Array.isArray(state.value) ? [...state.value] : [];
+    const idx = keys.indexOf(key);
+    if (idx >= 0) {
+      keys.splice(idx, 1);
+    } else {
+      keys.push(key);
+    }
+    state.value = keys;
+    return readCalendarSelection(state, context);
   }
 
   const next = selectRangeDate(current, day, context);
-  controller.setValue(CALENDAR_SELECTION_ID, calendarSelectionToValue(next, mode, context));
-  return readCalendarSelection(controller, mode, context);
+  state.value = calendarSelectionToValue(next, state.mode, context);
+  return readCalendarSelection(state, context);
 }
 
 export function clearCalendarSelection(
-  controller: SelectionController,
-  mode: CalendarMode,
+  state: CalendarSelectionState,
   context: ResolvedDateFnsContext
 ): CalendarSelection {
-  controller.clear(CALENDAR_SELECTION_ID);
-  return readCalendarSelection(controller, mode, context);
+  state.value = state.mode === "multiple" ? [] : null;
+  return readCalendarSelection(state, context);
+}
+
+// ── Comparison ──────────────────────────────────────────────────────
+
+function sameDate(a: Date, b: Date): boolean {
+  return a.getTime() === b.getTime();
+}
+
+function datesEqual(a: Date | null | undefined, b: Date | null | undefined): boolean {
+  if (a == null || b == null) {
+    return a == null && b == null;
+  }
+  return sameDate(a, b);
+}
+
+function datesArrayEqual(a: Date[], b: Date[]): boolean {
+  if (a.length !== b.length) {
+    return false;
+  }
+  return a.every((d, i) => sameDate(d, b[i]));
+}
+
+function rangesEqual(left: CalendarSelection, right: CalendarSelection): boolean {
+  const lr = left as CalendarDateRange | null;
+  const rr = right as CalendarDateRange | null;
+  if (!(lr || rr)) {
+    return true;
+  }
+  if (!(lr && rr)) {
+    return false;
+  }
+  return datesEqual(lr.from ?? null, rr.from ?? null) && datesEqual(lr.to ?? null, rr.to ?? null);
 }
 
 export function calendarSelectionEquals(
   left: CalendarSelection,
   right: CalendarSelection,
-  mode: CalendarMode,
-  context: ResolvedDateFnsContext
+  state: CalendarSelectionState
 ): boolean {
-  const leftValue = calendarSelectionToValue(left, mode, context);
-  const rightValue = calendarSelectionToValue(right, mode, context);
-  return JSON.stringify(leftValue) === JSON.stringify(rightValue);
-}
+  if (state.mode === "single") {
+    return datesEqual(left instanceof Date ? left : null, right instanceof Date ? right : null);
+  }
 
-export { CALENDAR_SELECTION_ID };
+  if (state.mode === "multiple") {
+    return datesArrayEqual(Array.isArray(left) ? left : [], Array.isArray(right) ? right : []);
+  }
+
+  return rangesEqual(left, right);
+}
