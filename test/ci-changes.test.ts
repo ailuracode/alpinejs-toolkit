@@ -5,6 +5,7 @@ import {
   analyzeChangedFiles,
   changedPackageFolders,
   isDocumentationOnlyChange,
+  toGithubOutputs,
 } from "../scripts/ci-changes.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -58,6 +59,21 @@ describe("ci:changes", () => {
     expect(result.runPack).toBe(true);
     expect(result.runSize).toBe(true);
     expect(result.runRepoCheck).toBe(false);
+  });
+
+  it("emits comma-separated pnpm build filters for multi-package changes", () => {
+    const result = analyzeChangedFiles(
+      ["packages/query/src/cache.ts", "packages/query-adapter-alpine/src/plugin.ts"],
+      { root }
+    );
+
+    expect(result.buildFilters).toEqual([
+      "@ailuracode/alpine-query...",
+      "@ailuracode/alpine-query-adapter-alpine...",
+    ]);
+    expect(toGithubOutputs(result).build_filters).toBe(
+      "@ailuracode/alpine-query...,@ailuracode/alpine-query-adapter-alpine..."
+    );
   });
 
   it("runs audit only when dependency manifests change", () => {

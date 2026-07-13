@@ -27,11 +27,33 @@ export class QueryCache {
   private readonly config: QueryCacheConfig;
   private readonly adapter: QueryStateAdapter;
   private readonly devtools = new DevtoolsRegistry();
-  private focusListenerAttached = false;
+  private destroyed = false;
+  private onWindowFocus: (() => void) | null = null;
+  private onDocumentVisibilityChange: (() => void) | null = null;
 
   constructor(options: QueryCacheOptions) {
     this.config = options;
     this.adapter = options.adapter;
+  }
+
+  get isDestroyed(): boolean {
+    return this.destroyed;
+  }
+
+  destroy(): void {
+    if (this.destroyed) {
+      return;
+    }
+
+    for (const entry of this.entries.values()) {
+      this.disposeEntryHandle(entry);
+      this.clearTimers(entry);
+    }
+
+    this.entries.clear();
+    this.detachFocusListeners();
+    this.devtools.destroy();
+    this.destroyed = true;
   }
 
   getDevtools() {
@@ -126,6 +148,10 @@ export class QueryCache {
   }
 
   invalidate(key?: QueryKey | QueryKey[]): void {
+    if (this.destroyed) {
+      return;
+    }
+
     const targets = this.resolveTargets(key);
 
     for (const entry of targets) {
@@ -139,6 +165,10 @@ export class QueryCache {
   }
 
   remove(key?: QueryKey | QueryKey[]): void {
+    if (this.destroyed) {
+      return;
+    }
+
     const targets = this.resolveTargets(key);
 
     for (const entry of targets) {
@@ -151,6 +181,10 @@ export class QueryCache {
   }
 
   setData<TData>(key: QueryKey, data: TData | ((current: TData | undefined) => TData)): void {
+    if (this.destroyed) {
+      return;
+    }
+
     const entry = this.entries.get(hashKey(key)) as QueryEntry<TData> | undefined;
     if (!entry) {
       return;
@@ -164,6 +198,10 @@ export class QueryCache {
   }
 
   cancel(key: QueryKey): void {
+    if (this.destroyed) {
+      return;
+    }
+
     const entry = this.entries.get(hashKey(key));
     if (!entry) {
       return;
@@ -177,6 +215,10 @@ export class QueryCache {
   }
 
   reset(): void {
+    if (this.destroyed) {
+      return;
+    }
+
     for (const entry of this.entries.values()) {
       this.disposeEntryHandle(entry);
       this.clearTimers(entry);
@@ -185,9 +227,14 @@ export class QueryCache {
     this.entries.clear();
     this.devtools.clearMutations();
     this.devtools.notify();
+    this.syncFocusListeners();
   }
 
   resetQueries(key?: QueryKey | QueryKey[]): void {
+    if (this.destroyed) {
+      return;
+    }
+
     const targets = key ? this.resolveTargets(key) : [...this.entries.values()];
 
     for (const entry of targets) {
@@ -213,6 +260,7 @@ export class QueryCache {
   mutate<TData, TVariables, TContext>(
     options: MutationOptions<TData, TVariables, TContext>
   ): MutationState<TData, TVariables> {
+    this.assertNotDestroyed();
     const handle = this.adapter.createMutationState<TData, TVariables>({
       mutate: async (variables: TVariables) => {
         handle.patch({ status: "pending", error: null });
@@ -254,6 +302,7 @@ export class QueryCache {
     queryFn: QueryFunction<TData>,
     options?: QueryOptions<TData>
   ): QueryEntry<TData> {
+    this.assertNotDestroyed();
     const keyHash = hashKey(key);
     const resolvedOptions = resolveQueryOptions<TData>(
       options,
@@ -332,6 +381,7 @@ export class QueryCache {
       this.clearRefetchInterval(entry);
     }
 
+    this.syncFocusListeners();
     this.devtools.notify();
   }
 
@@ -385,11 +435,11 @@ export class QueryCache {
   }
 
   private ensureFocusListener(): void {
-    if (this.focusListenerAttached || typeof window === "undefined") {
+    if (this.destroyed || this.onWindowFocus || typeof window === "undefined") {
       return;
     }
 
-    const onFocus = () => {
+    this.onWindowFocus = () => {
       for (const entry of this.entries.values()) {
         if (
           entry.observers > 0 &&
@@ -402,14 +452,49 @@ export class QueryCache {
       }
     };
 
-    window.addEventListener("focus", onFocus);
-    document.addEventListener("visibilitychange", () => {
+    this.onDocumentVisibilityChange = () => {
       if (document.visibilityState === "visible") {
-        onFocus();
+        this.onWindowFocus?.();
       }
-    });
+    };
 
-    this.focusListenerAttached = true;
+    window.addEventListener("focus", this.onWindowFocus);
+    document.addEventListener("visibilitychange", this.onDocumentVisibilityChange);
+  }
+
+  private detachFocusListeners(): void {
+    if (!this.onWindowFocus || typeof window === "undefined") {
+      return;
+    }
+
+    window.removeEventListener("focus", this.onWindowFocus);
+    if (this.onDocumentVisibilityChange) {
+      document.removeEventListener("visibilitychange", this.onDocumentVisibilityChange);
+    }
+
+    this.onWindowFocus = null;
+    this.onDocumentVisibilityChange = null;
+  }
+
+  private syncFocusListeners(): void {
+    if (this.destroyed) {
+      return;
+    }
+
+    for (const entry of this.entries.values()) {
+      if (entry.observers > 0) {
+        this.ensureFocusListener();
+        return;
+      }
+    }
+
+    this.detachFocusListeners();
+  }
+
+  private assertNotDestroyed(): void {
+    if (this.destroyed) {
+      throw Object.assign(new Error("QueryCache destroyed"), { code: "QUERY_CACHE_DESTROYED" });
+    }
   }
 
   private isStale<TData>(entry: QueryEntry<TData>): boolean {

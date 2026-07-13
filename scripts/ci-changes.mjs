@@ -574,7 +574,7 @@ export function toGithubOutputs(result) {
     build_packages: result.buildFolders.join(","),
     test_packages: result.testFolders.join(","),
     pack_packages: result.packFolders.join(","),
-    build_filters: result.buildFilters.join("\n"),
+    build_filters: result.buildFilters.join(","),
     test_paths: result.testPaths.join(" "),
     e2e_packages: result.e2eFolders.join(","),
     summary: result.summary,
