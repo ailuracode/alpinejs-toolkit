@@ -134,11 +134,12 @@ jobs:
         run: |
           set -euo pipefail
           cmd=(pnpm -r)
-          while IFS= read -r filter; do
+          IFS=',' read -ra filters <<< "${{ needs.detect.outputs.build_filters }}"
+          for filter in "${filters[@]}"; do
             if [ -n "$filter" ]; then
               cmd+=(--filter "$filter")
             fi
-          done <<< "${{ needs.detect.outputs.build_filters }}"
+          done
           cmd+=(build)
           "${cmd[@]}"
 
