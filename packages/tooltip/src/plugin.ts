@@ -5,7 +5,7 @@
  * `$store.tooltip` and the `$tooltip` magic.
  */
 
-import { bindControllerStore, syncRecordFromSnapshot } from "@ailuracode/alpine-core/alpine";
+import { bridgeControllerStore, syncRecordFromSnapshot } from "@ailuracode/alpine-core";
 import type { Alpine } from "alpinejs";
 import { TooltipController } from "./controller.js";
 import { createTooltipStoreFromController } from "./store.js";
@@ -24,16 +24,16 @@ export function tooltipPlugin(options: CreateTooltipOptions = {}): TooltipPlugin
     const Alpine = alpine as unknown as TooltipAlpine;
     const controller = new TooltipController(options.id);
 
-    bindControllerStore({
+    bridgeControllerStore({
       alpine: Alpine,
       storeKey: TOOLTIP_STORE_KEY,
       store: createTooltipStoreFromController(controller),
       controller,
-      sync: (reactiveStore) => {
-        syncRecordFromSnapshot(reactiveStore.instances, controller.snapshotInstances());
-      },
-      onReactiveStore: (reactiveStore) => {
+      subscribe: (reactiveStore) => {
         reactiveStore.isOpen = (id: string) => reactiveStore.instances[id]?.open ?? false;
+        return controller.on("change", () => {
+          syncRecordFromSnapshot(reactiveStore.instances, controller.snapshotInstances());
+        });
       },
     });
   };

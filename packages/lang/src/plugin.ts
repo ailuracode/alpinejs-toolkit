@@ -6,17 +6,11 @@
  * (see `AGENTS.md` for the integration contract).
  */
 
-import { bindControllerStore } from "@ailuracode/alpine-core/alpine";
+import { bridgeControllerStore } from "@ailuracode/alpine-core";
 import type { Alpine } from "alpinejs";
 import type { LangController } from "./controller";
 import { createLang } from "./controller";
-import type {
-  LangAlpine,
-  LangChangeDetail,
-  LangPluginCallback,
-  LangPluginOptions,
-  LangStore,
-} from "./types";
+import type { LangAlpine, LangPluginCallback, LangPluginOptions, LangStore } from "./types";
 
 /** Key under which the lang store is registered on `$store`. */
 const LANG_STORE_KEY = "lang";
@@ -34,21 +28,29 @@ const LANG_STORE_KEY = "lang";
  */
 export function langPlugin(options: LangPluginOptions = {}): LangPluginCallback {
   return function registerLang(alpine: Alpine): void {
+    // Narrow the base `Alpine` runtime to the toolkit's typed view.
+    // The boundary cast is the only `as unknown as` in this file —
+    // every subsequent call is fully typed against `LangAlpine`.
     const Alpine = alpine as unknown as LangAlpine;
+    // `createLang()` already mounts; the controller's constructor
+    // seeds deterministic state and `mount()` performs browser
+    // detection when no navigator is injected.
     const manager = createLang(options);
+    const store = createLangStore(manager);
 
-    bindControllerStore<LangStore, LangChangeDetail>({
+    bridgeControllerStore<LangStore, LangController>({
       alpine: Alpine,
       storeKey: LANG_STORE_KEY,
-      store: createLangStore(manager),
+      store,
       controller: manager,
-      sync: (reactiveStore, detail) => {
-        reactiveStore.current = detail.current;
-        reactiveStore.base = detail.base;
-        reactiveStore.region = detail.region;
-        reactiveStore.languages = [...detail.languages];
-        reactiveStore.isDetected = detail.isDetected;
-      },
+      subscribe: (reactiveStore) =>
+        manager.on("change", (detail) => {
+          reactiveStore.current = detail.current;
+          reactiveStore.base = detail.base;
+          reactiveStore.region = detail.region;
+          reactiveStore.languages = [...detail.languages];
+          reactiveStore.isDetected = detail.isDetected;
+        }),
     });
   };
 }

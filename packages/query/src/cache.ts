@@ -1,11 +1,13 @@
 import type { QueryStateAdapter } from "./adapters/types.js";
 import type { QueryEntry } from "./cache-internals.js";
 import { DevtoolsRegistry } from "./devtools-registry.js";
+import { createQueryObserver } from "./observer.js";
 import type {
   MutationOptions,
   MutationState,
   QueryFunction,
   QueryKey,
+  QueryObserver,
   QueryOptions,
   QueryState,
   QueryStatus,
@@ -45,12 +47,9 @@ export class QueryCache {
       return;
     }
 
-    for (const entry of this.entries.values()) {
-      this.disposeEntryHandle(entry);
-      this.clearTimers(entry);
+    for (const entry of [...this.entries.values()]) {
+      this.disposeAndRemoveEntry(entry);
     }
-
-    this.entries.clear();
     this.detachFocusListeners();
     this.devtools.destroy();
     this.destroyed = true;
@@ -103,24 +102,23 @@ export class QueryCache {
       return;
     }
 
-    this.clearTimers(entry);
-    this.entries.delete(keyHash);
-    this.devtools.notify();
+    if (this.disposeAndRemoveEntry(entry)) {
+      this.devtools.notify();
+      this.syncFocusListeners();
+    }
   }
 
   observe<TData>(
     key: QueryKey,
     queryFn: QueryFunction<TData>,
     options?: QueryOptions<TData>
-  ): QueryState<TData> & { destroy(): void } {
+  ): QueryObserver<TData> {
     const entry = this.ensureEntry(key, queryFn, options);
     this.subscribe(entry);
     void this.fetchEntry(entry);
 
-    return Object.assign(entry.state, {
-      destroy: () => {
-        this.unsubscribe(entry);
-      },
+    return createQueryObserver(entry.state, () => {
+      this.unsubscribe(entry);
     });
   }
 
@@ -170,14 +168,16 @@ export class QueryCache {
     }
 
     const targets = this.resolveTargets(key);
+    let removed = false;
 
     for (const entry of targets) {
-      this.disposeEntryHandle(entry);
-      this.clearTimers(entry);
-      this.entries.delete(entry.keyHash);
+      removed = this.disposeAndRemoveEntry(entry) || removed;
     }
 
-    this.devtools.notify();
+    if (removed) {
+      this.devtools.notify();
+      this.syncFocusListeners();
+    }
   }
 
   setData<TData>(key: QueryKey, data: TData | ((current: TData | undefined) => TData)): void {
@@ -219,12 +219,10 @@ export class QueryCache {
       return;
     }
 
-    for (const entry of this.entries.values()) {
-      this.disposeEntryHandle(entry);
-      this.clearTimers(entry);
+    for (const entry of [...this.entries.values()]) {
+      this.disposeAndRemoveEntry(entry);
     }
 
-    this.entries.clear();
     this.devtools.clearMutations();
     this.devtools.notify();
     this.syncFocusListeners();
@@ -354,6 +352,7 @@ export class QueryCache {
       devtoolsUnsubscribe: handle.listen(() => {
         this.devtools.notify();
       }),
+      disposed: false,
     };
 
     this.entries.set(keyHash, entryRef as QueryEntry);
@@ -374,6 +373,10 @@ export class QueryCache {
   }
 
   private unsubscribe<TData>(entry: QueryEntry<TData>): void {
+    if (!this.entries.has(entry.keyHash)) {
+      return;
+    }
+
     entry.observers = Math.max(0, entry.observers - 1);
 
     if (entry.observers === 0) {
@@ -391,11 +394,13 @@ export class QueryCache {
     }
 
     entry.gcTimeout = setTimeout(() => {
-      if (entry.observers === 0) {
-        this.disposeEntryHandle(entry);
-        this.clearTimers(entry);
-        this.entries.delete(entry.keyHash);
+      if (!this.entries.has(entry.keyHash) || entry.observers > 0) {
+        return;
+      }
+
+      if (this.disposeAndRemoveEntry(entry)) {
         this.devtools.notify();
+        this.syncFocusListeners();
       }
     }, entry.options.gcTime);
   }
@@ -699,8 +704,30 @@ export class QueryCache {
     });
   }
 
+  /**
+   * Disposes adapter resources, cancels timers and in-flight fetches, and
+   * removes the entry from the cache. Idempotent when the entry is already
+   * removed or disposed.
+   */
+  private disposeAndRemoveEntry<TData>(entry: QueryEntry<TData>): boolean {
+    if (!this.entries.has(entry.keyHash)) {
+      return false;
+    }
+
+    this.disposeEntryHandle(entry);
+    this.clearTimers(entry);
+    this.entries.delete(entry.keyHash);
+    return true;
+  }
+
   private disposeEntryHandle<TData>(entry: QueryEntry<TData>): void {
+    if (entry.disposed) {
+      return;
+    }
+
+    entry.disposed = true;
     entry.devtoolsUnsubscribe?.();
+    entry.devtoolsUnsubscribe = undefined;
     entry.handle.dispose?.();
   }
 }

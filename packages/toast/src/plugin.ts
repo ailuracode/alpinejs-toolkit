@@ -6,7 +6,11 @@
  * (see `AGENTS.md` for the integration contract).
  */
 
-import { bindControllerStore } from "@ailuracode/alpine-core/alpine";
+import {
+  registerReactiveStore,
+  registerStoreMagic,
+  wireControllerLifecycle,
+} from "@ailuracode/alpine-core";
 import type { Alpine } from "alpinejs";
 import {
   type CreateToastControllerOptions,
@@ -19,7 +23,6 @@ import type {
   ResolvedPromiseConfig,
   ResolvedToastPluginConfig,
   ToastAlpine,
-  ToastChangeDetail,
   ToastDuration,
   ToastEventPayload,
   ToastMagic,
@@ -173,24 +176,21 @@ export function toastPlugin<
     const config = resolveToastPluginConfig(options);
     const store = wrapToastStore<TPositions, TContent>(controller);
 
-    const { reactiveStore } = bindControllerStore({
-      alpine: Alpine,
-      storeKey: config.storeKey,
-      store: store as unknown as ToastStore,
-      controller,
-      sync: (proxy, detail) => {
-        const change = detail as ToastChangeDetail<readonly [], TPositions, TContent>;
-        const mutable = proxy as unknown as ToastStore<readonly [], TPositions, TContent>;
-        mutable.items = [...change.items];
-      },
-      magic: false,
+    const { reactiveStore } = registerReactiveStore(
+      Alpine,
+      config.storeKey as "toast",
+      store as unknown as ToastStore
+    );
+    const reactiveProxy = reactiveStore as unknown as ToastStore<readonly [], TPositions, TContent>;
+    const unsubscribe = controller.on("change", (detail) => {
+      reactiveProxy.items = [...detail.items];
     });
-
     const toast = createToastMagic<TVariants, TPositions, TContent>(
       config,
-      () => reactiveStore as unknown as ToastStore<TVariants, TPositions, TContent>
+      () => reactiveProxy as unknown as ToastStore<TVariants, TPositions, TContent>
     );
-    Alpine.magic("toast", () => toast);
+    registerStoreMagic(Alpine, "toast", () => toast);
+    wireControllerLifecycle(Alpine, controller, { subscriptions: [unsubscribe] });
   };
 }
 

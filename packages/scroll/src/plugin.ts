@@ -5,17 +5,33 @@
  * `$store.scroll` and the `$scroll` magic. Every command forwards to
  * the controller (see `AGENTS.md` for the integration contract).
  *
- * Reactive proxy re-target pattern is handled by
- * `bindControllerStore` from `@ailuracode/alpine-core/alpine`.
+ * Reactive proxy re-target pattern (mirrors `packages/theme/src/plugin.ts`
+ * and `packages/sidebar/src/plugin.ts`):
+ *
+ * 1. `Alpine.store('scroll', store)` registers the bare store.
+ * 2. `Alpine.store('scroll')` re-fetches the reactive proxy Alpine
+ *    wraps the store in. Mutations land on this proxy, not the bare
+ *    object — otherwise `x-text` bindings never re-render.
+ * 3. `controller.on('change', detail => mutate proxy)` is the single
+ *    subscription that bridges the headless controller to Alpine's
+ *    reactivity. The controller's `change` event is the canonical
+ *    source of truth for state transitions; `lock` and `section`
+ *    events are NOT mirrored separately because they already fold
+ *    into `change` via the controller's lock / section handlers.
+ * 4. `$scroll` magic returns the same reactive store proxy so
+ *    `x-text="$scroll.locked"` and `x-text="$store.scroll.locked"`
+ *    are interchangeable.
+ * 5. `Alpine.cleanup(() => controller.destroy())` releases the
+ *    controller when the host tears down (guarded by a
+ *    `typeof === "function"` check for older Alpine versions).
  */
 
-import { bindControllerStore } from "@ailuracode/alpine-core/alpine";
+import { bridgeControllerStore } from "@ailuracode/alpine-core";
 import type { Alpine } from "alpinejs";
 import { createScrollStore as buildStore } from "./alpine/store";
 import { createScroll, type ScrollController } from "./controller";
 import type {
   ScrollAlpine,
-  ScrollChangeDetail,
   ScrollOptions,
   ScrollPluginCallback,
   ScrollState,
@@ -39,27 +55,37 @@ const SCROLL_STORE_KEY = "scroll";
  */
 export function scrollPlugin(options: ScrollOptions = {}): ScrollPluginCallback {
   return function registerScroll(alpine: Alpine): void {
+    // Narrow the base `Alpine` runtime to the toolkit's typed view.
+    // The boundary cast is the only `as unknown as` in this file —
+    // every subsequent call is fully typed against `ScrollAlpine`.
     const Alpine = alpine as unknown as ScrollAlpine;
+
+    // `createScroll()` resolves the singleton — repeated calls return
+    // the same controller. `mount()` runs once per fresh build (the
+    // singleton factory guards it).
     const controller = createScroll(options);
 
-    bindControllerStore<ScrollStore, ScrollChangeDetail>({
+    const store = buildStore(controller);
+
+    bridgeControllerStore<ScrollStore, ScrollController>({
       alpine: Alpine,
       storeKey: SCROLL_STORE_KEY,
-      store: buildStore(controller),
+      store,
       controller,
-      sync: (reactiveStore, detail) => {
-        const state: ScrollState = detail.state;
-        reactiveStore.x = state.x;
-        reactiveStore.y = state.y;
-        reactiveStore.direction = state.direction;
-        reactiveStore.atTop = state.atTop;
-        reactiveStore.atBottom = state.atBottom;
-        reactiveStore.progress = state.progress;
-        reactiveStore.locked = state.locked;
-        reactiveStore.lockCount = state.lockCount;
-        reactiveStore.activeSection = state.activeSection;
-        reactiveStore.visibleSections = state.visibleSections.slice();
-      },
+      subscribe: (reactiveStore) =>
+        controller.on("change", (detail) => {
+          const state: ScrollState = detail.state;
+          reactiveStore.x = state.x;
+          reactiveStore.y = state.y;
+          reactiveStore.direction = state.direction;
+          reactiveStore.atTop = state.atTop;
+          reactiveStore.atBottom = state.atBottom;
+          reactiveStore.progress = state.progress;
+          reactiveStore.locked = state.locked;
+          reactiveStore.lockCount = state.lockCount;
+          reactiveStore.activeSection = state.activeSection;
+          reactiveStore.visibleSections = state.visibleSections.slice();
+        }),
     });
   };
 }

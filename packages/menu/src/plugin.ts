@@ -5,7 +5,7 @@
  * `$store.menu` and the `$menu` magic.
  */
 
-import { bindControllerStore, syncRecordFromSnapshot } from "@ailuracode/alpine-core/alpine";
+import { bridgeControllerStore, syncRecordFromSnapshot } from "@ailuracode/alpine-core";
 import type { Alpine } from "alpinejs";
 import { MenuController } from "./controller.js";
 import { createMenuStoreFromController } from "./store.js";
@@ -28,16 +28,16 @@ export function menuPlugin(options: CreateMenuOptions = {}): MenuPluginCallback 
       options.id
     );
 
-    bindControllerStore({
+    bridgeControllerStore({
       alpine: Alpine,
       storeKey: MENU_STORE_KEY,
       store: createMenuStoreFromController(controller),
       controller,
-      sync: (reactiveStore) => {
-        syncRecordFromSnapshot(reactiveStore.instances, controller.snapshotInstances());
-      },
-      onReactiveStore: (reactiveStore) => {
+      subscribe: (reactiveStore) => {
         reactiveStore.isOpen = (id: string) => reactiveStore.instances?.[id]?.open ?? false;
+        return controller.on("change", () => {
+          syncRecordFromSnapshot(reactiveStore.instances, controller.snapshotInstances());
+        });
       },
     });
   };

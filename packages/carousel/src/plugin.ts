@@ -5,7 +5,7 @@
  * `$store.carousel` and the `$carousel` magic.
  */
 
-import { bindControllerStore, syncRecordFromSnapshot } from "@ailuracode/alpine-core/alpine";
+import { bridgeControllerStore, syncRecordFromSnapshot } from "@ailuracode/alpine-core";
 import type { Alpine } from "alpinejs";
 import { CarouselController } from "./controller.js";
 import { createCarouselStoreFromController } from "./store.js";
@@ -24,23 +24,12 @@ export function carouselPlugin(options: CreateCarouselOptions = {}): CarouselPlu
     const Alpine = alpine as unknown as CarouselAlpine;
     const controller = new CarouselController(options.id);
 
-    bindControllerStore({
+    bridgeControllerStore({
       alpine: Alpine,
       storeKey: CAROUSEL_STORE_KEY,
       store: createCarouselStoreFromController(controller),
       controller,
-      sync: (reactiveStore) => {
-        syncRecordFromSnapshot(reactiveStore.instances, controller.snapshotInstances());
-      },
-      subscribe: (notify) => {
-        const unsubs = [controller.on("change", notify), controller.on("slideChange", notify)];
-        return () => {
-          for (const unsub of unsubs) {
-            unsub();
-          }
-        };
-      },
-      onReactiveStore: (reactiveStore) => {
+      subscribe: (reactiveStore) => {
         reactiveStore.current = (id) => reactiveStore.instances[id]?.currentIndex ?? 0;
         reactiveStore.count = (id) => reactiveStore.instances[id]?.totalSlides ?? 0;
         reactiveStore.canNext = (id) => reactiveStore.instances[id]?.canNext ?? false;
@@ -63,6 +52,16 @@ export function carouselPlugin(options: CreateCarouselOptions = {}): CarouselPlu
             "aria-label": `Go to slide ${index + 1}`,
             "aria-current": selected ? "true" : undefined,
           };
+        };
+
+        const sync = () => {
+          syncRecordFromSnapshot(reactiveStore.instances, controller.snapshotInstances());
+        };
+        const unsubs = [controller.on("change", sync), controller.on("slideChange", sync)];
+        return () => {
+          for (const unsub of unsubs) {
+            unsub();
+          }
         };
       },
     });

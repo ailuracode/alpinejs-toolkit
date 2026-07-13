@@ -18,6 +18,8 @@ export type QueryEntry<TData = unknown> = {
   fetchStartedAt: number | null;
   lastFetchDurationMs: number | null;
   devtoolsUnsubscribe?: () => void;
+  /** Set when adapter/devtools resources are released; prevents duplicate disposal. */
+  disposed: boolean;
 };
 
 export type QueryCacheInternals = {
@@ -25,5 +27,11 @@ export type QueryCacheInternals = {
   getEntryByHash(keyHash: string): QueryEntry | undefined;
   refetchEntry(keyHash: string): Promise<void> | undefined;
   invalidateEntry(keyHash: string): void;
+  /**
+   * Forcibly removes a cache entry by hash. Cancels timers and in-flight fetches,
+   * disposes adapter handles, and unsubscribes devtools listeners. Active
+   * observers are detached without decrementing their local subscription; a
+   * subsequent `destroy()` on the observe result is a no-op.
+   */
   removeEntry(keyHash: string): void;
 };

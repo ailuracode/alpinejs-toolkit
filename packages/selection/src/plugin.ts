@@ -2,7 +2,7 @@
  * Alpine.js integration for `@ailuracode/alpine-selection`.
  */
 
-import { bindControllerStore, syncRecordFromSnapshot } from "@ailuracode/alpine-core/alpine";
+import { bridgeControllerStore, syncRecordFromSnapshot } from "@ailuracode/alpine-core";
 import type { Alpine } from "alpinejs";
 import { SelectionController } from "./controller.js";
 import { createSelectionStoreFromController } from "./store.js";
@@ -16,16 +16,17 @@ export function selectionPlugin(options: CreateSelectionOptions = {}): Selection
     const Alpine = alpine as unknown as SelectionAlpine;
     const controller = new SelectionController(options.id);
 
-    bindControllerStore({
+    bridgeControllerStore({
       alpine: Alpine,
       storeKey: SELECTION_STORE_KEY,
       store: createSelectionStoreFromController(controller),
       controller,
-      sync: (reactiveStore) => {
-        syncRecordFromSnapshot(reactiveStore.instances, controller.snapshotInstances());
-      },
-      onReactiveStore: (reactiveStore) => {
-        syncRecordFromSnapshot(reactiveStore.instances, controller.snapshotInstances());
+      subscribe: (reactiveStore) => {
+        const sync = () => {
+          syncRecordFromSnapshot(reactiveStore.instances, controller.snapshotInstances());
+        };
+        sync();
+        return controller.on("change", sync);
       },
     });
   };

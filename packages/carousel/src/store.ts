@@ -2,7 +2,7 @@
  * Store factory for `@ailuracode/alpine-carousel`.
  */
 
-import { syncRecordFromSnapshot } from "@ailuracode/alpine-core/alpine";
+import { syncRecordFromSnapshot } from "@ailuracode/alpine-core";
 import { CarouselController } from "./controller.js";
 import type { CarouselInstance, CarouselStore } from "./types.js";
 
@@ -13,7 +13,7 @@ function syncInstances(
   syncInstanceRegistry(target, controller.snapshotInstances());
 }
 
-/** @deprecated Import `syncRecordFromSnapshot` from `@ailuracode/alpine-core/alpine`. */
+/** @deprecated Import `syncRecordFromSnapshot` from `@ailuracode/alpine-core`. */
 export function syncInstanceRegistry<T extends Record<string, CarouselInstance>>(
   target: Record<string, CarouselInstance>,
   snapshot: T

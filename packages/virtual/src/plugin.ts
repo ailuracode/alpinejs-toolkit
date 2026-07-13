@@ -2,7 +2,7 @@
  * Alpine.js integration for `@ailuracode/alpine-virtual`.
  */
 
-import { bindControllerStore, syncRecordFromSnapshot } from "@ailuracode/alpine-core/alpine";
+import { bridgeControllerStore, syncRecordFromSnapshot } from "@ailuracode/alpine-core";
 import type { Alpine } from "alpinejs";
 import { VirtualController } from "./controller.js";
 import { createVirtualStoreFromController } from "./store.js";
@@ -16,19 +16,19 @@ export function virtualPlugin(options: CreateVirtualOptions = {}): VirtualPlugin
     const Alpine = alpine as unknown as VirtualAlpine;
     const controller = new VirtualController(options.id);
 
-    bindControllerStore({
+    bridgeControllerStore({
       alpine: Alpine,
       storeKey: VIRTUAL_STORE_KEY,
       store: createVirtualStoreFromController(controller),
       controller,
-      sync: (reactiveStore) => {
-        syncRecordFromSnapshot(reactiveStore.instances, controller.snapshotInstances());
-      },
-      subscribe: (notify) => {
+      subscribe: (reactiveStore) => {
+        const sync = () => {
+          syncRecordFromSnapshot(reactiveStore.instances, controller.snapshotInstances());
+        };
         const unsubs = [
-          controller.on("change", notify),
-          controller.on("rangeChange", notify),
-          controller.on("scroll", notify),
+          controller.on("change", sync),
+          controller.on("rangeChange", sync),
+          controller.on("scroll", sync),
         ];
         return () => {
           for (const unsub of unsubs) {

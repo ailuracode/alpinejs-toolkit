@@ -15,4 +15,4 @@
 "@ailuracode/alpine-selection": patch
 ---
 
-Extract a shared Alpine lifecycle bridge (`@ailuracode/alpine-core/alpine`) and migrate controller-backed store adapters to use it. Subscription teardown is now explicit on every migrated plugin; `syncRecordFromSnapshot` replaces duplicated instance-registry sync helpers.
+Extend the shared Alpine lifecycle bridge with `syncRecordFromSnapshot` and migrate instance-registry store adapters (`dialog`, `menu`, `tooltip`, `carousel`, `virtual`, `selection`, `overlay`) to `bridgeControllerStore` with explicit subscription teardown on cleanup.

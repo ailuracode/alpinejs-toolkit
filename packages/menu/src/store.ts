@@ -6,7 +6,7 @@
  * standalone and integrated consumers share one adapter shape.
  */
 
-import { syncRecordFromSnapshot } from "@ailuracode/alpine-core/alpine";
+import { syncRecordFromSnapshot } from "@ailuracode/alpine-core";
 import { MenuController } from "./controller.js";
 import type { MenuControllerConfig, MenuInstance, MenuStore } from "./types.js";
 
@@ -14,7 +14,7 @@ function syncInstances(target: Record<string, MenuInstance>, controller: MenuCon
   syncInstanceRegistry(target, controller.snapshotInstances());
 }
 
-/** @deprecated Import `syncRecordFromSnapshot` from `@ailuracode/alpine-core/alpine`. */
+/** @deprecated Import `syncRecordFromSnapshot` from `@ailuracode/alpine-core`. */
 export function syncInstanceRegistry<T extends Record<string, MenuInstance>>(
   target: Record<string, MenuInstance>,
   snapshot: T

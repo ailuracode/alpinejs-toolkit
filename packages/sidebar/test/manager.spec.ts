@@ -23,7 +23,7 @@ import {
   type SidebarChangeDetail,
   type SidebarController,
 } from "../src/index";
-import { setMatchMedia } from "./setup";
+import { installMatchMediaMock, setMatchMedia } from "./setup";
 
 const MIN_WIDTH_1024 = "(min-width: 1024px)";
 
@@ -500,6 +500,7 @@ describe("SidebarController — SSR", () => {
     // session sees a real window again. We avoid `unstubAllGlobals`
     // because it would also clear `safeMatchMedia`'s environment.
     vi.unstubAllGlobals();
+    installMatchMediaMock();
   });
 
   it("constructing under missing window does not throw; matchesBreakpoint === false", () => {
@@ -831,7 +832,7 @@ describe("SidebarController — scroll option (body lock via @ailuracode/alpine-
     controller.destroy();
   });
 
-  it("Escape hide does NOT release the lock (only user source triggers release)", () => {
+  it("Escape hide releases the lock and hides the sidebar", () => {
     const spy = makeScrollSpy();
     const controller = createSidebar({
       closeOnEscape: true,
@@ -839,12 +840,14 @@ describe("SidebarController — scroll option (body lock via @ailuracode/alpine-
     });
     controller.show();
     expect(spy.locks).toEqual(["sidebar"]);
+    expect(controller.visible).toBe(true);
     window.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }));
-    expect(spy.unlocks).toEqual([]);
+    expect(controller.visible).toBe(false);
+    expect(spy.unlocks).toEqual(["h1"]);
     controller.destroy();
   });
 
-  it("breakpoint-driven hide does NOT release the lock", () => {
+  it("breakpoint-driven hide releases the lock and hides the sidebar", async () => {
     const spy = makeScrollSpy();
     setMatchMedia(MIN_WIDTH_1024, true);
     const controller = createSidebar({
@@ -853,8 +856,46 @@ describe("SidebarController — scroll option (body lock via @ailuracode/alpine-
     });
     controller.show();
     expect(spy.locks).toEqual(["sidebar"]);
+    expect(controller.visible).toBe(true);
     setMatchMedia(MIN_WIDTH_1024, false);
-    expect(spy.unlocks).toEqual([]);
+    await Promise.resolve();
+    expect(controller.visible).toBe(false);
+    expect(spy.unlocks).toEqual(["h1"]);
+    controller.destroy();
+  });
+
+  it("reset() releases the lock when it hides the sidebar", () => {
+    const spy = makeScrollSpy();
+    const controller = createSidebar({ scroll: spy.scroll });
+    controller.show();
+    expect(spy.locks).toEqual(["sidebar"]);
+    expect(controller.visible).toBe(true);
+    controller.reset();
+    expect(controller.visible).toBe(false);
+    expect(spy.unlocks).toEqual(["h1"]);
+    controller.destroy();
+  });
+
+  it("storage-driven hide releases the lock and hides the sidebar", () => {
+    const spy = makeScrollSpy();
+    const storage = createLocalStorageSidebarStorage({ key: "scroll-lock" });
+    const controller = createSidebar({ scroll: spy.scroll, storage });
+    controller.show();
+    expect(spy.locks).toEqual(["sidebar"]);
+    expect(controller.visible).toBe(true);
+    fireStorage("scroll-lock", "false");
+    expect(controller.visible).toBe(false);
+    expect(spy.unlocks).toEqual(["h1"]);
+    controller.destroy();
+  });
+
+  it("storage-driven show does NOT acquire a lock", () => {
+    const spy = makeScrollSpy();
+    const storage = createLocalStorageSidebarStorage({ key: "scroll-open" });
+    const controller = createSidebar({ scroll: spy.scroll, storage });
+    fireStorage("scroll-open", "true");
+    expect(controller.visible).toBe(true);
+    expect(spy.locks).toEqual([]);
     controller.destroy();
   });
 

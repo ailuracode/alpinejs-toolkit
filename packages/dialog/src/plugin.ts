@@ -5,7 +5,7 @@
  * `$store.dialog` and the `$dialog` magic.
  */
 
-import { bindControllerStore, syncRecordFromSnapshot } from "@ailuracode/alpine-core/alpine";
+import { bridgeControllerStore, syncRecordFromSnapshot } from "@ailuracode/alpine-core";
 import type { Alpine } from "alpinejs";
 import { DialogController } from "./controller.js";
 import { createDialogStoreFromController } from "./store.js";
@@ -32,16 +32,16 @@ export function dialogPlugin(options: CreateDialogOptions = {}): DialogPluginCal
       options.id
     );
 
-    bindControllerStore({
+    bridgeControllerStore({
       alpine: Alpine,
       storeKey: DIALOG_STORE_KEY,
       store: createDialogStoreFromController(controller),
       controller,
-      sync: (reactiveStore) => {
-        syncRecordFromSnapshot(reactiveStore.instances, controller.snapshotInstances());
-      },
-      onReactiveStore: (reactiveStore) => {
+      subscribe: (reactiveStore) => {
         reactiveStore.isOpen = (id: string) => reactiveStore.instances?.[id]?.open ?? false;
+        return controller.on("change", () => {
+          syncRecordFromSnapshot(reactiveStore.instances, controller.snapshotInstances());
+        });
       },
     });
   };

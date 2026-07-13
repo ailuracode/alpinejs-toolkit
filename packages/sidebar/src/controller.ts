@@ -528,21 +528,27 @@ export class SidebarController extends BaseController<SidebarEvents> implements 
   }
 
   /**
-   * Mirrors the user-driven visibility flip onto the scroll lock.
-   * Mirrors the storage-write gate: only `source: 'user'`
-   * transitions trigger lock / unlock. Escape / breakpoint /
-   * reset / storage / initialization keep the lock as it was.
+   * Keeps the scroll lock aligned with visibility.
+   *
+   * Acquire: only `source: 'user'` transitions to `visible: true`
+   * call `scroll.lock("sidebar")`. Escape, breakpoint, reset,
+   * storage, and initialization never acquire a lock.
+   *
+   * Release: whenever the sidebar becomes hidden and a lock handle
+   * is held, unlock it — regardless of transition source. This
+   * prevents the page from staying locked when Escape, breakpoint
+   * auto-hide, `reset()`, or cross-tab storage closes the sidebar.
    *
    * Idempotent: a duplicate show without a matching hide does NOT
-   * acquire a second lock (the existing `#lockHandle` is reused).
-   * `hide()` without a held handle is a no-op.
+   * acquire a second lock. `hide()` without a held handle is a
+   * no-op.
    */
   #updateScrollLock(source: SidebarChangeSource, visible: boolean): void {
-    if (!this.#scroll || source !== "user") {
+    if (!this.#scroll) {
       return;
     }
     if (visible) {
-      if (this.#lockHandle !== null) {
+      if (source !== "user" || this.#lockHandle !== null) {
         return;
       }
       this.#lockHandle = this.#scroll.lock("sidebar");

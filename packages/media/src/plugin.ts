@@ -11,7 +11,7 @@
  * on their intervals array without losing literal type inference.
  */
 
-import { bindControllerStore } from "@ailuracode/alpine-core/alpine";
+import { bridgeControllerStore } from "@ailuracode/alpine-core";
 import type { Alpine } from "alpinejs";
 import { createMedia, MEDIA_SINGLETON_KEY, MediaController } from "./controller";
 import type {
@@ -44,15 +44,17 @@ export function mediaPlugin<Name extends string = string>(
   return function registerMedia(alpine: Alpine): void {
     const Alpine = alpine as unknown as MediaAlpine;
     const controller = createMedia<Name>(options) as MediaController<Name>;
+    const store = createMediaStore<Name>(controller);
 
-    bindControllerStore<MediaStore<Name>, MediaChangeDetail<Name>>({
+    bridgeControllerStore({
       alpine: Alpine,
       storeKey: MEDIA_STORE_KEY,
-      store: createMediaStore<Name>(controller),
+      store,
       controller,
-      sync: (reactiveStore, detail) => {
-        syncMediaStoreMirror(reactiveStore, detail);
-      },
+      subscribe: (reactiveStore) =>
+        controller.on("change", (detail: MediaChangeDetail<Name>) => {
+          syncMediaStoreMirror(reactiveStore, detail);
+        }),
     });
   };
 }

@@ -11,7 +11,6 @@
     "allowJs": true,
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
     "paths": {
-      "@ailuracode/alpine-core/alpine": ["./packages/core/src/alpine/index.ts"],
       "@ailuracode/alpine-core": ["./packages/core/src/index.ts"],
       "@ailuracode/alpine-ui": ["./packages/ui/src/index.ts"],
       "@ailuracode/alpine-attention": ["./packages/attention/src/index.ts"],
