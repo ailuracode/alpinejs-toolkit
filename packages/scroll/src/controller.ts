@@ -18,9 +18,11 @@
  *
  * - The constructor MUST NOT touch `window` / `document` / timers.
  *   Every side effect lives in `mount()`.
- * - `mount()` calls `super.mount()` FIRST so the lifecycle phase is
- *   `'mounted'` even if the side-effect path throws — the locked
- *   `'initialization'` event still fires inside the same tick.
+ * - `mount()` calls `super.mount()` FIRST, then runs `#init()` inside
+ *   a transactional scope. Unexpected setup failures roll back
+ *   partial listeners/observers, call `destroy()`, and re-throw.
+ *   The `'initialization'` change event is scheduled only after
+ *   `#init()` completes successfully.
  * - `destroy()` calls `super.destroy()` which runs every cleanup
  *   registered through `registerCleanup()`.
  * - `#assertAlive()` throws `ToolkitError('CONTROLLER_DESTROYED')`
@@ -218,17 +220,12 @@ export class ScrollController extends BaseController<ScrollEvents> implements Sc
     if (this.isMounted) {
       return;
     }
-    // super.mount() FIRST so `isMounted === true` even if the
-    // side-effect path throws. The locked contract guarantees that
-    // every public command can run after `mount()` returns — but
-    // only after the lifecycle phase flips.
     super.mount();
     try {
       this.#init();
-    } catch {
-      // The `initialization` event still fires from the microtask
-      // scheduled below; re-throwing here would tear down the
-      // controller for an unrelated setup error.
+    } catch (error) {
+      this.destroy();
+      throw error;
     }
     if (!this.#initializationScheduled) {
       this.#initializationScheduled = true;
@@ -483,51 +480,72 @@ export class ScrollController extends BaseController<ScrollEvents> implements Sc
   }
 
   #init(): void {
-    if (this.isBrowser()) {
-      const snap = readSnapshotForState();
-      this.#state.x = snap.x;
-      this.#state.y = snap.y;
-      this.#state.direction = snap.direction;
-      this.#state.atTop = snap.atTop;
-      this.#state.atBottom = snap.atBottom;
-      this.#state.progress = snap.progress;
-      this.#reachedTop = snap.atTop;
-      this.#reachedBottom = snap.atBottom;
+    const pendingCleanups: Unsubscribe[] = [];
+    try {
+      if (this.isBrowser()) {
+        const snap = readSnapshotForState();
+        this.#state.x = snap.x;
+        this.#state.y = snap.y;
+        this.#state.direction = snap.direction;
+        this.#state.atTop = snap.atTop;
+        this.#state.atBottom = snap.atBottom;
+        this.#state.progress = snap.progress;
+        this.#reachedTop = snap.atTop;
+        this.#reachedBottom = snap.atBottom;
 
-      const observerOptions: ScrollObserverOptions = {
-        onPosition: (detail) => {
-          safeNotify((d: { x: number; y: number }) => this.#handlePositionChange(d.x, d.y), detail);
-        },
-        onReach: (detail) => {
-          safeNotify(
-            (d: { edge: "top" | "bottom"; y: number }) =>
-              this.emit("reach", d as ScrollReachDetail),
-            detail
-          );
-        },
-      };
-      this.#observerCleanup = attachScrollObserver(observerOptions);
-      this.registerCleanup(this.#observerCleanup);
-    }
+        const observerOptions: ScrollObserverOptions = {
+          onPosition: (detail) => {
+            safeNotify(
+              (d: { x: number; y: number }) => this.#handlePositionChange(d.x, d.y),
+              detail
+            );
+          },
+          onReach: (detail) => {
+            safeNotify(
+              (d: { edge: "top" | "bottom"; y: number }) =>
+                this.emit("reach", d as ScrollReachDetail),
+              detail
+            );
+          },
+        };
+        const observerCleanup = attachScrollObserver(observerOptions);
+        pendingCleanups.push(observerCleanup);
+        this.#observerCleanup = observerCleanup;
+      }
 
-    this.#wireLockManager();
-    if (this.#sections.size > 0) {
-      this.#rewireSectionObserver();
+      const lockCleanup = this.#lockManager.onChange((detail: LockChangeDetail) => {
+        this.#handleLockChange(detail);
+      });
+      pendingCleanups.push(lockCleanup);
+
+      if (this.#sections.size > 0) {
+        const sectionCleanup = this.#attachSectionObserver();
+        if (sectionCleanup) {
+          pendingCleanups.push(sectionCleanup);
+          this.#sectionObserverCleanup = sectionCleanup;
+        }
+      }
+
+      for (const cleanup of pendingCleanups) {
+        this.registerCleanup(cleanup);
+      }
+    } catch (error) {
+      this.#rollbackInit(pendingCleanups);
+      throw error;
     }
   }
 
-  #wireLockManager(): void {
-    const cleanup = this.#lockManager.onChange((detail: LockChangeDetail) => {
-      this.#handleLockChange(detail);
-    });
-    this.registerCleanup(cleanup);
-  }
-
-  #rewireSectionObserver(): void {
-    this.#sectionObserverCleanup?.();
+  #rollbackInit(pendingCleanups: readonly Unsubscribe[]): void {
+    for (let index = pendingCleanups.length - 1; index >= 0; index--) {
+      pendingCleanups[index]();
+    }
+    this.#observerCleanup = null;
     this.#sectionObserverCleanup = null;
+  }
+
+  #attachSectionObserver(): Unsubscribe | null {
     if (!this.isBrowser() || this.#sections.size === 0) {
-      return;
+      return null;
     }
     const sections: SectionObserverSection[] = [];
     for (const [id, entry] of this.#sections) {
@@ -539,13 +557,21 @@ export class ScrollController extends BaseController<ScrollEvents> implements Sc
           : {}),
       });
     }
-    const cleanup = attachSectionObserver(sections, {
+    return attachSectionObserver(sections, {
       onChange: (detail) => {
         this.#handleSectionChange(detail.visible);
       },
     });
-    this.#sectionObserverCleanup = cleanup;
-    this.registerCleanup(cleanup);
+  }
+
+  #rewireSectionObserver(): void {
+    this.#sectionObserverCleanup?.();
+    this.#sectionObserverCleanup = null;
+    const cleanup = this.#attachSectionObserver();
+    if (cleanup) {
+      this.#sectionObserverCleanup = cleanup;
+      this.registerCleanup(cleanup);
+    }
   }
 
   #handlePositionChange(x: number, y: number): void {

@@ -9,9 +9,10 @@
 
 import { ToolkitError } from "@ailuracode/alpine-core";
 import type { Alpine as AlpineBase } from "alpinejs";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { ScrollController } from "../src/controller";
 import { scrollPlugin } from "../src/index";
+import * as scrollObserver from "../src/internal/scroll-observer";
 import type { ScrollChangeDetail, ScrollLockChangeDetail } from "../src/types";
 
 describe("Critical #1 — #assertAlive throws ToolkitError('CONTROLLER_DESTROYED')", () => {
@@ -29,12 +30,19 @@ describe("Critical #1 — #assertAlive throws ToolkitError('CONTROLLER_DESTROYED
   });
 });
 
-describe("Critical #2 — mount() order: super.mount() first", () => {
-  it("after mount() returns, isMounted === true even if side effects throw", () => {
+describe("Critical #2 — mount() transactional initialization", () => {
+  it("unexpected init failures re-throw and transition the controller to destroyed", () => {
     const controller = new ScrollController();
-    controller.mount();
-    expect(controller.isMounted).toBe(true);
-    controller.destroy();
+    const setupError = new Error("scroll observer setup failed");
+    vi.spyOn(scrollObserver, "attachScrollObserver").mockImplementation(() => {
+      throw setupError;
+    });
+
+    expect(() => controller.mount()).toThrow(setupError);
+    expect(controller.isMounted).toBe(false);
+    expect(controller.isDestroyed).toBe(true);
+
+    vi.restoreAllMocks();
   });
 });
 
