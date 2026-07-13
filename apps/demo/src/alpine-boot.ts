@@ -19,6 +19,7 @@ import permissions from "@ailuracode/alpine-permissions";
 import query from "@ailuracode/alpine-query-adapter-alpine";
 import queryKit, { createAlpineNanostoresAdapter, NanoStores } from "@ailuracode/alpine-query-kit";
 import scroll from "@ailuracode/alpine-scroll";
+import selection from "@ailuracode/alpine-selection";
 import sidebar from "@ailuracode/alpine-sidebar";
 import tabs from "@ailuracode/alpine-tabs";
 import theme from "@ailuracode/alpine-theme";
@@ -92,6 +93,7 @@ export async function startAlpineDemo(): Promise<void> {
     accordion(),
     carousel(),
     virtual(),
+    selection(),
     calendar,
     attention,
     geo(),

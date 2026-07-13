@@ -20,7 +20,7 @@ Map `toast.variant` and `toast.position` to layout/CSS in your own renderer (e.g
 ## Install
 
 ```bash
-npm install @ailuracode/alpine-toast alpinejs
+pnpm install @ailuracode/alpine-toast alpinejs
 ```
 
 ## Setup

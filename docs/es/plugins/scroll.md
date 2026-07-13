@@ -10,7 +10,7 @@ Rastrea posición de desplazamiento, dirección y progreso. Proporciona bloqueo 
 ## Instalación
 
 ```bash
-npm install @ailuracode/alpine-scroll alpinejs
+pnpm install @ailuracode/alpine-scroll alpinejs
 ```
 
 ## Configuración

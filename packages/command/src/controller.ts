@@ -11,7 +11,6 @@ import { CommandError } from "./errors.js";
 import type { CommandEvents } from "./events.js";
 import { DEFAULT_MAX_RECENT, normalizeCommandOptions, ROOT_PAGE_ID } from "./options.js";
 import { resolvePredicate } from "./predicates.js";
-import { firstSelectableIndex, lastSelectableIndex, moveSelectableIndex } from "./selection.js";
 import type {
   CommandExecutionState,
   CommandItem,
@@ -21,6 +20,41 @@ import type {
   CommandStoreConfig,
   NormalizedCommandOptions,
 } from "./types.js";
+
+// ── Navigation helpers (inlined from @ailuracode/alpine-selection) ──────
+
+function moveSelectableIndex(
+  current: number,
+  delta: number,
+  selectable: readonly boolean[]
+): number {
+  const length = selectable.length;
+  if (length === 0) {
+    return 0;
+  }
+  let index = current;
+  for (let step = 0; step < length; step++) {
+    index = (index + delta + length) % length;
+    if (selectable[index]) {
+      return index;
+    }
+  }
+  return current;
+}
+
+function firstSelectableIndex(selectable: readonly boolean[]): number {
+  const index = selectable.findIndex(Boolean);
+  return index === -1 ? 0 : index;
+}
+
+function lastSelectableIndex(selectable: readonly boolean[]): number {
+  for (let index = selectable.length - 1; index >= 0; index--) {
+    if (selectable[index]) {
+      return index;
+    }
+  }
+  return 0;
+}
 
 function belongsToPage(item: CommandItem, pageId: string): boolean {
   const itemPage = item.page ?? ROOT_PAGE_ID;

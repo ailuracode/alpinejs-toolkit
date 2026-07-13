@@ -10,7 +10,7 @@ Gerencia a preferência de tema claro, escuro e do sistema com persistência em 
 ## Instalação
 
 ```bash
-npm install @ailuracode/alpine-theme @ailuracode/alpine-toggle @ailuracode/alpine-core alpinejs
+pnpm install @ailuracode/alpine-theme @ailuracode/alpine-toggle @ailuracode/alpine-core alpinejs
 ```
 
 ## Modelo de estado

@@ -10,7 +10,7 @@ Headless accessible carousel store for Alpine.js. Uses [Embla Carousel](https://
 ## Install
 
 ```bash
-npm install @ailuracode/alpine-carousel alpinejs
+pnpm install @ailuracode/alpine-carousel alpinejs
 ```
 
 Dependencies `embla-carousel` and `embla-carousel-autoplay` are included with the package.

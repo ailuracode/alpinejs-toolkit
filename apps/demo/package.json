@@ -22,6 +22,7 @@
     "@ailuracode/alpine-calendar": "workspace:*",
     "@ailuracode/alpine-carousel": "workspace:*",
     "@ailuracode/alpine-virtual": "workspace:*",
+    "@ailuracode/alpine-selection": "workspace:*",
     "@ailuracode/alpine-child": "workspace:*",
     "@ailuracode/alpine-command": "workspace:*",
     "@ailuracode/alpine-core": "workspace:*",

@@ -20,6 +20,7 @@ import PermissionsDemo from "../components/demos/PermissionsDemo.astro";
 import QueryDemo from "../components/demos/QueryDemo.astro";
 import QueryKitDemo from "../components/demos/QueryKitDemo.astro";
 import ScrollDemo from "../components/demos/ScrollDemo.astro";
+import SelectionDemo from "../components/demos/SelectionDemo.astro";
 import SidebarDemo from "../components/demos/SidebarDemo.astro";
 import TabsDemo from "../components/demos/TabsDemo.astro";
 import ThemeDemo from "../components/demos/ThemeDemo.astro";
@@ -50,6 +51,7 @@ export const PLAYGROUND_DEMOS: Record<string, AstroComponentFactory> = {
   command: CommandDemo,
   carousel: CarouselDemo,
   virtual: VirtualDemo,
+  selection: SelectionDemo,
   toast: ToastDemo,
   attention: AttentionDemo,
   notify: NotifyDemo,

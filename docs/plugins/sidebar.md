@@ -16,7 +16,7 @@ The plugin is intentionally **headless** and does not know about the width, mode
 ## Install
 
 ```bash
-npm install @ailuracode/alpine-sidebar alpinejs
+pnpm install @ailuracode/alpine-sidebar alpinejs
 ```
 
 ## Setup

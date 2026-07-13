@@ -12,7 +12,7 @@ The plugin **only manages the current language** — it does not translate conte
 ## Install
 
 ```bash
-npm install @ailuracode/alpine-lang alpinejs
+pnpm install @ailuracode/alpine-lang alpinejs
 ```
 
 ## Setup

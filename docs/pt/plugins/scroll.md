@@ -10,7 +10,7 @@ Rastreia posição, direção e progresso da rolagem. Fornece bloqueio de scroll
 ## Instalação
 
 ```bash
-npm install @ailuracode/alpine-scroll alpinejs
+pnpm install @ailuracode/alpine-scroll alpinejs
 ```
 
 ## Configuração

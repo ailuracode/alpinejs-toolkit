@@ -36,6 +36,7 @@ type JsonApiMagic = import("@ailuracode/alpine-json-api").JsonApiClient;
 type AccordionStore = import("@ailuracode/alpine-accordion").AccordionStore;
 type CarouselStore = import("@ailuracode/alpine-carousel").CarouselStore;
 type VirtualStore = import("@ailuracode/alpine-virtual").VirtualStore;
+type SelectionStore = import("@ailuracode/alpine-selection").SelectionStore;
 type CommandStore = import("@ailuracode/alpine-command").CommandStore;
 type DialogStore = import("@ailuracode/alpine-dialog").DialogStore;
 type MenuStore = import("@ailuracode/alpine-menu").MenuStore;
@@ -63,6 +64,7 @@ declare module "alpinejs" {
       accordion: AccordionStore;
       carousel: CarouselStore;
       virtual: VirtualStore;
+      selection: SelectionStore;
       command: CommandStore;
       dialog: DialogStore;
       menu: MenuStore;
@@ -94,6 +96,7 @@ declare module "alpinejs" {
       $accordion: AccordionStore;
       $carousel: CarouselStore;
       $virtual: VirtualStore;
+      $selection: SelectionStore;
       $command: CommandStore;
       $dialog: DialogStore;
       $menu: MenuStore;

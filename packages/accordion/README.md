@@ -10,6 +10,8 @@ Headless accessible accordion store for Alpine.js — single or multiple open pa
 pnpm add @ailuracode/alpine-accordion alpinejs
 ```
 
+Open panel state is backed by an inline lightweight state — no extra dependency.
+
 ## Store API
 
 ```ts

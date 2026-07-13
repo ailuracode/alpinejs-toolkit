@@ -10,7 +10,7 @@ Tracks scroll position, direction, and progress. Provides reference-counted body
 ## Install
 
 ```bash
-npm install @ailuracode/alpine-scroll alpinejs
+pnpm install @ailuracode/alpine-scroll alpinejs
 ```
 
 ## Setup

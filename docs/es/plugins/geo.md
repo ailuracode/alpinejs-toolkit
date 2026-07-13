@@ -10,7 +10,7 @@ Geolocalización reactiva mediante el store `$store.geo`. Envuelve la [Geolocati
 ## Instalación
 
 ```bash
-npm install @ailuracode/alpine-geo alpinejs
+pnpm install @ailuracode/alpine-geo alpinejs
 ```
 
 ## Configuración

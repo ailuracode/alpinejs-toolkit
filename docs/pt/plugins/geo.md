@@ -10,7 +10,7 @@ Geolocalização reativa via store `$store.geo`. Encapsula a [Geolocation API](h
 ## Instalação
 
 ```bash
-npm install @ailuracode/alpine-geo alpinejs
+pnpm install @ailuracode/alpine-geo alpinejs
 ```
 
 ## Configuração

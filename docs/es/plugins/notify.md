@@ -10,7 +10,7 @@ Envoltorio ligero de la [Web Notifications API](https://developer.mozilla.org/en
 ## Instalación
 
 ```bash
-npm install @ailuracode/alpine-notify alpinejs
+pnpm install @ailuracode/alpine-notify alpinejs
 ```
 
 ## Configuración

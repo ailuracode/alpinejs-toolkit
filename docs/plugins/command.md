@@ -13,6 +13,8 @@ Headless command palette (Spotlight-style) store — searchable actions, groups,
 pnpm add @ailuracode/alpine-command alpinejs
 ```
 
+Active item navigation uses inline helpers — no extra dependency.
+
 ## Setup
 
 ```js
