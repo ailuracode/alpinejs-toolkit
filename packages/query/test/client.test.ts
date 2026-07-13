@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, expectTypeOf, it, vi } from "vitest";
 import { createQueryClient } from "../src/client.js";
-import type { QueryFunction, QueryState, QueryStore } from "../src/types.js";
+import type { QueryFunction, QueryObserver, QueryStore } from "../src/types.js";
 
 type Todo = { id: number; title: string };
 
@@ -25,7 +25,7 @@ describe("createQueryClient()", () => {
 
     expectTypeOf(query.data).toEqualTypeOf<Todo[] | undefined>();
     expectTypeOf(query.data).not.toBeAny();
-    expectTypeOf(query).toEqualTypeOf<QueryState<Todo[]> & { destroy(): void }>();
+    expectTypeOf(query).toEqualTypeOf<QueryObserver<Todo[]>>();
 
     expect(query.isLoading).toBe(true);
 

@@ -8,6 +8,7 @@ import type {
   QueryDefinition,
   QueryFunction,
   QueryKey,
+  QueryObserver,
   QueryOptions,
   QueryState,
   QueryStore,
@@ -30,12 +31,12 @@ function createObserve(cache: QueryCache): QueryStore["observe"] {
     key: QueryKey,
     queryFn: QueryFunction<TData>,
     options?: QueryOptions<TData>
-  ): QueryState<TData> & { destroy(): void };
+  ): QueryObserver<TData>;
   function observe<TQueryFn extends QueryFunction<unknown>, TData = InferQueryData<TQueryFn>>(
     key: QueryKey,
     queryFn: TQueryFn,
     options?: QueryOptions<TData>
-  ): QueryState<TData> & { destroy(): void };
+  ): QueryObserver<TData>;
   function observe<
     const TKey extends QueryKey,
     TQueryFn extends QueryFunction<unknown>,
@@ -45,7 +46,7 @@ function createObserve(cache: QueryCache): QueryStore["observe"] {
       queryKey: TKey;
       queryFn: TQueryFn;
     } & QueryOptions<TData>
-  ): QueryState<TData> & { destroy(): void };
+  ): QueryObserver<TData>;
   function observe(
     keyOrDefinition: QueryKey | QueryDefinition,
     queryFn?: QueryFunction<unknown>,
