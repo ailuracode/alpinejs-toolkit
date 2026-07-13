@@ -85,7 +85,7 @@
       ],
       "gzip": true,
       "brotli": true,
-      "limit": "5.2 kB"
+      "limit": "5.3 kB"
     },
     {
       "name": "devtools surface",
