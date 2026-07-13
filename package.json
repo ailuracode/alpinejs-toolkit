@@ -12,6 +12,7 @@
     "format": "biome format --write .",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
+    "test:coverage:report": "node scripts/coverage-report.mjs --baseline coverage/baseline.json --write-summary",
     "test:watch": "vitest",
     "playwright:install": "playwright install chromium",
     "playwright:install:all": "playwright install chromium firefox webkit",

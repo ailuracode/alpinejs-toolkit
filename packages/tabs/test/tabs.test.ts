@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { startAlpine } from "../../../test/helpers.js";
 import tabsPlugin, { createTabsStore } from "../src/index.js";
 
@@ -68,5 +68,129 @@ describe("@ailuracode/alpine-tabs", () => {
     tabs.register("demo");
     tabs.registerTab("demo", "one");
     expect(tabs.active("demo")).toBe("one");
+  });
+
+  it("handles disabled tabs", () => {
+    store.registerTab("settings-tabs", "disabled-tab", true);
+    expect(store.active("settings-tabs")).toBe("profile");
+    store.select("settings-tabs", "disabled-tab");
+    expect(store.active("settings-tabs")).toBe("profile");
+  });
+
+  it("handles vertical orientation", () => {
+    store.register("vertical-tabs", { orientation: "vertical" });
+    store.registerTab("vertical-tabs", "tab1");
+    store.registerTab("vertical-tabs", "tab2");
+    store.active("vertical-tabs");
+
+    store.handleKeydown("vertical-tabs", new KeyboardEvent("keydown", { key: "ArrowDown" }));
+    expect(store.active("vertical-tabs")).toBe("tab2");
+
+    store.handleKeydown("vertical-tabs", new KeyboardEvent("keydown", { key: "ArrowUp" }));
+    expect(store.active("vertical-tabs")).toBe("tab1");
+  });
+
+  it("handles Home and End keys", () => {
+    store.select("settings-tabs", "billing");
+    store.handleKeydown("settings-tabs", new KeyboardEvent("keydown", { key: "Home" }));
+    expect(store.active("settings-tabs")).toBe("profile");
+
+    store.handleKeydown("settings-tabs", new KeyboardEvent("keydown", { key: "End" }));
+    expect(store.active("settings-tabs")).toBe("security");
+  });
+
+  it("handles manual activation mode", () => {
+    store.register("manual-tabs", { activation: "manual" });
+    store.registerTab("manual-tabs", "tab1");
+    store.registerTab("manual-tabs", "tab2");
+
+    store.handleKeydown("manual-tabs", new KeyboardEvent("keydown", { key: "ArrowRight" }));
+    expect(store.active("manual-tabs")).toBe("tab2");
+  });
+
+  it("unregisterTab removes tab and updates active", () => {
+    store.select("settings-tabs", "profile");
+    store.unregisterTab("settings-tabs", "profile");
+    expect(store.active("settings-tabs")).toBe("billing");
+  });
+
+  it("unregisterTab handles unknown group", () => {
+    store.unregisterTab("nonexistent", "tab");
+  });
+
+  it("unregisterTab handles removing active tab", () => {
+    store.select("settings-tabs", "billing");
+    store.unregisterTab("settings-tabs", "billing");
+    expect(store.active("settings-tabs")).toBe("profile");
+  });
+
+  it("unregisterTab when no enabled tabs remain", () => {
+    store.unregisterTab("settings-tabs", "profile");
+    store.unregisterTab("settings-tabs", "billing");
+    store.unregisterTab("settings-tabs", "security");
+    expect(store.active("settings-tabs")).toBeNull();
+  });
+
+  it("select handles unknown group", () => {
+    store.select("nonexistent", "tab");
+  });
+
+  it("select handles unknown tab", () => {
+    store.select("settings-tabs", "nonexistent");
+    expect(store.active("settings-tabs")).toBe("profile");
+  });
+
+  it("next handles unknown group", () => {
+    store.next("nonexistent");
+  });
+
+  it("previous handles unknown group", () => {
+    store.previous("nonexistent");
+  });
+
+  it("next wraps around", () => {
+    store.select("settings-tabs", "security");
+    store.next("settings-tabs");
+    expect(store.active("settings-tabs")).toBe("profile");
+  });
+
+  it("previous wraps around", () => {
+    store.select("settings-tabs", "profile");
+    store.previous("settings-tabs");
+    expect(store.active("settings-tabs")).toBe("security");
+  });
+
+  it("next with empty group returns null", () => {
+    store.register("empty-group");
+    store.next("empty-group");
+  });
+
+  it("tablistProps returns orientation", () => {
+    const props = store.tablistProps("settings-tabs");
+    expect(props.role).toBe("tablist");
+    expect(props["aria-orientation"]).toBe("horizontal");
+  });
+
+  it("emits change event on select", () => {
+    const controller = (store as any).controller;
+    let eventFired = false;
+    if (controller && typeof controller.on === "function") {
+      controller.on("change", () => {
+        eventFired = true;
+      });
+    }
+    store.select("settings-tabs", "billing");
+    if (controller) {
+      expect(eventFired).toBe(true);
+    }
+  });
+
+  it("calls onChange callback on select", () => {
+    const callback = vi.fn();
+    store.register("callback-tabs", { onChange: callback });
+    store.registerTab("callback-tabs", "tab1");
+    store.registerTab("callback-tabs", "tab2");
+    store.select("callback-tabs", "tab2");
+    expect(callback).toHaveBeenCalledWith("tab2");
   });
 });

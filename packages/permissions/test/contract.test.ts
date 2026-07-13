@@ -69,4 +69,46 @@ describe("@ailuracode/alpine-permissions contract", () => {
 
     expect(store.registry.notifications?.permission).toBe("granted");
   });
+
+  it("removes permission from registry when unregistered", async () => {
+    const Alpine = startAlpine(
+      permissionsPlugin({
+        adapters: [createPromptAdapter("geolocation")],
+      }) as Parameters<typeof startAlpine>[0]
+    );
+
+    const store = Alpine.store("permissions") as import("../src/types.js").PermissionsStore;
+
+    expect(store.registry.geolocation).toBeDefined();
+
+    const dispose = store.register(createPromptAdapter("camera"));
+    expect(store.registry.camera).toBeDefined();
+
+    dispose();
+    expect(store.registry.camera).toBeUndefined();
+  });
+
+  it("can be called with Alpine directly (no options)", () => {
+    const Alpine = startAlpine();
+    const result = permissionsPlugin(Alpine as any);
+    expect(result).toBeUndefined();
+  });
+
+  it("can be called without arguments", () => {
+    const register = permissionsPlugin();
+    expect(register).toBeInstanceOf(Function);
+  });
+
+  it("calls Alpine.cleanup when available", () => {
+    const cleanup = vi.fn();
+    const Alpine = startAlpine();
+    (Alpine as any).cleanup = cleanup;
+
+    const register = permissionsPlugin();
+    if (register) {
+      register(Alpine);
+    }
+
+    expect(cleanup).toHaveBeenCalled();
+  });
 });

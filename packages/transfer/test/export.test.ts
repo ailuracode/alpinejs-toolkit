@@ -114,7 +114,7 @@ describe("@ailuracode/alpine-transfer", () => {
         },
       };
 
-      registerExportMagic(Alpine as unknown as AlpineType.Alpine);
+      registerExportMagic(Alpine as any as AlpineType.Alpine);
 
       expect(store).not.toHaveBeenCalled();
       expect(typeof magicApi).toBe("function");
