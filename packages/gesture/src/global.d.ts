@@ -5,13 +5,18 @@ import type { GestureOptions, GesturePluginCallback, GestureState, GestureStore 
 export type {
   GestureAlpine,
   GestureChangeDetail,
+  GestureDetailFor,
+  GestureDetailMap,
   GestureDoubleTapDetail,
   GestureKind,
   GestureLongPressDetail,
   GestureOptions,
   GesturePanDetail,
+  GesturePhase,
   GesturePinchDetail,
   GesturePluginCallback,
+  GesturePointerType,
+  GesturePointerTypeName,
   GestureRecognizedDetail,
   GestureState,
   GestureStore,
@@ -33,9 +38,9 @@ export interface GestureStoreShape {
   readonly scale: number;
   readonly rotation: number;
   readonly direction: GestureState["direction"];
-  readonly button: number;
+  readonly button: import("./types").GestureMouseButton;
   readonly buttons: number;
-  readonly pointerType: string;
+  readonly pointerType: import("./types").GesturePointerTypeName;
   cancel(): void;
 }
 

@@ -20,8 +20,11 @@ import type {
   GestureAlpine,
   GestureChangeDetail,
   GestureKind,
+  GestureMouseButton,
   GestureOptions,
   GesturePluginCallback,
+  GesturePointerTypeName,
+  GestureRecognizedDetail,
   GestureState,
   GestureStore,
 } from "./types";
@@ -47,9 +50,9 @@ interface MutableGestureStore extends GestureStore {
   scale: number;
   rotation: number;
   direction: GestureState["direction"];
-  button: number;
+  button: GestureMouseButton;
   buttons: number;
-  pointerType: string;
+  pointerType: GesturePointerTypeName;
 }
 
 /**
@@ -152,7 +155,7 @@ function createDirectiveHandler(
 
     const unsub = ctrl.on(
       "gesture" as never,
-      ((detail: { kind: GestureKind }) => {
+      ((detail: GestureRecognizedDetail) => {
         if (detail.kind === kind) {
           if (evaluateGesture) {
             // Mirror x-on's pattern: `evaluate(() => {}, …)` — the receiver

@@ -8,13 +8,7 @@ import {
   resolveDirection,
 } from "../src/internal/pointer";
 
-function snap(
-  id: number,
-  x: number,
-  y: number,
-  timestamp = 0,
-  pressure = 0.5
-): PointerSnapshot {
+function snap(id: number, x: number, y: number, timestamp = 0, pressure = 0.5): PointerSnapshot {
   return {
     id,
     x,

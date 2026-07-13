@@ -5,6 +5,8 @@
  * multi-pointer geometry (scale, rotation).
  */
 
+import type { GestureMouseButton, GesturePointerTypeName } from "../types.js";
+
 /** Snapshot of a single pointer's state at a point in time. */
 export interface PointerSnapshot {
   readonly id: number;
@@ -15,6 +17,22 @@ export interface PointerSnapshot {
   readonly button: number;
   readonly buttons: number;
   readonly pointerType: string;
+}
+
+/** Narrows a DOM button index to the public gesture button union. */
+export function normalizeGestureButton(button: number): GestureMouseButton {
+  if (button === 0 || button === 1 || button === 2 || button === 3 || button === 4) {
+    return button;
+  }
+  return 0;
+}
+
+/** Preserves known pointer types while allowing future DOM values. */
+export function normalizeGesturePointerType(pointerType: string): GesturePointerTypeName {
+  if (pointerType === "mouse" || pointerType === "touch" || pointerType === "pen") {
+    return pointerType;
+  }
+  return pointerType;
 }
 
 /** Aggregated pointer state across all active pointers. */

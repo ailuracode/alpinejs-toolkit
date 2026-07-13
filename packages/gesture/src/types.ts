@@ -23,14 +23,20 @@ export type GestureDirection = "up" | "down" | "left" | "right" | "none";
 /** Axis lock for pan and swipe recognition. */
 export type GestureAxisLock = "none" | "horizontal" | "vertical";
 
+/** Lifecycle phase for continuous gestures (`pan`, `pinch`). */
+export type GesturePhase = "start" | "move" | "end";
+
 /**
  * Pointer button index from `PointerEvent.button`.
  * `0` = primary (left), `1` = auxiliary (middle), `2` = secondary (right).
  */
 export type GestureMouseButton = 0 | 1 | 2 | 3 | 4;
 
-/** `PointerEvent.pointerType` — touch input always reports button `0`. */
+/** Known `PointerEvent.pointerType` values. Additional strings are preserved at runtime. */
 export type GesturePointerType = "mouse" | "touch" | "pen";
+
+/** Pointer modality — known values plus future DOM strings. */
+export type GesturePointerTypeName = GesturePointerType | (string & {});
 
 /* -------------------------------------------------------------------------- */
 /*                              Gesture state                                 */
@@ -65,11 +71,11 @@ export interface GestureState {
   /** Swipe direction when recognized. */
   readonly direction: GestureDirection;
   /** Button that initiated the active gesture (`PointerEvent.button`). */
-  readonly button: number;
+  readonly button: GestureMouseButton;
   /** Active button bitmask (`PointerEvent.buttons`). */
   readonly buttons: number;
   /** Pointer modality (`PointerEvent.pointerType`). */
-  readonly pointerType: string;
+  readonly pointerType: GesturePointerTypeName;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -119,45 +125,40 @@ export interface GestureOptions {
 /*                              Event detail shapes                           */
 /* -------------------------------------------------------------------------- */
 
-/** Base detail shared by all gesture events. */
-export interface GestureEventBase {
-  readonly kind: GestureKind;
+/** Pointer metadata shared by all gesture event payloads. */
+export interface GesturePointerFields {
   readonly x: number;
   readonly y: number;
   readonly target: EventTarget | null;
-  readonly button: number;
+  readonly button: GestureMouseButton;
   readonly buttons: number;
-  readonly pointerType: string;
+  readonly pointerType: GesturePointerTypeName;
 }
+
+/** Base detail shared by all gesture events, narrowed by kind. */
+export type GestureEventBase<K extends GestureKind = GestureKind> = GesturePointerFields & {
+  readonly kind: K;
+};
 
 /** Detail payload for tap events. */
-export interface GestureTapDetail extends GestureEventBase {
-  readonly kind: "tap";
-}
+export type GestureTapDetail = GestureEventBase<"tap">;
 
 /** Detail payload for double-tap events. */
-export interface GestureDoubleTapDetail extends GestureEventBase {
-  readonly kind: "doubletap";
-}
+export type GestureDoubleTapDetail = GestureEventBase<"doubletap">;
 
 /** Detail payload for long-press events. */
-export interface GestureLongPressDetail extends GestureEventBase {
-  readonly kind: "longpress";
-}
+export type GestureLongPressDetail = GestureEventBase<"longpress">;
 
 /** Detail payload for swipe events. */
-export interface GestureSwipeDetail extends GestureEventBase {
-  readonly kind: "swipe";
+export interface GestureSwipeDetail extends GestureEventBase<"swipe"> {
   readonly direction: GestureDirection;
   readonly velocityX: number;
   readonly velocityY: number;
 }
 
 /** Detail payload for pan events. */
-export interface GesturePanDetail extends GestureEventBase {
-  readonly kind: "pan";
-  /** Phase of the pan lifecycle. */
-  readonly phase: "start" | "move" | "end";
+export interface GesturePanDetail extends GestureEventBase<"pan"> {
+  readonly phase: GesturePhase;
   readonly distanceX: number;
   readonly distanceY: number;
   readonly velocityX: number;
@@ -166,22 +167,37 @@ export interface GesturePanDetail extends GestureEventBase {
 }
 
 /** Detail payload for pinch events. */
-export interface GesturePinchDetail extends GestureEventBase {
-  readonly kind: "pinch";
-  /** Phase of the pinch lifecycle. */
-  readonly phase: "start" | "move" | "end";
+export interface GesturePinchDetail extends GestureEventBase<"pinch"> {
+  readonly phase: GesturePhase;
   readonly scale: number;
   readonly rotation: number;
   readonly distanceX: number;
   readonly distanceY: number;
 }
 
-/** Detail payload for the generic `gesture` event (fires for any recognized gesture). */
-export interface GestureRecognizedDetail {
-  readonly kind: GestureKind;
-  readonly state: GestureState;
-  readonly originalEvent: PointerEvent | null;
+/** Maps each gesture kind to its detail payload. */
+export interface GestureDetailMap {
+  readonly tap: GestureTapDetail;
+  readonly doubletap: GestureDoubleTapDetail;
+  readonly longpress: GestureLongPressDetail;
+  readonly swipe: GestureSwipeDetail;
+  readonly pan: GesturePanDetail;
+  readonly pinch: GesturePinchDetail;
 }
+
+/** Resolves the detail payload for a gesture kind. */
+export type GestureDetailFor<K extends GestureKind> = GestureDetailMap[K];
+
+/**
+ * Detail payload for the generic `gesture` event (fires for any recognized
+ * gesture). Discriminated by `kind` so handlers can narrow on the gesture type.
+ */
+export type GestureRecognizedDetail = {
+  [K in GestureKind]: GestureDetailMap[K] & {
+    readonly state: GestureState;
+    readonly originalEvent: PointerEvent | null;
+  };
+}[GestureKind];
 
 /** Detail payload for the `change` event (state transition). */
 export interface GestureChangeDetail {
@@ -198,26 +214,12 @@ export interface GestureChangeDetail {
  * a {@link GestureController}; reads delegate to the controller's
  * getters and mutations go through the controller's semantic commands.
  */
-export interface GestureStore {
-  active: boolean;
-  kind: GestureKind | null;
-  x: number;
-  y: number;
-  distanceX: number;
-  distanceY: number;
-  totalDistance: number;
-  velocityX: number;
-  velocityY: number;
-  pointerCount: number;
-  scale: number;
-  rotation: number;
-  direction: GestureDirection;
-  button: number;
-  buttons: number;
-  pointerType: string;
+export type GestureStore = {
+  [K in keyof GestureState]: GestureState[K];
+} & {
   /** Manually cancel the current gesture. */
   cancel(): void;
-}
+};
 
 /**
  * Public, framework-agnostic surface returned by the controller.

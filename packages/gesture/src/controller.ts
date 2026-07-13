@@ -17,6 +17,8 @@ import type { GestureEvents } from "./events";
 import {
   applyAxisLock,
   computeVelocity,
+  normalizeGestureButton,
+  normalizeGesturePointerType,
   type PointerSnapshot,
   resolveDirection,
   snapshotPointerFromEvent,
@@ -32,9 +34,14 @@ import {
 } from "./internal/recognizer";
 import { type NormalizedGestureOptions, normalizeGestureOptions } from "./options";
 import type {
+  GestureDetailFor,
   GestureKind,
+  GestureMouseButton,
   GesturePanDetail,
+  GesturePhase,
   GesturePinchDetail,
+  GesturePointerTypeName,
+  GestureRecognizedDetail,
   GestureState,
   GestureSwipeDetail,
 } from "./types";
@@ -77,9 +84,9 @@ export class GestureController extends BaseController<GestureEvents> {
   #activeKind: GestureKind | null = null;
   #initialPinchDistance = 0;
   #initialPinchRotation = 0;
-  #leadingButton = 0;
+  #leadingButton: GestureMouseButton = 0;
   #leadingButtons = 0;
-  #leadingPointerType = "";
+  #leadingPointerType: GesturePointerTypeName = "";
 
   // Recognizers
   readonly #tapRecognizer = new TapRecognizer();
@@ -253,7 +260,7 @@ export class GestureController extends BaseController<GestureEvents> {
       return;
     }
 
-    if (!this.#options.mouseButtons.has(event.button)) {
+    if (!this.#options.mouseButtons.has(normalizeGestureButton(event.button))) {
       return;
     }
 
@@ -278,9 +285,9 @@ export class GestureController extends BaseController<GestureEvents> {
     this.#startX = snap.x;
     this.#startY = snap.y;
     this.#startTimestamp = snap.timestamp;
-    this.#leadingButton = snap.button;
+    this.#leadingButton = normalizeGestureButton(snap.button);
     this.#leadingButtons = snap.buttons;
-    this.#leadingPointerType = snap.pointerType;
+    this.#leadingPointerType = normalizeGesturePointerType(snap.pointerType);
     this.#cancelAllRecognizers();
 
     const gestures = this.#options.gestures;
@@ -390,17 +397,20 @@ export class GestureController extends BaseController<GestureEvents> {
     const pinchResult = this.#pinchRecognizer.pointerMove(snap, aggregate, config);
 
     if (pinchResult.recognized && this.#pinchRecognizer.isTracking) {
-      if (this.#activeKind !== "pinch") {
-        this.#cancelCompeting("pinch");
-        this.#activeKind = "pinch";
-        this.#beginGesture("pinch");
-      }
       const scale =
         aggregate.distance > 0 && this.#getInitialPinchDistance() > 0
           ? aggregate.distance / this.#getInitialPinchDistance()
           : 1;
       const rotation = aggregate.rotation - this.#getInitialPinchRotation();
-      this.#emitPinchMove(snap, scale, rotation);
+      const isPinchStart = this.#activeKind !== "pinch";
+      if (isPinchStart) {
+        this.#cancelCompeting("pinch");
+        this.#activeKind = "pinch";
+        this.#beginGesture("pinch");
+        this.#emitPinchMove(snap, scale, rotation, "start");
+      } else {
+        this.#emitPinchMove(snap, scale, rotation, "move");
+      }
     }
 
     if (pinchResult.failed) {
@@ -561,19 +571,31 @@ export class GestureController extends BaseController<GestureEvents> {
     x: number;
     y: number;
     target: Element | null;
-    button: number;
+    button: GestureMouseButton;
     buttons: number;
-    pointerType: string;
+    pointerType: GesturePointerTypeName;
   } {
     const rect = this.#element?.getBoundingClientRect();
     return {
       x: snap.x - (rect?.left ?? 0),
       y: snap.y - (rect?.top ?? 0),
       target: this.#element,
-      button: snap.button,
+      button: normalizeGestureButton(snap.button),
       buttons: snap.buttons,
-      pointerType: snap.pointerType,
+      pointerType: normalizeGesturePointerType(snap.pointerType),
     };
+  }
+
+  #emitGestureEvent<K extends GestureKind>(
+    detail: GestureDetailFor<K>,
+    originalEvent: PointerEvent | null = null
+  ): void {
+    const payload = {
+      ...detail,
+      state: this.#state,
+      originalEvent,
+    } as GestureRecognizedDetail;
+    this.emit("gesture", payload);
   }
 
   #leadingPointerMeta(): Pick<PointerSnapshot, "button" | "buttons" | "pointerType"> {
@@ -620,11 +642,7 @@ export class GestureController extends BaseController<GestureEvents> {
       pointerType: detail.pointerType,
     };
     this.emit("tap", detail);
-    this.emit("gesture", {
-      kind: "tap",
-      state: this.#state,
-      originalEvent: null,
-    });
+    this.#emitGestureEvent(detail);
     this.emit("change", {
       state: this.#state,
       previous: this.#previousState,
@@ -647,11 +665,7 @@ export class GestureController extends BaseController<GestureEvents> {
       pointerType: detail.pointerType,
     };
     this.emit("doubletap", detail);
-    this.emit("gesture", {
-      kind: "doubletap",
-      state: this.#state,
-      originalEvent: null,
-    });
+    this.#emitGestureEvent(detail);
     this.emit("change", {
       state: this.#state,
       previous: this.#previousState,
@@ -682,11 +696,7 @@ export class GestureController extends BaseController<GestureEvents> {
       pointerType: detail.pointerType,
     };
     this.emit("longpress", detail);
-    this.emit("gesture", {
-      kind: "longpress",
-      state: this.#state,
-      originalEvent: null,
-    });
+    this.#emitGestureEvent(detail);
     this.emit("change", {
       state: this.#state,
       previous: this.#previousState,
@@ -726,11 +736,7 @@ export class GestureController extends BaseController<GestureEvents> {
       pointerType: detail.pointerType,
     };
     this.emit("swipe", detail);
-    this.emit("gesture", {
-      kind: "swipe",
-      state: this.#state,
-      originalEvent: null,
-    });
+    this.#emitGestureEvent(detail);
     this.emit("change", {
       state: this.#state,
       previous: this.#previousState,
@@ -740,7 +746,7 @@ export class GestureController extends BaseController<GestureEvents> {
   #emitPanMove(
     snap: PointerSnapshot,
     locked: { dx: number; dy: number },
-    phase: "start" | "move" = "move"
+    phase: GesturePhase = "move"
   ): void {
     const vel = computeVelocity(
       {
@@ -789,11 +795,7 @@ export class GestureController extends BaseController<GestureEvents> {
     }
 
     this.emit("pan", detail);
-    this.emit("gesture", {
-      kind: "pan",
-      state: this.#state,
-      originalEvent: null,
-    });
+    this.#emitGestureEvent(detail);
   }
 
   #emitPanEnd(snap: PointerSnapshot): void {
@@ -825,18 +827,19 @@ export class GestureController extends BaseController<GestureEvents> {
       pointerType: detail.pointerType,
     };
     this.emit("pan", detail);
-    this.emit("gesture", {
-      kind: "pan",
-      state: this.#state,
-      originalEvent: null,
-    });
+    this.#emitGestureEvent(detail);
     this.emit("change", {
       state: this.#state,
       previous: this.#previousState,
     });
   }
 
-  #emitPinchMove(snap: PointerSnapshot, scale: number, rotation: number): void {
+  #emitPinchMove(
+    snap: PointerSnapshot,
+    scale: number,
+    rotation: number,
+    phase: GesturePhase = "move"
+  ): void {
     const base = this.#eventBaseFromSnap(snap);
     this.#state = {
       ...this.#state,
@@ -852,22 +855,27 @@ export class GestureController extends BaseController<GestureEvents> {
     const detail: GesturePinchDetail = {
       kind: "pinch",
       ...base,
-      phase: "move",
+      phase,
       scale,
       rotation,
       distanceX: this.#state.distanceX,
       distanceY: this.#state.distanceY,
     };
     this.emit("pinch", detail);
-    this.emit("gesture", {
-      kind: "pinch",
-      state: this.#state,
-      originalEvent: null,
-    });
+    this.#emitGestureEvent(detail);
   }
 
   #emitPinchEnd(snap: PointerSnapshot): void {
     const base = this.#eventBaseFromSnap(snap);
+    const detail: GesturePinchDetail = {
+      kind: "pinch",
+      ...base,
+      phase: "end",
+      scale: this.#state.scale,
+      rotation: this.#state.rotation,
+      distanceX: this.#state.distanceX,
+      distanceY: this.#state.distanceY,
+    };
     this.#previousState = { ...this.#state };
     this.#state = {
       ...emptyState(),
@@ -877,6 +885,8 @@ export class GestureController extends BaseController<GestureEvents> {
       buttons: base.buttons,
       pointerType: base.pointerType,
     };
+    this.emit("pinch", detail);
+    this.#emitGestureEvent(detail);
     this.emit("change", {
       state: this.#state,
       previous: this.#previousState,

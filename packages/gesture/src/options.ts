@@ -2,7 +2,7 @@
  * Option normalization helpers for `@ailuracode/alpine-gesture`.
  */
 
-import type { GestureAxisLock, GestureKind, GestureOptions } from "./types";
+import type { GestureAxisLock, GestureKind, GestureMouseButton, GestureOptions } from "./types";
 
 /**
  * Fully-populated controller configuration with defaults applied.
@@ -20,7 +20,7 @@ export interface NormalizedGestureOptions {
   readonly pinchThreshold: number;
   readonly preventDefault: boolean;
   readonly capturePointer: boolean;
-  readonly mouseButtons: ReadonlySet<number>;
+  readonly mouseButtons: ReadonlySet<GestureMouseButton>;
 }
 
 const ALL_GESTURES: readonly GestureKind[] = [
@@ -63,7 +63,14 @@ export function normalizeGestureOptions(options: GestureOptions = {}): Normalize
     preventDefault: options.preventDefault ?? DEFAULT_GESTURE_OPTIONS.preventDefault,
     capturePointer: options.capturePointer ?? DEFAULT_GESTURE_OPTIONS.capturePointer,
     mouseButtons: options.mouseButtons
-      ? new Set(options.mouseButtons)
+      ? new Set<GestureMouseButton>(options.mouseButtons)
       : DEFAULT_GESTURE_OPTIONS.mouseButtons,
   };
+}
+
+/**
+ * Preserves literal inference for gesture arrays (e.g. `gestures: ["tap", "swipe"] as const`).
+ */
+export function gestureOptions<const T extends GestureOptions>(options: T): T {
+  return options;
 }
