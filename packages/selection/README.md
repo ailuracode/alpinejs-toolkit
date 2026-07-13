@@ -60,13 +60,56 @@ In inline `x-data` methods, reference component fields with `this` (or run `crea
 ## Store API
 
 - `$store.selection.create(id, options)` — register a selection instance
+- `$store.selection.destroy(id)` / `destroyAll()` — remove instance(s)
 - `$store.selection.replace(id, key)` — replace selection
 - `$store.selection.toggle(id, key)` — toggle membership (multiple mode)
 - `$store.selection.extend(id, key)` — extend from anchor (range / shift-click)
 - `$store.selection.selectAll(id)` / `clear(id)` — bulk commands
+- `$store.selection.setMode(id, mode)` — switch between `single`, `multiple`, `range`
+- `$store.selection.setKeys(id, keys)` — update the ordered key registry
+- `$store.selection.setDisabledKeys(id, keys)` — mark keys as non-selectable
 - `$store.selection.setActive(id, key)` / `setAnchor(id, key)` — keyboard / pointer focus
 - `$store.selection.instances[id]` — readonly snapshot (`value`, `selectedKeys`, `anchorKey`, `activeKey`, `mode`)
 - `$store.selection.listProps` / `itemProps` — headless listbox ARIA helpers (reactive via `instances`)
+
+## Store factory (standalone)
+
+Create a store without the full Alpine plugin:
+
+```ts
+import { createSelectionStore, createSelectionStoreFromController } from "@ailuracode/alpine-selection";
+
+// Fresh controller
+const store = createSelectionStore();
+store.create("list", { mode: "multiple", keys: ["a", "b", "c"] });
+store.toggle("list", "a");
+
+// Or wrap an existing controller
+import { SelectionController } from "@ailuracode/alpine-selection";
+const controller = new SelectionController();
+const store2 = createSelectionStoreFromController(controller);
+```
+
+## Adapter factories
+
+Controlled and uncontrolled adapters for framework-agnostic wiring:
+
+```ts
+import { createControlledAdapter, createUncontrolledAdapter } from "@ailuracode/alpine-selection";
+
+// Controlled — you own the value
+const adapter = createControlledAdapter({
+  mode: "multiple",
+  value: ["a"],
+  onChange: (detail) => render(detail.value),
+});
+
+// Uncontrolled — controller owns the state
+const adapter2 = createUncontrolledAdapter(controller, "list", {
+  mode: "multiple",
+  keys: ["a", "b", "c"],
+});
+```
 
 ## Navigation helpers
 
@@ -75,10 +118,13 @@ import {
   moveSelectableIndex,
   moveSelectableKey,
   firstSelectableIndex,
+  lastSelectableIndex,
+  firstSelectableKey,
   lastSelectableKey,
 } from "@ailuracode/alpine-selection";
 
-const next = moveSelectableIndex(keys, currentIndex, "next", { disabledKeys });
+const nextIndex = moveSelectableIndex(currentIndex, 1, selectableFlags);
+const nextKey = moveSelectableKey(currentKey, 1, keys, disabledKeys);
 ```
 
 Use these in keyboard handlers for listbox, command palette, and tab strips.
@@ -100,8 +146,36 @@ controller.on("change", ({ selectedKeys }) => {
 ```ts
 import { serializeSelection, deserializeSelection } from "@ailuracode/alpine-selection";
 
-const encoded = serializeSelection(["a", "c"], "multiple");
-const restored = deserializeSelection(encoded, "multiple");
+const encoded = serializeSelection(["a", "c"], "multiple"); // "a,c"
+const restored = deserializeSelection(encoded, "multiple");  // ["a", "c"]
+```
+
+### URL integration
+
+```ts
+import { parseSelectionParam, writeSelectionParam } from "@ailuracode/alpine-selection";
+
+// Read from URL
+const params = new URLSearchParams(window.location.search);
+const value = parseSelectionParam(params, "selected", "multiple");
+
+// Write to URL
+writeSelectionParam(params, "selected", ["a", "c"], "multiple");
+window.history.replaceState(null, "", `?${params}`);
+```
+
+## Error handling
+
+```ts
+import { SelectionError } from "@ailuracode/alpine-selection";
+
+try {
+  controller.toggle("unknown-instance", "a");
+} catch (e) {
+  if (e instanceof SelectionError && e.code === "INSTANCE_NOT_FOUND") {
+    // handle missing instance
+  }
+}
 ```
 
 ## Used by

@@ -1,4 +1,4 @@
-import type { SelectionMode } from "@ailuracode/alpine-selection";
+import { type SelectionMode, serializeSelection } from "@ailuracode/alpine-selection";
 import type { AlpineInstance } from "../types/alpine.js";
 
 const ITEM_CLASS =
@@ -12,6 +12,8 @@ type SelectionDemoData = {
   itemClass(key: string): string;
   pick(event: MouseEvent, key: string): void;
   setMode(mode: SelectionMode): void;
+  serialized(): string;
+  copyUrl(): void;
 };
 
 type SelectionDemoComponent = SelectionDemoData & {
@@ -78,6 +80,20 @@ export function registerSelectionDemo(Alpine: AlpineInstance): void {
       setMode(this: SelectionDemoComponent, mode: SelectionMode) {
         this.mode = mode;
         this.$store.selection.setMode("demo", mode);
+      },
+
+      serialized(this: SelectionDemoComponent) {
+        const snap = this.$store.selection.instances.demo;
+        if (!snap) {
+          return "";
+        }
+        return serializeSelection(snap.value, snap.mode);
+      },
+
+      copyUrl(this: SelectionDemoComponent) {
+        const encoded = encodeURIComponent(this.serialized());
+        const url = `${window.location.pathname}?selected=${encoded}&mode=${this.mode}`;
+        navigator.clipboard.writeText(url);
       },
     })
   );

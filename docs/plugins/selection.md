@@ -127,7 +127,103 @@ serializeSelection(["a", "c"], "multiple"); // "a,c"
 deserializeSelection("a..c", "range"); // { from: "a", to: "c" }
 ```
 
-URL helpers: `parseSelectionParam`, `writeSelectionParam`.
+### URL integration
+
+Read and write selection state to URL search params for deep-linking:
+
+```ts
+import { parseSelectionParam, writeSelectionParam } from "@ailuracode/alpine-selection";
+
+// Read from current URL
+const params = new URLSearchParams(window.location.search);
+const value = parseSelectionParam(params, "selected", "multiple");
+// value: ["a", "c"] if URL has ?selected=a,c
+
+// Write to URL (update browser history)
+writeSelectionParam(params, "selected", ["a", "c"], "multiple");
+window.history.replaceState(null, "", `?${params}`);
+
+// Empty values delete the param
+writeSelectionParam(params, "selected", [], "multiple");
+// ?selected= is removed from URL
+```
+
+## Store factory (standalone)
+
+Create a selection store without the full Alpine plugin — useful for non-Alpine frameworks or server-side rendering:
+
+```ts
+import { createSelectionStore, createSelectionStoreFromController } from "@ailuracode/alpine-selection";
+
+// Fresh controller
+const store = createSelectionStore();
+store.create("list", { mode: "multiple", keys: ["a", "b", "c"] });
+store.toggle("list", "a");
+store.getSnapshot("list").selectedKeys; // ["a"]
+
+// Wrap an existing controller
+import { SelectionController } from "@ailuracode/alpine-selection";
+const controller = new SelectionController();
+controller.create("list", { mode: "single", keys: ["x", "y"] });
+const store = createSelectionStoreFromController(controller);
+store.replace("list", "x");
+```
+
+The store auto-syncs `instances` on every mutation. Use `syncInstanceRegistry` to manually reconcile after SSR hydration:
+
+```ts
+import { syncInstanceRegistry } from "@ailuracode/alpine-selection";
+syncInstanceRegistry(targetInstances, controller.snapshotInstances());
+```
+
+## Adapter factories
+
+Controlled and uncontrolled adapters bridge selection state to external rendering:
+
+```ts
+import { createControlledAdapter, createUncontrolledAdapter } from "@ailuracode/alpine-selection";
+
+// Controlled — caller owns the value
+const adapter = createControlledAdapter({
+  mode: "multiple",
+  value: ["a"],
+  onChange: (detail) => {
+    // external render with detail.value
+  },
+});
+adapter.setValue(["a", "b"]); // triggers subscribers
+
+// Uncontrolled — controller owns the state
+const adapter = createUncontrolledAdapter(controller, "list", {
+  mode: "multiple",
+  keys: ["a", "b", "c"],
+});
+const unsubscribe = adapter.subscribe(() => render());
+adapter.getValue(); // lazily creates the controller instance
+```
+
+| Method | Description |
+|--------|-------------|
+| `adapter.isControlled` | `true` for controlled, `false` for uncontrolled |
+| `adapter.getValue()` | Read current value (uncontrolled lazily creates instance) |
+| `adapter.setValue(value)` | Write value (triggers subscribers) |
+| `adapter.subscribe(listener)` | Returns an `Unsubscribe` function |
+
+## Error handling
+
+```ts
+import { SelectionError } from "@ailuracode/alpine-selection";
+
+try {
+  controller.toggle("nonexistent", "a");
+} catch (e) {
+  if (e instanceof SelectionError) {
+    console.error(e.code); // "INSTANCE_NOT_FOUND" | "INVALID_VALUE" | ...
+  }
+}
+```
+
+Error codes: `INSTANCE_NOT_FOUND`, `INVALID_KEY`, `CONTROLLER_DESTROYED`.
 
 ## Accessibility
 
