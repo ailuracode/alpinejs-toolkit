@@ -67,4 +67,11 @@ describe("ci:changes", () => {
     expect(sourceOnly.runAudit).toBe(false);
     expect(lockfile.runAudit).toBe(true);
   });
+
+  it("enables E2E for packages with Playwright projects", () => {
+    const result = analyzeChangedFiles(["packages/theme/e2e/theme.smoke.spec.ts"], { root });
+
+    expect(result.runE2e).toBe(true);
+    expect(result.e2eFolders).toEqual(["theme"]);
+  });
 });

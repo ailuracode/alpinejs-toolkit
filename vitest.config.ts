@@ -28,6 +28,13 @@ export default defineConfig({
       path.join(root, "apps/demo/test/**/*.test.ts"),
       path.join(root, "test/**/*.test.ts"),
     ],
+    exclude: [
+      "**/node_modules/**",
+      "**/dist/**",
+      "**/e2e/**",
+      "**/playwright-report/**",
+      "**/test-results/**",
+    ],
     coverage: {
       provider: "v8",
       reporter: ["text", "html"],
