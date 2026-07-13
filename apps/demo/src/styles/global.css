@@ -284,17 +284,6 @@
 }
 
 /* ── Motion & Micro-interactions ── */
-@layer utilities {
-	.ios-transition {
-		transition-property: color, background-color, border-color, opacity, transform;
-		transition-timing-function: cubic-bezier(0.25, 0.1, 0.25, 1);
-		transition-duration: 0.2s;
-	}
-
-	.ios-spring {
-		transition-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.1);
-	}
-}
 
 /* Card hover lift effect */
 @layer utilities {
@@ -323,8 +312,6 @@
 	.fade-in-up-delay-2 { animation-delay: 0.1s; }
 	.fade-in-up-delay-3 { animation-delay: 0.15s; }
 	.fade-in-up-delay-4 { animation-delay: 0.2s; }
-	.fade-in-up-delay-5 { animation-delay: 0.25s; }
-	.fade-in-up-delay-6 { animation-delay: 0.3s; }
 }
 
 /* Stagger cards in grid via :nth-child */

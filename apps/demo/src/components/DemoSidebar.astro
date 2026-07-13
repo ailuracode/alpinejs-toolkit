@@ -1,6 +1,6 @@
 ---
 import { PLUGIN_NAV_GROUPS, playgroundPath } from "../plugin-nav";
-import Button from "./astro/Button.astro";
+import DemoButton from "./astro/DemoButton.astro";
 import DemoNavIcon from "./astro/DemoNavIcon.astro";
 
 interface Props {
@@ -125,7 +125,7 @@ const navLinkClass = (id: string) => {
     class="flex shrink-0 flex-col border-t border-[var(--ios-separator)] transition-[padding] duration-200 motion-reduce:transition-none"
     x-bind:class="effectivelyExpanded ? 'p-3' : 'px-1.5 py-2'"
   >
-    <Button
+    <DemoButton
       variant="ghost"
       size="sm"
       class="hidden text-[var(--ios-label-secondary)] hover:bg-[var(--ios-fill-quaternary)] hover:text-[var(--ios-label)] sm:inline-flex motion-reduce:transition-none"
@@ -150,7 +150,7 @@ const navLinkClass = (id: string) => {
         <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
       </svg>
       <span x-show="expanded" x-cloak>Collapse</span>
-    </Button>
+    </DemoButton>
     <p
       class="px-1 pt-2 text-center text-[10px] leading-snug text-[var(--ios-label-tertiary)]"
       x-show="effectivelyExpanded"

@@ -1,7 +1,6 @@
 ---
 import { calendarDayButtonClass, segmentButtonActiveClass } from "../../lib/button-styles";
 import { getPluginNavItem } from "../../plugin-nav";
-import Button from "../astro/Button.astro";
 import DemoButton from "../astro/DemoButton.astro";
 import DemoSection from "../DemoSection.astro";
 
@@ -41,7 +40,7 @@ const plugin = getPluginNavItem("calendar")!;
 		<template x-for="week in cal.weeks" :key="week[0].date.toISOString()">
 			<div class="grid grid-cols-7 gap-1">
 				<template x-for="day in week" :key="day.date.toISOString()">
-					<Button
+					<DemoButton
 						type="button"
 						variant="ghost"
 						size="icon"

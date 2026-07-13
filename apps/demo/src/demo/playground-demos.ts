@@ -28,7 +28,6 @@ import ToggleDemo from "../components/demos/ToggleDemo.astro";
 import TooltipDemo from "../components/demos/TooltipDemo.astro";
 import TransferDemo from "../components/demos/TransferDemo.astro";
 import VirtualDemo from "../components/demos/VirtualDemo.astro";
-import { PLUGIN_NAV_ITEMS, type PluginNavItem } from "../plugin-nav";
 
 export const PLAYGROUND_DEMOS: Record<string, AstroComponentFactory> = {
   theme: ThemeDemo,
@@ -64,8 +63,4 @@ export const PLAYGROUND_DEMOS: Record<string, AstroComponentFactory> = {
 
 export function getPlaygroundDemo(id: string): AstroComponentFactory | undefined {
   return PLAYGROUND_DEMOS[id];
-}
-
-export function isPlaygroundPlugin(id: string): id is PluginNavItem["id"] {
-  return PLUGIN_NAV_ITEMS.some((item) => item.id === id);
 }

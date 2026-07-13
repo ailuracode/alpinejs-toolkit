@@ -348,10 +348,6 @@ export const PLUGIN_NAV_GROUPS: PluginNavGroup[] = [
 
 export const PLUGIN_NAV_ITEMS: PluginNavItem[] = PLUGIN_NAV_GROUPS.flatMap((group) => group.items);
 
-export const ESSENTIAL_PLUGIN_IDS = PLUGIN_NAV_ITEMS.filter(
-  (item) => item.tier === "essential"
-).map((item) => item.id);
-
 export function getPluginsByTier(tier: PluginTier): PluginNavItem[] {
   return PLUGIN_NAV_ITEMS.filter((item) => item.tier === tier);
 }

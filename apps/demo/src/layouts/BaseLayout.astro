@@ -1,6 +1,6 @@
 ---
 import geistLatin from "@fontsource-variable/geist/files/geist-latin-wght-normal.woff2?url";
-import Button from "../components/astro/Button.astro";
+import DemoButton from "../components/astro/DemoButton.astro";
 import SonnerToasts from "../components/SonnerToasts.astro";
 import "../styles/global.css";
 
@@ -63,9 +63,9 @@ const navLinkClass = (active: boolean) =>
 				x-bind:class="$store.media.breakpoint === 'desktop' ? (expanded ? 'ml-64' : 'ml-16') : ''"
 			>
 				<div class="flex h-12 items-center gap-3 px-4">
-					<Button
-						variant="ghost"
-						size="icon"
+				<DemoButton
+					variant="ghost"
+					size="icon"
 						aria-label="Toggle sidebar"
 						class="rounded-full text-[var(--ios-label-secondary)] hover:bg-[var(--ios-fill-tertiary)] hover:text-[var(--ios-label)]"
 						x-on:click="$store.media.breakpoint === 'desktop' ? expanded = !expanded : $store.sidebar.toggle()"
@@ -81,7 +81,7 @@ const navLinkClass = (active: boolean) =>
 						>
 							<path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
 						</svg>
-					</Button>
+					</DemoButton>
 					<div class="min-w-0 flex-1">
 						<p class="truncate text-base font-semibold tracking-tight text-balance">Alpine.js Toolkit</p>
 						<p class="truncate text-[11px] leading-tight text-[var(--ios-label-secondary)]">
