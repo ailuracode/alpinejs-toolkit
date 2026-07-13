@@ -161,8 +161,8 @@ Alpine.start();
 | `unregisterPlugin(name)`           | Remove a plugin from the registry                                       |
 | `getRegisteredPlugin(name)`        | Look up a registered plugin                                             |
 | `getRegisteredPlugins()`           | List every plugin in registration order                                 |
-| `isPluginInitialized(name)`        | Whether a plugin has run with Alpine                                    |
-| `markPluginInitialized(name)`      | Mark a plugin as initialized (for adapters / sync paths)                |
+| `isPluginInitialized(name, Alpine)`        | Whether a plugin has run on the given Alpine runtime                    |
+| `markPluginInitialized(name, Alpine)`      | Mark a plugin as initialized on a runtime (adapters / sync paths)       |
 | `resetPluginRegistry()`            | Clear the registry (tests / storybook)                                  |
 | `resolvePluginEntries(names?)`     | Resolve names to registry entries (internal helper, exported for tests) |
 | `setRegistryDebugSink(sink)`       | Forward registry events to a `DebugLogger`                              |

@@ -85,9 +85,9 @@ describe("initPlugins — selection", () => {
     );
 
     assert.deepEqual(calls, ["theme", "share"]);
-    assert.equal(isPluginInitialized("theme"), true);
-    assert.equal(isPluginInitialized("share"), true);
-    assert.equal(isPluginInitialized("network"), false);
+    assert.equal(isPluginInitialized("theme", asAlpine(Alpine)), true);
+    assert.equal(isPluginInitialized("share", asAlpine(Alpine)), true);
+    assert.equal(isPluginInitialized("network", asAlpine(Alpine)), false);
   });
 
   it("initializes every plugin when no names are provided", async () => {
@@ -104,8 +104,8 @@ describe("initPlugins — selection", () => {
     await initPlugins(asAlpine(Alpine));
 
     assert.equal(Alpine.pluginCalls.length, 2);
-    assert.equal(getRegisteredPlugin("share")?.initialized, true);
-    assert.equal(getRegisteredPlugin("theme")?.initialized, true);
+    assert.equal(isPluginInitialized("share", asAlpine(Alpine)), true);
+    assert.equal(isPluginInitialized("theme", asAlpine(Alpine)), true);
   });
 
   it("treats an empty name list as a no-op", async () => {
@@ -292,5 +292,150 @@ describe("createAlpinePlugin", () => {
     const entry = getRegisteredPlugin("navigation");
     assert.ok(entry);
     assert.deepEqual(entry?.definition.kinds, ["directive"]);
+  });
+});
+
+describe("initPlugins — per-runtime state", () => {
+  it("initializes the same plugin once per Alpine runtime", async () => {
+    let loadCount = 0;
+    const share = (_alpine: Alpine): void => undefined;
+
+    registerPlugin(
+      "share",
+      definePlugin(["magic"], {
+        names: ["share"],
+        plugin: pluginLoader(() => {
+          loadCount += 1;
+          return share;
+        }),
+      })
+    );
+
+    const alpineA = createMockAlpine();
+    const alpineB = createMockAlpine();
+
+    await initPlugins(asAlpine(alpineA), "share");
+    await initPlugins(asAlpine(alpineB), "share");
+
+    assert.equal(loadCount, 2);
+    assert.equal(alpineA.pluginCalls.length, 1);
+    assert.equal(alpineB.pluginCalls.length, 1);
+    assert.equal(isPluginInitialized("share", asAlpine(alpineA)), true);
+    assert.equal(isPluginInitialized("share", asAlpine(alpineB)), true);
+  });
+
+  it("deduplicates concurrent async initialization for the same runtime", async () => {
+    let loadCount = 0;
+    let releaseLoad: (() => void) | undefined;
+    const loadGate = new Promise<void>((resolve) => {
+      releaseLoad = resolve;
+    });
+
+    registerPlugin(
+      "share",
+      definePlugin(["magic"], {
+        names: ["share"],
+        plugin: pluginLoader(async () => {
+          loadCount += 1;
+          await loadGate;
+          return () => undefined;
+        }),
+      })
+    );
+
+    const Alpine = createMockAlpine();
+    const alpine = asAlpine(Alpine);
+
+    const first = initPlugins(alpine, "share");
+    const second = initPlugins(alpine, "share");
+
+    assert.equal(loadCount, 1);
+
+    releaseLoad?.();
+    await Promise.all([first, second]);
+
+    assert.equal(Alpine.pluginCalls.length, 1);
+    assert.equal(isPluginInitialized("share", alpine), true);
+  });
+
+  it("allows retry after a failed async initialization", async () => {
+    let loadCount = 0;
+
+    registerPlugin(
+      "share",
+      definePlugin(["magic"], {
+        names: ["share"],
+        plugin: pluginLoader(() => {
+          loadCount += 1;
+          if (loadCount === 1) {
+            return Promise.reject(new Error("first load failed"));
+          }
+          return () => undefined;
+        }),
+      })
+    );
+
+    const Alpine = createMockAlpine();
+    const alpine = asAlpine(Alpine);
+
+    await assert.rejects(() => initPlugins(alpine, "share"), /first load failed/);
+    assert.equal(isPluginInitialized("share", alpine), false);
+    assert.equal(Alpine.pluginCalls.length, 0);
+
+    await initPlugins(alpine, "share");
+
+    assert.equal(loadCount, 2);
+    assert.equal(Alpine.pluginCalls.length, 1);
+    assert.equal(isPluginInitialized("share", alpine), true);
+  });
+
+  it("keeps sync initialization idempotent per runtime", () => {
+    let loadCount = 0;
+
+    registerPlugin(
+      "share",
+      definePlugin(["magic"], {
+        names: ["share"],
+        plugin: pluginLoader(() => {
+          loadCount += 1;
+          return () => undefined;
+        }),
+      })
+    );
+
+    const Alpine = createMockAlpine();
+    const alpine = asAlpine(Alpine);
+
+    initPluginsSync(alpine, "share");
+    initPluginsSync(alpine, "share");
+
+    assert.equal(loadCount, 1);
+    assert.equal(Alpine.pluginCalls.length, 1);
+    assert.equal(isPluginInitialized("share", alpine), true);
+  });
+
+  it("initializes sync plugins independently across runtimes", () => {
+    let loadCount = 0;
+
+    registerPlugin(
+      "share",
+      definePlugin(["magic"], {
+        names: ["share"],
+        plugin: pluginLoader(() => {
+          loadCount += 1;
+          return () => undefined;
+        }),
+      })
+    );
+
+    const alpineA = createMockAlpine();
+    const alpineB = createMockAlpine();
+
+    initPluginsSync(asAlpine(alpineA), "share");
+    initPluginsSync(asAlpine(alpineB), "share");
+
+    assert.equal(loadCount, 2);
+    assert.equal(alpineA.pluginCalls.length, 1);
+    assert.equal(alpineB.pluginCalls.length, 1);
   });
 });

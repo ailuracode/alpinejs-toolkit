@@ -19,9 +19,15 @@
  * (`PLUGIN_DUPLICATE`, `PLUGIN_UNKNOWN`, …) cover the diagnostic surface
  * that actually matters.
  */
+import type { Alpine } from "alpinejs";
 import type { DebugLogger } from "./core/debug";
 import { ToolkitError } from "./core/error";
 import { assertValidDefinition } from "./internal/assert";
+import {
+  isRuntimePluginInitialized,
+  markRuntimePluginInitialized,
+  resetRuntimeInitState,
+} from "./runtime-init";
 import type { PluginDefinition, PluginRegistryEntry } from "./types";
 
 /**
@@ -112,7 +118,6 @@ export function registerPlugin(name: string, definition: PluginDefinition): void
   registry.set(normalizedName, {
     name: normalizedName,
     definition,
-    initialized: false,
   });
 }
 
@@ -131,26 +136,42 @@ export function getRegisteredPlugins(): readonly PluginRegistryEntry[] {
   return [...registry.values()];
 }
 
-/** Returns whether a plugin has been initialized with Alpine. */
-export function isPluginInitialized(name: string): boolean {
-  const entry = registry.get(normalizePluginName(name));
-  return entry?.initialized ?? false;
+/**
+ * Returns whether a plugin has been initialized on the given Alpine runtime.
+ *
+ * Repeated initialization against the same runtime is a no-op once this
+ * returns `true`.
+ */
+export function isPluginInitialized(name: string, Alpine: Alpine): boolean {
+  const normalizedName = normalizePluginName(name);
+
+  if (!registry.has(normalizedName)) {
+    return false;
+  }
+
+  return isRuntimePluginInitialized(Alpine, normalizedName);
 }
 
-/** Marks a plugin as initialized. */
-export function markPluginInitialized(name: string): void {
-  const entry = registry.get(normalizePluginName(name));
+/**
+ * Marks a plugin as initialized on the given Alpine runtime.
+ *
+ * Use when registering a plugin callback outside `initPlugins()` (for example
+ * in a custom Alpine adapter). Throws when the plugin name is unknown.
+ */
+export function markPluginInitialized(name: string, Alpine: Alpine): void {
+  const normalizedName = normalizePluginName(name);
 
-  if (!entry) {
+  if (!registry.has(normalizedName)) {
     throw new ToolkitError(`Cannot mark unknown plugin "${name}" as initialized`, "PLUGIN_UNKNOWN");
   }
 
-  entry.initialized = true;
+  markRuntimePluginInitialized(Alpine, normalizedName);
 }
 
 /** Clears the registry. Intended for tests and storybook resets. */
 export function resetPluginRegistry(): void {
   registry.clear();
+  resetRuntimeInitState();
 }
 
 /**
