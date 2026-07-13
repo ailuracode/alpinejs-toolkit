@@ -12,7 +12,7 @@ For tab visibility, use [`@ailuracode/alpine-env`](./env.md) (`$visibility`).
 ## Install
 
 ```bash
-npm install @ailuracode/alpine-attention alpinejs
+pnpm install @ailuracode/alpine-attention alpinejs
 ```
 
 ## Setup

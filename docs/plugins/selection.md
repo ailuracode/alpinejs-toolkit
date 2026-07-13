@@ -231,14 +231,11 @@ Use `listProps` and `itemProps` for WAI-ARIA listbox semantics (`role`, `aria-se
 
 ## Adoption in the toolkit
 
-These packages use `@ailuracode/alpine-selection` internally:
+`@ailuracode/alpine-calendar` historically used `@ailuracode/alpine-selection` for date keys, but now ships inline selection state to keep the bundle slim. `tabs`, `accordion`, and `command` followed the same pattern.
 
 | Package | Use |
 |---------|-----|
-| `@ailuracode/alpine-tabs` | Active tab as single selection |
-| `@ailuracode/alpine-accordion` | Open panels as single/multiple selection |
-| `@ailuracode/alpine-command` | Active item index navigation |
-| `@ailuracode/alpine-calendar` | Date keys bridged to ISO strings |
+| `@ailuracode/alpine-calendar` | (moved to inline state) Date keys bridged to ISO strings |
 
 Consumers of those packages do not need to install `@ailuracode/alpine-selection` unless they use selection primitives directly.
 

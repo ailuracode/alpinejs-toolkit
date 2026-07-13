@@ -10,7 +10,7 @@ Reactive geolocation via the `$store.geo` store. Wraps the browser [Geolocation 
 ## Install
 
 ```bash
-npm install @ailuracode/alpine-geo alpinejs
+pnpm install @ailuracode/alpine-geo alpinejs
 ```
 
 ## Setup

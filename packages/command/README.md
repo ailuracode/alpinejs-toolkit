@@ -7,10 +7,10 @@ Headless command palette store for Alpine.js — searchable actions, keyboard na
 ## Install
 
 ```bash
-pnpm add @ailuracode/alpine-command @ailuracode/alpine-selection alpinejs
+pnpm add @ailuracode/alpine-command alpinejs
 ```
 
-Active item navigation uses `@ailuracode/alpine-selection` navigation helpers.
+Active item navigation uses inline helpers — no extra dependency.
 
 ## Store API
 

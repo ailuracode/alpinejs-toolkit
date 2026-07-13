@@ -10,7 +10,7 @@ Screen Wake Lock e Idle Detection reactivos mediante los magics `$wakelock` y `$
 ## Instalación
 
 ```bash
-npm install @ailuracode/alpine-attention alpinejs
+pnpm install @ailuracode/alpine-attention alpinejs
 ```
 
 ## Configuración

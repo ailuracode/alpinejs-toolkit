@@ -10,7 +10,7 @@ Reactive viewport breakpoints, dimensions, and browser media features in a singl
 ## Instalación
 
 ```bash
-npm install @ailuracode/alpine-media alpinejs
+pnpm install @ailuracode/alpine-media alpinejs
 ```
 
 ## Configuración

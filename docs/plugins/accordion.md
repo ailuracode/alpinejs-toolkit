@@ -10,10 +10,10 @@ Headless accordion store with **single** or **multiple** open panels, optional *
 ## Install
 
 ```bash
-npm install @ailuracode/alpine-accordion @ailuracode/alpine-selection alpinejs
+pnpm install @ailuracode/alpine-accordion alpinejs
 ```
 
-Open panel state maps to `@ailuracode/alpine-selection` (single or multiple mode).
+Open panel state is backed by an inline lightweight state — no extra dependency.
 
 ## Store API
 
@@ -128,7 +128,7 @@ Read open ids reactively:
 `@ailuracode/alpine-accordion` is headless — it does not animate panels. Use the official [`@alpinejs/collapse`](https://alpinejs.dev/plugins/collapse) plugin: `x-collapse` must sit on the **same element** as `x-show`.
 
 ```bash
-npm install @alpinejs/collapse
+pnpm install @alpinejs/collapse
 ```
 
 ```js

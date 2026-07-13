@@ -10,7 +10,7 @@ Package: `@ailuracode/alpine-child`
 ## Install
 
 ```bash
-npm install @ailuracode/alpine-child @alpinejs/morph alpinejs
+pnpm install @ailuracode/alpine-child @alpinejs/morph alpinejs
 ```
 
 ## Setup

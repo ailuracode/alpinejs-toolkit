@@ -10,7 +10,7 @@ Wrapper fino em torno da [Web Notifications API](https://developer.mozilla.org/e
 ## Instalação
 
 ```bash
-npm install @ailuracode/alpine-notify alpinejs
+pnpm install @ailuracode/alpine-notify alpinejs
 ```
 
 ## Configuração

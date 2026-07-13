@@ -10,13 +10,13 @@ Headless tooltip store. Hover/focus triggers, open/close delays, Escape dismiss.
 ## Install
 
 ```bash
-npm install @ailuracode/alpine-tooltip alpinejs
+pnpm install @ailuracode/alpine-tooltip alpinejs
 ```
 
 Positioning (Floating UI via Alpine):
 
 ```bash
-npm install @alpinejs/anchor
+pnpm install @alpinejs/anchor
 ```
 
 ## Store API

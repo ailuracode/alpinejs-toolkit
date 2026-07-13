@@ -8,7 +8,7 @@ TanStack Query-style async data fetching for Alpine.js: caching, stale-while-rev
 ## Install
 
 ```bash
-npm install @ailuracode/alpine-query @ailuracode/alpine-query-kit alpinejs nanostores @nanostores/alpine
+pnpm install @ailuracode/alpine-query @ailuracode/alpine-query-kit alpinejs nanostores @nanostores/alpine
 ```
 
 ## Quick start

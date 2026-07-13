@@ -7,10 +7,10 @@ Headless accessible accordion store for Alpine.js — single or multiple open pa
 ## Install
 
 ```bash
-pnpm add @ailuracode/alpine-accordion @ailuracode/alpine-selection alpinejs
+pnpm add @ailuracode/alpine-accordion alpinejs
 ```
 
-Open panel state maps to `@ailuracode/alpine-selection` (single or multiple mode).
+Open panel state is backed by an inline lightweight state — no extra dependency.
 
 ## Store API
 

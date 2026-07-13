@@ -7,7 +7,6 @@
 
 import type { Alpine } from "alpinejs";
 import { AccordionController } from "./controller.js";
-import { createAccordionStoreFromController, syncGroupRegistry } from "./store.js";
 import type { AccordionAlpine, AccordionPluginCallback, CreateAccordionOptions } from "./types.js";
 
 /** Key under which the accordion store is registered on `$store`. */
@@ -22,14 +21,9 @@ export function accordionPlugin(options: CreateAccordionOptions = {}): Accordion
   return function registerAccordion(alpine: Alpine): void {
     const Alpine = alpine as unknown as AccordionAlpine;
     const controller = new AccordionController(options.id);
-
-    const store = createAccordionStoreFromController(controller);
+    const store = { ...controller.toStore(), groups: {} };
     Alpine.store(ACCORDION_STORE_KEY, store);
     const reactiveStore = Alpine.store(ACCORDION_STORE_KEY);
-
-    const syncReactiveGroups = () => {
-      syncGroupRegistry(reactiveStore.groups, controller.snapshotGroups());
-    };
 
     reactiveStore.isOpen = (id, itemId) => reactiveStore.groups[id]?.open[itemId] ?? false;
     reactiveStore.openIds = (id) => {
@@ -59,7 +53,17 @@ export function accordionPlugin(options: CreateAccordionOptions = {}): Accordion
       };
     };
 
-    controller.on("change", syncReactiveGroups);
+    controller.on("change", () => {
+      const controllerGroups = controller.snapshotGroups();
+      for (const key of Object.keys(controllerGroups)) {
+        reactiveStore.groups[key] = controllerGroups[key];
+      }
+      for (const key of Object.keys(reactiveStore.groups)) {
+        if (!(key in controllerGroups)) {
+          delete reactiveStore.groups[key];
+        }
+      }
+    });
 
     Alpine.magic(ACCORDION_STORE_KEY, () => reactiveStore);
 

@@ -18,7 +18,7 @@ Outbound data transfer magics: clipboard copy, Web Share, and programmatic file 
 ## Install
 
 ```bash
-npm install @ailuracode/alpine-transfer alpinejs
+pnpm install @ailuracode/alpine-transfer alpinejs
 ```
 
 ## Setup

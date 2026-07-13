@@ -8,7 +8,7 @@ Obtenção assíncrona de dados no estilo TanStack Query para Alpine.js: cache, 
 ## Instalação
 
 ```bash
-npm install @ailuracode/alpine-query @ailuracode/alpine-query-kit alpinejs nanostores @nanostores/alpine
+pnpm install @ailuracode/alpine-query @ailuracode/alpine-query-kit alpinejs nanostores @nanostores/alpine
 ```
 
 ## Início rápido

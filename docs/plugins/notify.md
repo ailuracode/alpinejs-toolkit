@@ -10,7 +10,7 @@ Thin wrapper around the [Web Notifications API](https://developer.mozilla.org/en
 ## Install
 
 ```bash
-npm install @ailuracode/alpine-notify alpinejs
+pnpm install @ailuracode/alpine-notify alpinejs
 ```
 
 ## Setup

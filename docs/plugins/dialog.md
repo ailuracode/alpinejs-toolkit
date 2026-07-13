@@ -10,7 +10,7 @@ Headless accessible dialog store for Alpine.js. Manages open state, focus trap, 
 ## Install
 
 ```bash
-npm install @ailuracode/alpine-dialog alpinejs
+pnpm install @ailuracode/alpine-dialog alpinejs
 ```
 
 ## Setup

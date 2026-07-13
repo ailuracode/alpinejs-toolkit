@@ -76,7 +76,7 @@ Before merging README changes, verify:
 Quick audit command:
 
 ```bash
-# Check for npm install leftovers
+# Check for pnpm install leftovers
 rg "npm install" packages/*/README.md
 
 # Check default imports without matching export

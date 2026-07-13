@@ -8,7 +8,7 @@ Strongly typed JSON:API client for Alpine.js.
 ## Install
 
 ```bash
-npm install @ailuracode/alpine-json-api @ailuracode/alpine-query alpinejs
+pnpm install @ailuracode/alpine-json-api @ailuracode/alpine-query alpinejs
 ```
 
 ## Schema-driven types

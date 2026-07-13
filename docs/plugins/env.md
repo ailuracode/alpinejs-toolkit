@@ -21,7 +21,7 @@ The root entrypoint stays focused on Alpine magics. The headless API lives under
 ## Install
 
 ```bash
-npm install @ailuracode/alpine-env alpinejs
+pnpm install @ailuracode/alpine-env alpinejs
 ```
 
 ## Setup

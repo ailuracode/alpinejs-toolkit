@@ -132,7 +132,7 @@ npx @changesets/cli status --since=main
 The default changelog generator is `@changesets/cli/changelog`. For richer changelogs with GitHub links, use `@changesets/changelog-github`:
 
 ```bash
-npm install -D @changesets/changelog-github
+pnpm install -D @changesets/changelog-github
 ```
 
 Update `.changeset/config.json`:

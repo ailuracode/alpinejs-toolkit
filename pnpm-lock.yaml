@@ -248,9 +248,6 @@ importers:
       '@ailuracode/alpine-core':
         specifier: workspace:*
         version: link:../core
-      '@ailuracode/alpine-selection':
-        specifier: workspace:*
-        version: link:../selection
 
   packages/attention:
     dependencies:
@@ -340,9 +337,6 @@ importers:
       '@ailuracode/alpine-scroll':
         specifier: workspace:*
         version: link:../scroll
-      '@ailuracode/alpine-selection':
-        specifier: workspace:*
-        version: link:../selection
 
   packages/core:
     dependencies:
@@ -680,9 +674,6 @@ importers:
       '@ailuracode/alpine-core':
         specifier: workspace:*
         version: link:../core
-      '@ailuracode/alpine-selection':
-        specifier: workspace:*
-        version: link:../selection
 
   packages/theme:
     dependencies:

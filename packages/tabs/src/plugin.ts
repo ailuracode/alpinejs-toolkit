@@ -7,7 +7,7 @@
 
 import type { Alpine } from "alpinejs";
 import { TabsController } from "./controller";
-import type { CreateTabsOptions, TabsAlpine, TabsPluginCallback, TabsStore } from "./types";
+import type { CreateTabsOptions, TabsAlpine, TabsPluginCallback } from "./types";
 
 /** Key under which the tabs store is registered on `$store`. */
 const TABS_STORE_KEY = "tabs";
@@ -21,25 +21,7 @@ export function tabsPlugin(options: CreateTabsOptions = {}): TabsPluginCallback 
   return function registerTabs(alpine: Alpine): void {
     const Alpine = alpine as unknown as TabsAlpine;
     const controller = new TabsController(options.id);
-
-    const store: TabsStore = {
-      groups: {} as TabsStore["groups"],
-      register: (id, opts) => controller.register(id, opts),
-      unregister: (id) => controller.unregister(id),
-      registerTab: (id, tabId, disabled) => controller.registerTab(id, tabId, disabled),
-      unregisterTab: (id, tabId) => controller.unregisterTab(id, tabId),
-      select: (id, tabId) => controller.select(id, tabId),
-      active: (id) => controller.active(id),
-      isActive: (id, tabId) => controller.isActive(id, tabId),
-      next: (id) => controller.next(id),
-      previous: (id) => controller.previous(id),
-      handleKeydown: (id, event) => controller.handleKeydown(id, event),
-      tabProps: (id, tabId) => controller.tabProps(id, tabId),
-      panelProps: (id, tabId) => controller.panelProps(id, tabId),
-      tablistProps: (id) => controller.tablistProps(id),
-      destroy: () => controller.destroy(),
-    };
-
+    const store = { ...controller.toStore(), groups: {} };
     Alpine.store(TABS_STORE_KEY, store);
     const reactiveStore = Alpine.store(TABS_STORE_KEY);
 
