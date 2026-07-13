@@ -231,8 +231,10 @@ jobs:
           set -euo pipefail
           if [ "${{ needs.detect.outputs.run_full }}" = "true" ]; then
             pnpm run test:e2e
+          elif [ -n "${{ needs.detect.outputs.e2e_packages }}" ]; then
+            node scripts/e2e-run.mjs --packages "${{ needs.detect.outputs.e2e_packages }}"
           else
-            pnpm run test:e2e:affected
+            echo "No affected E2E packages"
           fi
 
   audit:

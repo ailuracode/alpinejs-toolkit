@@ -35,6 +35,9 @@ describe("gesturePlugin", () => {
     expect(store.scale).toBe(1);
     expect(store.rotation).toBe(0);
     expect(store.direction).toBe("none");
+    expect(store.button).toBe(0);
+    expect(store.buttons).toBe(0);
+    expect(store.pointerType).toBe("");
   });
 
   it("plugin is idempotent", () => {

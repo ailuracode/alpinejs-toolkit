@@ -8,6 +8,19 @@ import {
   resolveDirection,
 } from "../src/internal/pointer";
 
+function snap(id: number, x: number, y: number, timestamp = 0, pressure = 0.5): PointerSnapshot {
+  return {
+    id,
+    x,
+    y,
+    timestamp,
+    pressure,
+    button: 0,
+    buttons: 1,
+    pointerType: "touch",
+  };
+}
+
 describe("aggregatePointers", () => {
   it("returns zero aggregate for empty map", () => {
     const result = aggregatePointers(new Map());
@@ -18,7 +31,7 @@ describe("aggregatePointers", () => {
 
   it("computes center for single pointer", () => {
     const map = new Map<number, PointerSnapshot>();
-    map.set(1, { id: 1, x: 100, y: 200, timestamp: 0, pressure: 0.5 });
+    map.set(1, snap(1, 100, 200));
     const result = aggregatePointers(map);
     expect(result.centerX).toBe(100);
     expect(result.centerY).toBe(200);
@@ -28,8 +41,8 @@ describe("aggregatePointers", () => {
 
   it("computes center and distance for two pointers", () => {
     const map = new Map<number, PointerSnapshot>();
-    map.set(1, { id: 1, x: 100, y: 100, timestamp: 0, pressure: 0.5 });
-    map.set(2, { id: 2, x: 200, y: 200, timestamp: 0, pressure: 0.5 });
+    map.set(1, snap(1, 100, 100));
+    map.set(2, snap(2, 200, 200));
     const result = aggregatePointers(map);
     expect(result.centerX).toBe(150);
     expect(result.centerY).toBe(150);
@@ -47,8 +60,8 @@ describe("distance", () => {
 
 describe("computeVelocity", () => {
   it("computes velocity between snapshots", () => {
-    const from: PointerSnapshot = { id: 1, x: 0, y: 0, timestamp: 0, pressure: 0.5 };
-    const to: PointerSnapshot = { id: 1, x: 100, y: 0, timestamp: 100, pressure: 0.5 };
+    const from: PointerSnapshot = snap(1, 0, 0, 0);
+    const to: PointerSnapshot = snap(1, 100, 0, 100);
     const result = computeVelocity(from, to);
     expect(result.velocityX).toBe(1);
     expect(result.velocityY).toBe(0);
@@ -56,8 +69,8 @@ describe("computeVelocity", () => {
   });
 
   it("returns Infinity for same timestamp with displacement", () => {
-    const from: PointerSnapshot = { id: 1, x: 0, y: 0, timestamp: 100, pressure: 0.5 };
-    const to: PointerSnapshot = { id: 1, x: 100, y: 0, timestamp: 100, pressure: 0.5 };
+    const from: PointerSnapshot = snap(1, 0, 0, 100);
+    const to: PointerSnapshot = snap(1, 100, 0, 100);
     const result = computeVelocity(from, to);
     expect(result.velocityX).toBe(Number.POSITIVE_INFINITY);
     expect(result.velocityY).toBe(Number.POSITIVE_INFINITY);
@@ -65,8 +78,8 @@ describe("computeVelocity", () => {
   });
 
   it("returns zero for same timestamp and same position", () => {
-    const from: PointerSnapshot = { id: 1, x: 50, y: 50, timestamp: 100, pressure: 0.5 };
-    const to: PointerSnapshot = { id: 1, x: 50, y: 50, timestamp: 100, pressure: 0.5 };
+    const from: PointerSnapshot = snap(1, 50, 50, 100);
+    const to: PointerSnapshot = snap(1, 50, 50, 100);
     const result = computeVelocity(from, to);
     expect(result.velocityX).toBe(0);
     expect(result.velocityY).toBe(0);

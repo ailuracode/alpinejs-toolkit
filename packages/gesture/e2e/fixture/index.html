@@ -48,6 +48,36 @@
           x-gesture:longpress="last = 'longpress'"
         >Long press me</button>
       </section>
+
+      <section>
+        <h2>Pinch</h2>
+        <div
+          id="pinch-target"
+          role="region"
+          aria-label="Pinch target"
+          tabindex="0"
+          style="width: 200px; height: 120px; background: #eee; user-select: none; touch-action: none;"
+          x-data="{
+            pinchScale: 1,
+            pinchOrigin: 1,
+            onPinch(event) {
+              const scale = event.state ? event.state.scale : 1;
+              this.pinchScale = Math.max(0.5, this.pinchOrigin * scale);
+            },
+            commitPinch() {
+              this.pinchOrigin = this.pinchScale;
+            }
+          }"
+          x-gesture:pinch="onPinch"
+          @pointerup="commitPinch()"
+        >
+          <output
+            id="pinch-scale"
+            data-testid="pinch-scale"
+            x-text="pinchScale.toFixed(2)"
+          ></output>
+        </div>
+      </section>
     </main>
     <script type="module" src="/app.js"></script>
   </body>

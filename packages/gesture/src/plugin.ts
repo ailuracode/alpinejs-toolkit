@@ -20,8 +20,11 @@ import type {
   GestureAlpine,
   GestureChangeDetail,
   GestureKind,
+  GestureMouseButton,
   GestureOptions,
   GesturePluginCallback,
+  GesturePointerTypeName,
+  GestureRecognizedDetail,
   GestureState,
   GestureStore,
 } from "./types";
@@ -47,6 +50,9 @@ interface MutableGestureStore extends GestureStore {
   scale: number;
   rotation: number;
   direction: GestureState["direction"];
+  button: GestureMouseButton;
+  buttons: number;
+  pointerType: GesturePointerTypeName;
 }
 
 /**
@@ -69,6 +75,9 @@ function createGestureStore(controller: GestureController): GestureStore {
     scale: initial.scale,
     rotation: initial.rotation,
     direction: initial.direction,
+    button: initial.button,
+    buttons: initial.buttons,
+    pointerType: initial.pointerType,
     cancel() {
       controller.cancel();
     },
@@ -93,6 +102,9 @@ function syncGestureStore(store: GestureStore, state: GestureState): void {
   mutable.scale = state.scale;
   mutable.rotation = state.rotation;
   mutable.direction = state.direction;
+  mutable.button = state.button;
+  mutable.buttons = state.buttons;
+  mutable.pointerType = state.pointerType;
 }
 
 /**
@@ -130,7 +142,9 @@ function createDirectiveHandler(
     // Cache the evaluator at init time — identical to x-on's pattern:
     //   let evaluate = evaluateLater(el, expression)
     //   evaluate(() => {}, { scope: { '$event': e }, params: [e] })
-    const evaluateGesture = evaluateLater(expression);
+    // An empty expression is valid when consumers listen via @tap / addEventListener.
+    const trimmedExpression = expression.trim();
+    const evaluateGesture = trimmedExpression ? evaluateLater(expression) : null;
 
     const ctrl = new GestureController({
       ...pluginOptions,
@@ -141,13 +155,15 @@ function createDirectiveHandler(
 
     const unsub = ctrl.on(
       "gesture" as never,
-      ((detail: { kind: GestureKind }) => {
+      ((detail: GestureRecognizedDetail) => {
         if (detail.kind === kind) {
-          // Mirror x-on's pattern: `evaluate(() => {}, …)` — the receiver
-          // is intentionally a no-op because gesture handlers communicate
-          // via CustomEvents, not return values.
-          // biome-ignore lint/suspicious/noEmptyBlockStatements: intentional no-op receiver, matches Alpine's x-on directive.
-          evaluateGesture(() => {}, { scope: { $event: detail }, params: [detail] });
+          if (evaluateGesture) {
+            // Mirror x-on's pattern: `evaluate(() => {}, …)` — the receiver
+            // is intentionally a no-op because gesture handlers communicate
+            // via CustomEvents, not return values.
+            // biome-ignore lint/suspicious/noEmptyBlockStatements: intentional no-op receiver, matches Alpine's x-on directive.
+            evaluateGesture(() => {}, { scope: { $event: detail }, params: [detail] });
+          }
         }
         el.dispatchEvent(new CustomEvent(kind, { bubbles: true, detail }));
       }) as never

@@ -5,6 +5,8 @@
  * multi-pointer geometry (scale, rotation).
  */
 
+import type { GestureMouseButton, GesturePointerTypeName } from "../types.js";
+
 /** Snapshot of a single pointer's state at a point in time. */
 export interface PointerSnapshot {
   readonly id: number;
@@ -12,6 +14,25 @@ export interface PointerSnapshot {
   readonly y: number;
   readonly timestamp: number;
   readonly pressure?: number;
+  readonly button: number;
+  readonly buttons: number;
+  readonly pointerType: string;
+}
+
+/** Narrows a DOM button index to the public gesture button union. */
+export function normalizeGestureButton(button: number): GestureMouseButton {
+  if (button === 0 || button === 1 || button === 2 || button === 3 || button === 4) {
+    return button;
+  }
+  return 0;
+}
+
+/** Preserves known pointer types while allowing future DOM values. */
+export function normalizeGesturePointerType(pointerType: string): GesturePointerTypeName {
+  if (pointerType === "mouse" || pointerType === "touch" || pointerType === "pen") {
+    return pointerType;
+  }
+  return pointerType;
 }
 
 /** Aggregated pointer state across all active pointers. */
@@ -21,6 +42,22 @@ export interface PointerAggregate {
   readonly count: number;
   readonly distance: number;
   readonly rotation: number;
+}
+
+/**
+ * Captures a pointer snapshot from a DOM `PointerEvent`.
+ */
+export function snapshotPointerFromEvent(event: PointerEvent): PointerSnapshot {
+  return {
+    id: event.pointerId,
+    x: event.clientX,
+    y: event.clientY,
+    timestamp: event.timeStamp,
+    pressure: event.pressure,
+    button: event.button,
+    buttons: event.buttons,
+    pointerType: event.pointerType,
+  };
 }
 
 /**

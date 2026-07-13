@@ -25,8 +25,11 @@ export { GestureError } from "./error.js";
 // --- Event surface ---------------------------------------------------
 export type {
   GestureChangeListener,
+  GestureChannelDetailFor,
   GestureDoubleTapListener,
+  GestureEventNameFor,
   GestureEvents,
+  GestureListener,
   GestureLongPressListener,
   GesturePanListener,
   GesturePinchListener,
@@ -34,6 +37,8 @@ export type {
   GestureSwipeListener,
   GestureTapListener,
 } from "./events.js";
+// --- Options helpers -------------------------------------------------
+export { gestureOptions } from "./options.js";
 // --- Alpine integration ----------------------------------------------
 export { createGesture, gesturePlugin, gesturePlugin as default } from "./plugin.js";
 // --- Public types (state, contracts, options) ------------------------
@@ -41,15 +46,22 @@ export type {
   GestureAlpine,
   GestureAxisLock,
   GestureChangeDetail,
+  GestureDetailFor,
+  GestureDetailMap,
   GestureDirection,
   GestureDoubleTapDetail,
   GestureKind,
   GestureLongPressDetail,
   GestureManager,
+  GestureMouseButton,
   GestureOptions,
   GesturePanDetail,
+  GesturePhase,
   GesturePinchDetail,
   GesturePluginCallback,
+  GesturePointerFields,
+  GesturePointerType,
+  GesturePointerTypeName,
   GestureRecognizedDetail,
   GestureState,
   GestureStore,

@@ -21,7 +21,16 @@ const defaultConfig: RecognizerConfig = {
 };
 
 function snap(x: number, y: number, timestamp = 0): PointerSnapshot {
-  return { id: 1, x, y, timestamp, pressure: 0.5 };
+  return {
+    id: 1,
+    x,
+    y,
+    timestamp,
+    pressure: 0.5,
+    button: 0,
+    buttons: 1,
+    pointerType: "touch",
+  };
 }
 
 describe("TapRecognizer", () => {
