@@ -45,9 +45,50 @@ export function themePlugin(options: CreateThemeOptions = {}): ThemePluginCallba
     });
     Alpine.magic(THEME_STORE_KEY, () => reactiveStore);
 
+    // Re-apply the theme class/attribute when an external navigation
+    // framework mutates the `<html>` element out from under us.
+    // Most notably: Astro View Transitions preserves `<html>` across
+    // navigations but lets its diff sync attributes against the new
+    // page's `<html>` markup, which strips the `dark` / `light` /
+    // `data-theme` value our strategy set on initial mount. The
+    // strategy's internal cache then thinks the DOM is already in
+    // sync and skips the re-apply on the next `change` event.
+    //
+    // Both events are guarded with `typeof` and `addEventListener`
+    // checks so non-browser / non-Astro consumers pay nothing.
+    const documentRef: Document | undefined =
+      typeof globalThis !== "undefined" && "document" in globalThis
+        ? (globalThis as { document?: Document }).document
+        : undefined;
+    let teardownListeners: () => void = () => undefined;
+    if (documentRef && typeof documentRef.addEventListener === "function") {
+      const reapply = (): void => {
+        manager.apply();
+      };
+      const targets: ReadonlyArray<string> = [
+        "astro:after-swap",
+        "astro:page-load",
+      ];
+      const bound: Array<[string, () => void]> = [];
+      for (const type of targets) {
+        documentRef.addEventListener(type, reapply);
+        bound.push([type, reapply]);
+      }
+      teardownListeners = (): void => {
+        for (const [type, listener] of bound) {
+          documentRef.removeEventListener(type, listener);
+        }
+      };
+    }
+
     // Forward destroy() through Alpine's cleanup mechanism when available.
+    // The Astro listener teardown rides the same hook so consumers
+    // don't need to wire two cleanups.
     if (typeof Alpine.cleanup === "function") {
-      Alpine.cleanup(() => manager.destroy());
+      Alpine.cleanup(() => {
+        teardownListeners();
+        manager.destroy();
+      });
     }
   };
 }
@@ -78,6 +119,9 @@ export function createThemeStore(manager: ThemeController): ThemeStore {
     },
     reset: () => {
       manager.reset();
+    },
+    apply: () => {
+      manager.apply();
     },
   };
 }

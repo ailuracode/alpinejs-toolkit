@@ -3,22 +3,26 @@ import { PLUGIN_NAV_GROUPS, playgroundPath } from "../plugin-nav";
 import DemoButton from "./astro/DemoButton.astro";
 import DemoNavIcon from "./astro/DemoNavIcon.astro";
 
-interface Props {
-  activePlugin?: string;
-}
+const navBaseClass =
+  "group relative flex h-9 w-full items-center rounded-lg text-sm transition-all duration-150 ease-out motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ios-blue)]/40 focus-visible:ring-offset-1 focus-visible:ring-offset-[var(--ios-bg-secondary)] touch-manipulation";
+const navActiveClass =
+  "bg-[var(--ios-blue)]/15 font-medium text-[var(--ios-blue)] shadow-[inset_2px_0_0_0_var(--ios-blue)] ";
+const navInactiveClass =
+  "text-[var(--ios-label-secondary)] hover:bg-[var(--ios-fill-quaternary)] active:bg-[var(--ios-fill-tertiary)] hover:text-[var(--ios-label)] ";
 
-const { activePlugin = "overview" } = Astro.props;
+const isActivePath = (path: string): string => {
+  const pathNoSlash = path.replace(/\/$/, "");
+  return `(pathname === '${path}' || pathname === '${pathNoSlash}')`;
+};
 
-const navLinkClass = (id: string) => {
-  const active = activePlugin === id;
+const isActiveExpr = (path: string): string =>
+  `${isActivePath(path)} ? 'page' : null`;
 
-  return [
-    "group relative flex h-9 w-full items-center rounded-lg text-sm transition-all duration-150 ease-out motion-reduce:transition-none",
-    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ios-blue)]/40 focus-visible:ring-offset-1 focus-visible:ring-offset-[var(--ios-bg-secondary)] touch-manipulation",
-    active
-      ? "bg-[var(--ios-blue)]/10 font-medium text-[var(--ios-blue)]"
-      : "text-[var(--ios-label-secondary)] hover:bg-[var(--ios-fill-quaternary)] active:bg-[var(--ios-fill-tertiary)] hover:text-[var(--ios-label)]",
-  ].join(" ");
+const paddingSuffix =
+  " + (effectivelyExpanded ? 'gap-3.5 px-3' : 'justify-center gap-0 px-2')";
+
+const navItemClassExpr = (path: string): string => {
+  return `${isActivePath(path)} ? '${navActiveClass}'${paddingSuffix} : '${navInactiveClass}'${paddingSuffix}`;
 };
 ---
 
@@ -26,7 +30,12 @@ const navLinkClass = (id: string) => {
 <button
   type="button"
   x-show="$store.media.breakpoint !== 'desktop' && $store.sidebar.visible"
-  x-transition.opacity
+  x-transition:enter="transition-opacity ease-[cubic-bezier(0.32,0.72,0,1)] duration-[320ms] motion-reduce:transition-none"
+  x-transition:enter-start="opacity-0"
+  x-transition:enter-end="opacity-100"
+  x-transition:leave="transition-opacity ease-[cubic-bezier(0.32,0.72,0,1)] duration-[220ms] motion-reduce:transition-none"
+  x-transition:leave-start="opacity-100"
+  x-transition:leave-end="opacity-0"
   class="fixed inset-0 z-30 border-0 bg-black/30 p-0 motion-reduce:transition-none touch-manipulation backdrop-blur-sm"
   x-on:click="$store.sidebar.hide()"
   aria-label="Close navigation"
@@ -35,24 +44,27 @@ const navLinkClass = (id: string) => {
 
 <aside
   x-show="$store.media.breakpoint === 'desktop' || $store.sidebar.visible"
-  x-transition:enter="transition ease-out duration-300 motion-reduce:transition-none"
+  x-transition:enter="transition-[transform] ease-[cubic-bezier(0.32,0.72,0,1)] duration-[380ms] will-change-transform motion-reduce:transition-none"
   x-transition:enter-start="-translate-x-full"
   x-transition:enter-end="translate-x-0"
-  x-transition:leave="transition ease-in duration-200 motion-reduce:transition-none"
+  x-transition:leave="transition-[transform] ease-[cubic-bezier(0.32,0.72,0,1)] duration-[240ms] will-change-transform motion-reduce:transition-none"
   x-transition:leave-start="translate-x-0"
   x-transition:leave-end="-translate-x-full"
-  class="fixed top-12 bottom-0 left-0 z-40 flex flex-col overflow-hidden border-r border-[var(--ios-separator)] bg-[var(--ios-bg-secondary)]/80 text-[var(--ios-label)] shadow-xl backdrop-blur-2xl backdrop-saturate-150 transition-[width] duration-300 ease-out motion-reduce:transition-none"
+  class="fixed top-0 bottom-0 left-0 z-40 flex flex-col overflow-hidden border-r border-[var(--ios-separator)] bg-[var(--ios-bg-secondary)]/80 text-[var(--ios-label)] shadow-xl backdrop-blur-2xl backdrop-saturate-150 transition-[top,width] duration-300 ease-out motion-reduce:transition-none"
   x-cloak
-  x-bind:class="$store.media.breakpoint === 'desktop' && !expanded ? 'w-16' : 'w-64'"
+  x-data="{ pathname: typeof window !== 'undefined' ? window.location.pathname : '/', navTooltip: '', navTrigger: null }"
+  x-init="$store.tooltip.register('sidebar-nav', { openDelay: 120, closeDelay: 80 }); document.addEventListener('astro:after-swap', () => { pathname = window.location.pathname })"
+  x-bind:class="`${!expanded ? 'w-16' : 'w-64'}`"
   aria-label="Playground navigation"
+  transition:persist
 >
   <!-- App icon + title -->
   <a
     href="/playground/"
-    class="flex h-14 shrink-0 items-center gap-3 border-b border-[var(--ios-separator)] transition-colors duration-150 hover:bg-[var(--ios-fill-quaternary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ios-blue)]/40 focus-visible:ring-inset motion-reduce:transition-none"
+    class="flex h-12 shrink-0 items-center gap-3 border-b border-[var(--ios-separator)] transition-colors duration-150 hover:bg-[var(--ios-fill-quaternary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ios-blue)]/40 focus-visible:ring-inset motion-reduce:transition-none"
     x-bind:class="effectivelyExpanded ? 'px-4' : 'justify-center px-0'"
     x-on:click="$store.media.breakpoint !== 'desktop' && $store.sidebar.hide()"
-    aria-current={activePlugin === "overview" ? "page" : undefined}
+    x-bind:aria-current={isActiveExpr("/playground/")}
   >
     <img src="/logo.png" alt="" width="28" height="28" class="size-7 shrink-0 rounded-lg" />
     <span
@@ -68,21 +80,11 @@ const navLinkClass = (id: string) => {
   <nav
     class="flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto overscroll-contain py-3 transition-[padding] duration-200 motion-reduce:transition-none"
     x-bind:class="effectivelyExpanded ? 'px-3' : 'px-1.5'"
+    x-data="{ scrollY: $persist(0).as('sidebar-nav-scroll') }"
+    x-init="$nextTick(() => { $el.scrollTop = scrollY })"
+    x-on:scroll.passive="scrollY = $el.scrollTop"
     aria-label="Plugins"
   >
-    <!-- Overview -->
-    <a
-      href="/playground/"
-      class={navLinkClass("overview")}
-      aria-current={activePlugin === "overview" ? "page" : undefined}
-      x-bind:aria-label="!effectivelyExpanded ? 'Overview' : null"
-      x-bind:class="effectivelyExpanded ? 'gap-3 px-3' : 'justify-center gap-0 px-0'"
-      x-on:click="$store.media.breakpoint !== 'desktop' && $store.sidebar.hide()"
-    >
-      <DemoNavIcon id="overview" class="size-5" />
-      <span class="truncate whitespace-nowrap" x-show="effectivelyExpanded" x-cloak>Overview</span>
-    </a>
-
     <!-- Plugin groups -->
     {
       PLUGIN_NAV_GROUPS.map((group) => (
@@ -102,11 +104,15 @@ const navLinkClass = (id: string) => {
             {group.items.map((item) => (
               <a
                 href={playgroundPath(item.id)}
-                class={navLinkClass(item.id)}
-                aria-current={activePlugin === item.id ? "page" : undefined}
+                class={navBaseClass}
+                x-bind:aria-current={isActiveExpr(playgroundPath(item.id))}
                 x-bind:aria-label={`!effectivelyExpanded ? ${JSON.stringify(item.title)} : null`}
-                x-bind:class="effectivelyExpanded ? 'gap-3 px-3' : 'justify-center gap-0 px-0'"
+                x-bind:class={navItemClassExpr(playgroundPath(item.id))}
                 x-on:click="$store.media.breakpoint !== 'desktop' && $store.sidebar.hide()"
+                x-on:mouseenter={`navTooltip = ${JSON.stringify(item.title)}; navTrigger = $el; $store.tooltip.showOnHover('sidebar-nav')`}
+                x-on:mouseleave="$store.tooltip.hideOnHover('sidebar-nav')"
+                x-on:focus={`navTooltip = ${JSON.stringify(item.title)}; navTrigger = $el; $store.tooltip.showOnFocus('sidebar-nav')`}
+                x-on:blur="$store.tooltip.hideOnFocus('sidebar-nav')"
               >
                 <DemoNavIcon id={item.id} class="size-5" />
                 <span class="truncate whitespace-nowrap" x-show="effectivelyExpanded" x-cloak>
@@ -159,4 +165,22 @@ const navLinkClass = (id: string) => {
       {PLUGIN_NAV_GROUPS.reduce((n, g) => n + g.items.length, 0)} modules · one demo per page
     </p>
   </div>
+
+  <!-- Compact-mode tooltip (teleported to overlay-root) -->
+  <template x-teleport="#overlay-root">
+    <div
+      x-show="$store.tooltip.isOpen('sidebar-nav') && !effectivelyExpanded && $store.media.breakpoint === 'desktop'"
+      x-anchor.right.end.fixed.noflip.offset.8="navTrigger"
+      :style="{ zIndex: $store.overlay.zIndexOf('tooltip', 'sidebar-nav') }"
+      role="tooltip"
+      x-transition:enter="transition-[opacity,transform] ease-[cubic-bezier(0.32,0.72,0,1)] duration-150 motion-reduce:transition-none"
+      x-transition:enter-start="opacity-0 scale-95"
+      x-transition:enter-end="opacity-100 scale-100"
+      x-transition:leave="transition-[opacity,transform] ease-[cubic-bezier(0.32,0.72,0,1)] duration-100 motion-reduce:transition-none"
+      x-transition:leave-start="opacity-100 scale-100"
+      x-transition:leave-end="opacity-0 scale-95"
+      class="pointer-events-none whitespace-nowrap rounded-md bg-[var(--ios-bg-elevated)] px-2.5 py-1 text-xs font-medium text-[var(--ios-label)] shadow-md ring-1 ring-[var(--ios-separator)]"
+      x-text="navTooltip"
+    ></div>
+  </template>
 </aside>

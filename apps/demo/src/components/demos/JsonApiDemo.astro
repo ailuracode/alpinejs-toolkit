@@ -31,9 +31,9 @@ const plugin = getPluginNavItem("json-api")!;
 		<table class="w-full caption-bottom text-sm">
 			<thead class="[&_tr]:border-b">
 				<tr class="border-b transition-colors hover:bg-[var(--ios-fill-quaternary)]/50">
-					<th scope="col" class="h-10 px-2 text-left align-middle font-medium whitespace-nowrap">ID</th>
-					<th scope="col" class="h-10 px-2 text-left align-middle font-medium whitespace-nowrap">Title</th>
-					<th scope="col" class="h-10 px-2 text-left align-middle font-medium whitespace-nowrap">Author</th>
+					<th scope="col" class="h-10 px-4 text-left align-middle font-medium whitespace-nowrap">ID</th>
+					<th scope="col" class="h-10 px-4 text-left align-middle font-medium whitespace-nowrap">Title</th>
+					<th scope="col" class="h-10 px-4 text-left align-middle font-medium whitespace-nowrap">Author</th>
 				</tr>
 			</thead>
 			<tbody class="[&_tr:last-child]:border-0">
@@ -43,9 +43,9 @@ const plugin = getPluginNavItem("json-api")!;
 						x-bind:class="{ 'bg-[var(--ios-blue)]/10': selectedId === row.id }"
 						@click="selectArticle(row.id)"
 					>
-						<td class="p-2 align-middle tabular-nums" x-text="row.id"></td>
-						<td class="max-w-xs truncate p-2 align-middle" x-text="row.title"></td>
-						<td class="p-2 align-middle" x-text="row.author"></td>
+						<td class="p-3 align-middle tabular-nums" x-text="row.id"></td>
+						<td class="max-w-xs truncate p-3 align-middle" x-text="row.title"></td>
+						<td class="p-3 align-middle" x-text="row.author"></td>
 					</tr>
 				</template>
 			</tbody>
