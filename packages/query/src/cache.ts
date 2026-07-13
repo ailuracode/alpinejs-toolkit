@@ -1,11 +1,13 @@
 import type { QueryStateAdapter } from "./adapters/types.js";
 import type { QueryEntry } from "./cache-internals.js";
 import { DevtoolsRegistry } from "./devtools-registry.js";
+import { createQueryObserver } from "./observer.js";
 import type {
   MutationOptions,
   MutationState,
   QueryFunction,
   QueryKey,
+  QueryObserver,
   QueryOptions,
   QueryState,
   QueryStatus,
@@ -112,15 +114,13 @@ export class QueryCache {
     key: QueryKey,
     queryFn: QueryFunction<TData>,
     options?: QueryOptions<TData>
-  ): QueryState<TData> & { destroy(): void } {
+  ): QueryObserver<TData> {
     const entry = this.ensureEntry(key, queryFn, options);
     this.subscribe(entry);
     void this.fetchEntry(entry);
 
-    return Object.assign(entry.state, {
-      destroy: () => {
-        this.unsubscribe(entry);
-      },
+    return createQueryObserver(entry.state, () => {
+      this.unsubscribe(entry);
     });
   }
 

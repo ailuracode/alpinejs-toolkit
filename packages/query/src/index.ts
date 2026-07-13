@@ -14,6 +14,7 @@ export type {
 } from "./devtools.js";
 export type { ResponseParser, TypedFetchInit } from "./fetch.js";
 export { HttpError, typedFetch } from "./fetch.js";
+export { createQueryObserver } from "./observer.js";
 export { mutationOptions, queryFn, queryKey, queryOptions } from "./options.js";
 export {
   attachMutationFlags,
@@ -36,6 +37,7 @@ export type {
   QueryFunction,
   QueryFunctionContext,
   QueryKey,
+  QueryObserver,
   QueryOptions,
   QueryPluginOptions,
   QueryState,
