@@ -1,7 +1,7 @@
 import type { QueryStateAdapter } from "./adapters/types.js";
 import { vanillaQueryAdapter } from "./adapters/vanilla.js";
 import { QueryCache } from "./cache.js";
-import { isQueryDefinition, splitQueryDefinition } from "./options.js";
+import { normalizeQueryCallArgs } from "./options.js";
 import type {
   InferQueryData,
   QueryClientOptions,
@@ -52,16 +52,13 @@ function createObserve(cache: QueryCache): QueryStore["observe"] {
     queryFn?: QueryFunction<unknown>,
     queryOptions?: QueryOptions<unknown>
   ) {
-    if (isQueryDefinition(keyOrDefinition)) {
-      const { queryKey, queryFn: fn, options } = splitQueryDefinition(keyOrDefinition);
-      return cache.observe(queryKey, fn, options);
-    }
+    const {
+      queryKey,
+      queryFn: fn,
+      options,
+    } = normalizeQueryCallArgs("observe", keyOrDefinition, queryFn, queryOptions);
 
-    if (!queryFn) {
-      throw new Error("queryFn is required when observe() is called with a query key");
-    }
-
-    return cache.observe(keyOrDefinition, queryFn, queryOptions);
+    return cache.observe(queryKey, fn, options);
   }
 
   return observe;
@@ -93,16 +90,13 @@ function createFetch(cache: QueryCache): QueryStore["fetch"] {
     queryFn?: QueryFunction<unknown>,
     queryOptions?: QueryOptions<unknown>
   ) {
-    if (isQueryDefinition(keyOrDefinition)) {
-      const { queryKey, queryFn: fn, options } = splitQueryDefinition(keyOrDefinition);
-      return cache.fetch(queryKey, fn, options);
-    }
+    const {
+      queryKey,
+      queryFn: fn,
+      options,
+    } = normalizeQueryCallArgs("fetch", keyOrDefinition, queryFn, queryOptions);
 
-    if (!queryFn) {
-      throw new Error("queryFn is required when fetch() is called with a query key");
-    }
-
-    return cache.fetch(keyOrDefinition, queryFn, queryOptions);
+    return cache.fetch(queryKey, fn, options);
   }
 
   return fetch;
@@ -134,16 +128,13 @@ function createPrefetch(cache: QueryCache): QueryStore["prefetch"] {
     queryFn?: QueryFunction<unknown>,
     queryOptions?: QueryOptions<unknown>
   ) {
-    if (isQueryDefinition(keyOrDefinition)) {
-      const { queryKey, queryFn: fn, options } = splitQueryDefinition(keyOrDefinition);
-      return cache.prefetch(queryKey, fn, options);
-    }
+    const {
+      queryKey,
+      queryFn: fn,
+      options,
+    } = normalizeQueryCallArgs("prefetch", keyOrDefinition, queryFn, queryOptions);
 
-    if (!queryFn) {
-      throw new Error("queryFn is required when prefetch() is called with a query key");
-    }
-
-    return cache.prefetch(keyOrDefinition, queryFn, queryOptions);
+    return cache.prefetch(queryKey, fn, options);
   }
 
   return prefetch;
