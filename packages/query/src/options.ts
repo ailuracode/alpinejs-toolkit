@@ -59,3 +59,26 @@ export function splitQueryDefinition<TData>(definition: QueryDefinition<QueryKey
   const { queryKey, queryFn, ...options } = definition;
   return { queryKey, queryFn, options };
 }
+
+export type QueryCallOperation = "observe" | "fetch" | "prefetch";
+
+export function normalizeQueryCallArgs(
+  operation: QueryCallOperation,
+  keyOrDefinition: QueryKey | QueryDefinition,
+  queryFn?: QueryFunction<unknown>,
+  queryOptions?: QueryOptions<unknown>
+): {
+  queryKey: QueryKey;
+  queryFn: QueryFunction<unknown>;
+  options?: QueryOptions<unknown>;
+} {
+  if (isQueryDefinition(keyOrDefinition)) {
+    return splitQueryDefinition(keyOrDefinition);
+  }
+
+  if (!queryFn) {
+    throw new Error(`queryFn is required when ${operation}() is called with a query key`);
+  }
+
+  return { queryKey: keyOrDefinition, queryFn, options: queryOptions };
+}
