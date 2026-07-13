@@ -6,6 +6,7 @@
  * (see `AGENTS.md` for the integration contract).
  */
 
+import { bridgeControllerStore } from "@ailuracode/alpine-core";
 import type { Alpine } from "alpinejs";
 import type { ThemeController } from "./controller";
 import { createTheme } from "./controller";
@@ -30,20 +31,6 @@ export function themePlugin(options: CreateThemeOptions = {}): ThemePluginCallba
     // stays pure (no `window` / `document` / `localStorage` access).
     const manager = createTheme(options);
     const store = createThemeStore(manager);
-    Alpine.store(THEME_STORE_KEY, store);
-    // Alpine wraps the value in a reactive proxy on registration.
-    // Re-target the subscription so mutations land on the proxy, not
-    // on the unwrapped original — otherwise `x-text` bindings on the
-    // `$theme` magic / `$store.theme` never re-render. We cache the
-    // proxy so the `$theme` magic returns the SAME reference instead
-    // of forcing Alpine to re-resolve the store on every access.
-    const reactiveStore = Alpine.store(THEME_STORE_KEY);
-    manager.on("change", (detail) => {
-      reactiveStore.current = detail.current;
-      reactiveStore.system = detail.system;
-      reactiveStore.resolved = detail.resolved;
-    });
-    Alpine.magic(THEME_STORE_KEY, () => reactiveStore);
 
     // Re-apply the theme class/attribute when an external navigation
     // framework mutates the `<html>` element out from under us.
@@ -78,15 +65,19 @@ export function themePlugin(options: CreateThemeOptions = {}): ThemePluginCallba
       };
     }
 
-    // Forward destroy() through Alpine's cleanup mechanism when available.
-    // The Astro listener teardown rides the same hook so consumers
-    // don't need to wire two cleanups.
-    if (typeof Alpine.cleanup === "function") {
-      Alpine.cleanup(() => {
-        teardownListeners();
-        manager.destroy();
-      });
-    }
+    bridgeControllerStore({
+      alpine: Alpine,
+      storeKey: THEME_STORE_KEY,
+      store,
+      controller: manager,
+      subscribe: (reactiveStore) =>
+        manager.on("change", (detail) => {
+          reactiveStore.current = detail.current;
+          reactiveStore.system = detail.system;
+          reactiveStore.resolved = detail.resolved;
+        }),
+      onCleanup: teardownListeners,
+    });
   };
 }
 
