@@ -1,31 +1,30 @@
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import {
+  exportsControllerClass,
+  extractConstructorBodies,
+  findConstructorSideEffectsInSource,
+  findConstructorSideEffectViolations,
+  findCrossPackageInternalImportViolations,
+  findForbiddenBarrelReExports,
+  hasRuntimeAlpineImport,
+  importsPackageEntrypoint,
+} from "./architecture-check-ast.mjs";
 import { ARCHITECTURE_CHECK_POLICY } from "./architecture-check-policy.mjs";
 import { validateHeadlessCssPolicy } from "./headless-css-policy.mjs";
 import { discoverPackages, publishablePackages } from "./repo-check.mjs";
 
+export {
+  extractConstructorBodies,
+  findConstructorSideEffectViolations,
+  findCrossPackageInternalImportViolations,
+};
+
 const SCOPE = "@ailuracode/alpine-";
 const SOURCE_FILE_PATTERN = /\.(?:[cm]?ts|[cm]?js)$/;
 const TEST_FILE_PATTERN = /\.(?:test|spec)\.[cm]?[jt]sx?$/;
-const FROM_INTERNAL_RE = /\bfrom\s+["'](?:\.\/|\.\.\/)internal\//;
-const FROM_ADAPTER_RE = /\bfrom\s+["'](?:\.\/|\.\.\/)(?:alpine|bindings?|adapter)\//;
-const VALUE_ALPINE_IMPORT_RE = /^import\s+(?!type\b)[\s\S]*?\sfrom\s+["']alpinejs["']/m;
-const INDEX_IMPORT_RE = /from\s+["'](?:\.\.\/)+src\/index(?:\.(?:js|ts))?["']/;
 const CONTROLLER_FILE_RE = /(?:^|\/)controller(?:[-.][^/]+)?\.(?:[cm]?ts|[cm]?js)$/;
-const CONTROLLER_EXPORT_RE = /\b[A-Z][A-Za-z0-9]*Controller\b/;
-
-const CONSTRUCTOR_SIDE_EFFECT_PATTERNS = [
-  { id: "window-access", pattern: /(?<!typeof )window\./ },
-  { id: "document-access", pattern: /(?<!typeof )document\./ },
-  { id: "local-storage", pattern: /\blocalStorage\b/ },
-  { id: "session-storage", pattern: /\bsessionStorage\b/ },
-  { id: "navigator-access", pattern: /(?<!typeof )navigator\./ },
-  { id: "set-timeout", pattern: /\bsetTimeout\s*\(/ },
-  { id: "set-interval", pattern: /\bsetInterval\s*\(/ },
-  { id: "queue-microtask", pattern: /\bqueueMicrotask\s*\(/ },
-  { id: "request-animation-frame", pattern: /\brequestAnimationFrame\s*\(/ },
-];
 
 const DEPENDENCY_FIELDS = [
   "dependencies",
@@ -84,51 +83,6 @@ export function matchesAnyPattern(filePath, patterns) {
 }
 
 /**
- * @param {string} source
- * @returns {string[]}
- */
-export function extractConstructorBodies(source) {
-  const bodies = [];
-  const re = /constructor\s*\([^)]*\)\s*\{/g;
-  let match = re.exec(source);
-
-  while (match !== null) {
-    let depth = 1;
-    let index = match.index + match[0].length;
-    const start = index;
-
-    while (index < source.length && depth > 0) {
-      const char = source[index];
-      if (char === "{") {
-        depth += 1;
-      } else if (char === "}") {
-        depth -= 1;
-      }
-      index += 1;
-    }
-
-    bodies.push(source.slice(start, index - 1));
-    match = re.exec(source);
-  }
-
-  return bodies;
-}
-
-/**
- * @param {string} body
- * @returns {string[]}
- */
-export function findConstructorSideEffectViolations(body) {
-  const violations = [];
-  for (const rule of CONSTRUCTOR_SIDE_EFFECT_PATTERNS) {
-    if (rule.pattern.test(body)) {
-      violations.push(rule.id);
-    }
-  }
-  return violations;
-}
-
-/**
  * @param {string} relativePath
  * @returns {boolean}
  */
@@ -166,35 +120,14 @@ export function validateInternalBarrelExports(root, policy) {
     }
 
     const barrel = readFileSync(barrelPath, "utf8");
-    const violations = barrel
-      .split(/\r?\n/)
-      .map((line, index) => ({ line, lineNumber: index + 1 }))
-      .filter(({ line }) => FROM_INTERNAL_RE.test(line) || FROM_ADAPTER_RE.test(line));
+    const violations = findForbiddenBarrelReExports(barrel, "index.ts");
 
     for (const violation of violations) {
-      const adapterMatch = violation.line.match(FROM_ADAPTER_RE);
-      const kind = adapterMatch ? "alpine adapter" : "internal";
+      const kind = violation.kind === "alpine-adapter" ? "alpine adapter" : "internal";
       errors.push(
-        `packages/${entry.name}/src/index.ts:${violation.lineNumber}: public barrel must not re-export from ${kind} path (${violation.line.trim()})`
+        `packages/${entry.name}/src/index.ts:${violation.line}: public barrel must not re-export from ${kind} path (${violation.specifier})`
       );
     }
-  }
-
-  return errors;
-}
-
-/**
- * @param {string} source
- * @returns {string[]}
- */
-export function findCrossPackageInternalImportViolations(source) {
-  const errors = [];
-  const pattern = /from\s+["']@ailuracode\/alpine-[^"']+\/(?:src\/)?internal\//g;
-
-  for (const match of source.matchAll(pattern)) {
-    errors.push(
-      `cross-package import must not target another package's internal path (${match[0]})`
-    );
   }
 
   return errors;
@@ -218,7 +151,7 @@ export function findUnitTestImportViolations(relativePath, source, policy) {
     return [];
   }
 
-  if (!INDEX_IMPORT_RE.test(source)) {
+  if (!importsPackageEntrypoint(source, relativePath)) {
     return [];
   }
 
@@ -267,7 +200,7 @@ export function validateControllerAlpineImports(root) {
     }
 
     const source = readFileSync(filePath, "utf8");
-    if (VALUE_ALPINE_IMPORT_RE.test(source)) {
+    if (hasRuntimeAlpineImport(source, relativePath)) {
       errors.push(
         `${relativePath}: controller modules must not import alpinejs at runtime (use import type or keep Alpine in plugin.ts)`
       );
@@ -294,15 +227,11 @@ export function validateConstructorSideEffects(root, policy) {
     }
 
     const source = readFileSync(filePath, "utf8");
-    const bodies = extractConstructorBodies(source);
-
-    for (const body of bodies) {
-      const violations = findConstructorSideEffectViolations(body);
-      if (violations.length > 0) {
-        errors.push(
-          `${relativePath}: constructor must not access browser globals or start timers (${violations.join(", ")})`
-        );
-      }
+    const violations = findConstructorSideEffectsInSource(source, relativePath);
+    if (violations.length > 0) {
+      errors.push(
+        `${relativePath}: constructor must not access browser globals or start timers (${violations.join(", ")})`
+      );
     }
   });
 
@@ -346,7 +275,7 @@ export function validateControllerSurface(root, policy) {
     }
 
     const barrel = readFileSync(barrelPath, "utf8");
-    if (!(CONTROLLER_EXPORT_RE.test(barrel) || hasControllerSubpathExport(pkg.manifest))) {
+    if (!(exportsControllerClass(barrel, "index.ts") || hasControllerSubpathExport(pkg.manifest))) {
       errors.push(
         `${pkg.name}: stateful package must export a public *Controller class from src/index.ts, expose a ./controller subpath, or be listed in ARCHITECTURE_CHECK_POLICY.controllerExceptions`
       );
