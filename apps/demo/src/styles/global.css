@@ -220,10 +220,52 @@
 /* ── shadcn overrides (Apple HIG) ── */
 :root {
 	color-scheme: light;
+
+	/* shadcn semantic tokens (used by sonner.css, etc.) */
+	--background: var(--ios-bg-primary);
+	--foreground: var(--ios-label);
+	--card: var(--ios-bg-elevated);
+	--card-foreground: var(--ios-label);
+	--popover: var(--ios-bg-elevated);
+	--popover-foreground: var(--ios-label);
+	--primary: var(--ios-blue);
+	--primary-foreground: #FFFFFF;
+	--secondary: var(--ios-fill-secondary);
+	--secondary-foreground: var(--ios-label);
+	--muted: var(--ios-fill-quaternary);
+	--muted-foreground: var(--ios-label-secondary);
+	--accent: var(--ios-fill-secondary);
+	--accent-foreground: var(--ios-label);
+	--destructive: var(--ios-red);
+	--destructive-foreground: #FFFFFF;
+	--border: var(--ios-separator);
+	--input: var(--ios-separator);
+	--ring: var(--ios-blue);
+	--radius: var(--ios-radius-md);
 }
 
 .dark {
 	color-scheme: dark;
+
+	--background: var(--ios-bg-primary);
+	--foreground: var(--ios-label);
+	--card: var(--ios-bg-elevated);
+	--card-foreground: var(--ios-label);
+	--popover: var(--ios-bg-elevated);
+	--popover-foreground: var(--ios-label);
+	--primary: var(--ios-blue);
+	--primary-foreground: #000000;
+	--secondary: var(--ios-fill-secondary);
+	--secondary-foreground: var(--ios-label);
+	--muted: var(--ios-fill-quaternary);
+	--muted-foreground: var(--ios-label-secondary);
+	--accent: var(--ios-fill-secondary);
+	--accent-foreground: var(--ios-label);
+	--destructive: var(--ios-red);
+	--destructive-foreground: #FFFFFF;
+	--border: var(--ios-separator);
+	--input: var(--ios-separator);
+	--ring: var(--ios-blue);
 }
 
 @layer base {
