@@ -2,10 +2,11 @@
 
 import type { VirtualStore } from "./types";
 
-export { VirtualController, createVirtualController } from "./controller";
-export { createVirtualStore } from "./store";
+export { createVirtualController, VirtualController } from "./controller";
 export type { VirtualEvents, VirtualRangeChangeDetail, VirtualScrollDetail } from "./events";
+export { createVirtualStore } from "./store";
 export type {
+  CreateVirtualOptions,
   VirtualInstance,
   VirtualItem,
   VirtualKey,
@@ -13,7 +14,6 @@ export type {
   VirtualScrollAlign,
   VirtualScrollToIndexOptions,
   VirtualStore,
-  CreateVirtualOptions,
 } from "./types";
 
 export default function virtualPlugin(): import("alpinejs").PluginCallback;

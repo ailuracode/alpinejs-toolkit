@@ -4,6 +4,7 @@ Modular **Alpine.js toolkit** — lazy plugin init, headless stores and magics, 
 
 Built by **ailuracode**. 32 independent npm packages; install only what you need.
 
+
 ## Why this exists
 
 Alpine gives you reactivity in HTML. This monorepo adds **headless, tree-shakeable modules** coordinated by a **lazy registry** (`@ailuracode/alpine-core`):

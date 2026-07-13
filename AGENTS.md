@@ -6,6 +6,7 @@ Guidance for AI agents and contributors working on **@ailuracode/alpinejs-toolki
 
 Alpine.js plugin monorepo by **ailuracode**. 32 independent npm packages under `packages/`, plus shared tests and docs. The root package `@ailuracode/alpinejs-toolkit` is **private** and never published.
 
+
 | Package | Type | Store / Magic |
 |---------|------|---------------|
 | `@ailuracode/alpine-core` | Core | Plugin registry (`registerPlugin`, `initPlugins`) |
