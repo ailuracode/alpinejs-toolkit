@@ -123,4 +123,94 @@ describe("@ailuracode/alpine-dialog", () => {
     expect(scroll.lock).toHaveBeenCalledWith("dialog");
     expect(scroll.unlock).toHaveBeenLastCalledWith("dialog-lock");
   });
+
+  it("handles open on already open dialog", () => {
+    store.open("settings");
+    store.open("settings");
+    expect(store.isOpen("settings")).toBe(true);
+  });
+
+  it("handles close on closed dialog", () => {
+    store.close("settings");
+    expect(store.isOpen("settings")).toBe(false);
+  });
+
+  it("handles closeOnEscape: false", () => {
+    store.register("settings", { closeOnEscape: false });
+    store.open("settings");
+    store.handleKeydown("settings", new KeyboardEvent("keydown", { key: "Escape" }));
+    expect(store.isOpen("settings")).toBe(true);
+  });
+
+  it("handles handleKeydown on unknown dialog", () => {
+    store.handleKeydown("nonexistent", new KeyboardEvent("keydown", { key: "Escape" }));
+  });
+
+  it("handles dialogProps on unknown dialog", () => {
+    const props = store.dialogProps("nonexistent");
+    expect(props.role).toBe("dialog");
+  });
+
+  it("handles scrollLock: false", () => {
+    const scroll = createScrollStoreMock();
+    store = createDialogStore({ scroll, defaultScrollLock: true });
+    store.register("settings", { scrollLock: false });
+    store.open("settings");
+    expect(scroll.lock).not.toHaveBeenCalled();
+  });
+
+  it("handles defaultScrollLock: false", () => {
+    const scroll = createScrollStoreMock();
+    store = createDialogStore({ scroll, defaultScrollLock: false });
+    store.open("settings");
+    expect(scroll.lock).not.toHaveBeenCalled();
+  });
+
+  it("focus trap handles shift+tab on first element", () => {
+    const container = document.createElement("div");
+    const first = document.createElement("button");
+    const last = document.createElement("button");
+    container.append(first, last);
+    document.body.append(container);
+
+    const trap = createFocusTrap(container);
+    trap.activate();
+    first.focus();
+
+    const event = new KeyboardEvent("keydown", { key: "Tab", bubbles: true, shiftKey: true });
+    container.dispatchEvent(event);
+    expect(document.activeElement).toBe(last);
+
+    trap.deactivate();
+    container.remove();
+  });
+
+  it("focus trap handles tab on last element", () => {
+    const container = document.createElement("div");
+    const first = document.createElement("button");
+    const last = document.createElement("button");
+    container.append(first, last);
+    document.body.append(container);
+
+    const trap = createFocusTrap(container);
+    trap.activate();
+    last.focus();
+
+    const event = new KeyboardEvent("keydown", { key: "Tab", bubbles: true });
+    container.dispatchEvent(event);
+    expect(document.activeElement).toBe(first);
+
+    trap.deactivate();
+    container.remove();
+  });
+
+  it("unregister removes dialog", () => {
+    store.register("settings");
+    store.unregister("settings");
+    expect(store.isOpen("settings")).toBe(false);
+  });
+
+  it("handles unregister of unknown dialog", () => {
+    store.unregister("nonexistent");
+  });
 });

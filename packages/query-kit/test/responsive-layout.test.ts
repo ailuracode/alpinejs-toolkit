@@ -1,52 +1,71 @@
 import { describe, expect, it } from "vitest";
 import { applyResponsiveLayout, isCompactLayout } from "../src/devtools/responsive-layout.js";
 
+function createTargets(position: "bottom" | "right" = "bottom") {
+  return {
+    panel: document.createElement("section"),
+    resizeHandle: document.createElement("div"),
+    headerToolbar: document.createElement("div"),
+    toolbarTop: document.createElement("div"),
+    toolbarBottom: document.createElement("div"),
+    body: document.createElement("div"),
+    list: document.createElement("div"),
+    searchInput: document.createElement("input"),
+    adapterSelect: document.createElement("select"),
+    sortSelect: document.createElement("select"),
+    tabs: document.createElement("div"),
+    queriesTab: document.createElement("button"),
+    mutationsTab: document.createElement("button"),
+    position,
+  };
+}
+
 describe("query devtools responsive layout", () => {
   it("switches to compact layout on narrow panels", () => {
-    const panel = document.createElement("section");
-    const headerToolbar = document.createElement("div");
-    const toolbarTop = document.createElement("div");
-    const toolbarBottom = document.createElement("div");
-    const body = document.createElement("div");
-    const list = document.createElement("div");
-    const searchInput = document.createElement("input");
-    const adapterSelect = document.createElement("select");
-    const sortSelect = document.createElement("select");
-    const tabs = document.createElement("div");
-    const queriesTab = document.createElement("button");
-    const mutationsTab = document.createElement("button");
-    const resizeHandle = document.createElement("div");
-
-    applyResponsiveLayout(
-      {
-        panel,
-        resizeHandle,
-        headerToolbar,
-        toolbarTop,
-        toolbarBottom,
-        body,
-        list,
-        searchInput,
-        adapterSelect,
-        sortSelect,
-        tabs,
-        queriesTab,
-        mutationsTab,
-        position: "bottom",
-      },
-      true,
-      520
-    );
+    const targets = createTargets("bottom");
+    applyResponsiveLayout(targets, true, 520);
 
     expect(isCompactLayout()).toBe(true);
-    expect(body.style.gridTemplateColumns).toBe("1fr");
-    expect(body.style.gridTemplateRows).toBe("1fr");
-    expect(searchInput.style.width).toBe("100%");
-    expect(panel.style.width).toBe("auto");
-    expect(panel.style.left).toBe("0.5rem");
-    expect(panel.style.right).toBe("0.5rem");
-    expect(panel.style.height).toBe("520px");
-    expect(panel.style.minHeight).toBe("400px");
-    expect(resizeHandle.hidden).toBe(false);
+    expect(targets.body.style.gridTemplateColumns).toBe("1fr");
+    expect(targets.body.style.gridTemplateRows).toBe("1fr");
+    expect(targets.searchInput.style.width).toBe("100%");
+    expect(targets.panel.style.width).toBe("auto");
+    expect(targets.panel.style.left).toBe("0.5rem");
+    expect(targets.panel.style.right).toBe("0.5rem");
+    expect(targets.panel.style.height).toBe("520px");
+    expect(targets.panel.style.minHeight).toBe("400px");
+    expect(targets.resizeHandle.hidden).toBe(false);
+  });
+
+  it("applies compact layout for right-positioned panels", () => {
+    const targets = createTargets("right");
+    applyResponsiveLayout(targets, true);
+
+    expect(isCompactLayout()).toBe(true);
+    expect(targets.body.style.gridTemplateRows).toBe("1fr");
+  });
+
+  it("applies non-compact layout for right-positioned panels", () => {
+    const targets = createTargets("right");
+    applyResponsiveLayout(targets, false);
+
+    expect(isCompactLayout()).toBe(false);
+    expect(targets.body.style.gridTemplateRows).toContain("minmax");
+  });
+
+  it("applies non-compact bottom layout", () => {
+    const targets = createTargets("bottom");
+    applyResponsiveLayout(targets, false);
+
+    expect(isCompactLayout()).toBe(false);
+    expect(targets.resizeHandle.hidden).toBe(true);
+  });
+
+  it("handles null mobilePanelHeight for compact bottom layout", () => {
+    const targets = createTargets("bottom");
+    applyResponsiveLayout(targets, true, null);
+
+    // height is resolved from null fallback
+    expect(isCompactLayout()).toBe(true);
   });
 });
