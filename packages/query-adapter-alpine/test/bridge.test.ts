@@ -3,9 +3,9 @@ import type {
   MutationStateHandle,
   MutationStateRecord,
   QueryState,
+  QueryStateAdapter,
   QueryStateHandle,
   QueryStateRecord,
-  QueryStateAdapter,
 } from "@ailuracode/alpine-query";
 import { vanillaQueryAdapter } from "@ailuracode/alpine-query";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -74,7 +74,10 @@ function createMockMutationHandle(): MutationStateHandle<unknown, unknown> {
     status: "idle",
   };
 
-  const mutate = vi.fn().mockResolvedValue(undefined) as unknown as MutationState<unknown, unknown>["mutate"];
+  const mutate = vi.fn().mockResolvedValue(undefined) as unknown as MutationState<
+    unknown,
+    unknown
+  >["mutate"];
   const reset = vi.fn() as unknown as MutationState<unknown, unknown>["reset"];
   const state: MutationState<unknown, unknown> = {
     data: record.data,
@@ -258,7 +261,7 @@ describe("bridge.ts — coverage", () => {
       };
       const baseAdapter: QueryStateAdapter = {
         name: "NoStaleTime",
-        createQueryState: <TData,>(
+        createQueryState: <TData>(
           initial: QueryStateRecord<TData>,
           _staleTime: number,
           refetch: () => Promise<void>
@@ -281,7 +284,7 @@ describe("bridge.ts — coverage", () => {
             listen: noStaleListener as unknown as QueryStateHandle<TData>["listen"],
           };
         },
-        createMutationState: <TData, TVariables,>(
+        createMutationState: <TData, TVariables>(
           handlers: Pick<MutationState<TData, TVariables>, "mutate" | "reset">
         ): MutationStateHandle<TData, TVariables> => {
           const state: MutationState<TData, TVariables> = {
