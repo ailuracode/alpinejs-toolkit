@@ -10,8 +10,10 @@ Lightweight calendar logic for Alpine.js, powered by [date-fns](https://date-fns
 ## Install
 
 ```bash
-npm install @ailuracode/alpine-calendar alpinejs
+npm install @ailuracode/alpine-calendar @ailuracode/alpine-selection alpinejs
 ```
+
+Date selection uses `@ailuracode/alpine-selection` internally (ISO date keys, single/multiple/range modes).
 
 ## Setup
 

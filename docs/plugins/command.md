@@ -10,8 +10,10 @@ Headless command palette (Spotlight-style) store — searchable actions, groups,
 ## Install
 
 ```bash
-pnpm add @ailuracode/alpine-command alpinejs
+pnpm add @ailuracode/alpine-command @ailuracode/alpine-selection alpinejs
 ```
+
+Active item navigation uses `@ailuracode/alpine-selection` navigation helpers.
 
 ## Setup
 

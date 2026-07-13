@@ -10,8 +10,10 @@ Headless accordion store with **single** or **multiple** open panels, optional *
 ## Install
 
 ```bash
-npm install @ailuracode/alpine-accordion alpinejs
+npm install @ailuracode/alpine-accordion @ailuracode/alpine-selection alpinejs
 ```
+
+Open panel state maps to `@ailuracode/alpine-selection` (single or multiple mode).
 
 ## Store API
 

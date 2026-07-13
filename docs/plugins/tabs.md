@@ -10,8 +10,10 @@ Headless accessible tabs store with keyboard navigation, manual/automatic activa
 ## Install
 
 ```bash
-npm install @ailuracode/alpine-tabs alpinejs
+npm install @ailuracode/alpine-tabs @ailuracode/alpine-selection alpinejs
 ```
+
+Active tab tracking is backed by `@ailuracode/alpine-selection` (single mode).
 
 ## Store API
 
