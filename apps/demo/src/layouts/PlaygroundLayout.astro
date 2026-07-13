@@ -18,18 +18,20 @@ const footerLinkClass =
 	<main
 		id="main"
 		tabindex="-1"
-		class="mx-auto w-full max-w-3xl flex-1 px-4 py-6 pb-[max(5rem,env(safe-area-inset-bottom))] pl-[max(1rem,env(safe-area-inset-left))] pr-[max(1rem,env(safe-area-inset-right))] transition-[margin-left] duration-300 motion-reduce:transition-none sm:px-6 lg:max-w-5xl"
-		x-bind:class="$store.media.breakpoint === 'desktop' ? (expanded ? 'ml-64' : 'ml-16') : ''"
+		class="min-h-[calc(100vh-3rem)] w-full flex-1 px-4 py-6 pb-[max(5rem,env(safe-area-inset-bottom))] pl-[max(1rem,env(safe-area-inset-left))] pr-[max(1rem,env(safe-area-inset-right))] transition-[margin-left,max-width] duration-300 motion-reduce:transition-none sm:px-6"
+		x-bind:class="$store.media.breakpoint === 'desktop' ? (expanded ? 'lg:ml-64 lg:max-w-[calc(100vw-16rem)]' : 'lg:ml-16 lg:max-w-[calc(100vw-4rem)]') : ''"
 	>
-		<slot />
+		<div class="mx-auto w-full max-w-3xl lg:max-w-5xl">
+			<slot />
+		</div>
 	</main>
 
 	<DemoSidebar activePlugin={activePlugin} />
 
 	<footer class="border-t border-[var(--ios-separator)] bg-[var(--ios-bg-primary)]">
 		<div
-			class="flex flex-col items-center justify-center gap-3 px-6 py-8 pb-[max(2rem,env(safe-area-inset-bottom))] text-sm text-[var(--ios-label-secondary)] transition-[margin-left] duration-300 motion-reduce:transition-none"
-			x-bind:class="$store.media.breakpoint === 'desktop' ? (expanded ? 'ml-64' : 'ml-16') : ''"
+			class="flex flex-col items-center justify-center gap-3 px-6 py-8 pb-[max(2rem,env(safe-area-inset-bottom))] text-sm text-[var(--ios-label-secondary)] transition-[margin-left,max-width] duration-300 motion-reduce:transition-none"
+			x-bind:class="$store.media.breakpoint === 'desktop' ? (expanded ? 'lg:ml-64 lg:max-w-[calc(100vw-16rem)]' : 'lg:ml-16 lg:max-w-[calc(100vw-4rem)]') : ''"
 		>
 			<nav class="flex flex-wrap justify-center gap-x-4 gap-y-2" aria-label="Footer">
 				<a href="/" class={footerLinkClass}>Documentation</a>

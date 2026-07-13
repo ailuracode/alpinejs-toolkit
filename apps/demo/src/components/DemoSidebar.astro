@@ -41,7 +41,7 @@ const navLinkClass = (id: string) => {
   x-transition:leave="transition ease-in duration-200 motion-reduce:transition-none"
   x-transition:leave-start="translate-x-0"
   x-transition:leave-end="-translate-x-full"
-  class="fixed inset-y-0 left-0 z-40 flex flex-col overflow-hidden border-r border-[var(--ios-separator)] bg-[var(--ios-bg-secondary)]/80 text-[var(--ios-label)] shadow-xl backdrop-blur-2xl backdrop-saturate-150 transition-[width] duration-300 ease-out motion-reduce:transition-none"
+  class="fixed top-12 bottom-0 left-0 z-40 flex flex-col overflow-hidden border-r border-[var(--ios-separator)] bg-[var(--ios-bg-secondary)]/80 text-[var(--ios-label)] shadow-xl backdrop-blur-2xl backdrop-saturate-150 transition-[width] duration-300 ease-out motion-reduce:transition-none"
   x-cloak
   x-bind:class="$store.media.breakpoint === 'desktop' && !expanded ? 'w-16' : 'w-64'"
   aria-label="Playground navigation"
