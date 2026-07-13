@@ -14,11 +14,11 @@ const navLinkClass = (id: string) => {
   const active = activePlugin === id;
 
   return [
-    "relative flex h-10 w-full items-center rounded-lg text-sm transition-[background-color,color,gap,padding] duration-200 motion-reduce:transition-none",
-    "focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-sidebar-ring/50 touch-manipulation",
+    "relative flex h-9 w-full items-center rounded-[var(--ios-radius-sm)] text-sm transition-all duration-200 motion-reduce:transition-none",
+    "focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-[var(--ios-blue)]/50 touch-manipulation",
     active
-      ? "bg-sidebar-accent font-medium text-sidebar-accent-foreground before:absolute before:inset-y-2 before:left-0 before:w-0.5 before:rounded-full before:bg-sidebar-primary"
-      : "text-sidebar-foreground/80 hover:bg-sidebar-accent/60 hover:text-sidebar-accent-foreground",
+      ? "bg-[var(--ios-blue)]/10 font-medium text-[var(--ios-blue)] before:absolute before:inset-y-2 before:left-0 before:w-[3px] before:rounded-full before:bg-[var(--ios-blue)]"
+      : "text-[var(--ios-label-secondary)] hover:bg-[var(--ios-fill-quaternary)] hover:text-[var(--ios-label)]",
   ].join(" ");
 };
 ---
@@ -28,7 +28,7 @@ const navLinkClass = (id: string) => {
 	type="button"
 	x-show="$store.media.breakpoint !== 'desktop' && $store.sidebar.visible"
 	x-transition.opacity
-	class="fixed inset-0 z-30 border-0 bg-black/50 p-0 motion-reduce:transition-none touch-manipulation"
+	class="fixed inset-0 z-30 border-0 bg-black/40 p-0 motion-reduce:transition-none touch-manipulation backdrop-blur-sm"
 	x-on:click="$store.sidebar.hide()"
 	aria-label="Close navigation"
 	style="display: none;"
@@ -42,21 +42,21 @@ const navLinkClass = (id: string) => {
 	x-transition:leave="transition ease-in duration-200 motion-reduce:transition-none"
 	x-transition:leave-start="translate-x-0"
 	x-transition:leave-end="-translate-x-full"
-	class="fixed inset-y-0 left-0 z-40 flex flex-col overflow-hidden border-r border-sidebar-border bg-sidebar text-sidebar-foreground shadow-xl transition-[width] duration-300 ease-out motion-reduce:transition-none"
+	class="fixed inset-y-0 left-0 z-40 flex flex-col overflow-hidden border-r border-[var(--ios-separator)] bg-[var(--ios-bg-secondary)] text-[var(--ios-label)] shadow-xl transition-[width] duration-300 ease-out motion-reduce:transition-none"
 	x-cloak
 	x-bind:class="$store.media.breakpoint === 'desktop' && !expanded ? 'w-16' : 'w-64'"
 	aria-label="Playground navigation"
 >
 	<a
 		href="/playground/"
-		class="flex h-14 shrink-0 items-center border-b border-sidebar-border transition-[padding] duration-200 hover:bg-sidebar-accent/40 focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-sidebar-ring/50 focus-visible:ring-inset motion-reduce:transition-none"
+		class="flex h-12 shrink-0 items-center border-b border-[var(--ios-separator)] transition-[padding] duration-200 hover:bg-[var(--ios-fill-quaternary)] focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-[var(--ios-blue)]/50 focus-visible:ring-inset motion-reduce:transition-none"
 		x-bind:class="effectivelyExpanded ? 'justify-start gap-3 px-4' : 'justify-center px-0'"
 		x-on:click="$store.media.breakpoint !== 'desktop' && $store.sidebar.hide()"
 		aria-current={activePlugin === "overview" ? "page" : undefined}
 	>
-		<img src="/logo.png" alt="" width="32" height="32" class="size-8 shrink-0 rounded-lg" />
+		<img src="/logo.png" alt="" width="32" height="32" class="size-8 shrink-0 rounded-[var(--ios-radius-sm)]" />
 		<span
-			class="overflow-hidden whitespace-nowrap text-sm font-bold"
+			class="overflow-hidden whitespace-nowrap text-sm font-semibold tracking-tight"
 			x-show="effectivelyExpanded"
 			x-cloak
 		>
@@ -82,7 +82,7 @@ const navLinkClass = (id: string) => {
 		</a>
 
 		<Separator
-			class="bg-sidebar-border transition-[margin,width] duration-200 motion-reduce:transition-none"
+			class="bg-[var(--ios-separator)] transition-[margin,width] duration-200 motion-reduce:transition-none"
 			x-bind:class="effectivelyExpanded ? 'my-2' : 'mx-auto my-2 w-8'"
 		/>
 
@@ -90,7 +90,7 @@ const navLinkClass = (id: string) => {
 			PLUGIN_NAV_GROUPS.map((group) => (
 				<>
 					<div
-						class="px-3 pt-2 pb-1 text-[10px] font-semibold tracking-wider whitespace-nowrap text-sidebar-foreground/50 uppercase"
+						class="px-3 pt-3 pb-1 text-[11px] font-semibold tracking-wide whitespace-nowrap text-[var(--ios-label-tertiary)] uppercase"
 						x-show="effectivelyExpanded"
 						x-cloak
 						aria-hidden="true"
@@ -118,13 +118,13 @@ const navLinkClass = (id: string) => {
 	</nav>
 
 	<div
-		class="flex shrink-0 flex-col border-t border-sidebar-border transition-[padding] duration-200 motion-reduce:transition-none"
+		class="flex shrink-0 flex-col border-t border-[var(--ios-separator)] transition-[padding] duration-200 motion-reduce:transition-none"
 		x-bind:class="effectivelyExpanded ? 'p-2' : 'px-1.5 py-2'"
 	>
 		<Button
 			variant="ghost"
 			size="sm"
-			class="hidden text-sidebar-foreground/80 hover:bg-sidebar-accent/60 hover:text-sidebar-accent-foreground sm:inline-flex motion-reduce:transition-none"
+			class="hidden text-[var(--ios-label-secondary)] hover:bg-[var(--ios-fill-quaternary)] hover:text-[var(--ios-label)] sm:inline-flex motion-reduce:transition-none"
 			x-show="$store.media.breakpoint === 'desktop'"
 			x-on:click="expanded = !expanded"
 			x-bind:aria-label="expanded ? 'Collapse sidebar' : 'Expand sidebar'"
@@ -147,7 +147,7 @@ const navLinkClass = (id: string) => {
 			<span x-show="expanded" x-cloak>Collapse</span>
 		</Button>
 		<p
-			class="px-1 pt-2 text-center text-[10px] leading-snug text-sidebar-foreground/60"
+			class="px-1 pt-2 text-center text-[10px] leading-snug text-[var(--ios-label-tertiary)]"
 			x-show="effectivelyExpanded"
 			x-cloak
 		>

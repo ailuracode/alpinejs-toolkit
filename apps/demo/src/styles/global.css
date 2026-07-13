@@ -21,11 +21,86 @@
 	display: none !important;
 }
 
+/* ── iOS/Cupertino design tokens ── */
+:root {
+	/* iOS system backgrounds */
+	--ios-bg-primary: #F2F2F7;
+	--ios-bg-secondary: #FFFFFF;
+	--ios-bg-tertiary: #F2F2F7;
+	--ios-bg-elevated: #FFFFFF;
+
+	/* iOS system colors */
+	--ios-blue: #007AFF;
+	--ios-green: #34C759;
+	--ios-red: #FF3B30;
+	--ios-orange: #FF9500;
+	--ios-yellow: #FFCC00;
+	--ios-purple: #AF52DE;
+	--ios-pink: #FF2D55;
+	--ios-teal: #5AC8FA;
+	--ios-indigo: #5856D6;
+
+	/* iOS text */
+	--ios-label: #000000;
+	--ios-label-secondary: rgba(60, 60, 67, 0.6);
+	--ios-label-tertiary: rgba(60, 60, 67, 0.3);
+	--ios-label-quaternary: rgba(60, 60, 67, 0.18);
+
+	/* iOS separators and fills */
+	--ios-separator: rgba(60, 60, 67, 0.29);
+	--ios-separator-opaque: #C6C6C8;
+	--ios-fill: rgba(120, 120, 128, 0.2);
+	--ios-fill-secondary: rgba(120, 120, 128, 0.16);
+	--ios-fill-tertiary: rgba(120, 120, 128, 0.12);
+	--ios-fill-quaternary: rgba(120, 120, 128, 0.08);
+
+	/* iOS spacing */
+	--ios-radius-sm: 8px;
+	--ios-radius-md: 12px;
+	--ios-radius-lg: 16px;
+	--ios-radius-xl: 20px;
+	--ios-radius-2xl: 22px;
+}
+
+.dark {
+	/* iOS dark mode backgrounds */
+	--ios-bg-primary: #000000;
+	--ios-bg-secondary: #1C1C1E;
+	--ios-bg-tertiary: #2C2C2E;
+	--ios-bg-elevated: #1C1C1E;
+
+	/* iOS dark mode colors */
+	--ios-blue: #0A84FF;
+	--ios-green: #30D158;
+	--ios-red: #FF453A;
+	--ios-orange: #FF9F0A;
+	--ios-yellow: #FFD60A;
+	--ios-purple: #BF5AF2;
+	--ios-pink: #FF375F;
+	--ios-teal: #64D2FF;
+	--ios-indigo: #5E5CE6;
+
+	/* iOS dark text */
+	--ios-label: #FFFFFF;
+	--ios-label-secondary: rgba(235, 235, 245, 0.6);
+	--ios-label-tertiary: rgba(235, 235, 245, 0.3);
+	--ios-label-quaternary: rgba(235, 235, 245, 0.18);
+
+	/* iOS dark separators and fills */
+	--ios-separator: rgba(84, 84, 88, 0.65);
+	--ios-separator-opaque: #38383A;
+	--ios-fill: rgba(120, 120, 128, 0.36);
+	--ios-fill-secondary: rgba(120, 120, 128, 0.32);
+	--ios-fill-tertiary: rgba(120, 120, 128, 0.24);
+	--ios-fill-quaternary: rgba(120, 120, 128, 0.18);
+}
+
+/* ── Battery visualization ── */
 .battery-shell {
 	position: relative;
 	width: 4.5rem;
 	height: 1.5rem;
-	border: 2px solid color-mix(in oklch, var(--foreground) 40%, transparent);
+	border: 2px solid var(--ios-fill);
 	border-radius: 4px;
 	padding: 2px;
 }
@@ -38,7 +113,7 @@
 	width: 4px;
 	height: 0.55rem;
 	transform: translateY(-50%);
-	background: color-mix(in oklch, var(--foreground) 40%, transparent);
+	background: var(--ios-fill);
 	border-radius: 0 2px 2px 0;
 }
 
@@ -50,11 +125,12 @@
 		background 0.3s ease;
 }
 
+/* ── Query table ── */
 .query-table-wrap.is-fetching::after {
 	content: "";
 	position: absolute;
 	inset: 0;
-	background: color-mix(in oklch, var(--background) 72%, transparent);
+	background: color-mix(in oklch, var(--ios-bg-secondary) 72%, transparent);
 	pointer-events: none;
 }
 
@@ -68,9 +144,9 @@
 	border-radius: 0.2em;
 	background: linear-gradient(
 		90deg,
-		color-mix(in oklch, var(--foreground) 12%, transparent) 0%,
-		color-mix(in oklch, var(--foreground) 24%, transparent) 50%,
-		color-mix(in oklch, var(--foreground) 12%, transparent) 100%
+		var(--ios-fill-quaternary) 0%,
+		var(--ios-fill-tertiary) 50%,
+		var(--ios-fill-quaternary) 100%
 	);
 	background-size: 200% 100%;
 	animation: query-table-shimmer 1.2s ease-in-out infinite;
@@ -89,7 +165,7 @@
 @media (prefers-reduced-motion: reduce) {
 	.query-table-skeleton {
 		animation: none;
-		background: color-mix(in oklch, var(--foreground) 16%, transparent);
+		background: var(--ios-fill-tertiary);
 	}
 
 	.battery-fill {
@@ -99,126 +175,81 @@
 
 @theme inline {
 	--font-heading: var(--font-sans);
-	--font-sans: 'Geist Variable', sans-serif;
-	--color-sidebar-ring: var(--sidebar-ring);
-	--color-sidebar-border: var(--sidebar-border);
-	--color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-	--color-sidebar-accent: var(--sidebar-accent);
-	--color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-	--color-sidebar-primary: var(--sidebar-primary);
-	--color-sidebar-foreground: var(--sidebar-foreground);
-	--color-sidebar: var(--sidebar);
-	--color-chart-5: var(--chart-5);
-	--color-chart-4: var(--chart-4);
-	--color-chart-3: var(--chart-3);
-	--color-chart-2: var(--chart-2);
-	--color-chart-1: var(--chart-1);
-	--color-ring: var(--ring);
-	--color-input: var(--input);
-	--color-border: var(--border);
-	--color-destructive: var(--destructive);
-	--color-accent-foreground: var(--accent-foreground);
-	--color-accent: var(--accent);
-	--color-muted-foreground: var(--muted-foreground);
-	--color-muted: var(--muted);
-	--color-secondary-foreground: var(--secondary-foreground);
-	--color-secondary: var(--secondary);
-	--color-primary-foreground: var(--primary-foreground);
-	--color-primary: var(--primary);
-	--color-popover-foreground: var(--popover-foreground);
-	--color-popover: var(--popover);
-	--color-card-foreground: var(--card-foreground);
-	--color-card: var(--card);
-	--color-foreground: var(--foreground);
-	--color-background: var(--background);
-	--radius-sm: calc(var(--radius) * 0.6);
-	--radius-md: calc(var(--radius) * 0.8);
-	--radius-lg: var(--radius);
-	--radius-xl: calc(var(--radius) * 1.4);
-	--radius-2xl: calc(var(--radius) * 1.8);
-	--radius-3xl: calc(var(--radius) * 2.2);
-	--radius-4xl: calc(var(--radius) * 2.6);
+	--font-sans: 'Geist Variable', -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', 'Helvetica Neue', system-ui, sans-serif;
+	--color-sidebar-ring: var(--ios-blue);
+	--color-sidebar-border: var(--ios-separator);
+	--color-sidebar-accent-foreground: var(--ios-label);
+	--color-sidebar-accent: var(--ios-fill-quaternary);
+	--color-sidebar-primary-foreground: #FFFFFF;
+	--color-sidebar-primary: var(--ios-blue);
+	--color-sidebar-foreground: var(--ios-label);
+	--color-sidebar: var(--ios-bg-secondary);
+	--color-chart-5: var(--ios-purple);
+	--color-chart-4: var(--ios-indigo);
+	--color-chart-3: var(--ios-teal);
+	--color-chart-2: var(--ios-green);
+	--color-chart-1: var(--ios-blue);
+	--color-ring: var(--ios-blue);
+	--color-input: var(--ios-separator);
+	--color-border: var(--ios-separator);
+	--color-destructive: var(--ios-red);
+	--color-accent-foreground: var(--ios-label);
+	--color-accent: var(--ios-fill-tertiary);
+	--color-muted-foreground: var(--ios-label-secondary);
+	--color-muted: var(--ios-fill-quaternary);
+	--color-secondary-foreground: var(--ios-label);
+	--color-secondary: var(--ios-fill-tertiary);
+	--color-primary-foreground: #FFFFFF;
+	--color-primary: var(--ios-blue);
+	--color-popover-foreground: var(--ios-label);
+	--color-popover: var(--ios-bg-elevated);
+	--color-card-foreground: var(--ios-label);
+	--color-card: var(--ios-bg-secondary);
+	--color-foreground: var(--ios-label);
+	--color-background: var(--ios-bg-primary);
+	--radius-sm: var(--ios-radius-sm);
+	--radius-md: var(--ios-radius-md);
+	--radius-lg: var(--ios-radius-lg);
+	--radius-xl: var(--ios-radius-xl);
+	--radius-2xl: var(--ios-radius-2xl);
+	--radius-3xl: 28px;
+	--radius-4xl: 32px;
+	--radius: var(--ios-radius-md);
 }
 
+/* ── shadcn overrides (Apple HIG) ── */
 :root {
 	color-scheme: light;
-	--background: oklch(1 0 0);
-	--foreground: oklch(0.145 0 0);
-	--card: oklch(1 0 0);
-	--card-foreground: oklch(0.145 0 0);
-	--popover: oklch(1 0 0);
-	--popover-foreground: oklch(0.145 0 0);
-	--primary: oklch(0.205 0 0);
-	--primary-foreground: oklch(0.985 0 0);
-	--secondary: oklch(0.97 0 0);
-	--secondary-foreground: oklch(0.205 0 0);
-	--muted: oklch(0.97 0 0);
-	--muted-foreground: oklch(0.556 0 0);
-	--accent: oklch(0.97 0 0);
-	--accent-foreground: oklch(0.205 0 0);
-	--destructive: oklch(0.577 0.245 27.325);
-	--border: oklch(0.922 0 0);
-	--input: oklch(0.922 0 0);
-	--ring: oklch(0.708 0 0);
-	--chart-1: oklch(0.87 0 0);
-	--chart-2: oklch(0.556 0 0);
-	--chart-3: oklch(0.439 0 0);
-	--chart-4: oklch(0.371 0 0);
-	--chart-5: oklch(0.269 0 0);
-	--radius: 0.625rem;
-	--sidebar: oklch(0.985 0 0);
-	--sidebar-foreground: oklch(0.145 0 0);
-	--sidebar-primary: oklch(0.205 0 0);
-	--sidebar-primary-foreground: oklch(0.985 0 0);
-	--sidebar-accent: oklch(0.97 0 0);
-	--sidebar-accent-foreground: oklch(0.205 0 0);
-	--sidebar-border: oklch(0.922 0 0);
-	--sidebar-ring: oklch(0.708 0 0);
 }
 
 .dark {
 	color-scheme: dark;
-	--background: oklch(0.145 0 0);
-	--foreground: oklch(0.985 0 0);
-	--card: oklch(0.205 0 0);
-	--card-foreground: oklch(0.985 0 0);
-	--popover: oklch(0.205 0 0);
-	--popover-foreground: oklch(0.985 0 0);
-	--primary: oklch(0.922 0 0);
-	--primary-foreground: oklch(0.205 0 0);
-	--secondary: oklch(0.269 0 0);
-	--secondary-foreground: oklch(0.985 0 0);
-	--muted: oklch(0.269 0 0);
-	--muted-foreground: oklch(0.708 0 0);
-	--accent: oklch(0.269 0 0);
-	--accent-foreground: oklch(0.985 0 0);
-	--destructive: oklch(0.704 0.191 22.216);
-	--border: oklch(1 0 0 / 10%);
-	--input: oklch(1 0 0 / 15%);
-	--ring: oklch(0.556 0 0);
-	--chart-1: oklch(0.87 0 0);
-	--chart-2: oklch(0.556 0 0);
-	--chart-3: oklch(0.439 0 0);
-	--chart-4: oklch(0.371 0 0);
-	--chart-5: oklch(0.269 0 0);
-	--sidebar: oklch(0.205 0 0);
-	--sidebar-foreground: oklch(0.985 0 0);
-	--sidebar-primary: oklch(0.488 0.243 264.376);
-	--sidebar-primary-foreground: oklch(0.985 0 0);
-	--sidebar-accent: oklch(0.269 0 0);
-	--sidebar-accent-foreground: oklch(0.985 0 0);
-	--sidebar-border: oklch(1 0 0 / 10%);
-	--sidebar-ring: oklch(0.556 0 0);
 }
 
 @layer base {
-  * {
-    @apply border-border outline-ring/50;
+	* {
+		@apply border-border outline-ring/50;
 	}
-  body {
-    @apply bg-background text-foreground;
+	body {
+		@apply bg-background text-foreground antialiased;
 	}
-  html {
-    @apply font-sans;
+	html {
+		@apply font-sans;
+		-webkit-font-smoothing: antialiased;
+		-moz-osx-font-smoothing: grayscale;
+		text-rendering: optimizeLegibility;
+	}
+}
+
+/* ── iOS-style transitions ── */
+@layer utilities {
+	.ios-transition {
+		transition-property: color, background-color, border-color, opacity, transform;
+		transition-timing-function: cubic-bezier(0.25, 0.1, 0.25, 1);
+		transition-duration: 0.2s;
+	}
+
+	.ios-spring {
+		transition-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.1);
 	}
 }

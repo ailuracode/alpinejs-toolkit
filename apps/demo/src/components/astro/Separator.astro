@@ -9,7 +9,7 @@ const isVertical = orientation === "vertical";
 	role="separator"
 	aria-orientation={orientation}
 	class={cn(
-		"shrink-0 bg-border",
+		"shrink-0 bg-[var(--ios-separator)]",
 		isVertical ? "w-px self-stretch" : "h-px w-full",
 		className,
 	)}

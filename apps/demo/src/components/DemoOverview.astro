@@ -8,29 +8,29 @@ const moduleCount = PLUGIN_NAV_ITEMS.length;
 ---
 
 <header class="mb-8 scroll-mt-20">
-	<p class="text-sm font-medium text-primary">Interactive demos</p>
-	<h1 class="mt-1 text-3xl font-semibold tracking-tight text-balance">Playground</h1>
-	<p class="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground text-pretty">
-		Explore <strong class="font-medium text-foreground">{moduleCount} Alpine.js plugins</strong> with live
+	<p class="text-sm font-semibold tracking-wide text-[var(--ios-blue)]">Interactive demos</p>
+	<h1 class="mt-1 text-4xl font-bold tracking-tight text-balance">Playground</h1>
+	<p class="mt-2 max-w-2xl text-sm leading-relaxed text-[var(--ios-label-secondary)] text-pretty">
+		Explore <strong class="font-medium text-[var(--ios-label)]">{moduleCount} Alpine.js plugins</strong> with live
 		examples. Each page loads one module — start with essentials, then try environment, data, and query
 		stacks.
 	</p>
 	<dl class="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
-		<div class="rounded-lg border border-border bg-muted/40 px-3 py-2">
-			<dt class="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">Modules</dt>
-			<dd class="mt-0.5 text-lg font-semibold tabular-nums">{moduleCount}</dd>
+		<div class="rounded-[var(--ios-radius-lg)] bg-[var(--ios-bg-secondary)] px-4 py-3 shadow-sm shadow-black/5 dark:shadow-black/20">
+			<dt class="text-[10px] font-semibold uppercase tracking-wider text-[var(--ios-label-tertiary)]">Modules</dt>
+			<dd class="mt-1 text-xl font-bold tabular-nums">{moduleCount}</dd>
 		</div>
-		<div class="rounded-lg border border-border bg-muted/40 px-3 py-2">
-			<dt class="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">Essentials</dt>
-			<dd class="mt-0.5 text-lg font-semibold tabular-nums">{essentialItems.length}</dd>
+		<div class="rounded-[var(--ios-radius-lg)] bg-[var(--ios-bg-secondary)] px-4 py-3 shadow-sm shadow-black/5 dark:shadow-black/20">
+			<dt class="text-[10px] font-semibold uppercase tracking-wider text-[var(--ios-label-tertiary)]">Essentials</dt>
+			<dd class="mt-1 text-xl font-bold tabular-nums">{essentialItems.length}</dd>
 		</div>
-		<div class="rounded-lg border border-border bg-muted/40 px-3 py-2">
-			<dt class="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">Groups</dt>
-			<dd class="mt-0.5 text-lg font-semibold tabular-nums">{PLUGIN_NAV_GROUPS.length}</dd>
+		<div class="rounded-[var(--ios-radius-lg)] bg-[var(--ios-bg-secondary)] px-4 py-3 shadow-sm shadow-black/5 dark:shadow-black/20">
+			<dt class="text-[10px] font-semibold uppercase tracking-wider text-[var(--ios-label-tertiary)]">Groups</dt>
+			<dd class="mt-1 text-xl font-bold tabular-nums">{PLUGIN_NAV_GROUPS.length}</dd>
 		</div>
-		<div class="rounded-lg border border-border bg-muted/40 px-3 py-2">
-			<dt class="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">Stack</dt>
-			<dd class="mt-0.5 text-sm font-semibold leading-tight">Alpine · Astro</dd>
+		<div class="rounded-[var(--ios-radius-lg)] bg-[var(--ios-bg-secondary)] px-4 py-3 shadow-sm shadow-black/5 dark:shadow-black/20">
+			<dt class="text-[10px] font-semibold uppercase tracking-wider text-[var(--ios-label-tertiary)]">Stack</dt>
+			<dd class="mt-1 text-sm font-bold leading-tight">Alpine · Astro</dd>
 		</div>
 	</dl>
 </header>
@@ -38,8 +38,8 @@ const moduleCount = PLUGIN_NAV_ITEMS.length;
 <section aria-labelledby="essentials-heading" class="mb-10">
 	<div class="mb-4 flex items-end justify-between gap-3">
 		<div>
-			<h2 id="essentials-heading" class="text-lg font-semibold text-balance">Essentials</h2>
-			<p class="text-sm text-muted-foreground">Recommended starting point for most apps</p>
+			<h2 id="essentials-heading" class="text-xl font-bold tracking-tight text-balance">Essentials</h2>
+			<p class="text-sm text-[var(--ios-label-secondary)]">Recommended starting point for most apps</p>
 		</div>
 	</div>
 	<div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
@@ -51,10 +51,10 @@ const moduleCount = PLUGIN_NAV_ITEMS.length;
 	extendedGroups.map((group) => (
 		<section aria-labelledby={`group-${group.id}`} class="mb-10 last:mb-0">
 			<div class="mb-4">
-				<h2 id={`group-${group.id}`} class="text-lg font-semibold text-balance">
+				<h2 id={`group-${group.id}`} class="text-xl font-bold tracking-tight text-balance">
 					{group.label}
 				</h2>
-				<p class="text-sm text-muted-foreground">
+				<p class="text-sm text-[var(--ios-label-secondary)]">
 					{group.items.length} {group.items.length === 1 ? "module" : "modules"}
 				</p>
 			</div>
@@ -67,19 +67,19 @@ const moduleCount = PLUGIN_NAV_ITEMS.length;
 	))
 }
 
-<footer class="mt-10 border-t border-border pt-6 text-xs text-muted-foreground">
+<footer class="mt-10 border-t border-[var(--ios-separator)] pt-6 text-xs text-[var(--ios-label-secondary)]">
 	<p>
-		<a href="/getting-started/" class="font-medium text-primary underline-offset-4 hover:underline">
+		<a href="/getting-started/" class="font-semibold text-[var(--ios-blue)] underline-offset-4 hover:underline">
 			Getting started
 		</a>
 		<span aria-hidden="true"> · </span>
-		<a href="/core/" class="font-medium text-primary underline-offset-4 hover:underline">Core registry</a>
+		<a href="/core/" class="font-semibold text-[var(--ios-blue)] underline-offset-4 hover:underline">Core registry</a>
 		<span aria-hidden="true"> · </span>
 		<a
 			href="https://github.com/ailuracode/alpinejs-toolkit"
 			target="_blank"
 			rel="noreferrer"
-			class="font-medium text-primary underline-offset-4 hover:underline"
+			class="font-semibold text-[var(--ios-blue)] underline-offset-4 hover:underline"
 		>
 			GitHub
 			<span class="sr-only"> (opens in new tab)</span>
