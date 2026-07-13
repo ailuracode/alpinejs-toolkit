@@ -105,7 +105,8 @@ describe("@ailuracode/alpine-json-api", () => {
       })
     );
     const [, findAllInit] = vi.mocked(fetcher).mock.calls[0] ?? [];
-    expect((findAllInit?.headers as Headers).get("Accept")).toBe("application/vnd.api+json");
+    const findAllHeaders = findAllInit?.headers as Headers | undefined;
+    expect(findAllHeaders?.get("Accept")).toBe("application/vnd.api+json");
   });
 
   it("findOne() supports include, fields, sort, page, and filter query params", async () => {
@@ -173,8 +174,9 @@ describe("@ailuracode/alpine-json-api", () => {
 
     const [, createInit] = vi.mocked(fetcher).mock.calls[0] ?? [];
     expect(createInit?.method).toBe("POST");
-    expect((createInit?.headers as Headers).get("Accept")).toBe("application/vnd.api+json");
-    expect((createInit?.headers as Headers).get("Content-Type")).toBe("application/vnd.api+json");
+    const createHeaders = createInit?.headers as Headers | undefined;
+    expect(createHeaders?.get("Accept")).toBe("application/vnd.api+json");
+    expect(createHeaders?.get("Content-Type")).toBe("application/vnd.api+json");
     expect(JSON.parse(String(createInit?.body))).toEqual({
       data: {
         type: "articles",
