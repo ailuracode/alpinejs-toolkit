@@ -41,7 +41,7 @@ Tests MUST be split by layer:
 
 Controller-focused files (`controller.spec.ts`, `controller.test.ts`) MUST NOT import `src/index.ts`. Contract, integration, encapsulation, and inference tests MAY import the entrypoint.
 
-E2E specs live in `packages/<name>/e2e/**/*.spec.ts`, are excluded from Vitest, and run with `pnpm --filter @ailuracode/alpine-<name> test:e2e`. See `docs/e2e-testing.md`.
+E2E specs live in `packages/<name>/e2e/**/*.spec.ts`, are excluded from Vitest, and run with `pnpm --filter @ailuracode/alpine-<name> test:e2e`. See `.cursor/rules/e2e-testing.mdc` and `docs/e2e-testing.md`.
 
 ## Thresholds
 

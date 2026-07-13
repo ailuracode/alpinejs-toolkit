@@ -1,0 +1,183 @@
+---
+description: How to write per-package Playwright E2E tests for Alpine.js plugins
+globs: packages/*/e2e/**/*.ts,packages/*/e2e/**/*.html,packages/*/playwright.config.ts,e2e/**/*.ts
+alwaysApply: false
+---
+
+# E2E testing (Playwright)
+
+Use **Playwright directly** for real-browser coverage. Each package owns its scenarios under `packages/<name>/e2e/`. Do **not** put E2E specs in `packages/<name>/test/` and do **not** use Vitest browser mode.
+
+Full reference: `docs/e2e-testing.md`. Reference implementation: `packages/theme/e2e/`.
+
+## When to write E2E
+
+| Write E2E when… | Keep in happy-dom when… |
+|-----------------|-------------------------|
+| Focus trap, capture, restore | State machine, events, cleanup |
+| Real keyboard navigation (Tab, Escape, arrows) | Store/magic registration |
+| Portals, teleport, nested overlays | ARIA attribute literals without focus |
+| Scroll locking, layout measurement | Options normalization, errors |
+| Browser APIs (`matchMedia`, permissions, observers) | Controller logic without DOM |
+
+Every package does **not** need E2E on day one. Add a project when happy-dom cannot model the behavior faithfully.
+
+## Package layout
+
+```text
+packages/<name>/
+  playwright.config.ts
+  e2e/
+    fixture/
+      index.html    # minimal Alpine markup
+      main.ts       # registers the plugin under test
+    <feature>.spec.ts
+```
+
+Shared repo infrastructure (do not duplicate per package):
+
+- `e2e/playwright.base.ts` — `definePackagePlaywrightConfig()`
+- `e2e/fixtures.ts` — `test`, `expect`, `waitForAlpineFixture()`
+- `e2e/server/start-fixture-server.mjs` — bundles fixture and serves `/`, `/app.js`, `/__health`
+
+## Scaffold checklist
+
+1. Create `packages/<name>/e2e/fixture/index.html` with `data-e2e-ready="true"` on the bootstrapped root.
+2. Create `packages/<name>/e2e/fixture/main.ts` — import Alpine + plugin, call `Alpine.plugin(...)`, then `Alpine.start()`.
+3. Create `packages/<name>/playwright.config.ts`:
+
+```typescript
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { definePackagePlaywrightConfig } from "../../e2e/playwright.base.js";
+
+const packageDir = path.dirname(fileURLToPath(import.meta.url));
+
+export default definePackagePlaywrightConfig({
+  packageName: "<name>",
+  packageDir,
+});
+```
+
+4. Add to `packages/<name>/package.json`:
+
+```json
+"test:e2e": "playwright test --config playwright.config.ts",
+"test:e2e:report": "playwright show-report e2e/playwright-report"
+```
+
+5. Add specs under `packages/<name>/e2e/*.spec.ts`.
+
+## Fixture patterns by plugin type
+
+### Store plugin
+
+`main.ts` — register the store plugin with deterministic options:
+
+```typescript
+import myPlugin from "@ailuracode/alpine-my";
+import Alpine from "alpinejs";
+
+Alpine.plugin(myPlugin({ /* minimal options for the scenario */ }));
+Alpine.start();
+```
+
+`index.html` — exercise `$store.<name>` and user actions:
+
+```html
+<main data-e2e-ready="true" x-data x-init>
+  <button type="button" @click="$store.my.action()">Run action</button>
+  <output x-text="$store.my.value"></output>
+</main>
+<script type="module" src="/app.js"></script>
+```
+
+### Magic-only plugin
+
+Register the magic in `main.ts`. Bind magics in markup with `x-text` / `@click` on the magic return value (for object magics, expose methods on the returned object).
+
+### Directive plugin
+
+Put the directive on a host element in `index.html`. Keep markup minimal but include the attributes consumers would use (`x-child`, etc.).
+
+### Multiple workspace dependencies
+
+Import from `@ailuracode/alpine-*` package names in `main.ts`. The fixture server resolves workspace aliases from root `tsconfig.json` — do not hardcode relative paths to other packages' `src/`.
+
+## Writing specs
+
+Always import from the shared fixtures module:
+
+```typescript
+import { expect, test, waitForAlpineFixture } from "../../../e2e/fixtures.js";
+
+test.describe("@ailuracode/alpine-<name>", () => {
+  test("describes user-visible behavior", async ({ page }) => {
+    await page.goto("/");
+    await waitForAlpineFixture(page);
+
+    await expect(page.getByRole("button", { name: "Run action" })).toBeEnabled();
+    await page.getByRole("button", { name: "Run action" }).click();
+    await expect(page.getByRole("status")).toHaveText("expected");
+  });
+});
+```
+
+Rules:
+
+- `describe("@ailuracode/alpine-<name>", …)` — match package scope.
+- One behavior per `test()`; prefer two focused specs over one long flow.
+- Call `waitForAlpineFixture(page)` once after `page.goto("/")` — only for Alpine boot, not for every assertion.
+- Uncaught page errors fail the test automatically (configured in `e2e/fixtures.ts`).
+
+## Selectors and accessibility
+
+| Priority | Use |
+|----------|-----|
+| 1 | `page.getByRole("button", { name: "…" })` |
+| 2 | `page.getByRole("dialog")`, `getByLabel`, `getByText` |
+| 3 | `data-testid` when roles are insufficient |
+| Avoid | CSS classes, XPath, `nth-child`, `#id` unless stable and documented |
+
+Assert accessibility in E2E with role visibility, enabled/disabled, and focus where relevant. Detailed ARIA contracts may stay in happy-dom tests.
+
+## Waiting policy
+
+- Rely on Playwright auto-waiting: `expect(locator)`, `click()`, `fill()`.
+- **Forbidden**: `page.waitForTimeout()`.
+- **Forbidden**: manual `sleep` helpers.
+- Use `expect(…).toBeVisible()` / `toHaveText()` / `toHaveAttribute()` — they retry until timeout.
+
+## Anti-flake rules
+
+- Fixtures must be **deterministic** — fixed options, no random IDs, no network calls unless the scenario requires them (then stub in the spec).
+- Keep one plugin (plus required peers) per fixture page.
+- Do not share mutable `localStorage` state across specs — the fixture server serves a fresh page; reset in `main.ts` options if needed.
+- Do not start extra servers or processes from specs — Playwright `webServer` owns the fixture server lifecycle.
+- Headless CSS in fixtures is allowed only for layout needed by the scenario; stay headless-policy compliant (no Tailwind/framework classes in `packages/**` except devtools exempt paths).
+
+## Commands
+
+```bash
+pnpm run playwright:install
+pnpm --filter @ailuracode/alpine-<name> test:e2e
+pnpm run test:e2e
+pnpm run test:e2e:affected
+PWDEBUG=1 pnpm --filter @ailuracode/alpine-<name> test:e2e   # debug
+```
+
+## Common mistakes
+
+| Mistake | Fix |
+|---------|-----|
+| E2E spec in `packages/<name>/test/` | Move to `packages/<name>/e2e/*.spec.ts` |
+| Vitest `describe` / `it` in E2E | Use Playwright `test` / `test.describe` from `e2e/fixtures.js` |
+| Import `@playwright/test` directly | Import `test`, `expect` from `../../../e2e/fixtures.js` |
+| `domStrategy` in theme options | Use `strategy` (see `CreateThemeOptions`) |
+| Reassign `readonly` store fields in plugin code | Sync in place with `Object.assign` on a mutable backing object |
+| `page.waitForTimeout(500)` | Use `expect(locator).…` auto-wait |
+| Centralized `e2e/packages/*` directory | Keep specs in the owning package |
+| Skip `playwright.config.ts` | Every E2E package needs its own config calling `definePackagePlaywrightConfig` |
+| Missing `data-e2e-ready` in fixture HTML | Add to bootstrapped root so `waitForAlpineFixture` can gate Alpine init |
+
+Run `pnpm --filter @ailuracode/alpine-<name> test:e2e` before finishing E2E work.
