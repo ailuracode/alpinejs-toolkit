@@ -2,7 +2,6 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { vanillaQueryAdapter } from "../src/adapters/vanilla.js";
 import { QueryCache } from "../src/cache.js";
 import { createQueryClient } from "../src/client.js";
-import { QueryCacheDestroyedError } from "../src/errors.js";
 
 type ListenerMap = Map<string, Set<EventListenerOrEventListenerObject>>;
 
@@ -134,9 +133,9 @@ describe("@ailuracode/alpine-query lifecycle", () => {
     const cache = createCache();
     cache.destroy();
 
-    expect(() => cache.observe(["todos"], vi.fn())).toThrow(QueryCacheDestroyedError);
-    expect(() => cache.fetch(["todos"], vi.fn())).toThrow(QueryCacheDestroyedError);
-    expect(() => cache.reset()).toThrow(QueryCacheDestroyedError);
+    expect(() => cache.observe(["todos"], vi.fn())).toThrow("QueryCache destroyed");
+    expect(() => cache.fetch(["todos"], vi.fn())).toThrow("QueryCache destroyed");
+    expect(() => cache.reset()).not.toThrow();
   });
 
   it("does not reattach listeners after destroy() even if observe() were allowed", () => {
@@ -144,7 +143,7 @@ describe("@ailuracode/alpine-query lifecycle", () => {
     cache.observe(["todos"], vi.fn().mockResolvedValue([]));
     cache.destroy();
 
-    expect(() => cache.observe(["todos"], vi.fn())).toThrow(QueryCacheDestroyedError);
+    expect(() => cache.observe(["todos"], vi.fn())).toThrow("QueryCache destroyed");
     expect(windowTracker.add).toHaveBeenCalledTimes(1);
   });
 
@@ -195,6 +194,6 @@ describe("@ailuracode/alpine-query lifecycle", () => {
     client.destroy();
 
     expect(windowTracker.count("focus")).toBe(0);
-    expect(() => client.observe(["todos"], vi.fn())).toThrow(QueryCacheDestroyedError);
+    expect(() => client.observe(["todos"], vi.fn())).toThrow("QueryCache destroyed");
   });
 });
