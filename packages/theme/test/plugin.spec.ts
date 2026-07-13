@@ -164,6 +164,8 @@ describe("themePlugin — DOM re-apply on navigation events", () => {
   // them on demand. This avoids touching real DOM state and lets
   // us inspect what the plugin installed.
   let listeners: Map<string, Set<() => void>>;
+  let originalAddEventListener: typeof document.addEventListener;
+  let originalRemoveEventListener: typeof document.removeEventListener;
 
   beforeEach(() => {
     listeners = new Map();
@@ -171,8 +173,8 @@ describe("themePlugin — DOM re-apply on navigation events", () => {
       addEventListener(type: string, cb: () => void): void;
       removeEventListener(type: string, cb: () => void): void;
     };
-    const originalAdd = doc.addEventListener.bind(doc);
-    const originalRemove = doc.removeEventListener.bind(doc);
+    originalAddEventListener = doc.addEventListener.bind(doc);
+    originalRemoveEventListener = doc.removeEventListener.bind(doc);
     doc.addEventListener = (type: string, cb: () => void): void => {
       let set = listeners.get(type);
       if (!set) {
@@ -183,14 +185,14 @@ describe("themePlugin — DOM re-apply on navigation events", () => {
       // Fall back to the real implementation for unrelated events
       // so setup teardown stays correct.
       if (type !== "astro:after-swap" && type !== "astro:page-load") {
-        originalAdd(type as never, cb as never);
+        originalAddEventListener(type as never, cb as never);
       }
     };
     doc.removeEventListener = (type: string, cb: () => void): void => {
       const set = listeners.get(type);
       set?.delete(cb);
       if (type !== "astro:after-swap" && type !== "astro:page-load") {
-        originalRemove(type as never, cb as never);
+        originalRemoveEventListener(type as never, cb as never);
       }
     };
   });
@@ -198,12 +200,12 @@ describe("themePlugin — DOM re-apply on navigation events", () => {
   afterEach(() => {
     // Restore real addEventListener / removeEventListener so other
     // suites in the same worker don't see the stub.
-    delete (document as unknown as {
-      addEventListener?: unknown;
-    }).addEventListener;
-    delete (document as unknown as {
-      removeEventListener?: unknown;
-    }).removeEventListener;
+    const doc = document as unknown as {
+      addEventListener: typeof document.addEventListener;
+      removeEventListener: typeof document.removeEventListener;
+    };
+    doc.addEventListener = originalAddEventListener;
+    doc.removeEventListener = originalRemoveEventListener;
   });
 
   function fire(type: string): void {
@@ -285,7 +287,7 @@ describe("ThemeController — public apply()", () => {
     setMatchMedia(PREFERS_DARK, false);
     const Alpine = createMockAlpine();
     themePlugin({ defaultTheme: "light" })(Alpine as never);
-    const manager = (Alpine as unknown as { _manager?: unknown });
+    const manager = Alpine as unknown as { _manager?: unknown };
     void manager;
     const store = Alpine.stores.theme as ThemeStore;
     store.set("dark");

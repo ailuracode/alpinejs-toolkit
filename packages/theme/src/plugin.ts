@@ -65,10 +65,7 @@ export function themePlugin(options: CreateThemeOptions = {}): ThemePluginCallba
       const reapply = (): void => {
         manager.apply();
       };
-      const targets: ReadonlyArray<string> = [
-        "astro:after-swap",
-        "astro:page-load",
-      ];
+      const targets: ReadonlyArray<string> = ["astro:after-swap", "astro:page-load"];
       const bound: Array<[string, () => void]> = [];
       for (const type of targets) {
         documentRef.addEventListener(type, reapply);

@@ -5,8 +5,7 @@ import DemoNavIcon from "./astro/DemoNavIcon.astro";
 
 const navBaseClass =
   "group relative flex h-9 w-full items-center rounded-lg text-sm transition-all duration-150 ease-out motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ios-blue)]/40 focus-visible:ring-offset-1 focus-visible:ring-offset-[var(--ios-bg-secondary)] touch-manipulation";
-const navActiveClass =
-  "bg-[var(--ios-blue)]/15 font-medium text-[var(--ios-blue)] ";
+const navActiveClass = "bg-[var(--ios-blue)]/15 font-medium text-[var(--ios-blue)] ";
 const navInactiveClass =
   "text-[var(--ios-label-secondary)] hover:bg-[var(--ios-fill-quaternary)] active:bg-[var(--ios-fill-tertiary)] hover:text-[var(--ios-label)] ";
 
@@ -15,11 +14,9 @@ const isActivePath = (path: string): string => {
   return `(pathname === '${path}' || pathname === '${pathNoSlash}')`;
 };
 
-const isActiveExpr = (path: string): string =>
-  `${isActivePath(path)} ? 'page' : null`;
+const isActiveExpr = (path: string): string => `${isActivePath(path)} ? 'page' : null`;
 
-const paddingSuffix =
-  " + (effectivelyExpanded ? 'gap-3.5 px-3' : 'justify-center gap-0 px-2')";
+const paddingSuffix = " + (effectivelyExpanded ? 'gap-3.5 px-3' : 'justify-center gap-0 px-2')";
 
 const navItemClassExpr = (path: string): string => {
   return `${isActivePath(path)} ? '${navActiveClass}'${paddingSuffix} : '${navInactiveClass}'${paddingSuffix}`;
@@ -53,10 +50,51 @@ const navItemClassExpr = (path: string): string => {
   class="fixed top-0 bottom-0 left-0 z-40 flex flex-col overflow-hidden border-r border-[var(--ios-separator)] bg-[var(--ios-bg-secondary)]/80 text-[var(--ios-label)] shadow-xl backdrop-blur-2xl backdrop-saturate-150 transition-[top,width] duration-300 ease-out motion-reduce:transition-none"
   x-cloak
   x-data="{ pathname: typeof window !== 'undefined' ? window.location.pathname : '/', navTooltip: '', navTrigger: null }"
-  x-init="$store.tooltip.register('sidebar-nav', { openDelay: 120, closeDelay: 80 }); document.addEventListener('astro:after-swap', () => { pathname = window.location.pathname })"
+  x-init="
+    $store.tooltip.register('sidebar-nav', { openDelay: 120, closeDelay: 80 });
+    const scrollKey = 'playground-sidebar-nav-scroll';
+    const readScroll = () => Number(sessionStorage.getItem(scrollKey) ?? 0);
+    const writeScroll = (value) => sessionStorage.setItem(scrollKey, String(value));
+    const restoreNavScroll = () => {
+      const navEl = $el.querySelector('nav');
+      if (!navEl) {
+        return;
+      }
+      navEl.scrollTop = readScroll();
+    };
+    const nav = $el.querySelector('nav');
+    restoreNavScroll();
+    nav?.addEventListener('scroll', () => writeScroll(nav.scrollTop), { passive: true });
+    nav?.addEventListener('focusin', (event) => {
+      const link = event.target instanceof Element ? event.target.closest('a[href]') : null;
+      if (link && !link.matches(':focus-visible')) {
+        requestAnimationFrame(() => {
+          nav.scrollTop = readScroll();
+        });
+      }
+    });
+    nav?.addEventListener('click', (event) => {
+      if (event.target instanceof Element && event.target.closest('a[href]')) {
+        writeScroll(nav.scrollTop);
+      }
+    }, { capture: true });
+    document.addEventListener('astro:before-swap', () => {
+      const navEl = $el.querySelector('nav');
+      if (navEl) {
+        writeScroll(navEl.scrollTop);
+      }
+    });
+    document.addEventListener('astro:after-swap', () => {
+      pathname = window.location.pathname;
+      requestAnimationFrame(() => {
+        restoreNavScroll();
+        requestAnimationFrame(restoreNavScroll);
+      });
+    });
+  "
   x-bind:class="`${!expanded ? 'w-16' : 'w-64'}`"
   aria-label="Playground navigation"
-  transition:persist
+  transition:persist="playground-sidebar"
 >
   <!-- App icon + title -->
   <a
@@ -78,11 +116,8 @@ const navItemClassExpr = (path: string): string => {
 
   <!-- Navigation -->
   <nav
-    class="flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto overscroll-contain py-3 transition-[padding] duration-200 motion-reduce:transition-none"
+    class="flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto overflow-anchor-none py-3 transition-[padding] duration-200 motion-reduce:transition-none"
     x-bind:class="effectivelyExpanded ? 'px-3' : 'px-1.5'"
-    x-data="{ scrollY: $persist(0).as('sidebar-nav-scroll') }"
-    x-init="$nextTick(() => { $el.scrollTop = scrollY })"
-    x-on:scroll.passive="scrollY = $el.scrollTop"
     aria-label="Plugins"
   >
     <!-- Plugin groups -->
@@ -108,6 +143,7 @@ const navItemClassExpr = (path: string): string => {
                 x-bind:aria-current={isActiveExpr(playgroundPath(item.id))}
                 x-bind:aria-label={`!effectivelyExpanded ? ${JSON.stringify(item.title)} : null`}
                 x-bind:class={navItemClassExpr(playgroundPath(item.id))}
+                x-on:mousedown.prevent
                 x-on:click="$store.media.breakpoint !== 'desktop' && $store.sidebar.hide()"
                 x-on:mouseenter={`navTooltip = ${JSON.stringify(item.title)}; navTrigger = $el; $store.tooltip.showOnHover('sidebar-nav')`}
                 x-on:mouseleave="$store.tooltip.hideOnHover('sidebar-nav')"
