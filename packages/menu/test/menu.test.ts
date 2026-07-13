@@ -12,7 +12,7 @@ function createScrollStoreMock(handle = "menu-lock"): ScrollStore {
     lock: vi.fn(() => handle),
     unlock: vi.fn(),
     clear: vi.fn(),
-  } as any as ScrollStore;
+  } as unknown as ScrollStore;
 }
 
 describe("@ailuracode/alpine-menu", () => {
@@ -113,7 +113,7 @@ describe("@ailuracode/alpine-menu", () => {
     store.bindMenu("user-menu", container);
     store.open("user-menu");
 
-    store.handleOutsideClick("user-menu", { target: outside } as any as MouseEvent);
+    store.handleOutsideClick("user-menu", { target: outside } as unknown as MouseEvent);
     expect(store.isOpen("user-menu")).toBe(false);
 
     outside.remove();
@@ -224,7 +224,7 @@ describe("@ailuracode/alpine-menu", () => {
     store.bindMenu("user-menu", container);
     store.open("user-menu");
 
-    store.handleWindowOutsideClick({ target: outside } as any as MouseEvent, [
+    store.handleWindowOutsideClick({ target: outside } as unknown as MouseEvent, [
       "user-menu",
       "actions-menu",
     ]);
@@ -366,7 +366,7 @@ describe("@ailuracode/alpine-menu", () => {
   it("handles handleOutsideClick on unknown menu", () => {
     store.handleOutsideClick("nonexistent", {
       target: document.createElement("div"),
-    } as any as MouseEvent);
+    } as unknown as MouseEvent);
   });
 
   it("handles handleOutsideClick when target is inside trigger", () => {
@@ -378,7 +378,7 @@ describe("@ailuracode/alpine-menu", () => {
     store.bindMenu("user-menu", container);
     store.open("user-menu");
 
-    store.handleOutsideClick("user-menu", { target: trigger } as any as MouseEvent);
+    store.handleOutsideClick("user-menu", { target: trigger } as unknown as MouseEvent);
     expect(store.isOpen("user-menu")).toBe(true);
 
     trigger.remove();
@@ -394,7 +394,7 @@ describe("@ailuracode/alpine-menu", () => {
     store.bindMenu("user-menu", container);
     store.open("user-menu");
 
-    store.handleOutsideClick("user-menu", { target: container } as any as MouseEvent);
+    store.handleOutsideClick("user-menu", { target: container } as unknown as MouseEvent);
     expect(store.isOpen("user-menu")).toBe(true);
 
     trigger.remove();

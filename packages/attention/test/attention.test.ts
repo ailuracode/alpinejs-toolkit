@@ -111,7 +111,7 @@ function createIdleDetectorClass(detector: IdleDetectorMock): IdleDetectorConstr
     }
   }
 
-  return TestIdleDetector as any as IdleDetectorConstructor;
+  return TestIdleDetector as unknown as IdleDetectorConstructor;
 }
 
 function mockWakeLock(request: () => Promise<WakeLockSentinelLike>): () => void {
@@ -660,7 +660,7 @@ describe("@ailuracode/alpine-attention", () => {
         state: "denied",
         addEventListener: vi.fn(),
         removeEventListener: vi.fn(),
-      } as any as PermissionStatus);
+      } as unknown as PermissionStatus);
 
       const { idle } = createMagicHarness(attentionPlugin) as { idle: IdleMagic };
 

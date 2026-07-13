@@ -30,8 +30,7 @@ describe("toggle-corner", () => {
 
   it("falls back when localStorage is undefined", () => {
     const original = globalThis.localStorage;
-    // @ts-expect-error: simulating SSR
-    delete globalThis.localStorage;
+    (globalThis as Record<string, unknown>).localStorage = undefined;
     expect(loadToggleCorner(DEFAULT_TOGGLE_CORNER_STORAGE_KEY, "top-left")).toBe("top-left");
     saveToggleCorner(DEFAULT_TOGGLE_CORNER_STORAGE_KEY, "top-right");
     globalThis.localStorage = original;

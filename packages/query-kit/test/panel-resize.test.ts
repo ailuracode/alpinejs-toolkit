@@ -152,8 +152,7 @@ describe("panel-resize", () => {
 
   it("getDefaultMobilePanelHeight returns minimum when window is undefined", async () => {
     const originalWindow = globalThis.window;
-    // @ts-expect-error: simulating SSR
-    delete globalThis.window;
+    (globalThis as Record<string, unknown>).window = undefined;
     const { getDefaultMobilePanelHeight } = await import("../src/devtools/panel-resize.js");
     expect(getDefaultMobilePanelHeight()).toBe(MOBILE_PANEL_MIN_HEIGHT);
     globalThis.window = originalWindow;

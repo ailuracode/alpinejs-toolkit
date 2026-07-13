@@ -34,7 +34,7 @@ describe("@ailuracode/alpine-command integration", () => {
 
   it("filters items by search text", () => {
     store.search = "theme";
-    expect(store.filteredItems.map((item: unknown) => item.id)).toEqual(["toggle-theme"]);
+    expect(store.filteredItems.map((item: { id: string }) => item.id)).toEqual(["toggle-theme"]);
   });
 
   it("groups filtered items", () => {
@@ -47,7 +47,7 @@ describe("@ailuracode/alpine-command integration", () => {
     const action = vi.fn();
     store.register({ id: "save", label: "Save", action });
     store.open();
-    store.activeIndex = store.filteredItems.findIndex((item: unknown) => item.id === "save");
+    store.activeIndex = store.filteredItems.findIndex((item: { id: string }) => item.id === "save");
 
     store.handleKeydown(new KeyboardEvent("keydown", { key: "Enter" }));
     await vi.waitFor(() => {
@@ -68,7 +68,7 @@ describe("@ailuracode/alpine-command integration", () => {
     store.handleKeydown(new KeyboardEvent("keydown", { key: "t" }));
     store.handleKeydown(new KeyboardEvent("keydown", { key: "h" }));
     expect(store.search).toBe("th");
-    expect(store.filteredItems.map((item: unknown) => item.id)).toEqual(["toggle-theme"]);
+    expect(store.filteredItems.map((item: { id: string }) => item.id)).toEqual(["toggle-theme"]);
 
     store.handleKeydown(new KeyboardEvent("keydown", { key: "Backspace" }));
     expect(store.search).toBe("t");

@@ -7,7 +7,7 @@ function createScrollStoreMock(): ScrollStore {
   return {
     lock: vi.fn(() => "command-lock"),
     unlock: vi.fn(),
-  } as any as ScrollStore;
+  } as unknown as ScrollStore;
 }
 
 function createItem(

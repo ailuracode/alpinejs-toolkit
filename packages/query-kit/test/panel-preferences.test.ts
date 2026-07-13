@@ -51,8 +51,7 @@ describe("query devtools panel preferences", () => {
 
   it("falls back to defaults when localStorage is undefined", () => {
     const original = globalThis.localStorage;
-    // @ts-expect-error: simulating SSR
-    delete globalThis.localStorage;
+    (globalThis as Record<string, unknown>).localStorage = undefined;
     expect(loadPanelPreferences(DEFAULT_PREFERENCES_STORAGE_KEY, { filter: "seed" })).toEqual(
       createPanelPreferences({ filter: "seed" })
     );

@@ -583,14 +583,14 @@ describe("QueryCache — comprehensive coverage", () => {
 
       const errorCache = createCache({ defaultMutationRetry: 0 });
       const mutation = errorCache.mutate({
-        mutationFn: async () => {
-          throw new Error("fail");
+        mutationFn: () => {
+          return Promise.reject(new Error("fail"));
         },
         onError,
         onSettled,
       });
 
-      await mutation.mutate("x").catch(() => {});
+      await mutation.mutate("x").catch(() => undefined);
       expect(mutation.status).toBe("error");
       expect(onError).toHaveBeenCalled();
       expect(onSettled).toHaveBeenCalled();
@@ -600,12 +600,12 @@ describe("QueryCache — comprehensive coverage", () => {
     it("non-Error rejection is wrapped", async () => {
       const errorCache = createCache({ defaultMutationRetry: 0 });
       const mutation = errorCache.mutate({
-        mutationFn: async () => {
-          throw "string";
+        mutationFn: () => {
+          return Promise.reject("string");
         },
       });
 
-      await mutation.mutate("x").catch(() => {});
+      await mutation.mutate("x").catch(() => undefined);
       expect(mutation.status).toBe("error");
       errorCache.reset();
     });
@@ -626,17 +626,16 @@ describe("QueryCache — comprehensive coverage", () => {
     it("mutation retry on transient failure", async () => {
       let callCount = 0;
       const mutation = cache.mutate({
-        mutationFn: async () => {
+        mutationFn: (): Promise<string> => {
           callCount++;
           if (callCount === 1) {
-            throw new Error("transient");
+            return Promise.reject(new Error("transient"));
           }
-          return "ok";
+          return Promise.resolve("ok");
         },
       });
 
       const promise = mutation.mutate("x");
-      // advance past the retry delay (10ms)
       await vi.advanceTimersByTimeAsync(50);
       const result = await promise;
       expect(result).toBe("ok");
@@ -646,15 +645,15 @@ describe("QueryCache — comprehensive coverage", () => {
     it("mutation retries exhausted", async () => {
       const retryCache = createCache({ defaultMutationRetry: 2 });
       const mutation = retryCache.mutate({
-        mutationFn: async () => {
-          throw new Error("permanent");
+        mutationFn: () => {
+          return Promise.reject(new Error("permanent"));
         },
       });
 
       const promise = mutation.mutate("x");
       // advance past the retry delays (10ms then 20ms)
       await vi.advanceTimersByTimeAsync(50);
-      await promise.catch(() => {});
+      await promise.catch(() => undefined);
       expect(mutation.status).toBe("error");
       retryCache.reset();
     });
@@ -755,7 +754,7 @@ describe("QueryCache — comprehensive coverage", () => {
       const fn = vi.fn().mockImplementation(() => {
         call++;
         if (call === 1) {
-          return new Promise<string>(() => {});
+          return new Promise<string>(() => undefined);
         }
         return Promise.resolve("fresh");
       });

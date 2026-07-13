@@ -12,7 +12,7 @@ function createScrollStoreMock(): ScrollStore {
     lock: vi.fn(() => "dialog-lock"),
     unlock: vi.fn(),
     clear: vi.fn(),
-  } as any as ScrollStore;
+  } as unknown as ScrollStore;
 }
 
 describe("@ailuracode/alpine-dialog", () => {

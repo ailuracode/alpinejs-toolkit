@@ -40,7 +40,7 @@ describe("@ailuracode/alpine-query-adapter-alpine", () => {
     store.reset?.();
   });
 
-  it("alpineStoreQueryPlugin registers without options", async () => {
+  it("alpineStoreQueryPlugin registers without options", () => {
     const Alpine = startAlpine(alpineStoreQueryPlugin());
     const store = Alpine.store("query") as QueryStore;
     expect(store).toBeDefined();

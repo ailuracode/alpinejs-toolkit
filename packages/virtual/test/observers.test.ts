@@ -64,13 +64,13 @@ describe("virtual/internal/observers", () => {
     });
 
     it("writes vertical scroll to window", () => {
-      vi.spyOn(window, "scrollTo").mockImplementation(() => {});
+      vi.spyOn(window, "scrollTo").mockImplementation(() => undefined);
       writeScrollOffset(window, 200, false);
       expect(window.scrollTo).toHaveBeenCalled();
     });
 
     it("writes horizontal scroll to window", () => {
-      vi.spyOn(window, "scrollTo").mockImplementation(() => {});
+      vi.spyOn(window, "scrollTo").mockImplementation(() => undefined);
       writeScrollOffset(window, 100, true);
       expect(window.scrollTo).toHaveBeenCalled();
     });
@@ -100,9 +100,8 @@ describe("virtual/internal/observers", () => {
 
   describe("attachResizeObserver", () => {
     it("falls back when ResizeObserver is unavailable", () => {
-      const originalRO = (globalThis as any).ResizeObserver;
-      // @ts-expect-error: simulating no ResizeObserver
-      delete globalThis.ResizeObserver;
+      const originalRO = (globalThis as Record<string, unknown>).ResizeObserver;
+      (globalThis as Record<string, unknown>).ResizeObserver = undefined;
 
       const onResize = vi.fn();
       const el = document.createElement("div");
@@ -113,7 +112,7 @@ describe("virtual/internal/observers", () => {
       expect(onResize).toHaveBeenCalledWith({ width: 100, height: 200 });
 
       remove();
-      globalThis.ResizeObserver = originalRO;
+      (globalThis as Record<string, unknown>).ResizeObserver = originalRO;
     });
 
     it("uses ResizeObserver for elements", () => {
@@ -123,7 +122,7 @@ describe("virtual/internal/observers", () => {
         observe = observe;
         disconnect = disconnect;
       }
-      (globalThis as any).ResizeObserver = MockRO;
+      (globalThis as Record<string, unknown>).ResizeObserver = MockRO;
 
       const onResize = vi.fn();
       const el = document.createElement("div");

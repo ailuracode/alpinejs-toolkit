@@ -70,7 +70,7 @@ describe("@ailuracode/alpine-permissions contract", () => {
     expect(store.registry.notifications?.permission).toBe("granted");
   });
 
-  it("removes permission from registry when unregistered", async () => {
+  it("removes permission from registry when unregistered", () => {
     const Alpine = startAlpine(
       permissionsPlugin({
         adapters: [createPromptAdapter("geolocation")],
@@ -90,7 +90,7 @@ describe("@ailuracode/alpine-permissions contract", () => {
 
   it("can be called with Alpine directly (no options)", () => {
     const Alpine = startAlpine();
-    const result = permissionsPlugin(Alpine as any);
+    const result = permissionsPlugin(Alpine as Parameters<typeof permissionsPlugin>[0]);
     expect(result).toBeUndefined();
   });
 
@@ -102,7 +102,7 @@ describe("@ailuracode/alpine-permissions contract", () => {
   it("calls Alpine.cleanup when available", () => {
     const cleanup = vi.fn();
     const Alpine = startAlpine();
-    (Alpine as any).cleanup = cleanup;
+    (Alpine as unknown as Record<string, unknown>).cleanup = cleanup;
 
     const register = permissionsPlugin();
     if (register) {

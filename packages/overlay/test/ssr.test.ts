@@ -50,7 +50,7 @@ describe("OverlayController SSR", () => {
     // tests) still returns it as-is so the caller can hand-roll a
     // portal mount.
     (globalThis as { document?: unknown }).document = undefined;
-    const el = { id: "fake" } as any as HTMLElement;
+    const el = { id: "fake" } as unknown as HTMLElement;
     const controller = new OverlayController({ root: el });
     // safeDocument() returns null under SSR, so the resolver does
     // not attach the element. The element reference stays in

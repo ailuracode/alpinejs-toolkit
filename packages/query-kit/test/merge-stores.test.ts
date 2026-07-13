@@ -105,7 +105,9 @@ describe("query devtools merge stores", () => {
   });
 
   it("throws when no stores have devtools support", () => {
-    const fakeStore = { devtools: undefined } as any;
+    const fakeStore = { devtools: undefined } as unknown as Parameters<
+      typeof createMergedQueryDevtools
+    >[0][number];
     expect(() => createMergedQueryDevtools([fakeStore])).toThrow(
       /requires at least one query store/
     );
@@ -113,7 +115,9 @@ describe("query devtools merge stores", () => {
 
   it("throws when a store lacks devtools", () => {
     const valid = createQueryClient({ adapter: nanostoresQueryAdapter });
-    const fakeStore = { devtools: undefined } as any;
+    const fakeStore = { devtools: undefined } as unknown as Parameters<
+      typeof createMergedQueryDevtools
+    >[0][number];
     // Only the invalid store is passed, so validStores is empty
     expect(() => createMergedQueryDevtools([fakeStore])).toThrow(
       /requires at least one query store/
@@ -140,18 +144,22 @@ describe("query devtools merge stores", () => {
     const primary = createQueryClient({ adapter: nanostoresQueryAdapter });
     const merged = createMergedQueryDevtools([primary]);
 
-    expect(() => merged.getStoreForQuery({ storeId: "unknown" } as any)).toThrow(
-      /No query store registered/
-    );
+    expect(() =>
+      merged.getStoreForQuery({ storeId: "unknown" } as unknown as Parameters<
+        typeof merged.getStoreForQuery
+      >[0])
+    ).toThrow(/No query store registered/);
   });
 
   it("getStoreForMutation throws for unknown storeId", () => {
     const primary = createQueryClient({ adapter: nanostoresQueryAdapter });
     const merged = createMergedQueryDevtools([primary]);
 
-    expect(() => merged.getStoreForMutation({ storeId: "unknown" } as any)).toThrow(
-      /No query store registered/
-    );
+    expect(() =>
+      merged.getStoreForMutation({ storeId: "unknown" } as unknown as Parameters<
+        typeof merged.getStoreForMutation
+      >[0])
+    ).toThrow(/No query store registered/);
   });
 
   it("resolveQueryDevtoolsStores uses stores array when provided", async () => {

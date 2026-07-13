@@ -203,7 +203,7 @@ describe("@ailuracode/alpine-geo", () => {
       },
     };
 
-    geoPlugin()(Alpine as any as AlpineType.Alpine);
+    geoPlugin()(Alpine as unknown as AlpineType.Alpine);
     const unsupported = stores.geo as GeoStore;
 
     expect(unsupported.watch()).toBe(false);
@@ -256,7 +256,7 @@ describe("@ailuracode/alpine-geo", () => {
       },
     };
 
-    geoPlugin()(Alpine as any as AlpineType.Alpine);
+    geoPlugin()(Alpine as unknown as AlpineType.Alpine);
     const unsupported = stores.geo as GeoStore;
 
     expect(unsupported.isSupported).toBe(false);

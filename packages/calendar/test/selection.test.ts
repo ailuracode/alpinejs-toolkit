@@ -44,7 +44,13 @@ describe("calendar/internal/selection", () => {
     });
 
     it("returns null for non-Date single selection", () => {
-      expect(normalizeSelection(("invalid" as any as import("../src/types.js").CalendarSelection), "single", context)).toBeNull();
+      expect(
+        normalizeSelection(
+          "invalid" as unknown as import("../src/types.js").CalendarSelection,
+          "single",
+          context
+        )
+      ).toBeNull();
     });
 
     it("normalizes multiple date selection", () => {
@@ -54,7 +60,13 @@ describe("calendar/internal/selection", () => {
     });
 
     it("returns empty array for non-array multiple selection", () => {
-      expect(normalizeSelection(("invalid" as any as import("../src/types.js").CalendarSelection), "multiple", context)).toEqual([]);
+      expect(
+        normalizeSelection(
+          "invalid" as unknown as import("../src/types.js").CalendarSelection,
+          "multiple",
+          context
+        )
+      ).toEqual([]);
     });
 
     it("normalizes range selection", () => {

@@ -172,7 +172,9 @@ describe("@ailuracode/alpine-tabs", () => {
   });
 
   it("emits change event on select", () => {
-    const controller = (store as any).controller;
+    const controller = (
+      store as unknown as { controller?: { on: (event: string, fn: () => void) => void } }
+    ).controller;
     let eventFired = false;
     if (controller && typeof controller.on === "function") {
       controller.on("change", () => {

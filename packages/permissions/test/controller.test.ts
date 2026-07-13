@@ -283,9 +283,7 @@ describe("@ailuracode/alpine-permissions", () => {
     it("request handles query error", async () => {
       controller.register(
         createTestAdapter({
-          query: async () => {
-            throw new Error("query failed");
-          },
+          query: () => Promise.reject(new Error("query failed")),
         })
       );
       const snapshot = await controller.query("test");
@@ -296,9 +294,7 @@ describe("@ailuracode/alpine-permissions", () => {
     it("request handles request error", async () => {
       controller.register(
         createTestAdapter({
-          request: async () => {
-            throw new Error("request failed");
-          },
+          request: () => Promise.reject(new Error("request failed")),
         })
       );
       const snapshot = await controller.request("test");

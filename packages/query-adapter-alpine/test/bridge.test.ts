@@ -1,4 +1,12 @@
-import type { MutationState, QueryState } from "@ailuracode/alpine-query";
+import type {
+  MutationState,
+  MutationStateHandle,
+  MutationStateRecord,
+  QueryState,
+  QueryStateHandle,
+  QueryStateRecord,
+  QueryStateAdapter,
+} from "@ailuracode/alpine-query";
 import { vanillaQueryAdapter } from "@ailuracode/alpine-query";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { startAlpine } from "../../../test/helpers.js";
@@ -8,9 +16,9 @@ import {
   createAlpineBridgedAdapter,
 } from "../src/bridge.js";
 
-function createMockHandle() {
-  const listeners = new Set<(record: any) => void>();
-  const record: any = {
+function createMockHandle(): QueryStateHandle<unknown> {
+  const listeners = new Set<(record: QueryStateRecord<unknown>) => void>();
+  const record: QueryStateRecord<unknown> = {
     data: undefined,
     error: null,
     status: "pending",
@@ -20,111 +28,82 @@ function createMockHandle() {
   };
 
   const refetch = vi.fn().mockResolvedValue(undefined);
-  const state = {
-    ...record,
+  const state: QueryState<unknown> = {
+    data: record.data,
+    error: record.error,
+    status: record.status,
+    fetchStatus: record.fetchStatus,
+    dataUpdatedAt: record.dataUpdatedAt,
+    errorUpdatedAt: record.errorUpdatedAt,
+    isPending: record.status === "pending",
+    isLoading: record.status === "pending" && record.fetchStatus === "fetching",
+    isFetching: record.fetchStatus === "fetching",
+    isError: record.status === "error",
+    isSuccess: record.status === "success",
+    isStale: true,
     refetch,
-    get data() {
-      return record.data;
-    },
-    get error() {
-      return record.error;
-    },
-    get status() {
-      return record.status;
-    },
-    get fetchStatus() {
-      return record.fetchStatus;
-    },
-    get dataUpdatedAt() {
-      return record.dataUpdatedAt;
-    },
-    get errorUpdatedAt() {
-      return record.errorUpdatedAt;
-    },
-    get isStale() {
-      return true;
-    },
-    get isFetching() {
-      return false;
-    },
-    get isError() {
-      return record.status === "error";
-    },
-    get isSuccess() {
-      return record.status === "success";
-    },
-    get isPending() {
-      return record.status === "pending";
-    },
   };
 
   return {
-    record,
-    state: state as QueryState<unknown>,
-    refetch,
+    state,
     get: () => record,
-    patch: (p: any) => {
+    patch: (p) => {
       Object.assign(record, p);
       for (const l of listeners) {
         l(record);
       }
     },
-    listen: (l: any) => {
+    listen: (l) => {
       listeners.add(l);
       l(record);
-      return () => listeners.delete(l);
+      return () => {
+        listeners.delete(l);
+        return false;
+      };
     },
-    setStaleTime: (_n: number) => {},
+    setStaleTime: (_n: number) => undefined,
     getStaleTime: () => 60_000,
   };
 }
 
-function createMockMutationHandle() {
-  const listeners = new Set<(record: any) => void>();
-  const record: any = { data: undefined, error: null, status: "idle" };
+function createMockMutationHandle(): MutationStateHandle<unknown, unknown> {
+  const listeners = new Set<(record: MutationStateRecord<unknown>) => void>();
+  const record: MutationStateRecord<unknown> = {
+    data: undefined,
+    error: null,
+    status: "idle",
+  };
 
-  const mutate = vi.fn();
-  const reset = vi.fn();
-  const state = {
-    get data() {
-      return record.data;
-    },
-    get error() {
-      return record.error;
-    },
-    get status() {
-      return record.status;
-    },
-    get isIdle() {
-      return record.status === "idle";
-    },
-    get isPending() {
-      return record.status === "pending";
-    },
-    get isError() {
-      return record.status === "error";
-    },
-    get isSuccess() {
-      return record.status === "success";
-    },
+  const mutate = vi.fn().mockResolvedValue(undefined) as unknown as MutationState<unknown, unknown>["mutate"];
+  const reset = vi.fn() as unknown as MutationState<unknown, unknown>["reset"];
+  const state: MutationState<unknown, unknown> = {
+    data: record.data,
+    error: record.error,
+    status: record.status,
+    isIdle: record.status === "idle",
+    isPending: record.status === "pending",
+    isError: record.status === "error",
+    isSuccess: record.status === "success",
     mutate,
     reset,
   };
 
   return {
-    record,
-    state: state as MutationState<unknown, unknown>,
+    state,
     get: () => record,
-    patch: (p: any) => {
+    patch: (p) => {
       Object.assign(record, p);
       for (const l of listeners) {
         l(record);
       }
     },
-    listen: (l: any) => {
+    listen: (l) => {
       listeners.add(l);
       l(record);
-      return () => listeners.delete(l);
+      return () => {
+        listeners.delete(l);
+        return false;
+      };
     },
   };
 }
@@ -155,9 +134,10 @@ describe("bridge.ts — coverage", () => {
 
       handle.patch({ data: "test", status: "success", dataUpdatedAt: 12345 });
 
-      expect((bridge.state as any).data).toBe("test");
-      expect((bridge.state as any).status).toBe("success");
-      expect((bridge.state as any).dataUpdatedAt).toBe(12345);
+      const state = bridge.state;
+      expect(state.data).toBe("test");
+      expect(state.status).toBe("success");
+      expect(state.dataUpdatedAt).toBe(12345);
     });
 
     it("unbind stops syncing", () => {
@@ -168,7 +148,7 @@ describe("bridge.ts — coverage", () => {
       bridge.unbind();
       handle.patch({ data: "after-unbind" });
 
-      expect((bridge.state as any).data).toBeUndefined();
+      expect(bridge.state.data).toBeUndefined();
     });
   });
 
@@ -188,11 +168,11 @@ describe("bridge.ts — coverage", () => {
       const bridge = bridgeMutationHandleToAlpine(Alpine, handle);
 
       handle.patch({ status: "pending" });
-      expect((bridge.state as any).status).toBe("pending");
+      expect(bridge.state.status).toBe("pending");
 
       handle.patch({ data: "ok", status: "success" });
-      expect((bridge.state as any).data).toBe("ok");
-      expect((bridge.state as any).status).toBe("success");
+      expect((bridge.state as unknown as MutationStateRecord<unknown>).data).toBe("ok");
+      expect(bridge.state.status).toBe("success");
     });
 
     it("binds mutate and reset to the source state", () => {
@@ -200,10 +180,10 @@ describe("bridge.ts — coverage", () => {
       const handle = createMockMutationHandle();
       const bridge = bridgeMutationHandleToAlpine(Alpine, handle);
 
-      (bridge.state as any).mutate("v");
+      bridge.state.mutate("v");
       expect(handle.state.mutate).toHaveBeenCalledWith("v");
 
-      (bridge.state as any).reset();
+      bridge.state.reset();
       expect(handle.state.reset).toHaveBeenCalled();
     });
 
@@ -215,7 +195,7 @@ describe("bridge.ts — coverage", () => {
       bridge.unbind();
       handle.patch({ status: "pending" });
 
-      expect((bridge.state as any).status).toBe("idle");
+      expect(bridge.state.status).toBe("idle");
     });
   });
 
@@ -226,61 +206,6 @@ describe("bridge.ts — coverage", () => {
       const bridged = createAlpineBridgedAdapter(Alpine, base);
 
       expect(bridged.name).toBe("TestBase");
-    });
-
-    it("falls back to staleTime when handle has no getStaleTime", () => {
-      const Alpine = startAlpine();
-      const baseAdapter: any = {
-        name: "NoStaleTime",
-        createQueryState(initial: any, staleTime: any, refetch: any) {
-          const listeners = new Set<(r: any) => void>();
-          const record = { ...initial };
-          const state: any = { ...initial, refetch };
-          return {
-            state,
-            get: () => record,
-            patch: (p: any) => {
-              Object.assign(record, p);
-              for (const l of listeners) {
-                l(record);
-              }
-            },
-            listen: (l: any) => {
-              listeners.add(l);
-              l(record);
-              return () => listeners.delete(l);
-            },
-          };
-        },
-        createMutationState(handlers: any) {
-          return {
-            state: { ...handlers },
-            get: () => ({ data: undefined, error: null, status: "idle" }),
-            patch: () => {},
-            listen: (l: any) => {
-              l({ data: undefined, error: null, status: "idle" });
-              return () => {};
-            },
-          };
-        },
-      };
-      const bridged = createAlpineBridgedAdapter(Alpine, baseAdapter);
-      const handle = bridged.createQueryState(
-        {
-          data: undefined,
-          error: null,
-          status: "pending",
-          fetchStatus: "idle",
-          dataUpdatedAt: 0,
-          errorUpdatedAt: 0,
-        },
-        30_000,
-        vi.fn()
-      );
-
-      // handle.getStaleTime is undefined, so ?? staleTime (30_000) is used
-      expect(handle.getStaleTime?.()).toBeUndefined();
-      expect(bridged.createQueryState).toBeDefined();
     });
 
     it("createQueryState returns bridged handle with Alpine state", () => {
@@ -316,6 +241,84 @@ describe("bridge.ts — coverage", () => {
 
       expect(handle.state).toBeDefined();
       expect(handle.dispose).toBeDefined();
+    });
+
+    it("falls back to staleTime when handle has no getStaleTime", () => {
+      const Alpine = startAlpine();
+      const noStaleListener = (listener: (record: QueryStateRecord<unknown>) => void) => {
+        listener({
+          data: undefined,
+          error: null,
+          status: "pending",
+          fetchStatus: "idle",
+          dataUpdatedAt: 0,
+          errorUpdatedAt: 0,
+        });
+        return () => false;
+      };
+      const baseAdapter: QueryStateAdapter = {
+        name: "NoStaleTime",
+        createQueryState: <TData,>(
+          initial: QueryStateRecord<TData>,
+          _staleTime: number,
+          refetch: () => Promise<void>
+        ): QueryStateHandle<TData> => {
+          const listeners = new Set<(record: QueryStateRecord<TData>) => void>();
+          const record: QueryStateRecord<TData> = { ...initial };
+          const state = {
+            ...initial,
+            refetch,
+          } as QueryState<TData>;
+          return {
+            state,
+            get: () => record,
+            patch: (p) => {
+              Object.assign(record, p);
+              for (const l of listeners) {
+                l(record);
+              }
+            },
+            listen: noStaleListener as unknown as QueryStateHandle<TData>["listen"],
+          };
+        },
+        createMutationState: <TData, TVariables,>(
+          handlers: Pick<MutationState<TData, TVariables>, "mutate" | "reset">
+        ): MutationStateHandle<TData, TVariables> => {
+          const state: MutationState<TData, TVariables> = {
+            data: undefined as TData | undefined,
+            error: null,
+            status: "idle",
+            isIdle: true,
+            isPending: false,
+            isError: false,
+            isSuccess: false,
+            mutate: handlers.mutate,
+            reset: handlers.reset,
+          };
+          return {
+            state,
+            get: () => ({ data: undefined, error: null, status: "idle" }),
+            patch: () => undefined,
+            listen: () => () => false,
+          };
+        },
+      };
+      const bridged = createAlpineBridgedAdapter(Alpine, baseAdapter);
+      const handle = bridged.createQueryState(
+        {
+          data: undefined,
+          error: null,
+          status: "pending",
+          fetchStatus: "idle",
+          dataUpdatedAt: 0,
+          errorUpdatedAt: 0,
+        },
+        30_000,
+        vi.fn()
+      );
+
+      expect(handle.getStaleTime?.()).toBeUndefined();
+      expect(bridged.createQueryState).toBeDefined();
     });
   });
 });

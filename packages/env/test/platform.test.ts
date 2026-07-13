@@ -145,7 +145,7 @@ describe("env/internal/platform", () => {
         userAgent: "",
         platform: "",
         userAgentData: { platform: "Windows" },
-      } as Navigator);
+      } as unknown as Navigator);
       expect(isWindowsDevice()).toBe(true);
     });
   });
@@ -176,7 +176,7 @@ describe("env/internal/platform", () => {
         userAgent: "",
         platform: "",
         userAgentData: { platform: "macOS" },
-      } as Navigator);
+      } as unknown as Navigator);
       expect(isMacDevice()).toBe(true);
     });
   });
@@ -212,7 +212,7 @@ describe("env/internal/platform", () => {
         userAgent: "",
         platform: "",
         userAgentData: { platform: "Linux" },
-      } as Navigator);
+      } as unknown as Navigator);
       expect(isLinuxDevice()).toBe(true);
     });
   });

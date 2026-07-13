@@ -127,7 +127,7 @@ describe("@ailuracode/alpine-transfer", () => {
         },
       };
 
-      registerShareMagic(Alpine as any as AlpineType.Alpine);
+      registerShareMagic(Alpine as unknown as AlpineType.Alpine);
 
       expect(store).not.toHaveBeenCalled();
       expect(typeof magicApi).toBe("function");

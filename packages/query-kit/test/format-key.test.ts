@@ -31,7 +31,7 @@ describe("format-key", () => {
   });
 
   it("falls back to String() for circular references", () => {
-    const circular: any = {};
+    const circular: Record<string, unknown> = {};
     circular.self = circular;
     expect(formatQueryKeyLabel([circular])).toBe("[object Object]");
   });

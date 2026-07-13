@@ -60,7 +60,7 @@ describe("overlay $overlay magic", () => {
     `;
     setupOverlayAlpine();
     await Alpine.nextTick();
-    const facade = (window as any as { __facade?: OverlayMagicFacade }).__facade ?? null;
+    const facade = (window as unknown as { __facade?: OverlayMagicFacade }).__facade ?? null;
     expect(facade).not.toBeNull();
     if (!facade) {
       return;
@@ -80,7 +80,7 @@ describe("overlay $overlay magic", () => {
     `;
     setupOverlayAlpine();
     await Alpine.nextTick();
-    const facade = (window as any as { __facade?: OverlayMagicFacade }).__facade ?? null;
+    const facade = (window as unknown as { __facade?: OverlayMagicFacade }).__facade ?? null;
     expect(facade?.zIndexOf("dialog", "missing")).toBe(1000);
   });
 });

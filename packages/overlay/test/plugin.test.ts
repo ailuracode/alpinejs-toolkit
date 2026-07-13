@@ -21,7 +21,7 @@ describe("overlayPlugin", () => {
 
   it("installs $store.overlay when registered", () => {
     const Alpine = startAlpine(overlayPlugin());
-    const store = Alpine.store("overlay") as any as {
+    const store = Alpine.store("overlay") as unknown as {
       stack: unknown[];
       count: number;
     };
@@ -32,7 +32,7 @@ describe("overlayPlugin", () => {
 
   it("register() / zIndexOf() work via $store.overlay", () => {
     const Alpine = startAlpine(overlayPlugin());
-    const store = Alpine.store("overlay") as any as {
+    const store = Alpine.store("overlay") as unknown as {
       register: (plugin: string, id: string) => number;
       zIndexOf: (plugin: string, id: string) => number;
     };

@@ -53,7 +53,7 @@ function installMockNotification(
     this.close = vi.fn(() => {
       this.closed = true;
     });
-  }) as any as MockNotificationConstructor;
+  }) as unknown as MockNotificationConstructor;
 
   MockNotification.permission = permission;
   MockNotification.requestPermission = vi.fn(() => Promise.resolve("granted"));
@@ -236,7 +236,7 @@ describe("@ailuracode/alpine-notify", () => {
     it("closes notifications without throwing", () => {
       const notification = {
         close: vi.fn(),
-      } as any as Notification;
+      } as unknown as Notification;
 
       closeNotification(notification);
       expect(notification.close).toHaveBeenCalledOnce();
@@ -247,7 +247,7 @@ describe("@ailuracode/alpine-notify", () => {
         close: vi.fn(() => {
           throw new Error("already closed");
         }),
-      } as any as Notification;
+      } as unknown as Notification;
 
       expect(() => closeNotification(notification)).not.toThrow();
     });

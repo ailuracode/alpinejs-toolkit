@@ -15,7 +15,10 @@ describe("@ailuracode/alpine-geo/permission-adapter", () => {
 
   afterEach(() => {
     (globalThis as Record<string, unknown>).isSecureContext = originalIsSecureContext;
-    Object.defineProperty(globalThis, "navigator", { value: originalNavigator, configurable: true });
+    Object.defineProperty(globalThis, "navigator", {
+      value: originalNavigator,
+      configurable: true,
+    });
   });
 
   describe("createGeoPermissionAdapter", () => {

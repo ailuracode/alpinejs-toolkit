@@ -99,7 +99,11 @@ describe("permissions/snapshot", () => {
     });
 
     it("returns unknown for invalid string", () => {
-      expect(normalizePermissionState("invalid" as any)).toBe("unknown");
+      expect(
+        normalizePermissionState(
+          "invalid" as unknown as Parameters<typeof normalizePermissionState>[0]
+        )
+      ).toBe("unknown");
     });
   });
 });

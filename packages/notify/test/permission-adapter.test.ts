@@ -1,9 +1,9 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import * as controller from "../src/controller.js";
 import {
   createNotificationPermissionAdapter,
   NOTIFICATION_PERMISSION_NAME,
 } from "../src/permission-adapter.js";
-import * as controller from "../src/controller.js";
 
 describe("@ailuracode/alpine-notify/permission-adapter", () => {
   let originalIsSecureContext: unknown;
@@ -16,7 +16,10 @@ describe("@ailuracode/alpine-notify/permission-adapter", () => {
 
   afterEach(() => {
     (globalThis as Record<string, unknown>).isSecureContext = originalIsSecureContext;
-    Object.defineProperty(globalThis, "navigator", { value: originalNavigator, configurable: true });
+    Object.defineProperty(globalThis, "navigator", {
+      value: originalNavigator,
+      configurable: true,
+    });
     vi.restoreAllMocks();
   });
 
@@ -80,7 +83,9 @@ describe("@ailuracode/alpine-notify/permission-adapter", () => {
     });
 
     it("query returns unknown for invalid permission", async () => {
-      vi.spyOn(controller, "getNotifyPermission").mockReturnValue("invalid" as any);
+      vi.spyOn(controller, "getNotifyPermission").mockReturnValue(
+        "invalid" as unknown as ReturnType<typeof controller.getNotifyPermission>
+      );
       const adapter = createNotificationPermissionAdapter();
       const result = await adapter.query();
       expect(result).toBe("unknown");

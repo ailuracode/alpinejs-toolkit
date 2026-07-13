@@ -184,17 +184,67 @@ describe("query devtools sort", () => {
 
   it("pickLatestMutation picks the most recent", () => {
     const mutations: MutationDevtoolsEntryView[] = [
-      { id: "1", entryId: "1", updatedAt: 10, status: "success", storeId: "0", adapterName: "X", variables: undefined, data: undefined, error: null },
-      { id: "2", entryId: "2", updatedAt: 50, status: "success", storeId: "0", adapterName: "X", variables: undefined, data: undefined, error: null },
-      { id: "3", entryId: "3", updatedAt: 30, status: "success", storeId: "0", adapterName: "X", variables: undefined, data: undefined, error: null },
+      {
+        id: "1",
+        entryId: "1",
+        updatedAt: 10,
+        status: "success",
+        storeId: "0",
+        adapterName: "X",
+        variables: undefined,
+        data: undefined,
+        error: null,
+      },
+      {
+        id: "2",
+        entryId: "2",
+        updatedAt: 50,
+        status: "success",
+        storeId: "0",
+        adapterName: "X",
+        variables: undefined,
+        data: undefined,
+        error: null,
+      },
+      {
+        id: "3",
+        entryId: "3",
+        updatedAt: 30,
+        status: "success",
+        storeId: "0",
+        adapterName: "X",
+        variables: undefined,
+        data: undefined,
+        error: null,
+      },
     ];
     expect(pickLatestMutation(mutations)?.id).toBe("2");
   });
 
   it("sortMutations sorts by updated-desc by default", () => {
     const mutations: MutationDevtoolsEntryView[] = [
-      { id: "1", entryId: "1", updatedAt: 10, status: "success", storeId: "0", adapterName: "X", variables: undefined, data: undefined, error: null },
-      { id: "2", entryId: "2", updatedAt: 50, status: "success", storeId: "0", adapterName: "X", variables: undefined, data: undefined, error: null },
+      {
+        id: "1",
+        entryId: "1",
+        updatedAt: 10,
+        status: "success",
+        storeId: "0",
+        adapterName: "X",
+        variables: undefined,
+        data: undefined,
+        error: null,
+      },
+      {
+        id: "2",
+        entryId: "2",
+        updatedAt: 50,
+        status: "success",
+        storeId: "0",
+        adapterName: "X",
+        variables: undefined,
+        data: undefined,
+        error: null,
+      },
     ];
     const sorted = sortMutations(mutations, "updated-desc");
     expect(sorted.map((m) => m.id)).toEqual(["2", "1"]);
@@ -202,8 +252,28 @@ describe("query devtools sort", () => {
 
   it("sortMutations sorts by updated-asc", () => {
     const mutations: MutationDevtoolsEntryView[] = [
-      { id: "1", entryId: "1", updatedAt: 10, status: "success", storeId: "0", adapterName: "X", variables: undefined, data: undefined, error: null },
-      { id: "2", entryId: "2", updatedAt: 50, status: "success", storeId: "0", adapterName: "X", variables: undefined, data: undefined, error: null },
+      {
+        id: "1",
+        entryId: "1",
+        updatedAt: 10,
+        status: "success",
+        storeId: "0",
+        adapterName: "X",
+        variables: undefined,
+        data: undefined,
+        error: null,
+      },
+      {
+        id: "2",
+        entryId: "2",
+        updatedAt: 50,
+        status: "success",
+        storeId: "0",
+        adapterName: "X",
+        variables: undefined,
+        data: undefined,
+        error: null,
+      },
     ];
     const sorted = sortMutations(mutations, "updated-asc");
     expect(sorted.map((m) => m.id)).toEqual(["1", "2"]);
@@ -211,8 +281,28 @@ describe("query devtools sort", () => {
 
   it("sortMutations sorts by status", () => {
     const mutations: MutationDevtoolsEntryView[] = [
-      { id: "1", entryId: "1", updatedAt: 10, status: "success", storeId: "0", adapterName: "X", variables: undefined, data: undefined, error: null },
-      { id: "2", entryId: "2", updatedAt: 50, status: "pending", storeId: "0", adapterName: "X", variables: undefined, data: undefined, error: null },
+      {
+        id: "1",
+        entryId: "1",
+        updatedAt: 10,
+        status: "success",
+        storeId: "0",
+        adapterName: "X",
+        variables: undefined,
+        data: undefined,
+        error: null,
+      },
+      {
+        id: "2",
+        entryId: "2",
+        updatedAt: 50,
+        status: "pending",
+        storeId: "0",
+        adapterName: "X",
+        variables: undefined,
+        data: undefined,
+        error: null,
+      },
     ];
     const sorted = sortMutations(mutations, "status");
     expect(sorted.map((m) => m.id)).toEqual(["2", "1"]);
@@ -220,8 +310,28 @@ describe("query devtools sort", () => {
 
   it("sortMutations uses updatedAt as tiebreaker for status sort", () => {
     const mutations: MutationDevtoolsEntryView[] = [
-      { id: "1", entryId: "1", updatedAt: 10, status: "success", storeId: "0", adapterName: "X", variables: undefined, data: undefined, error: null },
-      { id: "2", entryId: "2", updatedAt: 50, status: "success", storeId: "0", adapterName: "X", variables: undefined, data: undefined, error: null },
+      {
+        id: "1",
+        entryId: "1",
+        updatedAt: 10,
+        status: "success",
+        storeId: "0",
+        adapterName: "X",
+        variables: undefined,
+        data: undefined,
+        error: null,
+      },
+      {
+        id: "2",
+        entryId: "2",
+        updatedAt: 50,
+        status: "success",
+        storeId: "0",
+        adapterName: "X",
+        variables: undefined,
+        data: undefined,
+        error: null,
+      },
     ];
     const sorted = sortMutations(mutations, "status");
     expect(sorted.map((m) => m.id)).toEqual(["2", "1"]);
@@ -229,8 +339,28 @@ describe("query devtools sort", () => {
 
   it("sortMutations uses entryId as tiebreaker for updated-desc", () => {
     const mutations: MutationDevtoolsEntryView[] = [
-      { id: "1", entryId: "1", updatedAt: 10, status: "success", storeId: "0", adapterName: "X", variables: undefined, data: undefined, error: null },
-      { id: "2", entryId: "2", updatedAt: 10, status: "success", storeId: "0", adapterName: "X", variables: undefined, data: undefined, error: null },
+      {
+        id: "1",
+        entryId: "1",
+        updatedAt: 10,
+        status: "success",
+        storeId: "0",
+        adapterName: "X",
+        variables: undefined,
+        data: undefined,
+        error: null,
+      },
+      {
+        id: "2",
+        entryId: "2",
+        updatedAt: 10,
+        status: "success",
+        storeId: "0",
+        adapterName: "X",
+        variables: undefined,
+        data: undefined,
+        error: null,
+      },
     ];
     const sorted = sortMutations(mutations, "updated-desc");
     expect(sorted.map((m) => m.id)).toEqual(["2", "1"]);
@@ -238,8 +368,28 @@ describe("query devtools sort", () => {
 
   it("sortMutations uses entryId as tiebreaker for updated-asc", () => {
     const mutations: MutationDevtoolsEntryView[] = [
-      { id: "1", entryId: "1", updatedAt: 10, status: "success", storeId: "0", adapterName: "X", variables: undefined, data: undefined, error: null },
-      { id: "2", entryId: "2", updatedAt: 10, status: "success", storeId: "0", adapterName: "X", variables: undefined, data: undefined, error: null },
+      {
+        id: "1",
+        entryId: "1",
+        updatedAt: 10,
+        status: "success",
+        storeId: "0",
+        adapterName: "X",
+        variables: undefined,
+        data: undefined,
+        error: null,
+      },
+      {
+        id: "2",
+        entryId: "2",
+        updatedAt: 10,
+        status: "success",
+        storeId: "0",
+        adapterName: "X",
+        variables: undefined,
+        data: undefined,
+        error: null,
+      },
     ];
     const sorted = sortMutations(mutations, "updated-asc");
     expect(sorted.map((m) => m.id)).toEqual(["1", "2"]);
