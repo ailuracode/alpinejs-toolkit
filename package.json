@@ -35,7 +35,7 @@
     "size:check": "pnpm run build && pnpm run size"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.5.2",
+    "@biomejs/biome": "^2.5.3",
     "@changesets/cli": "^2.31.0",
     "@size-limit/esbuild": "^12.1.0",
     "@size-limit/file": "^12.1.0",
@@ -43,7 +43,7 @@
     "@types/alpinejs": "^3.13.11",
     "@vitest/coverage-v8": "^4.1.10",
     "alpinejs": "^3.15.12",
-    "esbuild": "^0.25.9",
+    "esbuild": "^0.28.1",
     "happy-dom": "^20.10.6",
     "size-limit": "^12.1.0",
     "tsup": "^8.5.0",
