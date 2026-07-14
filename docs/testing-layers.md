@@ -20,7 +20,7 @@ pnpm run test:classify
 | Environment | Runner | When to use |
 |-------------|--------|-------------|
 | **`node`** | Vitest | Controller state machines, cache logic, parsing, utilities, SSR-safe imports, repository checks |
-| **`happy-dom`** | Vitest | Alpine stores, magics, directives, and DOM APIs that happy-dom models reliably (root default today) |
+| **`happy-dom`** | Vitest | Alpine stores, magics, directives, and DOM APIs that happy-dom models reliably |
 | **`jsdom`** | Vitest | Packages that depend on jsdom-specific APIs (`localStorage` listeners, `scrollIntoView`, etc.) — see package `vitest.config.ts` |
 | **`playwright`** | Playwright | Real focus, keyboard routing, layout, scroll locking, permissions, and browser-only APIs |
 
@@ -64,9 +64,22 @@ See also: [E2E testing](./e2e-testing.md).
 3. Use the harness from `.cursor/rules/testing.mdc` (`startAlpine`, `createMagicHarness`, `createQueryClient`, Playwright fixtures).
 4. Run `pnpm run test:classify` and commit the updated inventory when adding or renaming test files.
 
+## Root Vitest projects
+
+Root `vitest.config.ts` runs a workspace with explicit projects ([ALP-131](https://linear.app/ailuracode/issue/ALP-131/split-vitest-into-node-and-simulated-dom-projects)):
+
+| Project | Environment | Scope |
+|---------|-------------|-------|
+| `node` | Node | Controller, utility, contract, SSR, and repository tests |
+| `happy-dom` | happy-dom | Simulated DOM integration tests without package-local setup |
+| `<package>-jsdom` | jsdom | jsdom-only files in `theme`, `sidebar`, `scroll`, `collection`, `ui` |
+| `<package>-happy-dom` | happy-dom | happy-dom overlay files in `media`, `realtime` |
+
+Routing is generated from the live inventory via `scripts/vitest-projects.mjs`. Package `vitest.config.ts` files contribute overlay projects to the root workspace; package `test` scripts scope through `vitest run --config ../../vitest.config.ts packages/<name>`.
+
 ## Package-local Vitest configs
 
-These packages override the root happy-dom default:
+These packages contribute jsdom or happy-dom overlay projects to the root workspace:
 
 | Package | Environment | Reason |
 |---------|-------------|--------|

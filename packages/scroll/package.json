@@ -48,9 +48,9 @@
     "lint:fix": "biome check --write --assist-enabled=true .",
     "prepublishOnly": "pnpm run build",
     "size": "size-limit",
-    "test": "vitest run",
-    "test:coverage": "vitest run --coverage",
-    "test:watch": "vitest",
+    "test": "vitest run --config ../../vitest.config.ts packages/scroll",
+    "test:coverage": "vitest run --coverage --config ../../vitest.config.ts packages/scroll",
+    "test:watch": "vitest --config ../../vitest.config.ts packages/scroll",
     "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.test.json",
     "test:e2e": "playwright test --config playwright.config.ts",
     "test:e2e:report": "playwright show-report e2e/playwright-report"

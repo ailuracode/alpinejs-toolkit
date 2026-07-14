@@ -5,7 +5,6 @@ import { discoverPackages } from "../scripts/repo-check.mjs";
 import {
   expectedVitestScripts,
   isScopedVitestCommand,
-  packageHasLocalVitestConfig,
   usesAmbiguousTestFilter,
   validatePackageVitestScripts,
 } from "../scripts/vitest-package-scripts.mjs";
@@ -35,15 +34,15 @@ describe("vitest package scripts", () => {
     ).toBe(false);
   });
 
-  it("requires local-config packages to avoid the root config", () => {
-    expect(isScopedVitestCommand("vitest run", "theme", true)).toBe(true);
+  it("requires local-config packages to scope through the root workspace", () => {
     expect(
       isScopedVitestCommand(
         "vitest run --config ../../vitest.config.ts packages/theme",
         "theme",
         true
       )
-    ).toBe(false);
+    ).toBe(true);
+    expect(isScopedVitestCommand("vitest run", "theme", true)).toBe(false);
   });
 
   it("passes on the current repository package scripts", () => {
@@ -60,9 +59,7 @@ describe("vitest package scripts", () => {
     const scripts = dialog?.manifest.scripts as Record<string, string> | undefined;
     expect(scripts?.test).toBe("vitest run --config ../../vitest.config.ts packages/dialog");
     expect(usesAmbiguousTestFilter(scripts?.test)).toBe(false);
-    expect(
-      expectedVitestScripts("dialog", packageHasLocalVitestConfig("dialog", packagesDir))
-    ).toEqual({
+    expect(expectedVitestScripts("dialog")).toEqual({
       test: "vitest run --config ../../vitest.config.ts packages/dialog",
       "test:watch": "vitest --config ../../vitest.config.ts packages/dialog",
       "test:coverage": "vitest run --coverage --config ../../vitest.config.ts packages/dialog",

@@ -1,27 +1,24 @@
 /**
- * Per-package Vitest configuration for `@ailuracode/alpine-media`.
+ * Per-package Vitest project for `@ailuracode/alpine-media`.
  *
- * Per `.cursor/rules/tooling-configs.mdc` the package owns
- * its own `vitest.config.ts`. We override the root defaults:
- *
- * - `environment: 'happy-dom'` — `matchMedia`, `window`, and
- *   `MediaQueryList` listeners all require a DOM polyfill. The root
- *   config also defaults to `happy-dom`, but we declare it here so
- *   the package can be exercised in isolation.
- * - `setupFiles` installs the matchMedia stub the controller and
- *   store rely on. Per-test isolation is handled inside the setup
- *   module.
- *
- * Coverage defaults live on the root config — the per-package file
- * only declares what is genuinely different.
+ * happy-dom integration specs run here with package-local matchMedia setup.
+ * Controller and other node-classified specs run in the root `node` project.
  */
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { defineProject } from "vitest/config";
+import { packageProjectIncludes } from "../../scripts/vitest-projects.mjs";
+
+const packageDir = path.dirname(fileURLToPath(import.meta.url));
+const packageName = path.basename(packageDir);
 
 export default defineProject({
   test: {
+    name: `${packageName}-happy-dom`,
     globals: true,
     environment: "happy-dom",
-    include: ["test/**/*.{test,spec}.ts"],
+    include: packageProjectIncludes(packageName, "happy-dom"),
     setupFiles: ["./test/setup.ts"],
+    exclude: ["**/e2e/**"],
   },
 });

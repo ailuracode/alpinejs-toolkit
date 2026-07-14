@@ -1,10 +1,10 @@
 {
-  "generatedAt": "2026-07-14T21:17:24.022Z",
+  "generatedAt": "2026-07-14T21:28:26.856Z",
   "issue": "ALP-130",
-  "vitestFileCount": 228,
+  "vitestFileCount": 229,
   "e2eFileCount": 29,
   "environmentCounts": {
-    "node": 135,
+    "node": 136,
     "happy-dom": 75,
     "jsdom": 18,
     "playwright": 29
@@ -14,7 +14,7 @@
     "contract": 20,
     "integration": 34,
     "accessibility": 6,
-    "utility": 147,
+    "utility": 148,
     "repository": 3,
     "e2e": 29
   },
@@ -2327,6 +2327,15 @@
       "path": "test/vitest-package-scripts.test.ts",
       "package": "repository",
       "layer": "repository",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["no-alpine-import"],
+      "hasPlaywrightSibling": false
+    },
+    {
+      "path": "test/vitest-projects.test.ts",
+      "package": "repository",
+      "layer": "utility",
       "targetEnvironment": "node",
       "source": "content",
       "signals": ["no-alpine-import"],

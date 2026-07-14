@@ -2,6 +2,7 @@ import { readdirSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { defineConfig } from "vitest/config";
+import { buildRootVitestProjects } from "./scripts/vitest-projects.mjs";
 
 const root = path.dirname(fileURLToPath(import.meta.url));
 const packagesDir = path.resolve(root, "packages");
@@ -34,20 +35,7 @@ export default defineConfig({
     ],
   },
   test: {
-    environment: "happy-dom",
-    setupFiles: [path.join(root, "test/setup.ts")],
-    include: [
-      path.join(root, "packages/*/test/**/*.{test,spec}.ts"),
-      path.join(root, "apps/demo/test/**/*.test.ts"),
-      path.join(root, "test/**/*.test.ts"),
-    ],
-    exclude: [
-      "**/node_modules/**",
-      "**/dist/**",
-      "**/e2e/**",
-      "**/playwright-report/**",
-      "**/test-results/**",
-    ],
+    projects: buildRootVitestProjects(root),
     coverage: {
       provider: "v8",
       reporter: ["text", "html", "json", "json-summary"],

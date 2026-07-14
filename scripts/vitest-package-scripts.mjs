@@ -26,16 +26,9 @@ export function packageHasLocalVitestConfig(folder, packagesDir) {
  * @param {boolean} hasLocalConfig
  * @returns {Record<string, string>}
  */
-export function expectedVitestScripts(folder, hasLocalConfig) {
-  if (hasLocalConfig) {
-    return {
-      test: "vitest run",
-      "test:watch": "vitest",
-      "test:coverage": "vitest run --coverage",
-    };
-  }
-
+export function expectedVitestScripts(folder) {
   const scope = `packages/${folder}`;
+
   return {
     test: `vitest run --config ${ROOT_CONFIG} ${scope}`,
     "test:watch": `vitest --config ${ROOT_CONFIG} ${scope}`,
@@ -71,7 +64,7 @@ export function isScopedVitestCommand(command, folder, hasLocalConfig) {
   }
 
   if (hasLocalConfig) {
-    return !command.includes(ROOT_CONFIG);
+    return command.includes(ROOT_CONFIG) && command.includes(`packages/${folder}`);
   }
 
   return command.includes(`packages/${folder}`);
@@ -93,9 +86,7 @@ function validatePackageVitestScript(pkg, scriptName, command, hasLocalConfig, e
   }
 
   if (!isScopedVitestCommand(command, pkg.folder, hasLocalConfig)) {
-    const hint = hasLocalConfig
-      ? `expected "${expected[scriptName]}"`
-      : `expected a packages/${pkg.folder} path filter`;
+    const hint = `expected "${expected[scriptName]}"`;
     return [`${pkg.name}: scripts.${scriptName} is not scoped to the package (${hint})`];
   }
 
@@ -120,7 +111,7 @@ function validatePackageVitestScriptsForPackage(pkg, packagesDir) {
   }
 
   const hasLocalConfig = packageHasLocalVitestConfig(pkg.folder, packagesDir);
-  const expected = expectedVitestScripts(pkg.folder, hasLocalConfig);
+  const expected = expectedVitestScripts(pkg.folder);
   const errors = [];
 
   for (const scriptName of VITEST_SCRIPT_KEYS) {

@@ -594,7 +594,7 @@ export function renderInventoryMarkdown(inventory) {
     "| Environment | Files | Role |",
     "| --- | ---: | --- |",
     `| \`node\` | ${inventory.environmentCounts.node} | Controller, cache, parsing, SSR import, repository checks |`,
-    `| \`happy-dom\` | ${inventory.environmentCounts["happy-dom"]} | Alpine stores, directives, simulated DOM (root default) |`,
+    `| \`happy-dom\` | ${inventory.environmentCounts["happy-dom"]} | Alpine stores, directives, simulated DOM integration tests |`,
     `| \`jsdom\` | ${inventory.environmentCounts.jsdom} | Packages that require jsdom APIs (\`theme\`, \`sidebar\`, \`scroll\`, \`collection\`, \`ui\`) |`,
     `| \`playwright\` | ${inventory.environmentCounts.playwright} | Real browser focus, layout, keyboard, permissions |`,
     "",

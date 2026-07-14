@@ -1,24 +1,23 @@
 /**
- * Per-package Vitest configuration for `@ailuracode/alpine-realtime`.
+ * Per-package Vitest project for `@ailuracode/alpine-realtime`.
  *
- * The root `vitest.config.ts` auto-aliases every package under
- * `packages/\*\/src/index.ts`, so we only declare what is genuinely
- * different here:
- *
- * - `environment: 'happy-dom'` — `document.visibilityState`,
- *   `EventSource`, and `WebSocket` (available through globals) all
- *   require a DOM polyfill. Tests still stub these as needed.
- * - `globals: true` so `describe`, `expect`, `vi`, etc. work without
- *   per-file imports in this lightweight util-focused package.
- *
- * Coverage settings inherit from the root config.
+ * happy-dom integration specs run here. Controller and adapter unit tests
+ * run in the root `node` project instead.
  */
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { defineProject } from "vitest/config";
+import { packageProjectIncludes } from "../../scripts/vitest-projects.mjs";
+
+const packageDir = path.dirname(fileURLToPath(import.meta.url));
+const packageName = path.basename(packageDir);
 
 export default defineProject({
   test: {
+    name: `${packageName}-happy-dom`,
     globals: true,
     environment: "happy-dom",
-    include: ["test/**/*.{test,spec}.ts"],
+    include: packageProjectIncludes(packageName, "happy-dom"),
+    exclude: ["**/e2e/**"],
   },
 });

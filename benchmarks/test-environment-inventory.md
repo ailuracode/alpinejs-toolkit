@@ -4,16 +4,16 @@ Classification for [ALP-130](https://linear.app/ailuracode/issue/ALP-130/classif
 
 ## Summary
 
-- Generated: 2026-07-14T21:17:24.022Z
-- Vitest files: 228
+- Generated: 2026-07-14T21:28:26.856Z
+- Vitest files: 229
 - Playwright E2E files: 29
 
 ### Target environment (Vitest + E2E)
 
 | Environment | Files | Role |
 | --- | ---: | --- |
-| `node` | 135 | Controller, cache, parsing, SSR import, repository checks |
-| `happy-dom` | 75 | Alpine stores, directives, simulated DOM (root default) |
+| `node` | 136 | Controller, cache, parsing, SSR import, repository checks |
+| `happy-dom` | 75 | Alpine stores, directives, simulated DOM integration tests |
 | `jsdom` | 18 | Packages that require jsdom APIs (`theme`, `sidebar`, `scroll`, `collection`, `ui`) |
 | `playwright` | 29 | Real browser focus, layout, keyboard, permissions |
 
@@ -25,7 +25,7 @@ Classification for [ALP-130](https://linear.app/ailuracode/issue/ALP-130/classif
 | `contract` | 20 |
 | `integration` | 34 |
 | `accessibility` | 6 |
-| `utility` | 147 |
+| `utility` | 148 |
 | `repository` | 3 |
 | `e2e` | 29 |
 
@@ -353,4 +353,5 @@ Machine-readable output: `benchmarks/test-environment-inventory.json`.
 | `test/test-environment-inventory.test.ts` | `repository` | `utility` | `node` | content |
 | `test/tree-shaking-smoke.test.ts` | `repository` | `utility` | `node` | content |
 | `test/vitest-package-scripts.test.ts` | `repository` | `repository` | `node` | content |
+| `test/vitest-projects.test.ts` | `repository` | `utility` | `node` | content |
 

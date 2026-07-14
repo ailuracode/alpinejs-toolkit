@@ -1,24 +1,24 @@
 /**
- * Per-package Vitest configuration for `@ailuracode/alpine-theme`.
+ * Per-package Vitest project for `@ailuracode/alpine-theme`.
  *
- * Per `.cursor/rules/tooling-configs.mdc` the package owns its
- * own `vitest.config.ts`. We override the root defaults:
- *
- * - `environment: 'jsdom'` — `localStorage`, `matchMedia`, `window`, and
- *   `MediaQueryList` listeners all require a DOM polyfill.
- * - `setupFiles` installs the matchMedia stub the controller and store
- *   rely on. Per-test isolation is handled inside the setup module.
- *
- * Coverage defaults live on the root config — the per-package file only
- * declares what is genuinely different.
+ * jsdom files for this package are routed here from the root workspace.
+ * Node-classified specs run in the root `node` project instead.
  */
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { defineProject } from "vitest/config";
+import { packageProjectIncludes } from "../../scripts/vitest-projects.mjs";
+
+const packageDir = path.dirname(fileURLToPath(import.meta.url));
+const packageName = path.basename(packageDir);
 
 export default defineProject({
   test: {
+    name: `${packageName}-jsdom`,
     globals: true,
     environment: "jsdom",
-    include: ["test/**/*.{test,spec}.ts"],
+    include: packageProjectIncludes(packageName, "jsdom"),
     setupFiles: ["./test/setup.ts"],
+    exclude: ["**/e2e/**"],
   },
 });
