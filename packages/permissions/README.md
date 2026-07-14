@@ -2,8 +2,6 @@
 
 Framework-agnostic browser permission registry with a typed adapter contract.
 
-**[Full documentation →](../../docs/plugins/permissions.md)**
-
 ## Install
 
 ```bash
@@ -94,6 +92,56 @@ permissions.destroy();
 - Trigger `request()` only from explicit user actions.
 - Do not re-request permissions already reported as denied.
 - Distinguish unsupported APIs, insecure contexts, policy blocks, and platform restrictions.
+
+## Setup
+
+```ts
+import Alpine from "alpinejs";
+import { permissionsPlugin } from "@ailuracode/alpine-permissions";
+import { createNotificationPermissionAdapter } from "@ailuracode/alpine-notify";
+import { createGeoPermissionAdapter } from "@ailuracode/alpine-geo";
+import { createIdlePermissionAdapter } from "@ailuracode/alpine-attention";
+
+Alpine.plugin(
+  permissionsPlugin({
+    adapters: [
+      createNotificationPermissionAdapter(),
+      createGeoPermissionAdapter(),
+      createIdlePermissionAdapter(),
+    ],
+  })
+);
+
+Alpine.start();
+```
+
+When the plugin registers, it **queries** each adapter for the current permission and starts **watching** for revocations. This never opens a native prompt.
+
+## Headless controller
+
+```ts
+import { createPermissions } from "@ailuracode/alpine-permissions";
+import { createGeoPermissionAdapter } from "@ailuracode/alpine-geo";
+
+const permissions = createPermissions();
+const dispose = permissions.register(createGeoPermissionAdapter());
+
+await permissions.query("geolocation");
+await permissions.request("geolocation");
+
+dispose();
+permissions.destroy();
+```
+
+`PermissionsController` is framework-agnostic. Alpine integration is optional.
+
+## Relationship to feature plugins
+
+`$notify`, `$store.geo`, and `$idle` keep their existing APIs. Use `$permissions` when you need a single registry across capabilities or normalized availability metadata.
+
+- **Notify** — `createNotificationPermissionAdapter()` wraps `Notification.permission` and `requestPermission()`.
+- **Geo** — `createGeoPermissionAdapter()` uses the Permissions API and geolocation prompt semantics.
+- **Attention** — `createIdlePermissionAdapter()` covers idle-detection permission; `IdleController` uses the same adapter internally.
 
 ## License
 
