@@ -23,6 +23,7 @@ on:
       - "pnpm-workspace.yaml"
       - "tsconfig.json"
       - "vitest.config.ts"
+      - "benchmarks/**"
       - "e2e/**"
       - "biome.json"
       - "docs/**"

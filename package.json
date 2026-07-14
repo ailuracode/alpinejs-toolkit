@@ -26,6 +26,7 @@
     "size": "pnpm -r --if-present run size",
     "size:check": "pnpm run build && pnpm run size",
     "test": "vitest run",
+    "test:benchmark": "node scripts/vitest-benchmark.mjs",
     "test:coverage": "vitest run --coverage",
     "test:coverage:report": "node scripts/coverage-report.mjs --baseline coverage/baseline.json --write-summary",
     "test:e2e": "node scripts/e2e-run.mjs",
