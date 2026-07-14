@@ -3,7 +3,6 @@ import {
   getCatalogEntriesByCategory,
   getCatalogEntriesByTier,
   getCatalogEntry,
-  getDocumentedCatalogEntries,
   getPlaygroundCatalogEntries,
   PACKAGE_CATEGORIES,
   type PackageCatalogEntry,
@@ -86,21 +85,6 @@ export function pluginDocsPath(id: string): string {
     return `/plugins/${id}/`;
   }
   return catalogDocsPath(entry);
-}
-
-/** Package ids with README-backed documentation routes, derived from the catalog. */
-export const PLUGIN_DOCS: ReadonlySet<string> = new Set(
-  getDocumentedCatalogEntries().map((entry) => entry.id)
-);
-
-/** Starlight sidebar entries for plugin doc pages, grouped by tier (legacy until ALP-113). */
-export function pluginDocsSidebarItems(tier: PluginTier): { label: string; link: string }[] {
-  return getCatalogEntriesByTier(tier)
-    .filter((entry) => entry.docs?.available !== false)
-    .map((entry) => ({
-      label: entry.title,
-      link: catalogDocsPath(entry),
-    }));
 }
 
 export type {

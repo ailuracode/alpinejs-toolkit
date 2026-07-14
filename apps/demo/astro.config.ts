@@ -3,8 +3,8 @@ import react from "@astrojs/react";
 import starlight from "@astrojs/starlight";
 import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "astro/config";
+import { buildDocsSidebar } from "./src/catalog/docs-navigation.ts";
 import { getLocaleDetectScript } from "./src/locale-detect.ts";
-import { pluginDocsSidebarItems } from "./src/plugin-nav.ts";
 
 const root = fileURLToPath(new URL(".", import.meta.url));
 const pkg = (name: string) => `${root}../../packages/${name}/src/index.ts`;
@@ -16,70 +16,7 @@ const site =
       ? `https://${process.env.VERCEL_URL}`
       : "https://alpine-demo-ten.vercel.app";
 
-const sidebar = [
-  {
-    label: "Playground",
-    translations: { es: "Playground", pt: "Playground" },
-    link: "/playground/",
-  },
-  {
-    label: "Guides",
-    translations: { es: "Guías", pt: "Guias" },
-    items: [
-      {
-        label: "Getting started",
-        translations: { es: "Primeros pasos", pt: "Primeiros passos" },
-        link: "/getting-started/",
-      },
-      {
-        label: "Core",
-        translations: { es: "Core", pt: "Core" },
-        link: "/core/",
-      },
-      {
-        label: "Device detection",
-        translations: { es: "Detección de dispositivo", pt: "Detecção de dispositivo" },
-        link: "/device-detection/",
-      },
-    ],
-  },
-  {
-    label: "Essentials",
-    translations: { es: "Esenciales", pt: "Essenciais" },
-    items: pluginDocsSidebarItems("essential"),
-  },
-  {
-    label: "Extended",
-    translations: { es: "Extendidos", pt: "Estendidos" },
-    items: pluginDocsSidebarItems("extended"),
-  },
-  {
-    label: "Headless UI",
-    translations: { es: "Headless UI", pt: "Headless UI" },
-    items: pluginDocsSidebarItems("headless"),
-  },
-  {
-    label: "Advanced",
-    translations: { es: "Avanzados", pt: "Avançados" },
-    items: pluginDocsSidebarItems("advanced"),
-  },
-  {
-    label: "Query",
-    translations: { es: "Query", pt: "Query" },
-    items: [
-      {
-        label: "Query cache",
-        translations: { es: "Caché de consultas", pt: "Cache de consultas" },
-        link: "/query/",
-      },
-      {
-        label: "Query devtools",
-        translations: { es: "Query devtools", pt: "Query devtools" },
-        link: "/plugins/query-kit/#devtools",
-      },
-    ],
-  },
-];
+const sidebar = buildDocsSidebar();
 
 // https://astro.build/config
 export default defineConfig({
