@@ -4,7 +4,7 @@ Guidance for AI agents and contributors working on **@ailuracode/alpinejs-toolki
 
 ## Project
 
-Alpine.js plugin monorepo by **ailuracode**. 33 independent npm packages under `packages/`, plus shared tests and docs. The root package `@ailuracode/alpinejs-toolkit` is **private** and never published.
+Alpine.js plugin monorepo by **ailuracode**. 34 independent npm packages under `packages/`, plus shared tests and docs. The root package `@ailuracode/alpinejs-toolkit` is **private** and never published.
 
 
 | Package | Type | Store / Magic |
@@ -34,6 +34,7 @@ Alpine.js plugin monorepo by **ailuracode**. 33 independent npm packages under `
 | `@ailuracode/alpine-toggle` | Magic | `$toggle` |
 | `@ailuracode/alpine-child` | Directive | `x-child` |
 | `@ailuracode/alpine-gesture` | Store | `$store.gesture` / `x-gesture` — headless pointer gesture recognition |
+| `@ailuracode/alpine-realtime` | Store | `$store.realtime` / `$realtime` — headless realtime transport (SSE/WebSocket) |
 | `@ailuracode/alpine-notify` | Magic | `$notify` |
 | `@ailuracode/alpine-geo` | Store | `$store.geo` |
 | `@ailuracode/alpine-attention` | Magic | `$wakelock`, `$idle` |

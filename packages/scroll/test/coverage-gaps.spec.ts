@@ -8,7 +8,8 @@
  * surface it covers, no red-green-refactor cycle.
  */
 
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { clearAllSingletons } from "@ailuracode/alpine-core";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { ScrollController } from "../src/controller";
 import { ScrollError } from "../src/error";
 import { scrollPlugin } from "../src/index";
@@ -132,6 +133,14 @@ describe("coverage-gaps — navigation branches", () => {
 });
 
 describe("coverage-gaps — plugin factory", () => {
+  beforeEach(() => {
+    clearAllSingletons();
+  });
+
+  afterEach(() => {
+    clearAllSingletons();
+  });
+
   it("scrollPlugin() returns a function (the Alpine.plugin() callback)", () => {
     const cb = scrollPlugin({ id: "factory-1" });
     expect(typeof cb).toBe("function");
@@ -156,7 +165,7 @@ describe("coverage-gaps — plugin factory", () => {
         alpine.cleanups.push(cb);
       },
     };
-    scrollPlugin({ id: "factory-2" })(alpine as unknown as import("alpinejs").Alpine);
+    scrollPlugin()(alpine as unknown as import("alpinejs").Alpine);
     expect(alpine.stores.scroll).toBeDefined();
     expect(alpine.magics.scroll).toBeDefined();
     expect(alpine.cleanups.length).toBe(1);

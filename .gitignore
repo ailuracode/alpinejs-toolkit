@@ -22,3 +22,5 @@ blob-report/
 # Development tools
 .atl/
 .codegraph/
+.opencode/
+graphify-out/
