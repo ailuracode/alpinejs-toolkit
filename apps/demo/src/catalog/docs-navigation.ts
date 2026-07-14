@@ -103,10 +103,12 @@ export function buildDocsSidebar(): SidebarGroup[] {
         },
         {
           label: "Permissions composition",
+          translations: { es: "Composición de permisos", pt: "Composição de permissões" },
           link: "/guides/permissions/",
         },
         {
           label: "Query stack composition",
+          translations: { es: "Composición del query stack", pt: "Composição do query stack" },
           link: "/guides/query-stack/",
         },
       ],

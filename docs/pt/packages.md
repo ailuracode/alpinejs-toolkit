@@ -1,6 +1,6 @@
 ---
-title: Packages
-description: Browse all Alpine Toolkit packages by functional category and family.
+title: Pacotes
+description: Navegue todos os pacotes do Alpine Toolkit por categoria funcional e família.
 template: splash
 ---
 
