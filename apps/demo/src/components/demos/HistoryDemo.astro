@@ -1,0 +1,59 @@
+---
+import { getPluginNavItem } from "../../plugin-nav";
+import DemoButton from "../astro/DemoButton.astro";
+import DemoSection from "../DemoSection.astro";
+
+const plugin = getPluginNavItem("history")!;
+---
+
+<DemoSection id={plugin.id} title={plugin.title} api={plugin.api} description={plugin.description}>
+	<div
+		x-data="{
+			step: 1,
+			txValue: 0,
+			increment() { $store.history.commit($store.history.value + this.step); },
+			decrement() { $store.history.commit($store.history.value - this.step); },
+			txCommit() {
+				const tx = $store.history.transaction($store.history.value);
+				$store.history.commit($store.history.value + 5);
+				tx.commit();
+			},
+			txRollback() {
+				const tx = $store.history.transaction($store.history.value);
+				$store.history.commit($store.history.value + 100);
+				tx.rollback();
+			},
+		}"
+	>
+		<div class="space-y-3">
+			<div class="flex flex-wrap items-center gap-2">
+				<DemoButton @click="increment()">+{1}</DemoButton>
+				<DemoButton @click="decrement()">-{1}</DemoButton>
+				<span class="mx-1 w-px h-4 bg-[var(--ios-separator)]"></span>
+				<DemoButton @click="$store.history.undo()" :disabled="!$store.history.canUndo">Undo</DemoButton>
+				<DemoButton @click="$store.history.redo()" :disabled="!$store.history.canRedo">Redo</DemoButton>
+				<DemoButton @click="$store.history.clear()">Clear</DemoButton>
+			</div>
+
+			<div class="flex flex-wrap items-center gap-2">
+				<span class="text-sm text-[var(--ios-label-secondary)]">Checkpoint:</span>
+				<DemoButton @click="$store.history.checkpoint({ label: 'snapshot' })">checkpoint()</DemoButton>
+				<span class="mx-1 w-px h-4 bg-[var(--ios-separator)]"></span>
+				<span class="text-sm text-[var(--ios-label-secondary)]">Transaction:</span>
+				<DemoButton @click="txCommit()">commit +5</DemoButton>
+				<DemoButton @click="txRollback()">rollback</DemoButton>
+			</div>
+
+			<div class="flex flex-wrap gap-3 text-sm">
+				<span>Value: <strong x-text="$store.history.value ?? 'none'"></strong></span>
+				<span>Undo: <strong x-text="$store.history.undoStack.length"></strong></span>
+				<span>Redo: <strong x-text="$store.history.redoStack.length"></strong></span>
+				<span>canUndo: <strong x-text="$store.history.canUndo"></strong></span>
+				<span>canRedo: <strong x-text="$store.history.canRedo"></strong></span>
+			</div>
+		</div>
+	</div>
+	<p class="text-xs text-[var(--ios-label-secondary)] mt-3">
+		Package: <code>{plugin.package}</code>
+	</p>
+</DemoSection>

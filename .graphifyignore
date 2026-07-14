@@ -1,0 +1,47 @@
+# Graphify ignore — merged with .gitignore (patterns here take precedence).
+# Excludes tooling, generated output, agent config, and non-source noise.
+
+# Graphify / index outputs
+graphify-out/
+graph.json
+.codegraph/
+
+# Dependencies & build artifacts
+node_modules/
+.pnpm-store/
+dist/
+coverage/
+**/.astro/
+**/e2e/fixture/.bundled/
+playwright-report/
+test-results/
+blob-report/
+*.log
+.DS_Store
+
+# Lockfiles & generated metadata
+pnpm-lock.yaml
+skills-lock.json
+**/CHANGELOG.md
+
+# Agent / IDE / dev tooling (not application source)
+.cursor/
+.opencode/
+.atl/
+.husky/
+.vscode/
+AGENTS.md
+
+# CI, release, and repo automation
+.github/
+.changeset/
+patches/
+
+# Static assets (no code graph value)
+*.ico
+*.png
+*.svg
+*.webp
+*.gif
+*.jpg
+*.jpeg

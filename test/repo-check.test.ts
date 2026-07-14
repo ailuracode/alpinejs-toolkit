@@ -22,7 +22,7 @@ describe("repo:check", () => {
     const result = runRepoCheck({ root });
     expect(result.errors).toEqual([]);
     expect(result.ok).toBe(true);
-    expect(result.catalogCount).toBe(34);
+    expect(result.catalogCount).toBe(35);
   });
 
   it("allows package subpath aliases when the base package is cataloged", () => {

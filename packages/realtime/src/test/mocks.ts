@@ -23,7 +23,6 @@ import type {
 import {
   DEFAULT_REALTIME_CHANNEL,
   type RealtimeControllerConfig,
-  validateRealtimeControllerConfig,
 } from "../controller/RealtimeControllerConfig";
 
 /**

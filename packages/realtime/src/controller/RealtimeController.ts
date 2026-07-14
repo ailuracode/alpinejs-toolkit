@@ -600,7 +600,6 @@ export class RealtimeController extends BaseController<RealtimeEvents> {
     const error = createTransportError(message, {
       cause: event instanceof Error ? event : undefined,
     });
-    error.retryable; // touch — suppress unused warning on .retryable mutation
     this.#handleTransportFailure(error, retryable);
   }
 
