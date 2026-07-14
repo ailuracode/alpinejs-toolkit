@@ -46,6 +46,16 @@ export function createQueryPlugin(
     });
 
     Alpine.store("query", createQueryStore(cache));
+
+    const augmented = Alpine as AlpineType.Alpine & {
+      cleanup?(callback: () => void): void;
+    };
+
+    if (typeof augmented.cleanup === "function") {
+      augmented.cleanup(() => {
+        cache.destroy();
+      });
+    }
   };
 }
 

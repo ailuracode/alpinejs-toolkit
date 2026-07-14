@@ -28,11 +28,16 @@ mkdirSync(bundleDir, { recursive: true });
 
 const workspaceAliases = readWorkspaceAliases();
 
+/** Prefer longer import prefixes so subpaths win over package roots. */
+const sortedWorkspaceAliases = Object.fromEntries(
+  Object.entries(workspaceAliases).sort(([left], [right]) => right.length - left.length)
+);
+
 /** @type {import('esbuild').Plugin} */
 const workspaceAliasPlugin = {
   name: "workspace-alias",
   setup(build) {
-    for (const [alias, target] of Object.entries(workspaceAliases)) {
+    for (const [alias, target] of Object.entries(sortedWorkspaceAliases)) {
       build.onResolve({ filter: new RegExp(`^${escapeRegExp(alias)}($|/)`) }, (args) => {
         const suffix = args.path.slice(alias.length);
         const resolved = suffix.length > 0 ? path.join(target, `${suffix.slice(1)}.ts`) : target;

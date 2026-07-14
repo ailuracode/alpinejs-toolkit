@@ -1,5 +1,5 @@
 name: Setup Node and pnpm
-description: Install Node.js 22 and pnpm via corepack
+description: Install Node.js 22 and pnpm with store caching
 inputs:
   pnpm-version:
     description: pnpm version to activate with corepack
@@ -8,21 +8,15 @@ inputs:
 runs:
   using: composite
   steps:
+    - uses: pnpm/action-setup@v4
+      with:
+        version: ${{ inputs.pnpm-version }}
+
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 22
+        cache: pnpm
+        cache-dependency-path: pnpm-lock.yaml
+
     - shell: bash
-      run: |
-        set -euo pipefail
-
-        NODE_DIR=$(ls -d /usr/local/share/nvm/versions/node/v22.* 2>/dev/null | tail -1 || true)
-        if [ -n "$NODE_DIR" ]; then
-          echo "${NODE_DIR}/bin" >> "$GITHUB_PATH"
-        else
-          NODE_VERSION=22.16.0
-          curl -fsSL "https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-x64.tar.xz" -o /tmp/node.tar.xz
-          tar -xJf /tmp/node.tar.xz -C /tmp
-          echo "/tmp/node-v${NODE_VERSION}-linux-x64/bin" >> "$GITHUB_PATH"
-        fi
-
-        corepack enable
-        corepack prepare "pnpm@${{ inputs.pnpm-version }}" --activate
-        node --version
-        pnpm --version
+      run: pnpm install --frozen-lockfile

@@ -105,6 +105,7 @@ Start here for most Alpine apps.
 | [`@ailuracode/alpine-virtual`](./packages/virtual/README.md) | `$store.virtual` | Headless virtual list controller |
 | [`@ailuracode/alpine-selection`](./packages/selection/README.md) | `$store.selection` | Framework-agnostic selection primitives |
 | [`@ailuracode/alpine-collection`](./packages/collection/README.md) | `createCollectionController<T, K>()` | Headless collection primitives — filter, sort, group, paginate |
+| [`@ailuracode/alpine-history`](./packages/history/README.md) | `$store.history` | Headless undo/redo history controller |
 
 ### Advanced
 

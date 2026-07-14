@@ -2,8 +2,6 @@
 
 Headless accessible dialog store for Alpine.js — open/close state, focus trap, scroll lock integration, and ARIA helpers. No markup or CSS included.
 
-**[Full documentation →](../../docs/plugins/dialog.md)**
-
 ## Install
 
 ```bash
@@ -95,3 +93,55 @@ The controller emits `open`, `close`, and `change` events. The Alpine plugin mir
 |-------------------|-------------|
 | `controller.instances` getter | `snapshotInstances()` or `hasInstance(id)` |
 | `controller.toStore()` | `createDialogStore()` or `createDialogStoreFromController(controller)` |
+
+## Basic markup
+
+```html
+<div
+  x-data
+  x-init="$store.dialog.register('settings')"
+  @keydown.window="$store.dialog.handleKeydown('settings', $event)"
+>
+  <button @click="$store.dialog.open('settings', { trigger: $event.target })">
+    Settings
+  </button>
+
+  <template x-teleport="body">
+    <div
+      x-show="$store.dialog.isOpen('settings')"
+      class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+    >
+      <div
+        x-bind="$store.dialog.dialogProps('settings')"
+        x-init="$store.dialog.bindContainer('settings', $el)"
+        @click.stop
+      >
+    <h2 id="settings-title">Settings</h2>
+    <p id="settings-desc">Update your preferences.</p>
+    <button @click="$store.dialog.close('settings')">Close</button>
+    </div>
+  </div>
+  </template>
+</div>
+```
+
+## Accessibility
+
+- `role="dialog"` and `aria-modal="true"` via `dialogProps()`
+- Focus trap activates when the container is bound and the dialog opens
+- Focus restores to the trigger element on close
+- Escape dismisses when enabled
+
+## SSR
+
+State is in-memory. Guard DOM bindings (`bindContainer`, focus trap) behind `x-init` or client-only wrappers.
+
+## Integration
+
+- **Scroll** — pass `$store.scroll` as `scroll`
+- **Toast** — show confirmation toasts after dialog actions in your UI layer (not a required dependency)
+
+## Limitations
+
+- Stacking/z-index is consumer-owned — wrap modals in `<template x-teleport="body">` when inside `overflow-hidden` ancestors (`x-teleport` requires a `<template>` tag in Alpine 3)
+- One focus trap per dialog id; bind the dialog panel root element

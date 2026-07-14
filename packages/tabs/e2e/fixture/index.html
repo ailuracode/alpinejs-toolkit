@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ailuracode/alpine-tabs E2E fixture</title>
+  </head>
+  <body>
+    <main
+      id="app"
+      data-e2e-ready="true"
+      x-data="{ activeTab: 'tab-a' }"
+      x-init="
+        $store.tabs.register('main', { defaultTab: 'tab-a' });
+        $store.tabs.registerTab('main', 'tab-a');
+        $store.tabs.registerTab('main', 'tab-b');
+        $store.tabs.select('main', 'tab-a');
+        activeTab = $store.tabs.active('main') ?? 'tab-a';
+      "
+      @keydown.window="
+        $store.tabs.handleKeydown('main', $event);
+        activeTab = $store.tabs.active('main') ?? activeTab;
+      "
+    >
+      <h1>Tabs E2E fixture</h1>
+      <div role="tablist">
+        <button id="tab-a" type="button" role="tab" @click="$store.tabs.select('main', 'tab-a'); activeTab = 'tab-a'">Tab A</button>
+        <button id="tab-b" type="button" role="tab" @click="$store.tabs.select('main', 'tab-b'); activeTab = 'tab-b'">Tab B</button>
+      </div>
+      <div id="panel-a" role="tabpanel" x-show="activeTab === 'tab-a'">Panel A</div>
+      <div id="panel-b" role="tabpanel" x-show="activeTab === 'tab-b'">Panel B</div>
+      <output id="active-tab" x-text="activeTab"></output>
+    </main>
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>

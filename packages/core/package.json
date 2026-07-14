@@ -49,7 +49,9 @@
     "test": "vitest run --config ../../vitest.config.ts packages/core",
     "test:coverage": "vitest run --coverage --config ../../vitest.config.ts packages/core",
     "test:watch": "vitest --config ../../vitest.config.ts packages/core",
-    "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.test.json"
+    "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.test.json",
+    "test:e2e": "playwright test --config playwright.config.ts",
+    "test:e2e:report": "playwright show-report e2e/playwright-report"
   },
   "devDependencies": {
     "@types/alpinejs": "^3.13.11",
@@ -101,7 +103,7 @@
       ],
       "gzip": true,
       "brotli": true,
-      "limit": "2.9 kB"
+      "limit": "3.8 kB"
     }
   ]
 }

@@ -59,8 +59,30 @@ export {
   initPlugins,
   initPluginsSync,
 } from "./init";
+// --- Controller-backed Alpine adapter lifecycle bridge -------------------
+export type {
+  AlpineLifecycleHost,
+  ControllerStoreBridge,
+  ControllerStoreBridgeOptions,
+  Destroyable,
+  ReactiveStoreRegistration,
+  WireControllerLifecycleOptions,
+} from "./lifecycle-bridge";
+export {
+  bridgeControllerStore,
+  registerReactiveStore,
+  registerStoreMagic,
+  syncRecordFromSnapshot,
+  wireControllerLifecycle,
+} from "./lifecycle-bridge";
 // --- Errors --------------------------------------------------------------
-export { PluginLoaderError } from "./loader";
+export {
+  isPluginSource,
+  normalizePluginInput,
+  PluginLoaderError,
+  pluginCallback,
+  pluginLoader,
+} from "./loader";
 // --- Plugin registry -----------------------------------------------------
 export {
   getRegisteredPlugin,
@@ -75,21 +97,32 @@ export {
   setRegistryDebugSink,
   unregisterPlugin,
 } from "./registry";
+export type { SingletonInitOptions, SingletonScope } from "./singleton";
 // --- Singleton helper (intended for toolkit-internal singleton feature controllers) ---
 export {
+  attachSingletonScope,
   clearAllSingletons,
   clearSingleton,
   createSingleton,
+  createSingletonScope,
   getSingleton,
+  readSingletonScope,
+  releaseSingleton,
+  resolveInstanceSingletonScope,
+  resolveSingletonScope,
+  runWithSingletonScope,
   setSingleton,
 } from "./singleton";
 // --- Public types --------------------------------------------------------
 export type {
   AlpinePluginCallback,
+  PluginCallbackSource,
   PluginDefinition,
   PluginKind,
   PluginLoader,
+  PluginLoaderSource,
   PluginNames,
   PluginRegistryEntry,
+  PluginSource,
   RegisteredPlugin,
 } from "./types";

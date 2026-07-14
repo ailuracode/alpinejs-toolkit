@@ -9,6 +9,7 @@ import Focus from "@lucide/astro/icons/focus";
 import GalleryHorizontal from "@lucide/astro/icons/gallery-horizontal";
 import Globe from "@lucide/astro/icons/globe";
 import Hand from "@lucide/astro/icons/hand";
+import History from "@lucide/astro/icons/history";
 import Keyboard from "@lucide/astro/icons/keyboard";
 import Languages from "@lucide/astro/icons/languages";
 import LayoutDashboard from "@lucide/astro/icons/layout-dashboard";
@@ -63,6 +64,7 @@ const PLUGIN_NAV_ICONS: Record<string, PluginNavIcon> = {
   selection: ListChecks,
   keyboard: Keyboard,
   gesture: Hand,
+  history: History,
 };
 
 export function getPluginNavIcon(id: string): PluginNavIcon {

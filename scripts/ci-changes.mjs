@@ -535,17 +535,10 @@ export function analyzeCiChanges(options = {}) {
   const rootDir = options.root ?? root;
   const eventName = options.eventName ?? process.env.GITHUB_EVENT_NAME ?? "pull_request";
   const forceFull = options.forceFull === true || process.env.FORCE_FULL_CI === "true";
-  const coverage =
-    options.coverage === true ||
-    eventName === "schedule" ||
-    (eventName === "push" && process.env.GITHUB_REF === "refs/heads/master");
+  const coverage = options.coverage === true || eventName === "schedule";
 
   if (forceFull || eventName === "schedule") {
     return analyzeChangedFiles([], { ...options, forceFull: true, eventName });
-  }
-
-  if (eventName === "push" && process.env.GITHUB_REF === "refs/heads/master") {
-    return analyzeChangedFiles([], { ...options, forceFull: true, eventName, coverage: true });
   }
 
   const base = options.base ?? process.env.CI_BASE_REF ?? "origin/master";
@@ -574,7 +567,7 @@ export function toGithubOutputs(result) {
     build_packages: result.buildFolders.join(","),
     test_packages: result.testFolders.join(","),
     pack_packages: result.packFolders.join(","),
-    build_filters: result.buildFilters.join("\n"),
+    build_filters: result.buildFilters.join(","),
     test_paths: result.testPaths.join(" "),
     e2e_packages: result.e2eFolders.join(","),
     summary: result.summary,

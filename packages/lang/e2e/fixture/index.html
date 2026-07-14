@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ailuracode/alpine-lang E2E fixture</title>
+  </head>
+  <body>
+    <main id="app" data-e2e-ready="true" x-data x-init>
+      <h1>Lang E2E fixture</h1>
+      <output id="lang-current" x-text="$store.lang.current"></output>
+      <button type="button" @click="$store.lang.set('es-ES')">Set Spanish</button>
+      <button type="button" @click="$store.lang.reset()">Reset</button>
+    </main>
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>

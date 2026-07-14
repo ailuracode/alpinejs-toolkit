@@ -124,11 +124,11 @@ media.on("change", (detail: MediaChangeDetail) => {
 <p x-show="$store.media.prefersReducedMotion">Reduced motion preferred</p>
 ```
 
-## Tema vs esquema de cor do SO
+## Tema vs esquema de cor do SO {#theme-vs-media-color-scheme}
 
 `prefersColorScheme` reporta a preferência do **sistema operacional** a partir de `(prefers-color-scheme: dark)`. Não reflete um override manual do tema no seu app.
 
-Para **estilizar o app**, use [`@ailuracode/alpine-theme`](./theme.md) e leia `$store.theme.resolved`. Esse valor considera a escolha do usuário (`light`, `dark`, ou seguir o sistema com `mode: 'system'`).
+Para **estilizar o app**, use [`@ailuracode/alpine-theme`](/plugins/theme/) e leia `$store.theme.resolved`. Esse valor considera a escolha do usuário (`light`, `dark`, ou seguir o sistema com `mode: 'system'`).
 
 | Pergunta | Usar |
 |----------|------|
@@ -145,7 +145,7 @@ Para **estilizar o app**, use [`@ailuracode/alpine-theme`](./theme.md) e leia `$
 </p>
 ```
 
-Ver [Theme — `resolved` vs `prefersColorScheme`](./theme.md#resolved-vs-preferscolorscheme) para a comparação completa.
+Ver [Theme — `resolved` vs `prefersColorScheme`](/plugins/theme/#resolved-vs-preferscolorscheme) para a comparação completa.
 
 ## Helpers exportados
 

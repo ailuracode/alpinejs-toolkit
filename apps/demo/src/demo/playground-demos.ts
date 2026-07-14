@@ -9,6 +9,7 @@ import DialogDemo from "../components/demos/DialogDemo.astro";
 import EnvDemo from "../components/demos/EnvDemo.astro";
 import GeoDemo from "../components/demos/GeoDemo.astro";
 import GestureDemo from "../components/demos/GestureDemo.astro";
+import HistoryDemo from "../components/demos/HistoryDemo.astro";
 import JsonApiDemo from "../components/demos/JsonApiDemo.astro";
 import KeyboardDemo from "../components/demos/KeyboardDemo.astro";
 import LangDemo from "../components/demos/LangDemo.astro";
@@ -37,6 +38,7 @@ export const PLAYGROUND_DEMOS: Record<string, AstroComponentFactory> = {
   scroll: ScrollDemo,
   geo: GeoDemo,
   gesture: GestureDemo,
+  history: HistoryDemo,
   lang: LangDemo,
   toggle: ToggleDemo,
   child: ChildDemo,

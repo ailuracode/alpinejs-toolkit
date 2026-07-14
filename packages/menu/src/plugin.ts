@@ -5,9 +5,10 @@
  * `$store.menu` and the `$menu` magic.
  */
 
+import { bridgeControllerStore, syncRecordFromSnapshot } from "@ailuracode/alpine-core";
 import type { Alpine } from "alpinejs";
 import { MenuController } from "./controller.js";
-import { createMenuStoreFromController, syncInstanceRegistry } from "./store.js";
+import { createMenuStoreFromController } from "./store.js";
 import type { CreateMenuOptions, MenuAlpine, MenuPluginCallback } from "./types.js";
 
 /** Key under which the menu store is registered on `$store`. */
@@ -27,23 +28,18 @@ export function menuPlugin(options: CreateMenuOptions = {}): MenuPluginCallback 
       options.id
     );
 
-    const store = createMenuStoreFromController(controller);
-    Alpine.store(MENU_STORE_KEY, store);
-    const reactiveStore = Alpine.store(MENU_STORE_KEY);
-
-    const syncReactiveInstances = () => {
-      syncInstanceRegistry(reactiveStore.instances, controller.snapshotInstances());
-    };
-
-    controller.on("change", syncReactiveInstances);
-
-    reactiveStore.isOpen = (id: string) => reactiveStore.instances?.[id]?.open ?? false;
-
-    Alpine.magic(MENU_STORE_KEY, () => reactiveStore);
-
-    if (typeof Alpine.cleanup === "function") {
-      Alpine.cleanup(() => controller.destroy());
-    }
+    bridgeControllerStore({
+      alpine: Alpine,
+      storeKey: MENU_STORE_KEY,
+      store: createMenuStoreFromController(controller),
+      controller,
+      subscribe: (reactiveStore) => {
+        reactiveStore.isOpen = (id: string) => reactiveStore.instances?.[id]?.open ?? false;
+        return controller.on("change", () => {
+          syncRecordFromSnapshot(reactiveStore.instances, controller.snapshotInstances());
+        });
+      },
+    });
   };
 }
 

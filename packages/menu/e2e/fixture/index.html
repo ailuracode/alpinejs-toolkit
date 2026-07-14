@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ailuracode/alpine-menu E2E fixture</title>
+  </head>
+  <body>
+    <main
+      id="app"
+      data-e2e-ready="true"
+      x-data="{ ids: ['profile', 'settings'] }"
+      x-init="
+        $store.menu.register('user-menu');
+        ids.forEach(id => $store.menu.registerItem('user-menu', id));
+      "
+      @keydown.window="$store.menu.isOpen('user-menu') && $store.menu.handleKeydown('user-menu', $event)"
+    >
+      <h1>Menu E2E fixture</h1>
+      <button id="menu-trigger" type="button" @click="$store.menu.toggle('user-menu')">Account</button>
+      <ul id="menu-list" role="menu" x-show="$store.menu.isOpen('user-menu')">
+        <template x-for="id in ids" :key="id">
+          <li role="none">
+            <button
+              type="button"
+              role="menuitem"
+              :id="'item-' + id"
+              @click="$store.menu.selectItem('user-menu', id)"
+              x-text="id"
+            ></button>
+          </li>
+        </template>
+      </ul>
+      <output id="menu-open" x-text="$store.menu.isOpen('user-menu')"></output>
+      <output id="active-item" x-text="$store.menu.activeItem('user-menu') ?? 'none'"></output>
+    </main>
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>

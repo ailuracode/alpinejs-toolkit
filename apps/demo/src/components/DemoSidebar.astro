@@ -1,5 +1,10 @@
 ---
-import { PLUGIN_NAV_GROUPS, playgroundPath } from "../plugin-nav";
+import {
+  buildPlaygroundSidebar,
+  playgroundCategoryPath,
+  playgroundFamilyPath,
+  playgroundPackagePath,
+} from "../catalog/playground-navigation.js";
 import DemoButton from "./astro/DemoButton.astro";
 import DemoNavIcon from "./astro/DemoNavIcon.astro";
 
@@ -9,9 +14,11 @@ const navActiveClass = "bg-[var(--ios-blue)]/15 font-medium text-[var(--ios-blue
 const navInactiveClass =
   "text-[var(--ios-label-secondary)] hover:bg-[var(--ios-fill-quaternary)] active:bg-[var(--ios-fill-tertiary)] hover:text-[var(--ios-label)] ";
 
+const groups = buildPlaygroundSidebar();
+
 const isActivePath = (path: string): string => {
   const pathNoSlash = path.replace(/\/$/, "");
-  return `(pathname === '${path}' || pathname === '${pathNoSlash}')`;
+  return `(pathname === '${path}' || pathname === '${pathNoSlash}' || pathname.startsWith('${pathNoSlash}/'))`;
 };
 
 const isActiveExpr = (path: string): string => `${isActivePath(path)} ? 'page' : null`;
@@ -96,7 +103,6 @@ const navItemClassExpr = (path: string): string => {
   aria-label="Playground navigation"
   transition:persist="playground-sidebar"
 >
-  <!-- App icon + title -->
   <a
     href="/playground/"
     class="flex h-12 shrink-0 items-center gap-3 border-b border-[var(--ios-separator)] transition-colors duration-150 hover:bg-[var(--ios-fill-quaternary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ios-blue)]/40 focus-visible:ring-inset motion-reduce:transition-none"
@@ -114,45 +120,77 @@ const navItemClassExpr = (path: string): string => {
     </span>
   </a>
 
-  <!-- Navigation -->
   <nav
     class="flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto overflow-anchor-none py-3 transition-[padding] duration-200 motion-reduce:transition-none"
     x-bind:class="effectivelyExpanded ? 'px-3' : 'px-1.5'"
     aria-label="Plugins"
   >
-    <!-- Plugin groups -->
     {
-      PLUGIN_NAV_GROUPS.map((group) => (
+      groups.map((group) => (
         <div class="mt-2">
-          {/* Section header */}
-          <div
-            class="mb-1 px-3 pt-3 pb-1 text-[11px] font-semibold tracking-wide whitespace-nowrap text-[var(--ios-label-tertiary)] uppercase"
+          <a
+            href={playgroundCategoryPath(group.id)}
+            class="mb-1 block rounded-md px-3 pt-3 pb-1 text-[11px] font-semibold tracking-wide whitespace-nowrap text-[var(--ios-label-tertiary)] uppercase transition-colors hover:text-[var(--ios-label)]"
             x-show="effectivelyExpanded"
             x-cloak
-            aria-hidden="true"
+            x-bind:aria-current={isActiveExpr(playgroundCategoryPath(group.id))}
           >
-            {group.label}
-          </div>
+            {group.title}
+          </a>
 
-          {/* Group items */}
-          <div class="flex flex-col gap-0.5">
-            {group.items.map((item) => (
+          {group.families.map((family) => (
+            <div class="mb-1">
               <a
-                href={playgroundPath(item.id)}
+                href={playgroundFamilyPath(group.id, family.id)}
+                class="mb-1 block truncate px-3 text-[10px] font-medium tracking-wide text-[var(--ios-label-secondary)] hover:text-[var(--ios-blue)]"
+                x-show="effectivelyExpanded"
+                x-cloak
+              >
+                {family.title}
+              </a>
+              <div class="flex flex-col gap-0.5">
+                {family.entries.map((entry) => (
+                  <a
+                    href={playgroundPackagePath(entry)}
+                    class={navBaseClass}
+                    x-bind:aria-current={isActiveExpr(playgroundPackagePath(entry))}
+                    x-bind:aria-label={`!effectivelyExpanded ? ${JSON.stringify(entry.title)} : null`}
+                    x-bind:class={navItemClassExpr(playgroundPackagePath(entry))}
+                    x-on:mousedown.prevent
+                    x-on:click="$store.media.breakpoint !== 'desktop' && $store.sidebar.hide()"
+                    x-on:mouseenter={`navTooltip = ${JSON.stringify(entry.title)}; navTrigger = $el; $store.tooltip.showOnHover('sidebar-nav')`}
+                    x-on:mouseleave="$store.tooltip.hideOnHover('sidebar-nav')"
+                    x-on:focus={`navTooltip = ${JSON.stringify(entry.title)}; navTrigger = $el; $store.tooltip.showOnFocus('sidebar-nav')`}
+                    x-on:blur="$store.tooltip.hideOnFocus('sidebar-nav')"
+                  >
+                    <DemoNavIcon id={entry.id} class="size-5" />
+                    <span class="truncate whitespace-nowrap" x-show="effectivelyExpanded" x-cloak>
+                      {entry.title}
+                    </span>
+                  </a>
+                ))}
+              </div>
+            </div>
+          ))}
+
+          <div class="flex flex-col gap-0.5">
+            {group.standalone.map((entry) => (
+              <a
+                href={playgroundPackagePath(entry)}
                 class={navBaseClass}
-                x-bind:aria-current={isActiveExpr(playgroundPath(item.id))}
-                x-bind:aria-label={`!effectivelyExpanded ? ${JSON.stringify(item.title)} : null`}
-                x-bind:class={navItemClassExpr(playgroundPath(item.id))}
+                x-bind:aria-current={isActiveExpr(playgroundPackagePath(entry))}
+                x-bind:aria-label={`!effectivelyExpanded ? ${JSON.stringify(entry.title)} : null`}
+                x-bind:class={navItemClassExpr(playgroundPackagePath(entry))}
                 x-on:mousedown.prevent
                 x-on:click="$store.media.breakpoint !== 'desktop' && $store.sidebar.hide()"
-                x-on:mouseenter={`navTooltip = ${JSON.stringify(item.title)}; navTrigger = $el; $store.tooltip.showOnHover('sidebar-nav')`}
+                x-on:mouseenter={`navTooltip = ${JSON.stringify(entry.title)}; navTrigger = $el; $store.tooltip.showOnHover('sidebar-nav')`}
                 x-on:mouseleave="$store.tooltip.hideOnHover('sidebar-nav')"
-                x-on:focus={`navTooltip = ${JSON.stringify(item.title)}; navTrigger = $el; $store.tooltip.showOnFocus('sidebar-nav')`}
+                x-on:focus={`navTooltip = ${JSON.stringify(entry.title)}; navTrigger = $el; $store.tooltip.showOnFocus('sidebar-nav')`}
                 x-on:blur="$store.tooltip.hideOnFocus('sidebar-nav')"
               >
-                <DemoNavIcon id={item.id} class="size-5" />
+                <DemoNavIcon id={entry.id} class="size-5" />
                 <span class="truncate whitespace-nowrap" x-show="effectivelyExpanded" x-cloak>
-                  {item.title}
+                  {entry.title}
                 </span>
               </a>
             ))}
@@ -162,7 +200,6 @@ const navItemClassExpr = (path: string): string => {
     }
   </nav>
 
-  <!-- Footer -->
   <div
     class="flex shrink-0 flex-col border-t border-[var(--ios-separator)] transition-[padding] duration-200 motion-reduce:transition-none"
     x-bind:class="effectivelyExpanded ? 'p-3' : 'px-1.5 py-2'"
@@ -198,11 +235,10 @@ const navItemClassExpr = (path: string): string => {
       x-show="effectivelyExpanded"
       x-cloak
     >
-      {PLUGIN_NAV_GROUPS.reduce((n, g) => n + g.items.length, 0)} modules · one demo per page
+      {groups.reduce((count, group) => count + group.standalone.length + group.families.reduce((familyCount, family) => familyCount + family.entries.length, 0), 0)} demos · categories & families
     </p>
   </div>
 
-  <!-- Compact-mode tooltip (teleported to overlay-root) -->
   <template x-teleport="#overlay-root">
     <div
       x-show="$store.tooltip.isOpen('sidebar-nav') && !effectivelyExpanded && $store.media.breakpoint === 'desktop'"

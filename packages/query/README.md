@@ -217,6 +217,8 @@ const fetchTodos = () => typedFetch("/api/todos");
 
 Call `destroy()` when the subscription is no longer needed so unused cache entries can be garbage-collected.
 
+When you create a standalone client with `createQueryClient()`, call `client.destroy()` during teardown (tests, HMR, or app shutdown) to remove global focus/visibility listeners and release adapter handles. The Alpine plugin wires this through `Alpine.cleanup()` automatically.
+
 ## API
 
 ### Core exports
@@ -247,6 +249,7 @@ See adapter plugin READMEs for Alpine setup with Nanostores, Zustand, or native 
 | `setData(key, data \| updater)` | Update cached data |
 | `cancel(key)` | Cancel in-flight fetch |
 | `reset()` | Clear entire cache |
+| `destroy()` | Tear down global listeners, timers, and adapter handles (idempotent) |
 | `mutate(options)` | Create a mutation helper |
 
 ## TypeScript

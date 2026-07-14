@@ -1,0 +1,72 @@
+---
+import {
+  getDocumentedEntriesGroupedByCategory,
+  getDocumentedPackageCount,
+} from "../catalog/docs-navigation.js";
+import { packageDocsPath } from "../catalog/index.js";
+
+const groups = getDocumentedEntriesGroupedByCategory();
+const packageCount = getDocumentedPackageCount();
+---
+
+<section class="not-content">
+  <header class="mb-8">
+    <p class="text-sm font-semibold tracking-wide text-[var(--sl-color-accent)]">Package catalog</p>
+    <h1 class="mt-1 text-4xl font-bold tracking-tight">Packages</h1>
+    <p class="mt-2 max-w-2xl text-[var(--sl-color-gray-2)]">
+      {packageCount} documented packages organized by functional category and composed families.
+    </p>
+  </header>
+
+  {
+    groups.map(({ category, families, standalone }) => (
+      <section class="mb-10 last:mb-0" aria-labelledby={`category-${category.id}`}>
+        <div class="mb-4">
+          <h2 id={`category-${category.id}`} class="text-2xl font-bold tracking-tight">
+            {category.title}
+          </h2>
+          <p class="text-sm text-[var(--sl-color-gray-2)]">{category.summary}</p>
+        </div>
+
+        {families.map(({ family, entries }) =>
+          entries.length > 0 ? (
+            <div class="mb-6">
+              <h3 class="text-lg font-semibold">{family.title}</h3>
+              <p class="mb-3 text-sm text-[var(--sl-color-gray-2)]">{family.summary}</p>
+              <ul class="grid gap-3 sm:grid-cols-2">
+                {entries.map((entry) => (
+                  <li class="rounded-lg border border-[var(--sl-color-gray-5)] p-4">
+                    <a href={packageDocsPath(entry)} class="font-semibold text-[var(--sl-color-accent)]">
+                      {entry.title}
+                    </a>
+                    <p class="mt-1 text-sm text-[var(--sl-color-gray-2)]">{entry.summary}</p>
+                    <p class="mt-2 text-xs uppercase tracking-wide text-[var(--sl-color-gray-3)]">
+                      {entry.role}
+                      {entry.badges?.length ? ` · ${entry.badges.join(" · ")}` : ""}
+                    </p>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null
+        )}
+
+        {standalone.length > 0 ? (
+          <ul class="grid gap-3 sm:grid-cols-2">
+            {standalone.map((entry) => (
+              <li class="rounded-lg border border-[var(--sl-color-gray-5)] p-4">
+                <a href={packageDocsPath(entry)} class="font-semibold text-[var(--sl-color-accent)]">
+                  {entry.title}
+                </a>
+                <p class="mt-1 text-sm text-[var(--sl-color-gray-2)]">{entry.summary}</p>
+                <p class="mt-2 text-xs uppercase tracking-wide text-[var(--sl-color-gray-3)]">
+                  {entry.role}
+                </p>
+              </li>
+            ))}
+          </ul>
+        ) : null}
+      </section>
+    ))
+  }
+</section>

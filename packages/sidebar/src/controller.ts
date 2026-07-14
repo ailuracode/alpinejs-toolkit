@@ -47,9 +47,9 @@
 
 import {
   BaseController,
-  clearSingleton,
   createSingleton,
   generateId,
+  releaseSingleton,
   safeMatchMedia,
 } from "@ailuracode/alpine-core";
 import type { ScrollStore } from "@ailuracode/alpine-scroll";
@@ -114,11 +114,16 @@ type MappedSidebarChangeSource = Extract<SidebarChangeSource, "user" | "reset">;
  * `createSidebar()` factory enforces uniqueness.
  */
 export function createSidebar(options: CreateSidebarOptions = {}): SidebarController {
-  return createSingleton(SIDEBAR_SINGLETON_KEY, () => {
-    const controller = new SidebarController(options);
-    controller.mount();
-    return controller;
-  });
+  const { scope, ...factoryOptions } = options;
+  return createSingleton(
+    SIDEBAR_SINGLETON_KEY,
+    () => {
+      const controller = new SidebarController(factoryOptions);
+      controller.mount();
+      return controller;
+    },
+    { scope, options: factoryOptions }
+  );
 }
 
 /**
@@ -141,7 +146,10 @@ export class SidebarController extends BaseController<SidebarEvents> implements 
    */
   readonly #toggle: ToggleController<true, false, undefined, boolean>;
 
-  /** Snapshot used to build the `previous` field on the sidebar emit. */
+  /** Current breakpoint match state exposed via the getter. */
+  #matchesBreakpoint = false;
+
+  /** Snapshots used to build the `previous` field on the sidebar emit. */
   #lastVisible = false;
   #lastMatchesBreakpoint = false;
 
@@ -245,7 +253,7 @@ export class SidebarController extends BaseController<SidebarEvents> implements 
    * observer short-circuits to a no-op).
    */
   get matchesBreakpoint(): boolean {
-    return this.#lastMatchesBreakpoint;
+    return this.#matchesBreakpoint;
   }
 
   // ── Public commands ─────────────────────────────────────────────
@@ -287,10 +295,26 @@ export class SidebarController extends BaseController<SidebarEvents> implements 
     if (this.isDestroyed) {
       return;
     }
+    const breakpointWillChange = this.#matchesBreakpoint !== this.#initialMatchesBreakpoint;
+    const visibleWillChange = this.#toggle.value !== this.#initial;
+
+    if (!(breakpointWillChange || visibleWillChange)) {
+      return;
+    }
+
     this.#pendingSource = "reset";
     this.#pendingEvent = undefined;
-    this.#lastMatchesBreakpoint = this.#initialMatchesBreakpoint;
-    this.#toggle.reset();
+
+    if (breakpointWillChange) {
+      this.#matchesBreakpoint = this.#initialMatchesBreakpoint;
+    }
+
+    if (visibleWillChange) {
+      this.#toggle.reset();
+      return;
+    }
+
+    this.#emitChange();
   }
 
   // ── Lifecycle ───────────────────────────────────────────────────
@@ -314,7 +338,7 @@ export class SidebarController extends BaseController<SidebarEvents> implements 
       this.#lockHandle = null;
     }
     super.destroy();
-    clearSingleton(SIDEBAR_SINGLETON_KEY);
+    releaseSingleton(SIDEBAR_SINGLETON_KEY, this);
   }
 
   /**
@@ -357,7 +381,7 @@ export class SidebarController extends BaseController<SidebarEvents> implements 
     if (this.#breakpointOption) {
       const initialMedia = safeMatchMedia(this.#breakpointOption.query);
       if (initialMedia !== null) {
-        this.#lastMatchesBreakpoint = initialMedia.matches;
+        this.#matchesBreakpoint = initialMedia.matches;
         this.#initialMatchesBreakpoint = initialMedia.matches;
       }
     }
@@ -384,7 +408,7 @@ export class SidebarController extends BaseController<SidebarEvents> implements 
         if (this.isDestroyed) {
           return;
         }
-        this.#lastMatchesBreakpoint = event.matches;
+        this.#matchesBreakpoint = event.matches;
         this.#pendingSource = "breakpoint";
         this.#pendingEvent = event;
 
@@ -509,21 +533,27 @@ export class SidebarController extends BaseController<SidebarEvents> implements 
   }
 
   /**
-   * Mirrors the user-driven visibility flip onto the scroll lock.
-   * Mirrors the storage-write gate: only `source: 'user'`
-   * transitions trigger lock / unlock. Escape / breakpoint /
-   * reset / storage / initialization keep the lock as it was.
+   * Keeps the scroll lock aligned with visibility.
+   *
+   * Acquire: only `source: 'user'` transitions to `visible: true`
+   * call `scroll.lock("sidebar")`. Escape, breakpoint, reset,
+   * storage, and initialization never acquire a lock.
+   *
+   * Release: whenever the sidebar becomes hidden and a lock handle
+   * is held, unlock it — regardless of transition source. This
+   * prevents the page from staying locked when Escape, breakpoint
+   * auto-hide, `reset()`, or cross-tab storage closes the sidebar.
    *
    * Idempotent: a duplicate show without a matching hide does NOT
-   * acquire a second lock (the existing `#lockHandle` is reused).
-   * `hide()` without a held handle is a no-op.
+   * acquire a second lock. `hide()` without a held handle is a
+   * no-op.
    */
   #updateScrollLock(source: SidebarChangeSource, visible: boolean): void {
-    if (!this.#scroll || source !== "user") {
+    if (!this.#scroll) {
       return;
     }
     if (visible) {
-      if (this.#lockHandle !== null) {
+      if (source !== "user" || this.#lockHandle !== null) {
         return;
       }
       this.#lockHandle = this.#scroll.lock("sidebar");
@@ -607,7 +637,7 @@ export class SidebarController extends BaseController<SidebarEvents> implements 
     }
 
     const visible = this.#toggle.value;
-    const matchesBreakpoint = this.#lastMatchesBreakpoint;
+    const matchesBreakpoint = this.#matchesBreakpoint;
     const source: SidebarChangeSource = this.#pendingSource ?? "user";
     const previous: SidebarChangeDetail["previous"] =
       source === "initialization"

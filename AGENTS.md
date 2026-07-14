@@ -35,6 +35,7 @@ Alpine.js plugin monorepo by **ailuracode**. 34 independent npm packages under `
 | `@ailuracode/alpine-toggle` | Magic | `$toggle` |
 | `@ailuracode/alpine-child` | Directive | `x-child` |
 | `@ailuracode/alpine-gesture` | Store | `$store.gesture` / `x-gesture` — headless pointer gesture recognition |
+| `@ailuracode/alpine-history` | Store | `$store.history` / `$history` — headless undo/redo history controller |
 | `@ailuracode/alpine-notify` | Magic | `$notify` |
 | `@ailuracode/alpine-geo` | Store | `$store.geo` |
 | `@ailuracode/alpine-attention` | Magic | `$wakelock`, `$idle` |

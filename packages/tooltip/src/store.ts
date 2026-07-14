@@ -2,6 +2,7 @@
  * Store factory for `@ailuracode/alpine-tooltip`.
  */
 
+import { syncRecordFromSnapshot } from "@ailuracode/alpine-core";
 import { TooltipController } from "./controller.js";
 import type { TooltipInstance, TooltipStore } from "./types.js";
 
@@ -12,18 +13,12 @@ function syncInstances(
   syncInstanceRegistry(target, controller.snapshotInstances());
 }
 
+/** @deprecated Import `syncRecordFromSnapshot` from `@ailuracode/alpine-core`. */
 export function syncInstanceRegistry<T extends Record<string, TooltipInstance>>(
   target: Record<string, TooltipInstance>,
   snapshot: T
 ): void {
-  for (const key of Object.keys(snapshot)) {
-    target[key] = snapshot[key];
-  }
-  for (const key of Object.keys(target)) {
-    if (!(key in snapshot)) {
-      delete target[key];
-    }
-  }
+  syncRecordFromSnapshot(target, snapshot);
 }
 
 /** Builds a {@link TooltipStore} backed by a new {@link TooltipController}. */
