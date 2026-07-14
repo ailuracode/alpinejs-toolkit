@@ -46,8 +46,8 @@
     "build": "tsup --config tsup.config.ts && cp src/global.d.ts dist/global.d.ts",
     "clean": "rm -rf dist",
     "size": "size-limit",
-    "test": "vitest run --config ../../vitest.config.ts test",
-    "test:watch": "vitest --config ../../vitest.config.ts",
+    "test": "vitest run --config ../../vitest.config.ts packages/toggle",
+    "test:watch": "vitest --config ../../vitest.config.ts packages/toggle",
     "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.test.json"
   },
   "devDependencies": {

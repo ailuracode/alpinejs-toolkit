@@ -55,7 +55,7 @@
     "build": "tsup src/index.ts --format esm --dts --clean --out-dir dist --external @ailuracode/alpine-env --external @ailuracode/alpine-permissions && cp src/global.d.ts dist/global.d.ts && cp src/notify-sw.js dist/notify-sw.js",
     "prepublishOnly": "pnpm run build",
     "size": "size-limit",
-    "test": "vitest run --config ../../vitest.config.ts test",
+    "test": "vitest run --config ../../vitest.config.ts packages/notify",
     "test:e2e": "playwright test --config playwright.config.ts",
     "test:e2e:report": "playwright show-report e2e/playwright-report"
   },

@@ -52,7 +52,7 @@
     "build": "tsup src/index.ts --format esm --dts --clean --out-dir dist && cp src/global.d.ts dist/global.d.ts",
     "prepublishOnly": "pnpm run build",
     "size": "size-limit",
-    "test": "vitest run --config ../../vitest.config.ts test"
+    "test": "vitest run --config ../../vitest.config.ts packages/calendar"
   },
   "keywords": [
     "alpinejs",

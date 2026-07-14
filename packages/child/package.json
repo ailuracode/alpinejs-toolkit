@@ -54,8 +54,8 @@
     "clean": "rm -rf dist",
     "prepublishOnly": "pnpm run build",
     "size": "size-limit",
-    "test": "vitest run --config ../../vitest.config.ts test",
-    "test:watch": "vitest --config ../../vitest.config.ts",
+    "test": "vitest run --config ../../vitest.config.ts packages/child",
+    "test:watch": "vitest --config ../../vitest.config.ts packages/child",
     "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.test.json",
     "test:e2e": "playwright test --config playwright.config.ts",
     "test:e2e:report": "playwright show-report e2e/playwright-report"

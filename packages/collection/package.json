@@ -44,9 +44,9 @@
     "build": "tsup src/index.ts --format esm --dts --clean --out-dir dist --external @ailuracode/alpine-core",
     "clean": "rm -rf dist",
     "size": "size-limit",
-    "test": "vitest run --config ../../vitest.config.ts test",
-    "test:coverage": "vitest run --config ../../vitest.config.ts --coverage test",
-    "test:watch": "vitest --config ../../vitest.config.ts",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "test:watch": "vitest",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {

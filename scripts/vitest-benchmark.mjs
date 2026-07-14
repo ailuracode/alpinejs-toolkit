@@ -48,26 +48,15 @@ const PACKAGE_SCENARIOS = [
     id: "dialog",
     label: "@ailuracode/alpine-dialog",
     category: "dom-heavy",
-    command: [vitestBin, "run", "--config", "vitest.config.ts", "test"],
-    filterNote:
-      "Package script passes `test` as a path filter — currently matches the full workspace suite.",
-    inheritsWorkspace: "test",
+    command: [vitestBin, "run", "--config", "vitest.config.ts", "packages/dialog"],
+    filterNote: "Scoped to packages/dialog (package script contract).",
   },
   {
     id: "query",
     label: "@ailuracode/alpine-query",
     category: "async-cache",
-    command: [vitestBin, "run", "--config", "vitest.config.ts", "test"],
-    filterNote:
-      "Package script passes `test` as a path filter — currently matches the full workspace suite.",
-    inheritsWorkspace: "test",
-  },
-  {
-    id: "dialog-scoped",
-    label: "@ailuracode/alpine-dialog (intended scope)",
-    category: "dom-heavy",
-    command: [vitestBin, "run", "--config", "vitest.config.ts", "packages/dialog"],
-    filterNote: "Reference run for the intended package-only scope.",
+    command: [vitestBin, "run", "--config", "vitest.config.ts", "packages/query"],
+    filterNote: "Scoped to packages/query (package script contract).",
   },
 ];
 

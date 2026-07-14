@@ -27,8 +27,15 @@ export default defineProject({
     setupFiles: ["./test/setup.ts"],
     forbidOnly: true,
     coverage: {
+      provider: "v8",
       include: ["src/**/*.ts"],
       exclude: ["src/index.ts", "src/global.d.ts", "src/types.ts", "src/events.ts"],
+      thresholds: {
+        lines: 80,
+        functions: 70,
+        statements: 80,
+        branches: 73,
+      },
     },
   },
 });
