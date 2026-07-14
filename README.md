@@ -2,7 +2,7 @@
 
 Modular **Alpine.js toolkit** — lazy plugin init, headless stores and magics, TypeScript-first DX. Framework-agnostic: works with Vite, Astro, static HTML, or any ESM bundler.
 
-Built by **ailuracode**. 33 independent npm packages; install only what you need.
+Built by **ailuracode**. 34 independent npm packages; install only what you need.
 
 
 ## Why this exists
@@ -104,6 +104,7 @@ Start here for most Alpine apps.
 | [`@ailuracode/alpine-carousel`](./packages/carousel/README.md) | `$store.carousel` | Embla-powered accessible carousel |
 | [`@ailuracode/alpine-virtual`](./packages/virtual/README.md) | `$store.virtual` | Headless virtual list controller |
 | [`@ailuracode/alpine-selection`](./packages/selection/README.md) | `$store.selection` | Framework-agnostic selection primitives |
+| [`@ailuracode/alpine-collection`](./packages/collection/README.md) | `createCollectionController<T, K>()` | Headless collection primitives — filter, sort, group, paginate |
 
 ### Advanced
 

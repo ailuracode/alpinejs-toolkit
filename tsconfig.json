@@ -12,6 +12,7 @@
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
     "paths": {
       "@ailuracode/alpine-core": ["./packages/core/src/index.ts"],
+      "@ailuracode/alpine-collection": ["./packages/collection/src/index.ts"],
       "@ailuracode/alpine-ui": ["./packages/ui/src/index.ts"],
       "@ailuracode/alpine-attention": ["./packages/attention/src/index.ts"],
       "@ailuracode/alpine-calendar": ["./packages/calendar/src/index.ts"],
