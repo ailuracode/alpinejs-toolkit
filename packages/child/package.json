@@ -56,7 +56,9 @@
     "size": "size-limit",
     "test": "vitest run --config ../../vitest.config.ts test",
     "test:watch": "vitest --config ../../vitest.config.ts",
-    "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.test.json"
+    "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.test.json",
+    "test:e2e": "playwright test --config playwright.config.ts",
+    "test:e2e:report": "playwright show-report e2e/playwright-report"
   },
   "keywords": [
     "alpinejs",

@@ -54,7 +54,9 @@
     "test": "vitest run --config ../../vitest.config.ts packages/sidebar",
     "test:coverage": "vitest run --coverage --config ../../vitest.config.ts packages/sidebar",
     "test:watch": "vitest --config ../../vitest.config.ts packages/sidebar",
-    "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.test.json"
+    "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.test.json",
+    "test:e2e": "playwright test --config playwright.config.ts",
+    "test:e2e:report": "playwright show-report e2e/playwright-report"
   },
   "devDependencies": {
     "@ailuracode/alpine-core": "workspace:*",

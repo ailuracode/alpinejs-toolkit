@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ailuracode/alpine-overlay E2E fixture</title>
+  </head>
+  <body>
+    <main id="app" data-e2e-ready="true" x-data x-init="$store.overlay.register('demo', 'overlay-a')">
+      <h1>Overlay E2E fixture</h1>
+      <p>Stack count: <output id="stack-count" x-text="$store.overlay.count"></output></p>
+      <p>Z-index: <output id="z-index" x-text="$store.overlay.zIndexOf('demo', 'overlay-a')"></output></p>
+      <p>Open: <output id="open-state" x-text="$store.overlay.isOpen('demo', 'overlay-a')"></output></p>
+      <button type="button" @click="$store.overlay.unregister('demo', 'overlay-a')">Unregister</button>
+    </main>
+    <div id="overlay-root"></div>
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>

@@ -28,7 +28,7 @@ describe("ci:changes e2e detection", () => {
     const available = new Set(discoverE2ePackages());
     const folders = e2eFoldersForPackages(["theme", "core"], available);
 
-    expect(folders).toEqual(["theme"]);
+    expect(folders).toEqual(["core", "theme"]);
   });
 
   it("runs E2E when a package with a Playwright project changes", () => {
