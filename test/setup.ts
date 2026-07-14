@@ -1,4 +1,5 @@
-import { beforeEach, vi } from "vitest";
+import { clearAllSingletons } from "@ailuracode/alpine-core";
+import { afterEach, beforeEach, vi } from "vitest";
 
 const mediaListeners = new Map<string, Set<() => void>>();
 
@@ -113,6 +114,14 @@ beforeEach(() => {
   // touch heuristic. Other tests must not leak that property into them.
   Object.defineProperty(window, "ontouchstart", { configurable: true, value: undefined });
   Reflect.deleteProperty(window, "ontouchstart");
+});
+
+afterEach(() => {
+  // Package-level setup files are not loaded when Vitest runs from the
+  // workspace root. Reset singleton registries here so store/factory
+  // plugins (theme, sidebar, scroll, lang, …) do not leak controllers
+  // — and their options fingerprints — into the next test case.
+  clearAllSingletons();
 });
 
 // Replace `globalThis.fetch` with a stub that rejects synchronously. This prevents

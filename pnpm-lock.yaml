@@ -138,6 +138,9 @@ importers:
       '@ailuracode/alpine-query-kit':
         specifier: workspace:*
         version: link:../../packages/query-kit
+      '@ailuracode/alpine-realtime':
+        specifier: workspace:*
+        version: link:../../packages/realtime
       '@ailuracode/alpine-scroll':
         specifier: workspace:*
         version: link:../../packages/scroll
@@ -629,6 +632,25 @@ importers:
       nanostores:
         specifier: ^1.4.0
         version: 1.4.0
+
+  packages/realtime:
+    dependencies:
+      alpinejs:
+        specifier: ^3.0.0
+        version: 3.15.12
+    devDependencies:
+      '@ailuracode/alpine-core':
+        specifier: workspace:*
+        version: link:../core
+      '@types/alpinejs':
+        specifier: ^3.13.11
+        version: 3.13.11
+      '@types/node':
+        specifier: ^26.1.0
+        version: 26.1.1
+      tsup:
+        specifier: ^8.5.0
+        version: 8.5.1(patch_hash=f20e8b64de39029c6d726ef4ed37bc95f4d585b90816509f5533e8e7064d9516)(jiti@2.7.0)(postcss@8.5.17)(typescript@6.0.3)(yaml@2.9.0)
 
   packages/scroll:
     dependencies:

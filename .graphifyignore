@@ -1,0 +1,76 @@
+# Graphify ignore — merged with .gitignore (patterns here take precedence).
+# Goal: index only publishable package implementation under packages/*/src.
+
+# Graphify / index outputs
+graphify-out/
+graph.json
+.codegraph/
+
+# Dependencies & build artifacts
+node_modules/
+.pnpm-store/
+dist/
+coverage/
+**/.astro/
+**/e2e/fixture/.bundled/
+playwright-report/
+test-results/
+blob-report/
+*.log
+.DS_Store
+
+# Lockfiles & generated metadata
+pnpm-lock.yaml
+skills-lock.json
+**/CHANGELOG.md
+**/README.md
+
+# Agent / IDE / dev tooling
+.cursor/
+.opencode/
+.atl/
+.husky/
+.vscode/
+AGENTS.md
+
+# CI, release, and repo automation
+.github/
+.changeset/
+patches/
+scripts/
+
+# Demo app, docs, and all tests
+apps/
+docs/
+e2e/
+test/
+packages/*/test/
+packages/*/e2e/
+
+# Package & workspace config (not runtime source)
+package.json
+**/package.json
+**/playwright.config.ts
+**/vitest.config.ts
+**/tsconfig*.json
+**/tsup.config.ts
+**/global.d.ts
+biome.json
+opencode.json
+tsconfig.json
+vitest.config.ts
+
+# Scoped devtools UI (styled panel — not headless API)
+packages/query-kit/src/devtools/
+
+# In-src test helpers
+packages/*/src/test/
+
+# Static assets
+*.ico
+*.png
+*.svg
+*.webp
+*.gif
+*.jpg
+*.jpeg

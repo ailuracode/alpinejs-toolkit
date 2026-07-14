@@ -1,0 +1,106 @@
+{
+  "name": "@ailuracode/alpine-realtime",
+  "version": "0.0.0",
+  "description": "Headless realtime transport controller for Alpine.js — SSE/WebSocket adapters, automatic reconnect with exponential backoff, heartbeat, and visibility-aware pausing.",
+  "type": "module",
+  "license": "MIT",
+  "author": "ailuracode",
+  "sideEffects": false,
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ailuracode/alpinejs-toolkit.git",
+    "directory": "packages/realtime"
+  },
+  "bugs": {
+    "url": "https://github.com/ailuracode/alpinejs-toolkit/issues"
+  },
+  "homepage": "https://github.com/ailuracode/alpinejs-toolkit/tree/main/packages/realtime#readme",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./controller": {
+      "types": "./dist/controller.d.ts",
+      "default": "./dist/controller.js"
+    },
+    "./adapters": {
+      "types": "./dist/adapters.d.ts",
+      "default": "./dist/adapters.js"
+    },
+    "./alpine": {
+      "types": "./dist/alpine.d.ts",
+      "default": "./dist/alpine.js"
+    },
+    "./plugin": {
+      "types": "./dist/plugin.d.ts",
+      "default": "./dist/plugin.js"
+    },
+    "./test": {
+      "types": "./dist/test.d.ts",
+      "default": "./dist/test.js"
+    }
+  },
+  "scripts": {
+    "build": "tsup --config tsup.config.ts",
+    "clean": "rm -rf dist",
+    "size": "size-limit",
+    "test": "vitest run --config ../../vitest.config.ts test",
+    "test:watch": "vitest --config ../../vitest.config.ts",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.test.json",
+    "prepublishOnly": "pnpm run build"
+  },
+  "peerDependencies": {
+    "@ailuracode/alpine-core": "^0.2.0",
+    "alpinejs": "^3.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@types/alpinejs": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@ailuracode/alpine-core": "workspace:*",
+    "@types/alpinejs": "^3.13.11",
+    "@types/node": "^26.1.0",
+    "tsup": "^8.5.0"
+  },
+  "keywords": [
+    "alpinejs",
+    "alpine",
+    "realtime",
+    "transport",
+    "sse",
+    "websocket",
+    "event-source",
+    "resilience"
+  ],
+  "toolkit": {
+    "bundleBudget": {
+      "category": "complex-feature"
+    }
+  },
+  "size-limit": [
+    {
+      "name": "full surface",
+      "path": "dist/index.js",
+      "import": "*",
+      "ignore": [
+        "alpinejs",
+        "@ailuracode/alpine-core",
+        "@types/alpinejs"
+      ],
+      "gzip": true,
+      "brotli": true,
+      "limit": "9 kB"
+    }
+  ]
+}

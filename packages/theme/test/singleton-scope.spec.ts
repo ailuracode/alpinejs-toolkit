@@ -3,7 +3,7 @@
  */
 import assert from "node:assert/strict";
 import { clearAllSingletons, createSingletonScope } from "@ailuracode/alpine-core";
-import { afterEach, describe, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { createTheme } from "../src/controller.js";
 
 afterEach(() => {
@@ -22,11 +22,18 @@ describe("createTheme — scoped singletons", () => {
   });
 
   it("reuses the live instance inside one scope", () => {
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => undefined);
     const scope = createSingletonScope();
     const first = createTheme({ scope, defaultTheme: "light" });
     const second = createTheme({ scope, defaultTheme: "dark" });
     assert.equal(first, second);
     assert.equal(second.current, "light");
+    expect(warnSpy).toHaveBeenCalledWith(
+      expect.stringContaining(
+        'Singleton "@ailuracode/alpine-theme/default" already exists in this scope with different options'
+      )
+    );
+    warnSpy.mockRestore();
   });
 
   it("releases only the destroyed instance scope", () => {

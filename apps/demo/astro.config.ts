@@ -110,6 +110,7 @@ export default defineConfig({
         "@ailuracode/alpine-theme": pkg("theme"),
         "@ailuracode/alpine-toggle": pkg("toggle"),
         "@ailuracode/alpine-history": pkg("history"),
+        "@ailuracode/alpine-realtime": pkg("realtime"),
       },
     },
   },

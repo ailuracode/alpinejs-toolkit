@@ -47,7 +47,8 @@
       "@ailuracode/alpine-geo": ["./packages/geo/src/index.ts"],
       "@ailuracode/alpine-lang": ["./packages/lang/src/index.ts"],
       "@ailuracode/alpine-gesture": ["./packages/gesture/src/index.ts"],
-      "@ailuracode/alpine-history": ["./packages/history/src/index.ts"]
+      "@ailuracode/alpine-history": ["./packages/history/src/index.ts"],
+      "@ailuracode/alpine-realtime": ["./packages/realtime/src/index.ts"]
     }
   },
   "include": [

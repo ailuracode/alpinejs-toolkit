@@ -10,7 +10,7 @@
 
 import { clearAllSingletons } from "@ailuracode/alpine-core";
 import type { Alpine as AlpineBase } from "alpinejs";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { createScroll, ScrollController, type ScrollStore, scrollPlugin } from "../src/index";
 
 interface MockAlpine {
@@ -153,8 +153,10 @@ describe("scrollPlugin — cleanup", () => {
 describe("createScroll — singleton guarantee", () => {
   beforeEach(() => {
     clearAllSingletons();
+    vi.spyOn(console, "warn").mockImplementation(() => undefined);
   });
   afterEach(() => {
+    vi.restoreAllMocks();
     clearAllSingletons();
   });
 
