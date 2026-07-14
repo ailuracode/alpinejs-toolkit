@@ -2,8 +2,6 @@
 
 Framework-agnostic selection primitives for Alpine.js — single, multiple, and range modes with anchor tracking.
 
-**[Full documentation →](../../docs/plugins/selection.md)**
-
 ## Install
 
 ```bash
@@ -181,6 +179,90 @@ try {
 ## Used by
 
 `@ailuracode/alpine-calendar`, `@ailuracode/alpine-command`, `@ailuracode/alpine-tabs`, and `@ailuracode/alpine-accordion` build on these primitives internally.
+
+## Setup
+
+```js
+import Alpine from "alpinejs";
+import selection from "@ailuracode/alpine-selection";
+
+Alpine.plugin(selection());
+Alpine.start();
+```
+
+## Reactivity in templates
+
+Selection state is mirrored on `$store.selection.instances[id]`. Read from that snapshot (or use `listProps` / `itemProps`, which derive from it) so Alpine re-renders when selection changes:
+
+```html
+<p x-text="$store.selection.instances.rows?.selectedKeys.join(', ')"></p>
+```
+
+`isSelected()`, `isActive()`, and similar helpers are for imperative code (event handlers, tests). They do not register reactive dependencies in templates.
+
+In inline `x-data` object methods, bare names like `mode` or `items` are **not** in scope — use `this.mode` / `this.items`, or call `create` from an `x-init` expression:
+
+```html
+<div
+  x-data="{ items: ['Alpha', 'Bravo'], mode: 'multiple' }"
+  x-init="$store.selection.create('rows', { mode, keys: items })"
+>
+```
+
+## Options
+
+| Option | Default | Description |
+|--------|---------|-------------|
+| `mode` | `"single"` | `single`, `multiple`, or `range` |
+| `keys` | `[]` | Ordered selectable keys (defines range span order) |
+| `disabledKeys` | `[]` | Keys that cannot be selected |
+| `allowDisabledSelection` | `false` | Allow selecting disabled keys programmatically |
+| `value` / `defaultValue` | — | Controlled or initial value |
+| `onChange` | — | Called after each confirmed transition |
+
+## Modes
+
+| Mode | Value shape | Typical use |
+|------|-------------|-------------|
+| `single` | `key \| null` | Listbox, radio group, tabs |
+| `multiple` | `key[]` | Multi-select tables, checklists |
+| `range` | `{ from, to? }` | Shift-click ranges, calendars |
+
+## Pointer interactions
+
+| Gesture | Command |
+|---------|---------|
+| Click | `replace(id, key)` |
+| Ctrl/Cmd + click | `toggle(id, key)` (multiple) |
+| Shift + click | `extend(id, key)` (range / multiple) |
+
+Call `setActive(id, key)` on pointer down or click so `activeKey` stays in sync for keyboard continuation.
+
+## Controller (no Alpine)
+
+```ts
+import { createSelectionController } from "@ailuracode/alpine-selection";
+
+const controller = createSelectionController();
+controller.create("rows", { mode: "multiple", keys: ["a", "b", "c"] });
+controller.on("change", ({ selectedKeys }) => {
+  console.log(selectedKeys);
+});
+```
+
+## Accessibility
+
+Use `listProps` and `itemProps` for WAI-ARIA listbox semantics (`role`, `aria-selected`, `aria-disabled`, `aria-multiselectable`). Pair keyboard handlers with `setActive`, `moveSelectableKey`, and `extend` for arrow-key and shift-arrow range selection.
+
+## Adoption in the toolkit
+
+`@ailuracode/alpine-calendar` historically used `@ailuracode/alpine-selection` for date keys, but now ships inline selection state to keep the bundle slim. `tabs`, `accordion`, and `command` followed the same pattern.
+
+| Package | Use |
+|---------|-----|
+| `@ailuracode/alpine-calendar` | (moved to inline state) Date keys bridged to ISO strings |
+
+Consumers of those packages do not need to install `@ailuracode/alpine-selection` unless they use selection primitives directly.
 
 ## License
 

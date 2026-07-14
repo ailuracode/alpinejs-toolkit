@@ -8,8 +8,6 @@ The plugin is **headless** and knows nothing about the width, mode, or appearanc
 >
 > **v2.1.0 adds opt-in persistence.** `initialVisible` was renamed to `initial` (a TypeScript compile error for v2.0 callers passing the old name). New `storage` and `persistKey` options wire the sidebar's `visible` boolean to a persistence adapter. See the [Persistence](#persistence) section and the [Migration → v2.1.0](#migration-from-v20-to-v210) section.
 
-**[Full documentation →](../../docs/plugins/sidebar.md)**
-
 ## Install
 
 ```bash
@@ -494,6 +492,12 @@ The `detail.source` discriminator gains a 6th value when a `storage` adapter wit
 ### Behavior note for v2.0 callers adopting `storage`
 
 Consumers passing `storage` for the first time will observe their first `change` event after `mount()` reflect the persisted value rather than `false`. Pass no `storage` (default behavior) to preserve v2.0 semantics.
+
+## See also
+
+- [Scroll](./scroll.md) — compose with `$store.scroll` for body scroll locking via the `change` event
+- [Theme](./theme.md) — same factory plugin pattern with a headless controller
+- [Toggle](./toggle.md) — the `ToggleController` the sidebar composes internally
 
 ## License
 

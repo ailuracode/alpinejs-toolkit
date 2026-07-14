@@ -84,6 +84,14 @@ rg 'import \w+ from "@ailuracode' packages/*/README.md
 rg "export.*as default" packages/*/src/index.ts
 ```
 
+## Canonical source of truth
+
+`packages/*/README.md` is the **canonical package reference** for npm, GitHub, and the documentation site.
+
+- Document the full public consumer contract in each README.
+- `docs/` is for cross-package guides, architecture topics, migrations, and composition — not duplicate API reference.
+- Do not link READMEs to `docs/plugins/*.md` as a fuller source; merge any unique reference content into the README instead.
+
 ## Structure
 
 Recommended README skeleton (adapt per package — skip sections that don't apply):
@@ -91,14 +99,17 @@ Recommended README skeleton (adapt per package — skip sections that don't appl
 ```markdown
 # @ailuracode/alpine-<name>
 
-One-line description.
+One-line description and positioning.
 
 ## Install
-## Quick example
-## Store API / Magic API / Controller API
+## Quick start
+## Store API / Magic API / Directive API
+## Controller API (when applicable)
 ## Plugin options
 ## Standalone usage (no Alpine)
+## Browser, SSR, and lifecycle behavior
+## Composition and related packages
 ## License
 ```
 
-Keep READMEs concise. Full documentation lives in `docs/`. The README is a quick-reference, not a tutorial.
+Keep READMEs focused on the public API. Cross-package tutorials belong in `docs/guides/`.

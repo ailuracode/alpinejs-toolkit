@@ -1,8 +1,6 @@
 # @ailuracode/alpine-tabs
 
-Headless accessible tabs store for Alpine.js — selection, keyboard navigation, ARIA helpers, and optional URL query sync.
-
-**[Full documentation →](../../docs/plugins/tabs.md)**
+Headless accessible tabs store with keyboard navigation, manual/automatic activation, ARIA helpers, and optional URL query sync.
 
 ## Install
 
@@ -14,9 +12,51 @@ Active tab tracking uses an inline lightweight state — no extra dependency.
 
 ## Store API
 
-```ts
-$store.tabs.select("settings-tabs", "profile");
-$store.tabs.active("settings-tabs");
-$store.tabs.isActive("settings-tabs", "profile");
-$store.tabs.next("settings-tabs");
+| Method | Description |
+|--------|-------------|
+| `select(groupId, tabId)` | Activate a tab |
+| `active(groupId)` | Active tab id |
+| `isActive(groupId, tabId)` | Whether a tab is active |
+| `next(groupId)` / `previous(groupId)` | Cycle tabs |
+| `handleKeydown(groupId, event)` | Arrow/Home/End navigation |
+| `tabProps(groupId, tabId)` | `role`, `aria-selected`, `aria-controls` |
+| `panelProps(groupId, tabId)` | `role`, `hidden`, `aria-labelledby` |
+| `tablistProps(groupId)` | `role`, `aria-orientation` |
+
+Register a group with `urlParam: 'tab'` to sync `?tab=` in the address bar (no separate URL plugin required).
+
+## Basic markup
+
+```html
+<div
+  x-data
+  x-init="
+    $store.tabs.register('settings-tabs', { defaultTab: 'profile' });
+    ['profile','billing','security'].forEach(id => $store.tabs.registerTab('settings-tabs', id));
+  "
+>
+  <div x-bind="$store.tabs.tablistProps('settings-tabs')" @keydown="$store.tabs.handleKeydown('settings-tabs', $event)">
+    <template x-for="id in ['profile','billing','security']" :key="id">
+      <button
+        x-bind="$store.tabs.tabProps('settings-tabs', id)"
+        @click="$store.tabs.select('settings-tabs', id)"
+        x-text="id"
+      ></button>
+    </template>
+  </div>
+
+  <template x-for="id in ['profile','billing','security']" :key="id">
+    <section x-bind="$store.tabs.panelProps('settings-tabs', id)">
+      <p x-text="`Panel: ${id}`"></p>
+    </section>
+  </template>
+</div>
 ```
+
+## SSR
+
+URL sync reads `window.location` only when `register()` runs on the client.
+
+## Integration
+
+- **Toast** — optional feedback in demos when switching tabs; not required by the plugin
