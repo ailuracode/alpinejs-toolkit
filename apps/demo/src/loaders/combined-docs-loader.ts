@@ -39,12 +39,17 @@ function stripReadmeTitle(content: string): string {
   return rest.join("\n");
 }
 
-function transformReadmeLinks(content: string): string {
+const GITHUB_SOURCE_BASE = "https://github.com/ailuracode/alpinejs-toolkit/blob/master/packages";
+
+export function transformReadmeLinks(content: string): string {
   return content
     .replace(/\]\(\.\.\/\.\.\/docs\/plugins\/([^)#]+)(#[^)]+)?\)/g, "](/plugins/$1/$2)")
     .replace(/\]\(\.\.\/\.\.\/docs\/([^)#]+)(#[^)]+)?\)/g, "](/$1/$2)")
     .replace(/\]\(\.\.\/\.\.\/packages\/([^/#)]+)\/README\.md(#[^)]+)?\)/g, "](/plugins/$1/$2)")
-    .replace(/\]\(\.\.\/([^/#)]+)\/README\.md(#[^)]+)?\)/g, "](/plugins/$1/$2)");
+    .replace(/\]\(\.\.\/([^/#)]+)\/README\.md(#[^)]+)?\)/g, "](/plugins/$1/$2)")
+    .replace(/\]\(\.\/([^)#]+)\.md(#[^)]+)?\)/g, "](/plugins/$1/$2)")
+    .replace(/\]\(\.\.\/([^)#]+)\.md(#[^)]+)?\)/g, "](/$1/$2)")
+    .replace(/\]\(\.\.\/packages\/([^/]+)\/src\/([^)]+)\)/g, `](${GITHUB_SOURCE_BASE}/$1/src/$2)`);
 }
 
 function appendRelatedPackages(body: string, entry: PackageCatalogEntry): string {

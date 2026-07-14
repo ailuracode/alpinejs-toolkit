@@ -110,7 +110,7 @@ manager.on("change", (detail) => {
 
 Dentro de um x-data do Alpine, leia `$store.theme` reativamente — o Alpine faz a assinatura por você.
 
-## `resolved` vs `prefersColorScheme`
+## `resolved` vs `prefersColorScheme` {#resolved-vs-preferscolorscheme}
 
 Ambos se referem a claro/escuro mas respondem a perguntas diferentes:
 
@@ -146,7 +146,7 @@ Se você usa apenas `@ailuracode/alpine-theme`, `resolved` basta na maioria dos 
 </p>
 ```
 
-Veja também [Media — tema vs esquema de cor do SO](./media.md#theme-vs-media-color-scheme).
+Veja também [Media — tema vs esquema de cor do SO](/plugins/media/#theme-vs-media-color-scheme).
 
 ## Prevenção de FOUC
 

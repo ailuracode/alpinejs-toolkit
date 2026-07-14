@@ -104,7 +104,7 @@ Use o número da página na query key para que cada página seja cacheada de for
 
 Voltar a uma página anterior serve dados cacheados instantaneamente enquanto `staleTime` não expirou.
 
-Consulte o [README do pacote](../packages/query/README.md) para a API completa.
+Consulte a [referência do pacote](/plugins/query/) para a API completa.
 
 ## Adaptador personalizado
 
@@ -142,7 +142,7 @@ import {
 const client = createQueryClient({ adapter: vanillaQueryAdapter });
 ```
 
-Consulte [`packages/query/src/adapters/vanilla.ts`](../packages/query/src/adapters/vanilla.ts) para a implementação completa.
+Consulte [`packages/query/src/adapters/vanilla.ts`](https://github.com/ailuracode/alpinejs-toolkit/blob/master/packages/query/src/adapters/vanilla.ts) para a implementação completa.
 
 ### Adaptador respaldado por store
 
@@ -204,8 +204,8 @@ export const myStoreAdapter: QueryStateAdapter = {
 
 Conecte o `subscribe` / `listen` nativo do store em `listen` em vez de um `Set` manual quando disponível. Adaptadores existentes:
 
-- [`query-kit`](../packages/query-kit/src/nanostores/adapter.ts) — Nanostores `map()`
-- [`query-adapter-zustand`](../packages/query-adapter-zustand/src/adapter.ts) — Zustand vanilla `createStore`
+- [`query-kit`](https://github.com/ailuracode/alpinejs-toolkit/blob/master/packages/query-kit/src/nanostores/adapter.ts) — Nanostores `map()`
+- [`query-adapter-zustand`](https://github.com/ailuracode/alpinejs-toolkit/blob/master/packages/query-adapter-zustand/src/adapter.ts) — Zustand vanilla `createStore`
 
 ### Plugin Alpine a partir de um adaptador personalizado
 
@@ -229,7 +229,7 @@ Alpine.plugin(
 );
 ```
 
-Para armazenamento nativo com `Alpine.reactive`, use [`createAlpineStoreAdapter`](../packages/query-adapter-alpine/src/adapter.ts) como referência — chama `attachQueryFlags` / `attachMutationFlags` diretamente no objeto reativo.
+Para armazenamento nativo com `Alpine.reactive`, use [`createAlpineStoreAdapter`](https://github.com/ailuracode/alpinejs-toolkit/blob/master/packages/query-adapter-alpine/src/adapter.ts) como referência — chama `attachQueryFlags` / `attachMutationFlags` diretamente no objeto reativo.
 
 ### Factory de adaptador
 
