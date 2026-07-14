@@ -11,14 +11,14 @@ import {
 
 type SidebarLink = {
   label: string;
+  translations?: Record<string, string>;
   link: string;
 };
 
 type SidebarGroup = {
   label: string;
   translations?: Record<string, string>;
-  link?: string;
-  items?: SidebarEntry[];
+  items: SidebarEntry[];
   collapsed?: boolean;
 };
 
@@ -61,7 +61,7 @@ function buildCategoryDocItems(categoryId: PackageCatalogEntry["category"]): Sid
   return items;
 }
 
-export function buildDocsSidebar(): SidebarGroup[] {
+export function buildDocsSidebar(): SidebarEntry[] {
   const categorySections = PACKAGE_CATEGORIES.flatMap((category) => {
     const items = buildCategoryDocItems(category.id);
     if (items.length === 0) {

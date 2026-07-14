@@ -50,6 +50,7 @@
     "@ailuracode/alpine-toggle": "workspace:*",
     "@ailuracode/alpine-tooltip": "workspace:*",
     "@ailuracode/alpine-transfer": "workspace:*",
+    "@ailuracode/alpine-history": "workspace:*",
     "@alpinejs/anchor": "^3.15.12",
     "@alpinejs/collapse": "^3.15.12",
     "@alpinejs/morph": "^3.15.12",

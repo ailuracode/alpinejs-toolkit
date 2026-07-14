@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ailuracode/alpine-history E2E fixture</title>
+  </head>
+  <body>
+    <main
+      id="app"
+      data-e2e-ready="true"
+      x-data="{
+        step: 1,
+        increment() { $store.history.commit($store.history.value + this.step); },
+        decrement() { $store.history.commit($store.history.value - this.step); },
+        txCommit() {
+          const tx = $store.history.transaction($store.history.value);
+          $store.history.commit($store.history.value + 5);
+          tx.commit();
+        },
+        txRollback() {
+          const tx = $store.history.transaction($store.history.value);
+          $store.history.commit($store.history.value + 100);
+          tx.rollback();
+        },
+      }"
+    >
+      <h1>History E2E fixture</h1>
+
+      <section>
+        <h2>Counter</h2>
+        <output id="value" data-testid="value" x-text="$store.history.value ?? 'none'"></output>
+        <output id="can-undo" data-testid="can-undo" x-text="String($store.history.canUndo)"></output>
+        <output id="can-redo" data-testid="can-redo" x-text="String($store.history.canRedo)"></output>
+        <output id="undo-depth" data-testid="undo-depth" x-text="$store.history.undoStack.length"></output>
+        <output id="redo-depth" data-testid="redo-depth" x-text="$store.history.redoStack.length"></output>
+
+        <button
+          type="button"
+          id="btn-increment"
+          @click="increment()"
+        >Increment</button>
+
+        <button
+          type="button"
+          id="btn-decrement"
+          @click="decrement()"
+        >Decrement</button>
+
+        <button
+          type="button"
+          id="btn-undo"
+          :disabled="!$store.history.canUndo"
+          @click="$store.history.undo()"
+        >Undo</button>
+
+        <button
+          type="button"
+          id="btn-redo"
+          :disabled="!$store.history.canRedo"
+          @click="$store.history.redo()"
+        >Redo</button>
+
+        <button
+          type="button"
+          id="btn-clear"
+          @click="$store.history.clear()"
+        >Clear</button>
+
+        <button
+          type="button"
+          id="btn-checkpoint"
+          @click="$store.history.checkpoint({ label: 'snapshot' })"
+        >Checkpoint</button>
+      </section>
+
+      <section>
+        <h2>Transaction</h2>
+        <button
+          type="button"
+          id="btn-tx-commit"
+          @click="txCommit()"
+        >Transaction commit</button>
+
+        <button
+          type="button"
+          id="btn-tx-rollback"
+          @click="txRollback()"
+        >Transaction rollback</button>
+      </section>
+    </main>
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>
