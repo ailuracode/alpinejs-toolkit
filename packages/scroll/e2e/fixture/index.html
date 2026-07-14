@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ailuracode/alpine-scroll E2E fixture</title>
+    <style>
+      body { margin: 0; }
+      #scroll-content { height: 2000px; padding: 1rem; }
+    </style>
+  </head>
+  <body>
+    <main id="app" data-e2e-ready="true" x-data="{ lockHandle: null }" x-init>
+      <h1>Scroll E2E fixture</h1>
+      <output id="scroll-y" x-text="$store.scroll.y"></output>
+      <output id="scroll-locked" x-text="$store.scroll.locked"></output>
+      <button type="button" @click="lockHandle = $store.scroll.lock('demo')">Lock scroll</button>
+      <button type="button" @click="lockHandle && $store.scroll.unlock(lockHandle)">Unlock scroll</button>
+      <button type="button" @click="$store.scroll.toTop()">Scroll to top</button>
+      <div id="scroll-content">Scrollable content</div>
+    </main>
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>

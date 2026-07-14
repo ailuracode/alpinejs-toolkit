@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ailuracode/alpine-child E2E fixture</title>
+  </head>
+  <body>
+    <main id="app" data-e2e-ready="true" x-data="{ clicked: false }">
+      <h1>Child E2E fixture</h1>
+      <div x-child id="wrapper" class="wrapper-class" style="border: 1px solid #ccc;">
+        <button id="child-button" type="button" class="child-class" @click="clicked = true">Child action</button>
+      </div>
+      <output id="click-state" x-text="clicked ? 'clicked' : 'idle'"></output>
+    </main>
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>

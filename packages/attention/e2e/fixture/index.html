@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ailuracode/alpine-attention E2E fixture</title>
+  </head>
+  <body>
+    <main id="app" data-e2e-ready="true" x-data x-init>
+      <h1>Attention E2E fixture</h1>
+      <output id="wakelock-supported" x-text="$wakelock.isSupported"></output>
+      <output id="wakelock-active" x-text="$wakelock.isActive"></output>
+      <button type="button" @click="$wakelock.request()">Request wake lock</button>
+      <button type="button" @click="$wakelock.release()">Release wake lock</button>
+    </main>
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>

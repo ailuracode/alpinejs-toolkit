@@ -51,7 +51,9 @@
     "test": "vitest run --config ../../vitest.config.ts packages/scroll",
     "test:coverage": "vitest run --coverage --coverage.include=packages/scroll/src/**/*.ts --coverage.exclude=packages/scroll/src/index.ts --coverage.exclude=packages/scroll/src/global.d.ts --coverage.exclude=packages/scroll/src/types.ts --coverage.exclude=packages/scroll/src/events.ts --coverage.thresholds.lines=80 --coverage.thresholds.functions=70 --coverage.thresholds.statements=80 --coverage.thresholds.branches=73 --config ../../vitest.config.ts packages/scroll",
     "test:watch": "vitest --config ../../vitest.config.ts packages/scroll",
-    "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.test.json"
+    "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.test.json",
+    "test:e2e": "playwright test --config playwright.config.ts",
+    "test:e2e:report": "playwright show-report e2e/playwright-report"
   },
   "devDependencies": {
     "@ailuracode/alpine-core": "workspace:*",

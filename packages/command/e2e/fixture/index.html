@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ailuracode/alpine-command E2E fixture</title>
+  </head>
+  <body>
+    <main
+      id="app"
+      data-e2e-ready="true"
+      x-data="commandFixture"
+      @keydown.window="$store.command.isOpen && $store.command.handleKeydown($event)"
+    >
+      <h1>Command E2E fixture</h1>
+      <button type="button" @click="$store.command.open()">Open palette</button>
+      <div id="palette" x-show="$store.command.isOpen">
+        <input id="command-input" type="text" x-model="$store.command.search" x-bind="$store.command.inputProps()" />
+        <ul id="command-list" role="listbox" x-bind="$store.command.listboxProps()">
+          <template x-for="entry in $store.command.visibleItems" :key="entry.id">
+            <li role="presentation">
+              <button type="button" role="option" x-bind="$store.command.optionProps(entry.id)" @click="$store.command.run(entry.id)" x-text="entry.item.label"></button>
+            </li>
+          </template>
+        </ul>
+      </div>
+      <output id="command-ran" x-text="ran"></output>
+    </main>
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>

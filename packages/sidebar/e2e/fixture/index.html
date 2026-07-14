@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ailuracode/alpine-sidebar E2E fixture</title>
+  </head>
+  <body>
+    <main id="app" data-e2e-ready="true" x-data x-init>
+      <h1>Sidebar E2E fixture</h1>
+      <button type="button" @click="$store.sidebar.show()">Show sidebar</button>
+      <button type="button" @click="$store.sidebar.hide()">Hide sidebar</button>
+      <aside id="sidebar-panel" x-show="$store.sidebar.visible">Sidebar content</aside>
+      <output id="sidebar-visible" x-text="$store.sidebar.visible"></output>
+    </main>
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>

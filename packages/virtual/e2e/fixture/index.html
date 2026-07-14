@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ailuracode/alpine-virtual E2E fixture</title>
+    <style>
+      #virtual-scroll { height: 200px; overflow: auto; border: 1px solid #ccc; }
+      .virtual-row { height: 40px; }
+    </style>
+  </head>
+  <body>
+    <main
+      id="app"
+      data-e2e-ready="true"
+      x-data
+      x-init="
+        $store.virtual.create('list');
+        $store.virtual.setCount('list', 100);
+        $nextTick(() => $store.virtual.bindScrollElement('list', $refs.scroller));
+      "
+    >
+      <h1>Virtual E2E fixture</h1>
+      <div id="virtual-scroll" x-ref="scroller" x-bind="$store.virtual.listProps('list')">
+        <div x-bind="$store.virtual.contentProps('list')">
+          <template x-for="item in $store.virtual.getVirtualItems('list')" :key="item.key">
+            <div class="virtual-row" x-bind="$store.virtual.itemProps('list', item.index)" x-text="'Row ' + item.index"></div>
+          </template>
+        </div>
+      </div>
+      <output id="virtual-count" x-text="$store.virtual.getVirtualItems('list').length"></output>
+    </main>
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>
