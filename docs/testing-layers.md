@@ -84,14 +84,9 @@ Per-project pool settings are centralized in `scripts/vitest-runtime-settings.mj
 | `node` | `threads` | `max(2, min(6, floor(cpus/2)))` | enabled |
 | DOM overlays | `forks` | same cap | enabled |
 
-Override workers with `VITEST_MAX_WORKERS`. Evidence and rejected options: [`benchmarks/vitest-tuning-decisions.md`](../benchmarks/vitest-tuning-decisions.md).
+Override workers with `VITEST_MAX_WORKERS`. Rejected options are recorded in `runtimeSettingsSnapshot()` inside `scripts/vitest-runtime-settings.mjs`.
 
-## Performance regression checks (ALP-135)
-
-- Baseline: `pnpm run test:benchmark` → `benchmarks/vitest-baseline.json`
-- Compare: `pnpm run test:benchmark:check` (warn at 1.25× wall, fail at 1.50× or test failures)
-- Scheduled CI uploads `benchmarks/vitest-performance-report.json` on Monday full runs
-- Affected PR CI runs `vitest run --config vitest.config.ts <package-test-dirs>` so project routing stays explicit
+Affected PR CI runs `vitest run --config vitest.config.ts <package-test-dirs>` so project routing stays explicit.
 
 ## Package-local Vitest configs
 
@@ -108,4 +103,3 @@ Individual files inside those packages may still target `node` when they do not 
 - [ALP-131](https://linear.app/ailuracode/issue/ALP-131/split-vitest-into-node-and-simulated-dom-projects) — split Vitest projects by environment
 - [ALP-133](https://linear.app/ailuracode/issue/ALP-133/move-tests-to-the-cheapest-correct-environment) — migrate tests to their target environment
 - [ALP-134](https://linear.app/ailuracode/issue/ALP-134/benchmark-and-tune-vitest-execution-settings) — pool and worker tuning
-- [ALP-135](https://linear.app/ailuracode/issue/ALP-135/add-vitest-performance-regression-checks-and-finalize-ci-integration) — regression checks and CI reporting

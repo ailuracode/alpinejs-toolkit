@@ -4,7 +4,7 @@ Classification for [ALP-130](https://linear.app/ailuracode/issue/ALP-130/classif
 
 ## Summary
 
-- Generated: 2026-07-14T23:15:52.520Z
+- Generated: 2026-07-14T23:26:28.433Z
 - Vitest files: 227
 - Playwright E2E files: 29
 
@@ -349,6 +349,6 @@ Machine-readable output: `benchmarks/test-environment-inventory.json`.
 | `test/test-environment-inventory.test.ts` | `repository` | `utility` | `node` | content |
 | `test/tree-shaking-smoke.test.ts` | `repository` | `utility` | `node` | content |
 | `test/vitest-package-scripts.test.ts` | `repository` | `repository` | `node` | content |
-| `test/vitest-performance.test.ts` | `repository` | `utility` | `node` | content |
 | `test/vitest-projects.test.ts` | `repository` | `utility` | `node` | content |
+| `test/vitest-runtime-settings.test.ts` | `repository` | `utility` | `node` | content |
 

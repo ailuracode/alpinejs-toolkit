@@ -25,4 +25,3 @@ blob-report/
 .opencode/
 graphify-out/
 benchmarks/.tmp/
-benchmarks/vitest-performance-report.json

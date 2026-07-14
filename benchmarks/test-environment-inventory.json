@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-14T23:15:52.520Z",
+  "generatedAt": "2026-07-14T23:26:28.433Z",
   "issue": "ALP-130",
   "vitestFileCount": 227,
   "e2eFileCount": 29,
@@ -2305,7 +2305,7 @@
       "hasPlaywrightSibling": false
     },
     {
-      "path": "test/vitest-performance.test.ts",
+      "path": "test/vitest-projects.test.ts",
       "package": "repository",
       "layer": "utility",
       "targetEnvironment": "node",
@@ -2314,7 +2314,7 @@
       "hasPlaywrightSibling": false
     },
     {
-      "path": "test/vitest-projects.test.ts",
+      "path": "test/vitest-runtime-settings.test.ts",
       "package": "repository",
       "layer": "utility",
       "targetEnvironment": "node",

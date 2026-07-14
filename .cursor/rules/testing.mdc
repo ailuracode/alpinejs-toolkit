@@ -13,8 +13,7 @@ alwaysApply: false
 - Playwright E2E (root `e2e/playwright.base.ts`, per-package `playwright.config.ts`)
 - E2E include pattern: `packages/*/e2e/**/*.spec.ts`
 - Inventory: `benchmarks/test-environment-inventory.json` — regenerate with `pnpm run test:classify` (enforced by `repo:check`)
-- Performance baseline: `benchmarks/vitest-baseline.json` — refresh with `pnpm run test:benchmark`; compare with `pnpm run test:benchmark:check`
-- Tuning evidence: `benchmarks/vitest-tuning-decisions.md` (ALP-134 pool/worker settings in `scripts/vitest-runtime-settings.mjs`)
+- Runtime pool settings in `scripts/vitest-runtime-settings.mjs` (ALP-134)
 
 ## Environments
 

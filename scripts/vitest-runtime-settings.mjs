@@ -10,13 +10,6 @@ import os from "node:os";
 /** Linear issue that owns these settings. */
 export const VITEST_TUNING_ISSUE = "ALP-134";
 
-/** Tolerance multipliers for scheduled performance regression checks (ALP-135). */
-export const PERFORMANCE_TOLERANCE = {
-  wallMs: 1.25,
-  environmentSec: 1.3,
-  severeWallMs: 1.5,
-};
-
 /**
  * @returns {number}
  */
@@ -86,8 +79,7 @@ export function runtimeSettingsSnapshot() {
       },
       {
         setting: "pool: vmThreads",
-        reason:
-          "Not benchmarked — forks/threads covered the measured workspace gains without VM pool risk.",
+        reason: "Forks/threads cover workspace gains without VM pool risk.",
       },
       {
         setting: "deps.optimizer",

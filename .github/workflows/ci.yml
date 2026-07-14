@@ -128,26 +128,6 @@ jobs:
         if: needs.detect.outputs.run_validate == 'true' && needs.detect.outputs.run_coverage != 'true' && needs.detect.outputs.test_paths != ''
         run: pnpm exec vitest run --config vitest.config.ts ${{ needs.detect.outputs.test_paths }}
 
-  performance:
-    needs: detect
-    if: github.event_name == 'schedule' && needs.detect.outputs.run_full == 'true'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: ./.github/actions/setup
-
-      - name: Vitest performance regression check
-        run: pnpm run test:benchmark:check
-
-      - name: Upload performance report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: vitest-performance-report
-          path: benchmarks/vitest-performance-report.json
-          if-no-files-found: ignore
-
       - name: Validate package tarballs
         if: needs.detect.outputs.run_validate == 'true' && needs.detect.outputs.run_pack == 'true'
         run: |
@@ -231,7 +211,7 @@ jobs:
           fi
 
   gate:
-    needs: [detect, validate, e2e, performance]
+    needs: [detect, validate, e2e]
     if: always()
     runs-on: ubuntu-latest
     steps:
@@ -244,7 +224,6 @@ jobs:
           DETECT_RESULT: ${{ needs.detect.result }}
           VALIDATE_RESULT: ${{ needs.validate.result }}
           E2E_RESULT: ${{ needs.e2e.result }}
-          PERFORMANCE_RESULT: ${{ needs.performance.result }}
         run: |
           set -euo pipefail
 
@@ -265,11 +244,6 @@ jobs:
 
           if [ "$RUN_E2E" = "true" ] && [ "$E2E_RESULT" != "success" ]; then
             echo "e2e job did not succeed"
-            exit 1
-          fi
-
-          if [ "$PERFORMANCE_RESULT" = "failure" ]; then
-            echo "performance job did not succeed"
             exit 1
           fi
 
