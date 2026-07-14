@@ -1,0 +1,2711 @@
+{
+  "generatedAt": "2026-07-14T21:17:24.022Z",
+  "issue": "ALP-130",
+  "vitestFileCount": 228,
+  "e2eFileCount": 29,
+  "environmentCounts": {
+    "node": 135,
+    "happy-dom": 75,
+    "jsdom": 18,
+    "playwright": 29
+  },
+  "layerCounts": {
+    "controller": 18,
+    "contract": 20,
+    "integration": 34,
+    "accessibility": 6,
+    "utility": 147,
+    "repository": 3,
+    "e2e": 29
+  },
+  "files": [
+    {
+      "path": "apps/demo/test/catalog.test.ts",
+      "package": "demo",
+      "layer": "utility",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["no-alpine-import"],
+      "hasPlaywrightSibling": false
+    },
+    {
+      "path": "apps/demo/test/combined-docs-loader.test.ts",
+      "package": "demo",
+      "layer": "utility",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["no-alpine-import"],
+      "hasPlaywrightSibling": false
+    },
+    {
+      "path": "apps/demo/test/docs-navigation.test.ts",
+      "package": "demo",
+      "layer": "utility",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["no-alpine-import"],
+      "hasPlaywrightSibling": false
+    },
+    {
+      "path": "apps/demo/test/docs-translations.test.ts",
+      "package": "demo",
+      "layer": "utility",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["no-alpine-import"],
+      "hasPlaywrightSibling": false
+    },
+    {
+      "path": "apps/demo/test/locale-detect.test.ts",
+      "package": "demo",
+      "layer": "utility",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["no-alpine-import"],
+      "hasPlaywrightSibling": false
+    },
+    {
+      "path": "apps/demo/test/playground-navigation.test.ts",
+      "package": "demo",
+      "layer": "utility",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["no-alpine-import"],
+      "hasPlaywrightSibling": false
+    },
+    {
+      "path": "packages/accordion/e2e/accordion.e2e.spec.ts",
+      "package": "accordion",
+      "layer": "e2e",
+      "targetEnvironment": "playwright",
+      "source": "path",
+      "signals": ["e2e-path"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/accordion/test/accordion.test.ts",
+      "package": "accordion",
+      "layer": "utility",
+      "targetEnvironment": "happy-dom",
+      "source": "content",
+      "signals": ["startAlpine"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/accordion/test/alpine.integration.test.ts",
+      "package": "accordion",
+      "layer": "integration",
+      "targetEnvironment": "happy-dom",
+      "source": "content",
+      "signals": ["Alpine.start", "document", "innerHTML", "x-data"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/accordion/test/alpine.reactivity.test.ts",
+      "package": "accordion",
+      "layer": "integration",
+      "targetEnvironment": "happy-dom",
+      "source": "content",
+      "signals": ["startAlpine", "document", "innerHTML", "x-data"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/accordion/test/encapsulation.test.ts",
+      "package": "accordion",
+      "layer": "contract",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["no-alpine-import"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/attention/e2e/attention.e2e.spec.ts",
+      "package": "attention",
+      "layer": "e2e",
+      "targetEnvironment": "playwright",
+      "source": "path",
+      "signals": ["e2e-path"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/attention/test/attention.test.ts",
+      "package": "attention",
+      "layer": "utility",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["controller-only-import", "magic-harness", "no-alpine-import"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/attention/test/permission-adapter.test.ts",
+      "package": "attention",
+      "layer": "utility",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["no-alpine-import"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/calendar/test/alpine-integration.spec.ts",
+      "package": "calendar",
+      "layer": "integration",
+      "targetEnvironment": "happy-dom",
+      "source": "filename",
+      "signals": ["layer:integration"],
+      "hasPlaywrightSibling": false
+    },
+    {
+      "path": "packages/calendar/test/controller.spec.ts",
+      "package": "calendar",
+      "layer": "controller",
+      "targetEnvironment": "node",
+      "source": "filename",
+      "signals": ["layer:controller"],
+      "hasPlaywrightSibling": false
+    },
+    {
+      "path": "packages/calendar/test/selection.test.ts",
+      "package": "calendar",
+      "layer": "utility",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["no-alpine-import"],
+      "hasPlaywrightSibling": false
+    },
+    {
+      "path": "packages/carousel/e2e/carousel.e2e.spec.ts",
+      "package": "carousel",
+      "layer": "e2e",
+      "targetEnvironment": "playwright",
+      "source": "path",
+      "signals": ["e2e-path"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/carousel/test/alpine.reactivity.test.ts",
+      "package": "carousel",
+      "layer": "integration",
+      "targetEnvironment": "happy-dom",
+      "source": "content",
+      "signals": ["startAlpine", "document", "innerHTML", "x-data", "Embla"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/carousel/test/carousel.test.ts",
+      "package": "carousel",
+      "layer": "utility",
+      "targetEnvironment": "happy-dom",
+      "source": "content",
+      "signals": ["startAlpine", "document", "innerHTML", "Embla"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/carousel/test/encapsulation.test.ts",
+      "package": "carousel",
+      "layer": "contract",
+      "targetEnvironment": "happy-dom",
+      "source": "content",
+      "signals": ["Embla"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/child/e2e/child.e2e.spec.ts",
+      "package": "child",
+      "layer": "e2e",
+      "targetEnvironment": "playwright",
+      "source": "path",
+      "signals": ["e2e-path"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/child/test/child.test.ts",
+      "package": "child",
+      "layer": "utility",
+      "targetEnvironment": "happy-dom",
+      "source": "content",
+      "signals": ["Alpine.start", "document", "innerHTML", "x-data"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/child/test/sidebar.integration.test.ts",
+      "package": "child",
+      "layer": "utility",
+      "targetEnvironment": "happy-dom",
+      "source": "content",
+      "signals": ["Alpine.start", "document", "innerHTML", "x-data"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/collection/test/composition.spec.ts",
+      "package": "collection",
+      "layer": "utility",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["no-alpine-import"],
+      "hasPlaywrightSibling": false
+    },
+    {
+      "path": "packages/collection/test/controller.spec.ts",
+      "package": "collection",
+      "layer": "controller",
+      "targetEnvironment": "node",
+      "source": "filename",
+      "signals": ["layer:controller"],
+      "hasPlaywrightSibling": false
+    },
+    {
+      "path": "packages/collection/test/events.spec.ts",
+      "package": "collection",
+      "layer": "utility",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["no-alpine-import"],
+      "hasPlaywrightSibling": false
+    },
+    {
+      "path": "packages/collection/test/filter.spec.ts",
+      "package": "collection",
+      "layer": "utility",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["no-alpine-import"],
+      "hasPlaywrightSibling": false
+    },
+    {
+      "path": "packages/collection/test/group.spec.ts",
+      "package": "collection",
+      "layer": "utility",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["no-alpine-import"],
+      "hasPlaywrightSibling": false
+    },
+    {
+      "path": "packages/collection/test/navigation.spec.ts",
+      "package": "collection",
+      "layer": "utility",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["no-alpine-import"],
+      "hasPlaywrightSibling": false
+    },
+    {
+      "path": "packages/collection/test/paginate.spec.ts",
+      "package": "collection",
+      "layer": "utility",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["no-alpine-import"],
+      "hasPlaywrightSibling": false
+    },
+    {
+      "path": "packages/collection/test/sort.spec.ts",
+      "package": "collection",
+      "layer": "utility",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["no-alpine-import"],
+      "hasPlaywrightSibling": false
+    },
+    {
+      "path": "packages/collection/test/ssr.spec.ts",
+      "package": "collection",
+      "layer": "contract",
+      "targetEnvironment": "node",
+      "source": "filename",
+      "signals": ["ssr-contract"],
+      "hasPlaywrightSibling": false
+    },
+    {
+      "path": "packages/command/e2e/command.e2e.spec.ts",
+      "package": "command",
+      "layer": "e2e",
+      "targetEnvironment": "playwright",
+      "source": "path",
+      "signals": ["e2e-path"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/command/test/accessibility.test.ts",
+      "package": "command",
+      "layer": "accessibility",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["controller-only-import", "no-alpine-import"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/command/test/alpine-reactivity.test.ts",
+      "package": "command",
+      "layer": "integration",
+      "targetEnvironment": "happy-dom",
+      "source": "content",
+      "signals": ["startAlpine", "document", "innerHTML", "x-data"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/command/test/command.test.ts",
+      "package": "command",
+      "layer": "utility",
+      "targetEnvironment": "happy-dom",
+      "source": "content",
+      "signals": ["startAlpine", "document"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/command/test/contract.test.ts",
+      "package": "command",
+      "layer": "contract",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["no-alpine-import"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/command/test/controller.test.ts",
+      "package": "command",
+      "layer": "controller",
+      "targetEnvironment": "node",
+      "source": "filename",
+      "signals": ["layer:controller"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/command/test/demo-integration.test.ts",
+      "package": "command",
+      "layer": "integration",
+      "targetEnvironment": "happy-dom",
+      "source": "content",
+      "signals": ["Alpine.start", "document", "innerHTML", "x-data", "portal-root"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/command/test/demo-markup.test.ts",
+      "package": "command",
+      "layer": "integration",
+      "targetEnvironment": "happy-dom",
+      "source": "content",
+      "signals": ["Alpine.start", "document", "innerHTML", "x-data", "portal-root"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/command/test/search.test.ts",
+      "package": "command",
+      "layer": "utility",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["no-alpine-import"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/core/e2e/core.e2e.spec.ts",
+      "package": "core",
+      "layer": "e2e",
+      "targetEnvironment": "playwright",
+      "source": "path",
+      "signals": ["e2e-path"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/core/test/alpine-types.spec.ts",
+      "package": "core",
+      "layer": "utility",
+      "targetEnvironment": "node",
+      "source": "filename",
+      "signals": ["layer:utility"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/core/test/base-controller.spec.ts",
+      "package": "core",
+      "layer": "controller",
+      "targetEnvironment": "node",
+      "source": "filename",
+      "signals": ["layer:controller"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/core/test/contract.spec.ts",
+      "package": "core",
+      "layer": "contract",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["no-alpine-import"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/core/test/controller-id.spec.ts",
+      "package": "core",
+      "layer": "controller",
+      "targetEnvironment": "node",
+      "source": "filename",
+      "signals": ["layer:controller"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/core/test/core-primitives.spec.ts",
+      "package": "core",
+      "layer": "utility",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["no-alpine-import"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/core/test/init.spec.ts",
+      "package": "core",
+      "layer": "utility",
+      "targetEnvironment": "node",
+      "source": "filename",
+      "signals": ["layer:utility"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/core/test/lazy-plugin.spec.ts",
+      "package": "core",
+      "layer": "utility",
+      "targetEnvironment": "node",
+      "source": "filename",
+      "signals": ["layer:utility"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/core/test/lifecycle-bridge.spec.ts",
+      "package": "core",
+      "layer": "utility",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["no-alpine-import"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/core/test/load-error.spec.ts",
+      "package": "core",
+      "layer": "utility",
+      "targetEnvironment": "node",
+      "source": "filename",
+      "signals": ["layer:utility"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/core/test/loader.spec.ts",
+      "package": "core",
+      "layer": "utility",
+      "targetEnvironment": "node",
+      "source": "filename",
+      "signals": ["layer:utility"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/core/test/match-media.spec.ts",
+      "package": "core",
+      "layer": "utility",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["no-alpine-import"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/core/test/plugin-registry.spec.ts",
+      "package": "core",
+      "layer": "utility",
+      "targetEnvironment": "node",
+      "source": "filename",
+      "signals": ["layer:utility"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/core/test/singleton.spec.ts",
+      "package": "core",
+      "layer": "utility",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["no-alpine-import"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/dialog/e2e/dialog.e2e.spec.ts",
+      "package": "dialog",
+      "layer": "e2e",
+      "targetEnvironment": "playwright",
+      "source": "path",
+      "signals": ["e2e-path"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/dialog/test/alpine.integration.test.ts",
+      "package": "dialog",
+      "layer": "integration",
+      "targetEnvironment": "happy-dom",
+      "source": "content",
+      "signals": ["Alpine.start", "document", "innerHTML", "x-data"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/dialog/test/alpine.teleport.integration.test.ts",
+      "package": "dialog",
+      "layer": "utility",
+      "targetEnvironment": "happy-dom",
+      "source": "content",
+      "signals": ["startAlpine", "document", "innerHTML", "x-data", "HTMLElement", "portal-root"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/dialog/test/dialog.test.ts",
+      "package": "dialog",
+      "layer": "utility",
+      "targetEnvironment": "happy-dom",
+      "source": "content",
+      "signals": ["startAlpine", "document", "focus"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/dialog/test/encapsulation.test.ts",
+      "package": "dialog",
+      "layer": "contract",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["no-alpine-import"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/env/e2e/env.e2e.spec.ts",
+      "package": "env",
+      "layer": "e2e",
+      "targetEnvironment": "playwright",
+      "source": "path",
+      "signals": ["e2e-path"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/env/test/controller.test.ts",
+      "package": "env",
+      "layer": "controller",
+      "targetEnvironment": "node",
+      "source": "filename",
+      "signals": ["layer:controller"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/env/test/env.test.ts",
+      "package": "env",
+      "layer": "utility",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["magic-harness", "no-alpine-import"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/env/test/platform.test.ts",
+      "package": "env",
+      "layer": "utility",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["no-alpine-import"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/env/test/visibility.test.ts",
+      "package": "env",
+      "layer": "utility",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["no-alpine-import"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/form/test/accessibility.test.ts",
+      "package": "form",
+      "layer": "accessibility",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["no-alpine-import"],
+      "hasPlaywrightSibling": false
+    },
+    {
+      "path": "packages/form/test/async-races.test.ts",
+      "package": "form",
+      "layer": "utility",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["controller-only-import", "no-alpine-import"],
+      "hasPlaywrightSibling": false
+    },
+    {
+      "path": "packages/form/test/controller.test.ts",
+      "package": "form",
+      "layer": "controller",
+      "targetEnvironment": "node",
+      "source": "filename",
+      "signals": ["layer:controller"],
+      "hasPlaywrightSibling": false
+    },
+    {
+      "path": "packages/form/test/create-form.test.ts",
+      "package": "form",
+      "layer": "utility",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["no-alpine-import"],
+      "hasPlaywrightSibling": false
+    },
+    {
+      "path": "packages/form/test/json-api-errors.test.ts",
+      "package": "form",
+      "layer": "utility",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["no-alpine-import"],
+      "hasPlaywrightSibling": false
+    },
+    {
+      "path": "packages/form/test/paths.test.ts",
+      "package": "form",
+      "layer": "utility",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["no-alpine-import"],
+      "hasPlaywrightSibling": false
+    },
+    {
+      "path": "packages/form/test/plugin.test.ts",
+      "package": "form",
+      "layer": "integration",
+      "targetEnvironment": "happy-dom",
+      "source": "content",
+      "signals": ["startAlpine"],
+      "hasPlaywrightSibling": false
+    },
+    {
+      "path": "packages/form/test/ssr.test.ts",
+      "package": "form",
+      "layer": "contract",
+      "targetEnvironment": "node",
+      "source": "filename",
+      "signals": ["ssr-contract"],
+      "hasPlaywrightSibling": false
+    },
+    {
+      "path": "packages/form/test/standard-schema.test.ts",
+      "package": "form",
+      "layer": "utility",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["no-alpine-import"],
+      "hasPlaywrightSibling": false
+    },
+    {
+      "path": "packages/geo/e2e/geo.e2e.spec.ts",
+      "package": "geo",
+      "layer": "e2e",
+      "targetEnvironment": "playwright",
+      "source": "path",
+      "signals": ["e2e-path"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/geo/test/geo.test.ts",
+      "package": "geo",
+      "layer": "utility",
+      "targetEnvironment": "happy-dom",
+      "source": "content",
+      "signals": ["startAlpine"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/geo/test/permission-adapter.test.ts",
+      "package": "geo",
+      "layer": "utility",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["no-alpine-import"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/gesture/e2e/gesture.smoke.spec.ts",
+      "package": "gesture",
+      "layer": "e2e",
+      "targetEnvironment": "playwright",
+      "source": "path",
+      "signals": ["e2e-path"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/gesture/test/controller.test.ts",
+      "package": "gesture",
+      "layer": "controller",
+      "targetEnvironment": "happy-dom",
+      "source": "content",
+      "signals": ["document", "HTMLElement"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/gesture/test/directive.integration.test.ts",
+      "package": "gesture",
+      "layer": "integration",
+      "targetEnvironment": "happy-dom",
+      "source": "content",
+      "signals": ["document", "innerHTML", "x-data", "HTMLElement"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/gesture/test/error.test.ts",
+      "package": "gesture",
+      "layer": "utility",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["no-alpine-import"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/gesture/test/options.test.ts",
+      "package": "gesture",
+      "layer": "utility",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["no-alpine-import"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/gesture/test/plugin.test.ts",
+      "package": "gesture",
+      "layer": "integration",
+      "targetEnvironment": "happy-dom",
+      "source": "content",
+      "signals": ["startAlpine"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/gesture/test/pointer.test.ts",
+      "package": "gesture",
+      "layer": "utility",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["no-alpine-import"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/gesture/test/recognizer.test.ts",
+      "package": "gesture",
+      "layer": "utility",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["no-alpine-import"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/history/e2e/history.e2e.spec.ts",
+      "package": "history",
+      "layer": "e2e",
+      "targetEnvironment": "playwright",
+      "source": "path",
+      "signals": ["e2e-path"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/history/test/controller.test.ts",
+      "package": "history",
+      "layer": "controller",
+      "targetEnvironment": "node",
+      "source": "filename",
+      "signals": ["layer:controller"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/history/test/plugin.test.ts",
+      "package": "history",
+      "layer": "integration",
+      "targetEnvironment": "happy-dom",
+      "source": "content",
+      "signals": ["startAlpine", "document", "innerHTML", "x-data", "HTMLElement"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/json-api/test/json-api.test.ts",
+      "package": "json-api",
+      "layer": "utility",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["no-alpine-import"],
+      "hasPlaywrightSibling": false
+    },
+    {
+      "path": "packages/json-api/test/plugin.test.ts",
+      "package": "json-api",
+      "layer": "integration",
+      "targetEnvironment": "happy-dom",
+      "source": "filename",
+      "signals": ["layer:integration"],
+      "hasPlaywrightSibling": false
+    },
+    {
+      "path": "packages/json-api/test/query.test.ts",
+      "package": "json-api",
+      "layer": "utility",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["query-client", "no-alpine-import"],
+      "hasPlaywrightSibling": false
+    },
+    {
+      "path": "packages/json-api/test/resolve.test.ts",
+      "package": "json-api",
+      "layer": "utility",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["no-alpine-import"],
+      "hasPlaywrightSibling": false
+    },
+    {
+      "path": "packages/keyboard/e2e/keyboard.e2e.spec.ts",
+      "package": "keyboard",
+      "layer": "e2e",
+      "targetEnvironment": "playwright",
+      "source": "path",
+      "signals": ["e2e-path"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/keyboard/test/accessibility.test.ts",
+      "package": "keyboard",
+      "layer": "accessibility",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["controller-only-import", "no-alpine-import"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/keyboard/test/contract.test.ts",
+      "package": "keyboard",
+      "layer": "contract",
+      "targetEnvironment": "happy-dom",
+      "source": "content",
+      "signals": ["startAlpine"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/keyboard/test/controller.test.ts",
+      "package": "keyboard",
+      "layer": "controller",
+      "targetEnvironment": "happy-dom",
+      "source": "content",
+      "signals": ["document"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/keyboard/test/integration.test.ts",
+      "package": "keyboard",
+      "layer": "utility",
+      "targetEnvironment": "happy-dom",
+      "source": "content",
+      "signals": ["document"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/keyboard/test/parse.test.ts",
+      "package": "keyboard",
+      "layer": "utility",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["no-alpine-import"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/lang/e2e/lang.e2e.spec.ts",
+      "package": "lang",
+      "layer": "e2e",
+      "targetEnvironment": "playwright",
+      "source": "path",
+      "signals": ["e2e-path"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/lang/test/helpers.test.ts",
+      "package": "lang",
+      "layer": "utility",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["no-alpine-import"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/lang/test/manager.test.ts",
+      "package": "lang",
+      "layer": "utility",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["no-alpine-import"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/lang/test/plugin.test.ts",
+      "package": "lang",
+      "layer": "integration",
+      "targetEnvironment": "happy-dom",
+      "source": "content",
+      "signals": ["startAlpine", "document", "innerHTML", "x-data"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/lang/test/types.test.ts",
+      "package": "lang",
+      "layer": "utility",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["no-alpine-import"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/media/e2e/media.e2e.spec.ts",
+      "package": "media",
+      "layer": "e2e",
+      "targetEnvironment": "playwright",
+      "source": "path",
+      "signals": ["e2e-path"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/media/test/controller.spec.ts",
+      "package": "media",
+      "layer": "controller",
+      "targetEnvironment": "node",
+      "source": "filename",
+      "signals": ["layer:controller"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/media/test/plugin.spec.ts",
+      "package": "media",
+      "layer": "integration",
+      "targetEnvironment": "happy-dom",
+      "source": "filename",
+      "signals": ["layer:integration"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/menu/e2e/menu.e2e.spec.ts",
+      "package": "menu",
+      "layer": "e2e",
+      "targetEnvironment": "playwright",
+      "source": "path",
+      "signals": ["e2e-path"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/menu/test/alpine.integration.test.ts",
+      "package": "menu",
+      "layer": "integration",
+      "targetEnvironment": "happy-dom",
+      "source": "content",
+      "signals": ["Alpine.start", "startAlpine", "document", "innerHTML", "x-data"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/menu/test/alpine.teleport.integration.test.ts",
+      "package": "menu",
+      "layer": "utility",
+      "targetEnvironment": "happy-dom",
+      "source": "content",
+      "signals": ["Alpine.start", "startAlpine", "document", "innerHTML", "x-data", "portal-root"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/menu/test/encapsulation.test.ts",
+      "package": "menu",
+      "layer": "contract",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["no-alpine-import"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/menu/test/menu.test.ts",
+      "package": "menu",
+      "layer": "utility",
+      "targetEnvironment": "happy-dom",
+      "source": "content",
+      "signals": ["startAlpine", "document"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/notify/e2e/notify.e2e.spec.ts",
+      "package": "notify",
+      "layer": "e2e",
+      "targetEnvironment": "playwright",
+      "source": "path",
+      "signals": ["e2e-path"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/notify/test/notify.test.ts",
+      "package": "notify",
+      "layer": "utility",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["magic-harness", "no-alpine-import"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/notify/test/permission-adapter.test.ts",
+      "package": "notify",
+      "layer": "utility",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["controller-only-import", "no-alpine-import"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/overlay/e2e/overlay.e2e.spec.ts",
+      "package": "overlay",
+      "layer": "e2e",
+      "targetEnvironment": "playwright",
+      "source": "path",
+      "signals": ["e2e-path"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/overlay/test/configure.test.ts",
+      "package": "overlay",
+      "layer": "utility",
+      "targetEnvironment": "happy-dom",
+      "source": "content",
+      "signals": ["document", "innerHTML", "HTMLElement", "portal-root"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/overlay/test/controller.test.ts",
+      "package": "overlay",
+      "layer": "controller",
+      "targetEnvironment": "happy-dom",
+      "source": "content",
+      "signals": ["document", "innerHTML"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/overlay/test/events.test.ts",
+      "package": "overlay",
+      "layer": "utility",
+      "targetEnvironment": "happy-dom",
+      "source": "content",
+      "signals": ["document", "innerHTML"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/overlay/test/magic.test.ts",
+      "package": "overlay",
+      "layer": "integration",
+      "targetEnvironment": "happy-dom",
+      "source": "content",
+      "signals": ["Alpine.start", "document", "innerHTML", "x-data"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/overlay/test/plugin.test.ts",
+      "package": "overlay",
+      "layer": "integration",
+      "targetEnvironment": "happy-dom",
+      "source": "content",
+      "signals": ["Alpine.start", "startAlpine", "document", "innerHTML"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/overlay/test/portal-helper.test.ts",
+      "package": "overlay",
+      "layer": "utility",
+      "targetEnvironment": "happy-dom",
+      "source": "content",
+      "signals": ["document", "innerHTML", "portal-root"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/overlay/test/portal-root.test.ts",
+      "package": "overlay",
+      "layer": "utility",
+      "targetEnvironment": "happy-dom",
+      "source": "content",
+      "signals": ["Alpine.start", "document", "innerHTML", "portal-root"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/overlay/test/queries.test.ts",
+      "package": "overlay",
+      "layer": "utility",
+      "targetEnvironment": "happy-dom",
+      "source": "content",
+      "signals": ["document", "innerHTML"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/overlay/test/register-unregister.test.ts",
+      "package": "overlay",
+      "layer": "utility",
+      "targetEnvironment": "happy-dom",
+      "source": "content",
+      "signals": ["document", "innerHTML"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/overlay/test/soft-peer.test.ts",
+      "package": "overlay",
+      "layer": "utility",
+      "targetEnvironment": "happy-dom",
+      "source": "content",
+      "signals": ["Alpine.start", "document", "innerHTML", "x-data"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/overlay/test/ssr.test.ts",
+      "package": "overlay",
+      "layer": "contract",
+      "targetEnvironment": "node",
+      "source": "filename",
+      "signals": ["ssr-contract"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/overlay/test/stack-order.test.ts",
+      "package": "overlay",
+      "layer": "utility",
+      "targetEnvironment": "happy-dom",
+      "source": "content",
+      "signals": ["document", "innerHTML"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/permissions/e2e/permissions.e2e.spec.ts",
+      "package": "permissions",
+      "layer": "e2e",
+      "targetEnvironment": "playwright",
+      "source": "path",
+      "signals": ["e2e-path"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/permissions/test/contract.test.ts",
+      "package": "permissions",
+      "layer": "contract",
+      "targetEnvironment": "happy-dom",
+      "source": "content",
+      "signals": ["startAlpine", "document", "innerHTML"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/permissions/test/controller.test.ts",
+      "package": "permissions",
+      "layer": "controller",
+      "targetEnvironment": "node",
+      "source": "filename",
+      "signals": ["layer:controller"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/permissions/test/snapshot.test.ts",
+      "package": "permissions",
+      "layer": "utility",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["no-alpine-import"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/query-adapter-alpine/test/adapter.test.ts",
+      "package": "query-adapter-alpine",
+      "layer": "integration",
+      "targetEnvironment": "happy-dom",
+      "source": "content",
+      "signals": ["startAlpine"],
+      "hasPlaywrightSibling": false
+    },
+    {
+      "path": "packages/query-adapter-alpine/test/bridge.test.ts",
+      "package": "query-adapter-alpine",
+      "layer": "utility",
+      "targetEnvironment": "happy-dom",
+      "source": "content",
+      "signals": ["startAlpine"],
+      "hasPlaywrightSibling": false
+    },
+    {
+      "path": "packages/query-adapter-zustand/test/adapter.test.ts",
+      "package": "query-adapter-zustand",
+      "layer": "integration",
+      "targetEnvironment": "happy-dom",
+      "source": "filename",
+      "signals": ["layer:integration"],
+      "hasPlaywrightSibling": false
+    },
+    {
+      "path": "packages/query-kit/e2e/query-kit.e2e.spec.ts",
+      "package": "query-kit",
+      "layer": "e2e",
+      "targetEnvironment": "playwright",
+      "source": "path",
+      "signals": ["e2e-path"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/query-kit/test/adapter-badge.test.ts",
+      "package": "query-kit",
+      "layer": "utility",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["no-alpine-import"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/query-kit/test/adapter.test.ts",
+      "package": "query-kit",
+      "layer": "integration",
+      "targetEnvironment": "happy-dom",
+      "source": "filename",
+      "signals": ["layer:integration"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/query-kit/test/devtools.test.ts",
+      "package": "query-kit",
+      "layer": "integration",
+      "targetEnvironment": "happy-dom",
+      "source": "content",
+      "signals": ["startAlpine", "document", "localStorage", "innerHTML", "HTMLElement"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/query-kit/test/format-duration.test.ts",
+      "package": "query-kit",
+      "layer": "utility",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["no-alpine-import"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/query-kit/test/format-key.test.ts",
+      "package": "query-kit",
+      "layer": "utility",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["no-alpine-import"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/query-kit/test/json-tree.test.ts",
+      "package": "query-kit",
+      "layer": "utility",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["no-alpine-import"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/query-kit/test/kit-with-devtools.test.ts",
+      "package": "query-kit",
+      "layer": "utility",
+      "targetEnvironment": "happy-dom",
+      "source": "content",
+      "signals": ["startAlpine", "document"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/query-kit/test/merge-stores.test.ts",
+      "package": "query-kit",
+      "layer": "utility",
+      "targetEnvironment": "happy-dom",
+      "source": "content",
+      "signals": ["startAlpine"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/query-kit/test/panel-preferences.test.ts",
+      "package": "query-kit",
+      "layer": "utility",
+      "targetEnvironment": "happy-dom",
+      "source": "content",
+      "signals": ["localStorage"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/query-kit/test/panel-resize.test.ts",
+      "package": "query-kit",
+      "layer": "utility",
+      "targetEnvironment": "happy-dom",
+      "source": "content",
+      "signals": ["document"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/query-kit/test/query-kit.test.ts",
+      "package": "query-kit",
+      "layer": "utility",
+      "targetEnvironment": "happy-dom",
+      "source": "content",
+      "signals": ["startAlpine"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/query-kit/test/responsive-layout.test.ts",
+      "package": "query-kit",
+      "layer": "utility",
+      "targetEnvironment": "happy-dom",
+      "source": "content",
+      "signals": ["document"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/query-kit/test/sort.test.ts",
+      "package": "query-kit",
+      "layer": "utility",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["no-alpine-import"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/query-kit/test/style-utils.test.ts",
+      "package": "query-kit",
+      "layer": "utility",
+      "targetEnvironment": "happy-dom",
+      "source": "content",
+      "signals": ["document", "HTMLElement"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/query-kit/test/theme.test.ts",
+      "package": "query-kit",
+      "layer": "utility",
+      "targetEnvironment": "happy-dom",
+      "source": "content",
+      "signals": ["document"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/query-kit/test/toggle-corner.test.ts",
+      "package": "query-kit",
+      "layer": "utility",
+      "targetEnvironment": "happy-dom",
+      "source": "content",
+      "signals": ["localStorage"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/query/test/adapters.test.ts",
+      "package": "query",
+      "layer": "utility",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["query-client", "vanilla-adapter", "no-alpine-import"],
+      "hasPlaywrightSibling": false
+    },
+    {
+      "path": "packages/query/test/cache-coverage.test.ts",
+      "package": "query",
+      "layer": "utility",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["vanilla-adapter", "no-alpine-import"],
+      "hasPlaywrightSibling": false
+    },
+    {
+      "path": "packages/query/test/client.test.ts",
+      "package": "query",
+      "layer": "utility",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["query-client", "no-alpine-import"],
+      "hasPlaywrightSibling": false
+    },
+    {
+      "path": "packages/query/test/devtools.test.ts",
+      "package": "query",
+      "layer": "integration",
+      "targetEnvironment": "happy-dom",
+      "source": "content",
+      "signals": ["startAlpine"],
+      "hasPlaywrightSibling": false
+    },
+    {
+      "path": "packages/query/test/entry-removal.test.ts",
+      "package": "query",
+      "layer": "utility",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["vanilla-adapter", "no-alpine-import"],
+      "hasPlaywrightSibling": false
+    },
+    {
+      "path": "packages/query/test/fetch.test.ts",
+      "package": "query",
+      "layer": "utility",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["no-alpine-import"],
+      "hasPlaywrightSibling": false
+    },
+    {
+      "path": "packages/query/test/inference.test.ts",
+      "package": "query",
+      "layer": "utility",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["query-client", "no-alpine-import"],
+      "hasPlaywrightSibling": false
+    },
+    {
+      "path": "packages/query/test/lifecycle.test.ts",
+      "package": "query",
+      "layer": "utility",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["query-client", "vanilla-adapter", "no-alpine-import"],
+      "hasPlaywrightSibling": false
+    },
+    {
+      "path": "packages/query/test/observer.test.ts",
+      "package": "query",
+      "layer": "utility",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["vanilla-adapter", "no-alpine-import"],
+      "hasPlaywrightSibling": false
+    },
+    {
+      "path": "packages/query/test/query.test.ts",
+      "package": "query",
+      "layer": "utility",
+      "targetEnvironment": "happy-dom",
+      "source": "content",
+      "signals": ["startAlpine"],
+      "hasPlaywrightSibling": false
+    },
+    {
+      "path": "packages/query/test/utils.test.ts",
+      "package": "query",
+      "layer": "utility",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["no-alpine-import"],
+      "hasPlaywrightSibling": false
+    },
+    {
+      "path": "packages/realtime/e2e/realtime.e2e.spec.ts",
+      "package": "realtime",
+      "layer": "e2e",
+      "targetEnvironment": "playwright",
+      "source": "path",
+      "signals": ["e2e-path"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/realtime/test/adapters/SseTransportAdapter.test.ts",
+      "package": "realtime",
+      "layer": "utility",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["no-alpine-import"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/realtime/test/adapters/TransportAdapterFactory.test.ts",
+      "package": "realtime",
+      "layer": "utility",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["no-alpine-import"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/realtime/test/adapters/WsTransportAdapter.test.ts",
+      "package": "realtime",
+      "layer": "utility",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["no-alpine-import"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/realtime/test/alpine/realtimePlugin.test.ts",
+      "package": "realtime",
+      "layer": "integration",
+      "targetEnvironment": "happy-dom",
+      "source": "filename",
+      "signals": ["layer:integration"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/realtime/test/backoff.test.ts",
+      "package": "realtime",
+      "layer": "utility",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["no-alpine-import"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/realtime/test/controller/RealtimeController.test.ts",
+      "package": "realtime",
+      "layer": "controller",
+      "targetEnvironment": "node",
+      "source": "filename",
+      "signals": ["layer:controller"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/realtime/test/heartbeat.test.ts",
+      "package": "realtime",
+      "layer": "utility",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["no-alpine-import"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/realtime/test/reconnect.test.ts",
+      "package": "realtime",
+      "layer": "utility",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["no-alpine-import"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/realtime/test/visibility.test.ts",
+      "package": "realtime",
+      "layer": "utility",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["no-alpine-import"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/scroll/e2e/scroll.e2e.spec.ts",
+      "package": "scroll",
+      "layer": "e2e",
+      "targetEnvironment": "playwright",
+      "source": "path",
+      "signals": ["e2e-path"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/scroll/test/a11y.spec.ts",
+      "package": "scroll",
+      "layer": "accessibility",
+      "targetEnvironment": "jsdom",
+      "source": "content",
+      "signals": ["document"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/scroll/test/alpine-adapters.spec.ts",
+      "package": "scroll",
+      "layer": "utility",
+      "targetEnvironment": "jsdom",
+      "source": "content",
+      "signals": ["document", "IntersectionObserver"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/scroll/test/contract.spec.ts",
+      "package": "scroll",
+      "layer": "contract",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["no-alpine-import"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/scroll/test/controller.spec.ts",
+      "package": "scroll",
+      "layer": "controller",
+      "targetEnvironment": "jsdom",
+      "source": "content",
+      "signals": ["document", "IntersectionObserver"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/scroll/test/coverage-gaps.spec.ts",
+      "package": "scroll",
+      "layer": "utility",
+      "targetEnvironment": "jsdom",
+      "source": "content",
+      "signals": ["document", "innerHTML", "focus"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/scroll/test/criticals-fix.spec.ts",
+      "package": "scroll",
+      "layer": "utility",
+      "targetEnvironment": "jsdom",
+      "source": "content",
+      "signals": ["document", "focus"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/scroll/test/internals.spec.ts",
+      "package": "scroll",
+      "layer": "utility",
+      "targetEnvironment": "jsdom",
+      "source": "content",
+      "signals": ["document", "focus"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/scroll/test/lifecycle.spec.ts",
+      "package": "scroll",
+      "layer": "utility",
+      "targetEnvironment": "jsdom",
+      "source": "content",
+      "signals": ["document"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/scroll/test/mount-init-failure.spec.ts",
+      "package": "scroll",
+      "layer": "utility",
+      "targetEnvironment": "jsdom",
+      "source": "content",
+      "signals": ["document"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/scroll/test/plugin.spec.ts",
+      "package": "scroll",
+      "layer": "integration",
+      "targetEnvironment": "jsdom",
+      "source": "filename",
+      "signals": ["layer:integration"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/scroll/test/ssr.spec.ts",
+      "package": "scroll",
+      "layer": "contract",
+      "targetEnvironment": "node",
+      "source": "filename",
+      "signals": ["ssr-contract"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/selection/e2e/selection.e2e.spec.ts",
+      "package": "selection",
+      "layer": "e2e",
+      "targetEnvironment": "playwright",
+      "source": "path",
+      "signals": ["e2e-path"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/selection/test/accessibility.test.ts",
+      "package": "selection",
+      "layer": "accessibility",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["controller-only-import", "no-alpine-import"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/selection/test/adapter.test.ts",
+      "package": "selection",
+      "layer": "integration",
+      "targetEnvironment": "happy-dom",
+      "source": "filename",
+      "signals": ["layer:integration"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/selection/test/controller.test.ts",
+      "package": "selection",
+      "layer": "controller",
+      "targetEnvironment": "node",
+      "source": "filename",
+      "signals": ["layer:controller"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/selection/test/demo-interaction.test.ts",
+      "package": "selection",
+      "layer": "utility",
+      "targetEnvironment": "happy-dom",
+      "source": "content",
+      "signals": ["startAlpine", "document", "innerHTML", "x-data"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/selection/test/demo-scope.test.ts",
+      "package": "selection",
+      "layer": "utility",
+      "targetEnvironment": "happy-dom",
+      "source": "content",
+      "signals": ["startAlpine", "document", "innerHTML", "x-data"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/selection/test/encapsulation.test.ts",
+      "package": "selection",
+      "layer": "contract",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["no-alpine-import"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/selection/test/lifecycle.test.ts",
+      "package": "selection",
+      "layer": "utility",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["controller-only-import", "no-alpine-import"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/selection/test/navigation.test.ts",
+      "package": "selection",
+      "layer": "utility",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["no-alpine-import"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/selection/test/plugin.test.ts",
+      "package": "selection",
+      "layer": "integration",
+      "targetEnvironment": "happy-dom",
+      "source": "content",
+      "signals": ["startAlpine", "document", "innerHTML"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/selection/test/serialization.test.ts",
+      "package": "selection",
+      "layer": "utility",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["no-alpine-import"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/selection/test/ssr.test.ts",
+      "package": "selection",
+      "layer": "contract",
+      "targetEnvironment": "node",
+      "source": "filename",
+      "signals": ["ssr-contract"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/selection/test/store.test.ts",
+      "package": "selection",
+      "layer": "integration",
+      "targetEnvironment": "happy-dom",
+      "source": "filename",
+      "signals": ["layer:integration"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/selection/test/toggle-range.test.ts",
+      "package": "selection",
+      "layer": "utility",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["controller-only-import", "no-alpine-import"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/selection/test/transitions.test.ts",
+      "package": "selection",
+      "layer": "utility",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["no-alpine-import"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/sidebar/e2e/sidebar.e2e.spec.ts",
+      "package": "sidebar",
+      "layer": "e2e",
+      "targetEnvironment": "playwright",
+      "source": "path",
+      "signals": ["e2e-path"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/sidebar/test/manager.spec.ts",
+      "package": "sidebar",
+      "layer": "utility",
+      "targetEnvironment": "jsdom",
+      "source": "content",
+      "signals": ["localStorage", "matchMedia"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/sidebar/test/persist.spec.ts",
+      "package": "sidebar",
+      "layer": "utility",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["no-alpine-import"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/sidebar/test/plugin.spec.ts",
+      "package": "sidebar",
+      "layer": "integration",
+      "targetEnvironment": "jsdom",
+      "source": "content",
+      "signals": ["x-data"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/sidebar/test/storage.spec.ts",
+      "package": "sidebar",
+      "layer": "utility",
+      "targetEnvironment": "jsdom",
+      "source": "content",
+      "signals": ["localStorage"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/sidebar/test/types.test.ts",
+      "package": "sidebar",
+      "layer": "utility",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["no-alpine-import"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/tabs/e2e/tabs.e2e.spec.ts",
+      "package": "tabs",
+      "layer": "e2e",
+      "targetEnvironment": "playwright",
+      "source": "path",
+      "signals": ["e2e-path"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/tabs/test/tabs.test.ts",
+      "package": "tabs",
+      "layer": "utility",
+      "targetEnvironment": "happy-dom",
+      "source": "content",
+      "signals": ["startAlpine"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/theme/e2e/theme.smoke.spec.ts",
+      "package": "theme",
+      "layer": "e2e",
+      "targetEnvironment": "playwright",
+      "source": "path",
+      "signals": ["e2e-path"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/theme/test/cross-tab.spec.ts",
+      "package": "theme",
+      "layer": "utility",
+      "targetEnvironment": "jsdom",
+      "source": "content",
+      "signals": ["localStorage"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/theme/test/id.spec.ts",
+      "package": "theme",
+      "layer": "utility",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["no-alpine-import"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/theme/test/manager.spec.ts",
+      "package": "theme",
+      "layer": "utility",
+      "targetEnvironment": "jsdom",
+      "source": "content",
+      "signals": ["document", "localStorage", "matchMedia"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/theme/test/plugin.spec.ts",
+      "package": "theme",
+      "layer": "integration",
+      "targetEnvironment": "jsdom",
+      "source": "content",
+      "signals": ["document", "localStorage"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/theme/test/singleton-scope.spec.ts",
+      "package": "theme",
+      "layer": "utility",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["controller-only-import", "no-alpine-import"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/theme/test/ssr.spec.ts",
+      "package": "theme",
+      "layer": "contract",
+      "targetEnvironment": "node",
+      "source": "filename",
+      "signals": ["ssr-contract"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/theme/test/storage.spec.ts",
+      "package": "theme",
+      "layer": "utility",
+      "targetEnvironment": "jsdom",
+      "source": "content",
+      "signals": ["localStorage"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/toast/e2e/toast.e2e.spec.ts",
+      "package": "toast",
+      "layer": "e2e",
+      "targetEnvironment": "playwright",
+      "source": "path",
+      "signals": ["e2e-path"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/toast/test/alpine.integration.test.ts",
+      "package": "toast",
+      "layer": "integration",
+      "targetEnvironment": "happy-dom",
+      "source": "content",
+      "signals": ["Alpine.start", "startAlpine", "document", "innerHTML", "x-data"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/toast/test/inference.test.ts",
+      "package": "toast",
+      "layer": "utility",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["no-alpine-import"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/toast/test/toast.test.ts",
+      "package": "toast",
+      "layer": "utility",
+      "targetEnvironment": "node",
+      "source": "filename",
+      "signals": ["layer:utility"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/toggle/test/controller.spec.ts",
+      "package": "toggle",
+      "layer": "controller",
+      "targetEnvironment": "node",
+      "source": "filename",
+      "signals": ["layer:controller"],
+      "hasPlaywrightSibling": false
+    },
+    {
+      "path": "packages/toggle/test/plugin.spec.ts",
+      "package": "toggle",
+      "layer": "integration",
+      "targetEnvironment": "happy-dom",
+      "source": "filename",
+      "signals": ["layer:integration"],
+      "hasPlaywrightSibling": false
+    },
+    {
+      "path": "packages/tooltip/e2e/tooltip.e2e.spec.ts",
+      "package": "tooltip",
+      "layer": "e2e",
+      "targetEnvironment": "playwright",
+      "source": "path",
+      "signals": ["e2e-path"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/tooltip/test/alpine.anchor.integration.test.ts",
+      "package": "tooltip",
+      "layer": "utility",
+      "targetEnvironment": "happy-dom",
+      "source": "content",
+      "signals": ["Alpine.start", "startAlpine", "document", "innerHTML", "x-data", "portal-root"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/tooltip/test/alpine.reactivity.test.ts",
+      "package": "tooltip",
+      "layer": "integration",
+      "targetEnvironment": "happy-dom",
+      "source": "content",
+      "signals": ["Alpine.start", "document", "innerHTML", "x-data"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/tooltip/test/encapsulation.test.ts",
+      "package": "tooltip",
+      "layer": "contract",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["no-alpine-import"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/tooltip/test/tooltip.test.ts",
+      "package": "tooltip",
+      "layer": "utility",
+      "targetEnvironment": "happy-dom",
+      "source": "content",
+      "signals": ["startAlpine"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/transfer/e2e/transfer.e2e.spec.ts",
+      "package": "transfer",
+      "layer": "e2e",
+      "targetEnvironment": "playwright",
+      "source": "path",
+      "signals": ["e2e-path"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/transfer/test/clipboard.test.ts",
+      "package": "transfer",
+      "layer": "utility",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["magic-harness", "no-alpine-import"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/transfer/test/export.test.ts",
+      "package": "transfer",
+      "layer": "utility",
+      "targetEnvironment": "happy-dom",
+      "source": "content",
+      "signals": ["document"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/transfer/test/inference.test.ts",
+      "package": "transfer",
+      "layer": "utility",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["no-alpine-import"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/transfer/test/share.test.ts",
+      "package": "transfer",
+      "layer": "utility",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["magic-harness"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/transfer/test/transfer.test.ts",
+      "package": "transfer",
+      "layer": "utility",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["magic-harness", "no-alpine-import"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/ui/test/contract.spec.ts",
+      "package": "ui",
+      "layer": "contract",
+      "targetEnvironment": "jsdom",
+      "source": "content",
+      "signals": ["portal-root"],
+      "hasPlaywrightSibling": false
+    },
+    {
+      "path": "packages/ui/test/media.spec.ts",
+      "package": "ui",
+      "layer": "utility",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["no-alpine-import"],
+      "hasPlaywrightSibling": false
+    },
+    {
+      "path": "packages/ui/test/storage.spec.ts",
+      "package": "ui",
+      "layer": "utility",
+      "targetEnvironment": "jsdom",
+      "source": "content",
+      "signals": ["localStorage"],
+      "hasPlaywrightSibling": false
+    },
+    {
+      "path": "packages/virtual/e2e/virtual.e2e.spec.ts",
+      "package": "virtual",
+      "layer": "e2e",
+      "targetEnvironment": "playwright",
+      "source": "path",
+      "signals": ["e2e-path"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/virtual/test/accessibility.test.ts",
+      "package": "virtual",
+      "layer": "accessibility",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["controller-only-import", "no-alpine-import"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/virtual/test/benchmark.test.ts",
+      "package": "virtual",
+      "layer": "utility",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["controller-only-import", "no-alpine-import"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/virtual/test/controller.test.ts",
+      "package": "virtual",
+      "layer": "controller",
+      "targetEnvironment": "node",
+      "source": "filename",
+      "signals": ["layer:controller"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/virtual/test/encapsulation.test.ts",
+      "package": "virtual",
+      "layer": "contract",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["controller-only-import", "no-alpine-import"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/virtual/test/lifecycle.test.ts",
+      "package": "virtual",
+      "layer": "utility",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["controller-only-import", "no-alpine-import"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/virtual/test/observers.test.ts",
+      "package": "virtual",
+      "layer": "utility",
+      "targetEnvironment": "happy-dom",
+      "source": "content",
+      "signals": ["document", "ResizeObserver"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/virtual/test/plugin.test.ts",
+      "package": "virtual",
+      "layer": "integration",
+      "targetEnvironment": "happy-dom",
+      "source": "content",
+      "signals": ["startAlpine", "document", "innerHTML"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/virtual/test/ssr.test.ts",
+      "package": "virtual",
+      "layer": "contract",
+      "targetEnvironment": "node",
+      "source": "filename",
+      "signals": ["ssr-contract"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "test/architecture-boundary.test.ts",
+      "package": "repository",
+      "layer": "utility",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["no-alpine-import"],
+      "hasPlaywrightSibling": false
+    },
+    {
+      "path": "test/architecture-check.test.ts",
+      "package": "repository",
+      "layer": "repository",
+      "targetEnvironment": "happy-dom",
+      "source": "content",
+      "signals": ["document", "window", "localStorage"],
+      "hasPlaywrightSibling": false
+    },
+    {
+      "path": "test/ci-changes.test.ts",
+      "package": "repository",
+      "layer": "utility",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["no-alpine-import"],
+      "hasPlaywrightSibling": false
+    },
+    {
+      "path": "test/e2e-run.test.ts",
+      "package": "repository",
+      "layer": "utility",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["no-alpine-import"],
+      "hasPlaywrightSibling": false
+    },
+    {
+      "path": "test/headless-css-policy.test.ts",
+      "package": "repository",
+      "layer": "utility",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["no-alpine-import"],
+      "hasPlaywrightSibling": false
+    },
+    {
+      "path": "test/pack-check.test.ts",
+      "package": "repository",
+      "layer": "repository",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["no-alpine-import"],
+      "hasPlaywrightSibling": false
+    },
+    {
+      "path": "test/package-catalog-check.test.ts",
+      "package": "repository",
+      "layer": "utility",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["no-alpine-import"],
+      "hasPlaywrightSibling": false
+    },
+    {
+      "path": "test/public-surface-contract.test.ts",
+      "package": "repository",
+      "layer": "utility",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["no-alpine-import"],
+      "hasPlaywrightSibling": false
+    },
+    {
+      "path": "test/repo-check.test.ts",
+      "package": "repository",
+      "layer": "utility",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["no-alpine-import"],
+      "hasPlaywrightSibling": false
+    },
+    {
+      "path": "test/test-environment-inventory.test.ts",
+      "package": "repository",
+      "layer": "utility",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["no-alpine-import"],
+      "hasPlaywrightSibling": false
+    },
+    {
+      "path": "test/tree-shaking-smoke.test.ts",
+      "package": "repository",
+      "layer": "utility",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["no-alpine-import"],
+      "hasPlaywrightSibling": false
+    },
+    {
+      "path": "test/vitest-package-scripts.test.ts",
+      "package": "repository",
+      "layer": "repository",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["no-alpine-import"],
+      "hasPlaywrightSibling": false
+    }
+  ],
+  "overlapByPackage": [
+    {
+      "package": "accordion",
+      "vitestFiles": 4,
+      "e2eFiles": 1,
+      "vitestIntegration": [
+        "packages/accordion/test/alpine.integration.test.ts",
+        "packages/accordion/test/alpine.reactivity.test.ts"
+      ],
+      "e2eSpecs": ["packages/accordion/e2e/accordion.e2e.spec.ts"],
+      "overlap": "complementary",
+      "note": "DOM integration tests validate Alpine registration and reactivity; Playwright validates real focus, layout, and browser APIs. Keep both unless the same public contract is asserted twice."
+    },
+    {
+      "package": "attention",
+      "vitestFiles": 2,
+      "e2eFiles": 1,
+      "vitestIntegration": [],
+      "e2eSpecs": ["packages/attention/e2e/attention.e2e.spec.ts"],
+      "overlap": "complementary",
+      "note": "Browser behavior validated in Playwright; Vitest covers controller/contract layers."
+    },
+    {
+      "package": "calendar",
+      "vitestFiles": 3,
+      "e2eFiles": 0,
+      "vitestIntegration": ["packages/calendar/test/alpine-integration.spec.ts"],
+      "e2eSpecs": [],
+      "overlap": "review",
+      "note": "Simulated DOM integration without Playwright — confirm critical browser behavior is not missing from E2E backlog."
+    },
+    {
+      "package": "carousel",
+      "vitestFiles": 3,
+      "e2eFiles": 1,
+      "vitestIntegration": ["packages/carousel/test/alpine.reactivity.test.ts"],
+      "e2eSpecs": ["packages/carousel/e2e/carousel.e2e.spec.ts"],
+      "overlap": "complementary",
+      "note": "DOM integration tests validate Alpine registration and reactivity; Playwright validates real focus, layout, and browser APIs. Keep both unless the same public contract is asserted twice."
+    },
+    {
+      "package": "child",
+      "vitestFiles": 2,
+      "e2eFiles": 1,
+      "vitestIntegration": [],
+      "e2eSpecs": ["packages/child/e2e/child.e2e.spec.ts"],
+      "overlap": "complementary",
+      "note": "Browser behavior validated in Playwright; Vitest covers controller/contract layers."
+    },
+    {
+      "package": "collection",
+      "vitestFiles": 9,
+      "e2eFiles": 0,
+      "vitestIntegration": [],
+      "e2eSpecs": [],
+      "overlap": "none",
+      "note": "Vitest only — no Playwright project."
+    },
+    {
+      "package": "command",
+      "vitestFiles": 8,
+      "e2eFiles": 1,
+      "vitestIntegration": [
+        "packages/command/test/accessibility.test.ts",
+        "packages/command/test/alpine-reactivity.test.ts",
+        "packages/command/test/demo-integration.test.ts",
+        "packages/command/test/demo-markup.test.ts"
+      ],
+      "e2eSpecs": ["packages/command/e2e/command.e2e.spec.ts"],
+      "overlap": "complementary",
+      "note": "DOM integration tests validate Alpine registration and reactivity; Playwright validates real focus, layout, and browser APIs. Keep both unless the same public contract is asserted twice."
+    },
+    {
+      "package": "core",
+      "vitestFiles": 13,
+      "e2eFiles": 1,
+      "vitestIntegration": [],
+      "e2eSpecs": ["packages/core/e2e/core.e2e.spec.ts"],
+      "overlap": "complementary",
+      "note": "Browser behavior validated in Playwright; Vitest covers controller/contract layers."
+    },
+    {
+      "package": "dialog",
+      "vitestFiles": 4,
+      "e2eFiles": 1,
+      "vitestIntegration": ["packages/dialog/test/alpine.integration.test.ts"],
+      "e2eSpecs": ["packages/dialog/e2e/dialog.e2e.spec.ts"],
+      "overlap": "complementary",
+      "note": "DOM integration tests validate Alpine registration and reactivity; Playwright validates real focus, layout, and browser APIs. Keep both unless the same public contract is asserted twice."
+    },
+    {
+      "package": "env",
+      "vitestFiles": 4,
+      "e2eFiles": 1,
+      "vitestIntegration": [],
+      "e2eSpecs": ["packages/env/e2e/env.e2e.spec.ts"],
+      "overlap": "complementary",
+      "note": "Browser behavior validated in Playwright; Vitest covers controller/contract layers."
+    },
+    {
+      "package": "form",
+      "vitestFiles": 9,
+      "e2eFiles": 0,
+      "vitestIntegration": [
+        "packages/form/test/accessibility.test.ts",
+        "packages/form/test/plugin.test.ts"
+      ],
+      "e2eSpecs": [],
+      "overlap": "review",
+      "note": "Simulated DOM integration without Playwright — confirm critical browser behavior is not missing from E2E backlog."
+    },
+    {
+      "package": "geo",
+      "vitestFiles": 2,
+      "e2eFiles": 1,
+      "vitestIntegration": [],
+      "e2eSpecs": ["packages/geo/e2e/geo.e2e.spec.ts"],
+      "overlap": "complementary",
+      "note": "Browser behavior validated in Playwright; Vitest covers controller/contract layers."
+    },
+    {
+      "package": "gesture",
+      "vitestFiles": 7,
+      "e2eFiles": 1,
+      "vitestIntegration": [
+        "packages/gesture/test/directive.integration.test.ts",
+        "packages/gesture/test/plugin.test.ts"
+      ],
+      "e2eSpecs": ["packages/gesture/e2e/gesture.smoke.spec.ts"],
+      "overlap": "complementary",
+      "note": "DOM integration tests validate Alpine registration and reactivity; Playwright validates real focus, layout, and browser APIs. Keep both unless the same public contract is asserted twice."
+    },
+    {
+      "package": "history",
+      "vitestFiles": 2,
+      "e2eFiles": 1,
+      "vitestIntegration": ["packages/history/test/plugin.test.ts"],
+      "e2eSpecs": ["packages/history/e2e/history.e2e.spec.ts"],
+      "overlap": "complementary",
+      "note": "DOM integration tests validate Alpine registration and reactivity; Playwright validates real focus, layout, and browser APIs. Keep both unless the same public contract is asserted twice."
+    },
+    {
+      "package": "json-api",
+      "vitestFiles": 4,
+      "e2eFiles": 0,
+      "vitestIntegration": ["packages/json-api/test/plugin.test.ts"],
+      "e2eSpecs": [],
+      "overlap": "review",
+      "note": "Simulated DOM integration without Playwright — confirm critical browser behavior is not missing from E2E backlog."
+    },
+    {
+      "package": "keyboard",
+      "vitestFiles": 5,
+      "e2eFiles": 1,
+      "vitestIntegration": ["packages/keyboard/test/accessibility.test.ts"],
+      "e2eSpecs": ["packages/keyboard/e2e/keyboard.e2e.spec.ts"],
+      "overlap": "complementary",
+      "note": "DOM integration tests validate Alpine registration and reactivity; Playwright validates real focus, layout, and browser APIs. Keep both unless the same public contract is asserted twice."
+    },
+    {
+      "package": "lang",
+      "vitestFiles": 4,
+      "e2eFiles": 1,
+      "vitestIntegration": ["packages/lang/test/plugin.test.ts"],
+      "e2eSpecs": ["packages/lang/e2e/lang.e2e.spec.ts"],
+      "overlap": "complementary",
+      "note": "DOM integration tests validate Alpine registration and reactivity; Playwright validates real focus, layout, and browser APIs. Keep both unless the same public contract is asserted twice."
+    },
+    {
+      "package": "media",
+      "vitestFiles": 2,
+      "e2eFiles": 1,
+      "vitestIntegration": ["packages/media/test/plugin.spec.ts"],
+      "e2eSpecs": ["packages/media/e2e/media.e2e.spec.ts"],
+      "overlap": "complementary",
+      "note": "DOM integration tests validate Alpine registration and reactivity; Playwright validates real focus, layout, and browser APIs. Keep both unless the same public contract is asserted twice."
+    },
+    {
+      "package": "menu",
+      "vitestFiles": 4,
+      "e2eFiles": 1,
+      "vitestIntegration": ["packages/menu/test/alpine.integration.test.ts"],
+      "e2eSpecs": ["packages/menu/e2e/menu.e2e.spec.ts"],
+      "overlap": "complementary",
+      "note": "DOM integration tests validate Alpine registration and reactivity; Playwright validates real focus, layout, and browser APIs. Keep both unless the same public contract is asserted twice."
+    },
+    {
+      "package": "notify",
+      "vitestFiles": 2,
+      "e2eFiles": 1,
+      "vitestIntegration": [],
+      "e2eSpecs": ["packages/notify/e2e/notify.e2e.spec.ts"],
+      "overlap": "complementary",
+      "note": "Browser behavior validated in Playwright; Vitest covers controller/contract layers."
+    },
+    {
+      "package": "overlay",
+      "vitestFiles": 12,
+      "e2eFiles": 1,
+      "vitestIntegration": [
+        "packages/overlay/test/magic.test.ts",
+        "packages/overlay/test/plugin.test.ts"
+      ],
+      "e2eSpecs": ["packages/overlay/e2e/overlay.e2e.spec.ts"],
+      "overlap": "complementary",
+      "note": "DOM integration tests validate Alpine registration and reactivity; Playwright validates real focus, layout, and browser APIs. Keep both unless the same public contract is asserted twice."
+    },
+    {
+      "package": "permissions",
+      "vitestFiles": 3,
+      "e2eFiles": 1,
+      "vitestIntegration": [],
+      "e2eSpecs": ["packages/permissions/e2e/permissions.e2e.spec.ts"],
+      "overlap": "complementary",
+      "note": "Browser behavior validated in Playwright; Vitest covers controller/contract layers."
+    },
+    {
+      "package": "query",
+      "vitestFiles": 11,
+      "e2eFiles": 0,
+      "vitestIntegration": ["packages/query/test/devtools.test.ts"],
+      "e2eSpecs": [],
+      "overlap": "review",
+      "note": "Simulated DOM integration without Playwright — confirm critical browser behavior is not missing from E2E backlog."
+    },
+    {
+      "package": "query-adapter-alpine",
+      "vitestFiles": 2,
+      "e2eFiles": 0,
+      "vitestIntegration": ["packages/query-adapter-alpine/test/adapter.test.ts"],
+      "e2eSpecs": [],
+      "overlap": "review",
+      "note": "Simulated DOM integration without Playwright — confirm critical browser behavior is not missing from E2E backlog."
+    },
+    {
+      "package": "query-adapter-zustand",
+      "vitestFiles": 1,
+      "e2eFiles": 0,
+      "vitestIntegration": ["packages/query-adapter-zustand/test/adapter.test.ts"],
+      "e2eSpecs": [],
+      "overlap": "review",
+      "note": "Simulated DOM integration without Playwright — confirm critical browser behavior is not missing from E2E backlog."
+    },
+    {
+      "package": "query-kit",
+      "vitestFiles": 16,
+      "e2eFiles": 1,
+      "vitestIntegration": [
+        "packages/query-kit/test/adapter.test.ts",
+        "packages/query-kit/test/devtools.test.ts"
+      ],
+      "e2eSpecs": ["packages/query-kit/e2e/query-kit.e2e.spec.ts"],
+      "overlap": "complementary",
+      "note": "DOM integration tests validate Alpine registration and reactivity; Playwright validates real focus, layout, and browser APIs. Keep both unless the same public contract is asserted twice."
+    },
+    {
+      "package": "realtime",
+      "vitestFiles": 9,
+      "e2eFiles": 1,
+      "vitestIntegration": ["packages/realtime/test/alpine/realtimePlugin.test.ts"],
+      "e2eSpecs": ["packages/realtime/e2e/realtime.e2e.spec.ts"],
+      "overlap": "complementary",
+      "note": "DOM integration tests validate Alpine registration and reactivity; Playwright validates real focus, layout, and browser APIs. Keep both unless the same public contract is asserted twice."
+    },
+    {
+      "package": "scroll",
+      "vitestFiles": 11,
+      "e2eFiles": 1,
+      "vitestIntegration": [
+        "packages/scroll/test/a11y.spec.ts",
+        "packages/scroll/test/plugin.spec.ts"
+      ],
+      "e2eSpecs": ["packages/scroll/e2e/scroll.e2e.spec.ts"],
+      "overlap": "complementary",
+      "note": "DOM integration tests validate Alpine registration and reactivity; Playwright validates real focus, layout, and browser APIs. Keep both unless the same public contract is asserted twice."
+    },
+    {
+      "package": "selection",
+      "vitestFiles": 14,
+      "e2eFiles": 1,
+      "vitestIntegration": [
+        "packages/selection/test/accessibility.test.ts",
+        "packages/selection/test/adapter.test.ts",
+        "packages/selection/test/plugin.test.ts",
+        "packages/selection/test/store.test.ts"
+      ],
+      "e2eSpecs": ["packages/selection/e2e/selection.e2e.spec.ts"],
+      "overlap": "complementary",
+      "note": "DOM integration tests validate Alpine registration and reactivity; Playwright validates real focus, layout, and browser APIs. Keep both unless the same public contract is asserted twice."
+    },
+    {
+      "package": "sidebar",
+      "vitestFiles": 5,
+      "e2eFiles": 1,
+      "vitestIntegration": ["packages/sidebar/test/plugin.spec.ts"],
+      "e2eSpecs": ["packages/sidebar/e2e/sidebar.e2e.spec.ts"],
+      "overlap": "complementary",
+      "note": "DOM integration tests validate Alpine registration and reactivity; Playwright validates real focus, layout, and browser APIs. Keep both unless the same public contract is asserted twice."
+    },
+    {
+      "package": "tabs",
+      "vitestFiles": 1,
+      "e2eFiles": 1,
+      "vitestIntegration": [],
+      "e2eSpecs": ["packages/tabs/e2e/tabs.e2e.spec.ts"],
+      "overlap": "complementary",
+      "note": "Browser behavior validated in Playwright; Vitest covers controller/contract layers."
+    },
+    {
+      "package": "theme",
+      "vitestFiles": 7,
+      "e2eFiles": 1,
+      "vitestIntegration": ["packages/theme/test/plugin.spec.ts"],
+      "e2eSpecs": ["packages/theme/e2e/theme.smoke.spec.ts"],
+      "overlap": "complementary",
+      "note": "DOM integration tests validate Alpine registration and reactivity; Playwright validates real focus, layout, and browser APIs. Keep both unless the same public contract is asserted twice."
+    },
+    {
+      "package": "toast",
+      "vitestFiles": 3,
+      "e2eFiles": 1,
+      "vitestIntegration": ["packages/toast/test/alpine.integration.test.ts"],
+      "e2eSpecs": ["packages/toast/e2e/toast.e2e.spec.ts"],
+      "overlap": "complementary",
+      "note": "DOM integration tests validate Alpine registration and reactivity; Playwright validates real focus, layout, and browser APIs. Keep both unless the same public contract is asserted twice."
+    },
+    {
+      "package": "toggle",
+      "vitestFiles": 2,
+      "e2eFiles": 0,
+      "vitestIntegration": ["packages/toggle/test/plugin.spec.ts"],
+      "e2eSpecs": [],
+      "overlap": "review",
+      "note": "Simulated DOM integration without Playwright — confirm critical browser behavior is not missing from E2E backlog."
+    },
+    {
+      "package": "tooltip",
+      "vitestFiles": 4,
+      "e2eFiles": 1,
+      "vitestIntegration": ["packages/tooltip/test/alpine.reactivity.test.ts"],
+      "e2eSpecs": ["packages/tooltip/e2e/tooltip.e2e.spec.ts"],
+      "overlap": "complementary",
+      "note": "DOM integration tests validate Alpine registration and reactivity; Playwright validates real focus, layout, and browser APIs. Keep both unless the same public contract is asserted twice."
+    },
+    {
+      "package": "transfer",
+      "vitestFiles": 5,
+      "e2eFiles": 1,
+      "vitestIntegration": [],
+      "e2eSpecs": ["packages/transfer/e2e/transfer.e2e.spec.ts"],
+      "overlap": "complementary",
+      "note": "Browser behavior validated in Playwright; Vitest covers controller/contract layers."
+    },
+    {
+      "package": "ui",
+      "vitestFiles": 3,
+      "e2eFiles": 0,
+      "vitestIntegration": [],
+      "e2eSpecs": [],
+      "overlap": "none",
+      "note": "Vitest only — no Playwright project."
+    },
+    {
+      "package": "virtual",
+      "vitestFiles": 8,
+      "e2eFiles": 1,
+      "vitestIntegration": [
+        "packages/virtual/test/accessibility.test.ts",
+        "packages/virtual/test/plugin.test.ts"
+      ],
+      "e2eSpecs": ["packages/virtual/e2e/virtual.e2e.spec.ts"],
+      "overlap": "complementary",
+      "note": "DOM integration tests validate Alpine registration and reactivity; Playwright validates real focus, layout, and browser APIs. Keep both unless the same public contract is asserted twice."
+    }
+  ]
+}

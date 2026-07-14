@@ -8,10 +8,22 @@ alwaysApply: false
 
 ## Framework
 
-- Vitest + happy-dom (root `vitest.config.ts`)
+- Vitest + happy-dom (root `vitest.config.ts`) — **target:** split into Node and DOM projects ([ALP-131](https://linear.app/ailuracode/issue/ALP-131/split-vitest-into-node-and-simulated-dom-projects))
 - Include pattern: `packages/*/test/**/*.{test,spec}.ts`
 - Playwright E2E (root `e2e/playwright.base.ts`, per-package `playwright.config.ts`)
 - E2E include pattern: `packages/*/e2e/**/*.spec.ts`
+- Inventory: `benchmarks/test-environment-inventory.json` — regenerate with `pnpm run test:classify` (enforced by `repo:check`)
+
+## Environments
+
+| Target | Use for |
+|--------|---------|
+| `node` | Controllers, cache, parsing, utilities, SSR imports, repository checks |
+| `happy-dom` | Alpine stores, directives, magics, simulated DOM (root default today) |
+| `jsdom` | Package-local configs when jsdom APIs are required (`theme`, `sidebar`, `scroll`, `collection`, `ui`) |
+| `playwright` | Real browser focus, layout, keyboard, permissions (`packages/<name>/e2e/`) |
+
+Override per file with `// @vitest-environment node` when the default project is wrong. See `docs/testing-layers.md` for the full taxonomy.
 
 ## Harnesses
 
@@ -29,7 +41,19 @@ alwaysApply: false
 
 ## Layer split
 
-Tests MUST be split by layer:
+Tests MUST be split by layer. Each file has a documented **target environment** in `benchmarks/test-environment-inventory.json`.
+
+| Layer | Filename | Target environment |
+|-------|----------|-------------------|
+| Controller | `controller.*`, `*Controller.test.ts` | `node` (DOM only when exercising events) |
+| Contract | `contract.*`, `encapsulation.*`, `ssr.*` | `node` for SSR; DOM when browser helpers are under test |
+| Integration | `plugin.*`, `alpine.integration.*`, `adapter.*`, `magic.*` | `happy-dom` or package `jsdom` |
+| Accessibility | `accessibility.*`, `a11y.*` | `node` or DOM depending on assertions |
+| Utility | `parse.*`, `utils.*`, `adapters/**` | `node` |
+| Repository | `test/architecture-check.test.ts`, etc. | `node` |
+| E2E | `packages/<name>/e2e/*.spec.ts` | `playwright` |
+
+Responsibilities by layer:
 
 - **Controller tests**: initial state, transitions, invariants, events, options, errors, idempotency, cleanup. Import implementation modules directly (`../src/controller.js`). Alpine MUST NOT be initialized unless strictly required.
 - **Alpine integration tests**: plugin registration, stores, magics, directives, reactivity, `$dispatch`, expression evaluation, cleanup, multiple instances. Use `startAlpine()` for store/directive plugins or `createMagicHarness()` for magic-only plugins.
@@ -60,6 +84,7 @@ Every behavior change MUST include tests. Global thresholds MUST NOT be lowered.
 | Import test helpers without `.js` | `import { startAlpine } from "../../../test/helpers.js"` |
 | Assert Alpine reactivity without real Alpine | Magic harness uses plain objects — no reactivity there |
 | Put E2E specs in Vitest `test/` | Use `packages/<name>/e2e/*.spec.ts` with Playwright |
+| Add/rename tests without updating inventory | Run `pnpm run test:classify` and commit `benchmarks/test-environment-inventory.json` |
 | Use `page.waitForTimeout()` in E2E | Prefer Playwright auto-waiting and `expect(locator)` |
 
 Run `pnpm test` and `pnpm run lint` before finishing.
