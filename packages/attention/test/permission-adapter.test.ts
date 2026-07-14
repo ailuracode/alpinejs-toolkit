@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { createIdlePermissionAdapter, IDLE_PERMISSION_NAME } from "../src/permission-adapter.js";
 
 function createMockCtor(options: { requestPermission?: ReturnType<typeof vi.fn> } = {}) {
@@ -7,21 +7,13 @@ function createMockCtor(options: { requestPermission?: ReturnType<typeof vi.fn> 
   } as unknown as import("../src/types.js").IdleDetectorConstructor;
 }
 
+function stubNavigator(value: unknown): void {
+  vi.stubGlobal("navigator", value);
+}
+
 describe("@ailuracode/alpine-attention/permission-adapter", () => {
-  let originalIsSecureContext: boolean;
-  let originalIdleDetector: unknown;
-  let originalNavigator: unknown;
-
-  beforeEach(() => {
-    originalIsSecureContext = (globalThis as Record<string, unknown>).isSecureContext as boolean;
-    originalIdleDetector = (globalThis as Record<string, unknown>).IdleDetector;
-    originalNavigator = (globalThis as Record<string, unknown>).navigator;
-  });
-
   afterEach(() => {
-    (globalThis as Record<string, unknown>).isSecureContext = originalIsSecureContext;
-    (globalThis as Record<string, unknown>).IdleDetector = originalIdleDetector;
-    (globalThis as Record<string, unknown>).navigator = originalNavigator;
+    vi.unstubAllGlobals();
   });
 
   describe("createIdlePermissionAdapter", () => {
@@ -30,21 +22,21 @@ describe("@ailuracode/alpine-attention/permission-adapter", () => {
     });
 
     it("returns insecure-context when not in secure context", () => {
-      (globalThis as Record<string, unknown>).isSecureContext = false;
+      vi.stubGlobal("isSecureContext", false);
       const adapter = createIdlePermissionAdapter(createMockCtor());
       expect(adapter.getAvailability()).toBe("insecure-context");
       expect(adapter.isSupported()).toBe(false);
     });
 
     it("returns unsupported when no constructor", () => {
-      (globalThis as Record<string, unknown>).isSecureContext = true;
+      vi.stubGlobal("isSecureContext", true);
       const adapter = createIdlePermissionAdapter(null);
       expect(adapter.getAvailability()).toBe("unsupported");
       expect(adapter.isSupported()).toBe(false);
     });
 
     it("returns unsupported when constructor lacks requestPermission", () => {
-      (globalThis as Record<string, unknown>).isSecureContext = true;
+      vi.stubGlobal("isSecureContext", true);
       const adapter = createIdlePermissionAdapter(
         {} as unknown as import("../src/types.js").IdleDetectorConstructor
       );
@@ -52,38 +44,38 @@ describe("@ailuracode/alpine-attention/permission-adapter", () => {
     });
 
     it("returns available when in secure context with constructor", () => {
-      (globalThis as Record<string, unknown>).isSecureContext = true;
+      vi.stubGlobal("isSecureContext", true);
       const adapter = createIdlePermissionAdapter(createMockCtor());
       expect(adapter.getAvailability()).toBe("available");
       expect(adapter.isSupported()).toBe(true);
     });
 
     it("query returns normalized permission state", async () => {
-      (globalThis as Record<string, unknown>).isSecureContext = true;
-      (globalThis as Record<string, unknown>).navigator = {
+      vi.stubGlobal("isSecureContext", true);
+      stubNavigator({
         permissions: {
           query: vi.fn().mockResolvedValue({ state: "granted" }),
         },
-      };
+      });
       const adapter = createIdlePermissionAdapter(createMockCtor());
       const result = await adapter.query();
       expect(result).toBe("granted");
     });
 
     it("query returns unknown for null status", async () => {
-      (globalThis as Record<string, unknown>).isSecureContext = true;
-      (globalThis as Record<string, unknown>).navigator = {
+      vi.stubGlobal("isSecureContext", true);
+      stubNavigator({
         permissions: {
           query: vi.fn().mockResolvedValue({ state: null }),
         },
-      };
+      });
       const adapter = createIdlePermissionAdapter(createMockCtor());
       const result = await adapter.query();
       expect(result).toBe("unknown");
     });
 
     it("request returns denied when not available", async () => {
-      (globalThis as Record<string, unknown>).isSecureContext = false;
+      vi.stubGlobal("isSecureContext", false);
       const adapter = createIdlePermissionAdapter(createMockCtor());
       const result = await adapter.request();
       expect(result.permission).toBe("denied");
@@ -91,7 +83,7 @@ describe("@ailuracode/alpine-attention/permission-adapter", () => {
     });
 
     it("request returns unsupported error when no constructor", async () => {
-      (globalThis as Record<string, unknown>).isSecureContext = true;
+      vi.stubGlobal("isSecureContext", true);
       const adapter = createIdlePermissionAdapter(null);
       const result = await adapter.request();
       expect(result.permission).toBe("denied");
@@ -99,36 +91,36 @@ describe("@ailuracode/alpine-attention/permission-adapter", () => {
     });
 
     it("request returns granted when already granted", async () => {
-      (globalThis as Record<string, unknown>).isSecureContext = true;
-      (globalThis as Record<string, unknown>).navigator = {
+      vi.stubGlobal("isSecureContext", true);
+      stubNavigator({
         permissions: {
           query: vi.fn().mockResolvedValue({ state: "granted" }),
         },
-      };
+      });
       const adapter = createIdlePermissionAdapter(createMockCtor());
       const result = await adapter.request();
       expect(result.permission).toBe("granted");
     });
 
     it("request returns denied when already denied", async () => {
-      (globalThis as Record<string, unknown>).isSecureContext = true;
-      (globalThis as Record<string, unknown>).navigator = {
+      vi.stubGlobal("isSecureContext", true);
+      stubNavigator({
         permissions: {
           query: vi.fn().mockResolvedValue({ state: "denied" }),
         },
-      };
+      });
       const adapter = createIdlePermissionAdapter(createMockCtor());
       const result = await adapter.request();
       expect(result.permission).toBe("denied");
     });
 
     it("request prompts for permission when prompt state", async () => {
-      (globalThis as Record<string, unknown>).isSecureContext = true;
-      (globalThis as Record<string, unknown>).navigator = {
+      vi.stubGlobal("isSecureContext", true);
+      stubNavigator({
         permissions: {
           query: vi.fn().mockResolvedValue({ state: "prompt" }),
         },
-      };
+      });
       const requestPermission = vi.fn().mockResolvedValue("granted");
       const adapter = createIdlePermissionAdapter(createMockCtor({ requestPermission }));
       const result = await adapter.request();
@@ -137,12 +129,12 @@ describe("@ailuracode/alpine-attention/permission-adapter", () => {
     });
 
     it("request handles prompt returning denied", async () => {
-      (globalThis as Record<string, unknown>).isSecureContext = true;
-      (globalThis as Record<string, unknown>).navigator = {
+      vi.stubGlobal("isSecureContext", true);
+      stubNavigator({
         permissions: {
           query: vi.fn().mockResolvedValue({ state: "prompt" }),
         },
-      };
+      });
       const requestPermission = vi.fn().mockResolvedValue("denied");
       const adapter = createIdlePermissionAdapter(createMockCtor({ requestPermission }));
       const result = await adapter.request();
@@ -150,12 +142,12 @@ describe("@ailuracode/alpine-attention/permission-adapter", () => {
     });
 
     it("request handles prompt returning unknown", async () => {
-      (globalThis as Record<string, unknown>).isSecureContext = true;
-      (globalThis as Record<string, unknown>).navigator = {
+      vi.stubGlobal("isSecureContext", true);
+      stubNavigator({
         permissions: {
           query: vi.fn().mockResolvedValue({ state: "prompt" }),
         },
-      };
+      });
       const requestPermission = vi.fn().mockResolvedValue("invalid");
       const adapter = createIdlePermissionAdapter(createMockCtor({ requestPermission }));
       const result = await adapter.request();
@@ -163,12 +155,12 @@ describe("@ailuracode/alpine-attention/permission-adapter", () => {
     });
 
     it("request handles requestPermission throwing", async () => {
-      (globalThis as Record<string, unknown>).isSecureContext = true;
-      (globalThis as Record<string, unknown>).navigator = {
+      vi.stubGlobal("isSecureContext", true);
+      stubNavigator({
         permissions: {
           query: vi.fn().mockResolvedValue({ state: "prompt" }),
         },
-      };
+      });
       const requestPermission = vi.fn().mockRejectedValue(new Error("user denied"));
       const adapter = createIdlePermissionAdapter(createMockCtor({ requestPermission }));
       const result = await adapter.request();
@@ -177,12 +169,12 @@ describe("@ailuracode/alpine-attention/permission-adapter", () => {
     });
 
     it("request handles requestPermission throwing non-Error", async () => {
-      (globalThis as Record<string, unknown>).isSecureContext = true;
-      (globalThis as Record<string, unknown>).navigator = {
+      vi.stubGlobal("isSecureContext", true);
+      stubNavigator({
         permissions: {
           query: vi.fn().mockResolvedValue({ state: "prompt" }),
         },
-      };
+      });
       const requestPermission = vi.fn().mockRejectedValue("string error");
       const adapter = createIdlePermissionAdapter(createMockCtor({ requestPermission }));
       const result = await adapter.request();
@@ -190,23 +182,19 @@ describe("@ailuracode/alpine-attention/permission-adapter", () => {
     });
 
     it("subscribe returns no-op when navigator undefined", async () => {
-      (globalThis as Record<string, unknown>).isSecureContext = true;
-      const originalNavigatorDescriptor = Object.getOwnPropertyDescriptor(globalThis, "navigator");
-      Object.defineProperty(globalThis, "navigator", { value: undefined, configurable: true });
+      vi.stubGlobal("isSecureContext", true);
+      stubNavigator(undefined);
       const adapter = createIdlePermissionAdapter(createMockCtor());
       if (adapter.subscribe) {
         const dispose = await adapter.subscribe(vi.fn());
         expect(dispose).toBeInstanceOf(Function);
         dispose();
       }
-      if (originalNavigatorDescriptor) {
-        Object.defineProperty(globalThis, "navigator", originalNavigatorDescriptor);
-      }
     });
 
     it("subscribe returns no-op when permissions.query missing", async () => {
-      (globalThis as Record<string, unknown>).isSecureContext = true;
-      (globalThis as Record<string, unknown>).navigator = {};
+      vi.stubGlobal("isSecureContext", true);
+      stubNavigator({});
       const adapter = createIdlePermissionAdapter(createMockCtor());
       if (adapter.subscribe) {
         const dispose = await adapter.subscribe(vi.fn());
@@ -215,7 +203,7 @@ describe("@ailuracode/alpine-attention/permission-adapter", () => {
     });
 
     it("subscribe notifies listener and cleans up", async () => {
-      (globalThis as Record<string, unknown>).isSecureContext = true;
+      vi.stubGlobal("isSecureContext", true);
       const listeners: Array<() => void> = [];
       const status = {
         state: "granted",
@@ -229,22 +217,20 @@ describe("@ailuracode/alpine-attention/permission-adapter", () => {
           }
         }),
       };
-      (globalThis as Record<string, unknown>).navigator = {
+      stubNavigator({
         permissions: {
           query: vi.fn().mockResolvedValue(status),
         },
-      };
+      });
       const adapter = createIdlePermissionAdapter(createMockCtor());
       const listener = vi.fn();
       if (adapter.subscribe) {
         const dispose = await adapter.subscribe(listener);
 
-        // Wait for the async notify() to complete
         await vi.waitFor(() => {
           expect(listener).toHaveBeenCalled();
         });
 
-        // Trigger change
         listeners[0]?.();
         await vi.waitFor(() => {
           expect(listener.mock.calls.length).toBeGreaterThan(1);
@@ -256,12 +242,12 @@ describe("@ailuracode/alpine-attention/permission-adapter", () => {
     });
 
     it("subscribe returns no-op when query throws", async () => {
-      (globalThis as Record<string, unknown>).isSecureContext = true;
-      (globalThis as Record<string, unknown>).navigator = {
+      vi.stubGlobal("isSecureContext", true);
+      stubNavigator({
         permissions: {
           query: vi.fn().mockRejectedValue(new Error("not supported")),
         },
-      };
+      });
       const adapter = createIdlePermissionAdapter(createMockCtor());
       if (adapter.subscribe) {
         const dispose = await adapter.subscribe(vi.fn());

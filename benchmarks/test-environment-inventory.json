@@ -1,12 +1,12 @@
 {
-  "generatedAt": "2026-07-14T21:43:16.068Z",
+  "generatedAt": "2026-07-14T22:11:47.966Z",
   "issue": "ALP-130",
   "vitestFileCount": 230,
   "e2eFileCount": 29,
   "environmentCounts": {
-    "node": 137,
+    "node": 136,
     "happy-dom": 75,
-    "jsdom": 18,
+    "jsdom": 19,
     "playwright": 29
   },
   "layerCounts": {
@@ -1607,9 +1607,9 @@
       "path": "packages/scroll/test/contract.spec.ts",
       "package": "scroll",
       "layer": "contract",
-      "targetEnvironment": "node",
-      "source": "content",
-      "signals": ["no-alpine-import"],
+      "targetEnvironment": "jsdom",
+      "source": "vitest-directive",
+      "signals": ["@vitest-environment jsdom"],
       "hasPlaywrightSibling": true
     },
     {

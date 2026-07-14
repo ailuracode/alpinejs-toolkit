@@ -1,5 +1,5 @@
 import { clearAllSingletons } from "@ailuracode/alpine-core";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { createMagicHarness } from "../../../test/mock-alpine.js";
 import envPlugin, {
   type BatteryMagic,
@@ -44,28 +44,36 @@ function createBatteryManager(overrides: Partial<BatteryManagerLike> = {}) {
 }
 
 function mockGetBattery(implementation: () => Promise<BatteryManagerLike>): () => void {
-  const original = (navigator as Navigator & { getBattery?: () => Promise<BatteryManagerLike> })
-    .getBattery;
-
-  Object.defineProperty(navigator, "getBattery", {
-    configurable: true,
-    value: implementation,
+  vi.stubGlobal("navigator", {
+    onLine: true,
+    getBattery: implementation,
   });
 
   return () => {
-    Object.defineProperty(navigator, "getBattery", {
-      configurable: true,
-      value: original,
-      writable: true,
-    });
+    vi.stubGlobal("navigator", { onLine: true });
   };
 }
 
-function countEventCalls(spy: ReturnType<typeof vi.spyOn>, name: string): number {
+function countEventCalls(spy: ReturnType<typeof vi.fn>, name: string): number {
   return spy.mock.calls.filter((call: unknown[]) => call[0] === name).length;
 }
 
+function createEventTargetSpy() {
+  const addEventListener = vi.fn((_type: string, _listener: EventListener) => undefined);
+  const removeEventListener = vi.fn((_type: string, _listener: EventListener) => undefined);
+
+  return {
+    addEventListener,
+    removeEventListener,
+    dispatchEvent: vi.fn(() => true),
+  };
+}
+
 describe("@ailuracode/alpine-env plugin", () => {
+  beforeEach(() => {
+    vi.stubGlobal("navigator", { onLine: true });
+  });
+
   afterEach(() => {
     resetEnvRuntimeForTests();
     clearAllSingletons();
@@ -105,8 +113,10 @@ describe("@ailuracode/alpine-env plugin", () => {
   });
 
   it("does not duplicate active listeners on repeated registration", async () => {
-    const addWindowSpy = vi.spyOn(window, "addEventListener");
-    const addDocumentSpy = vi.spyOn(document, "addEventListener");
+    const windowTarget = createEventTargetSpy();
+    const documentTarget = createEventTargetSpy();
+    vi.stubGlobal("window", windowTarget);
+    vi.stubGlobal("document", documentTarget);
     const manager = createBatteryManager();
     const restore = mockGetBattery(() => Promise.resolve(manager));
 
@@ -117,9 +127,9 @@ describe("@ailuracode/alpine-env plugin", () => {
       expect(manager.listenerCount("chargingchange")).toBe(1);
     });
 
-    expect(countEventCalls(addWindowSpy, "online")).toBe(1);
-    expect(countEventCalls(addWindowSpy, "offline")).toBe(1);
-    expect(countEventCalls(addDocumentSpy, "visibilitychange")).toBe(1);
+    expect(countEventCalls(windowTarget.addEventListener, "online")).toBe(1);
+    expect(countEventCalls(windowTarget.addEventListener, "offline")).toBe(1);
+    expect(countEventCalls(documentTarget.addEventListener, "visibilitychange")).toBe(1);
     expect(manager.listenerCount("chargingchange")).toBe(1);
     expect(manager.listenerCount("levelchange")).toBe(1);
     expect(manager.listenerCount("chargingtimechange")).toBe(1);

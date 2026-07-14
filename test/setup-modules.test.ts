@@ -26,6 +26,7 @@ describe("test setup modules", () => {
     expect(nodeSetup).not.toMatch(/dom-reset/);
     expect(nodeSetup).toMatch(/singleton-cleanup/);
     expect(nodeSetup).toMatch(/fetch-stub/);
+    expect(nodeSetup).toMatch(/node-globals/);
   });
 
   it("loads happy-dom setup without match-media or observer polyfills", () => {

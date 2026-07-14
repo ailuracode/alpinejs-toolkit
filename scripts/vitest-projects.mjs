@@ -1,9 +1,9 @@
 /**
- * @fileoverview Vitest project routing for ALP-131.
+ * @fileoverview Vitest project routing for ALP-131 / ALP-133.
  *
  * Builds Node, happy-dom, and package overlay projects from the live test
- * environment inventory. Files classified as `node` stay on simulated DOM when
- * their source still references browser globals — ALP-133 migrates those tests.
+ * environment inventory. Runtime routing follows classification signals and
+ * only keeps tests on simulated DOM when their source genuinely needs it.
  */
 
 import { readFileSync } from "node:fs";
@@ -11,6 +11,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import {
   buildTestEnvironmentInventory,
+  detectDomSignals,
   packageDefaultEnvironment,
   packageFromPath,
   readVitestEnvironmentDirective,
@@ -35,41 +36,23 @@ const SHARED_TEST_EXCLUDE = [
   "**/test-results/**",
 ];
 
-/** Browser globals and harness imports that require a simulated DOM today. */
-const RUNTIME_DOM_PATTERNS = [
-  /\bdocument\./,
-  /\bwindow\./,
-  /Object\.defineProperty\(\s*document/,
-  /Object\.defineProperty\(\s*window/,
+/**
+ * DOM usage that `detectDomSignals` does not cover but still requires a
+ * simulated browser environment.
+ */
+const SUPPLEMENTAL_DOM_PATTERNS = [
+  /\bdocument\.dispatchEvent\b/,
   /\btoBe\(document\)/,
-  /\blocalStorage\b/,
-  /\bsessionStorage\b/,
-  /\bnavigator\b/,
-  /\bmatchMedia\b/,
-  /\bIntersectionObserver\b/,
-  /\bResizeObserver\b/,
-  /from\s+["']\.\/setup(?:\.js)?["']/,
-  /from\s+["'][^"']*\/test\/setup(?:\.js)?["']/,
-  /x-data|x-init|x-show|x-text|@click/,
+  /\bnew KeyboardEvent\b/,
   /\bstartAlpine\s*\(/,
   /\bAlpine\.start\s*\(/,
-  /\bcreateMagicHarness\s*\(/,
-  /\bcreateTheme\s*\(/,
-  /\bcreateScroll\s*\(/,
-  /\bcreateSidebar\s*\(/,
-  /\bbindScrollElement\s*\(/,
+  /from\s+["']\.\/setup(?:\.js)?["']/,
+  /from\s+["'][^"']*\/test\/setup(?:\.js)?["']/,
   /\bcreateJsonTree\b/,
-  /\.querySelector\b/,
-  /KeyboardEvent/,
-  /\.mount\s*\(/,
-  /\.innerHTML\s*=/,
-  /\bgetBoundingClientRect\s*\(/,
-  /\.focus\s*\(|\.blur\s*\(/,
-  /\bisBrowser\s*\(/,
-  /\bsafeWindow\s*\(/,
-  /globalThis\.window/,
   /\bcreateAdapterBadge\b/,
-  /\bsafeMatchMedia\s*\(/,
+  /\.querySelector\b/,
+  /\bHTMLTextAreaElement\b/,
+  /document\.execCommand/,
   /@floating-ui|computePosition|autoUpdate/,
   /\bEmbla|embla/i,
 ];
@@ -79,15 +62,40 @@ const RUNTIME_DOM_PATTERNS = [
  * @param {import('./test-environment-classify.mjs').ClassifiedTestFile} file
  * @returns {boolean}
  */
-function isSsrShadowTest(content, file) {
+function isSsrNoDomTest(content, file) {
   if (file.layer !== "contract" && !file.path.includes("ssr.")) {
     return false;
   }
 
-  return (
+  const shadowsWithDefineProperty =
     /Object\.defineProperty\(globalThis,\s*["']window["']/.test(content) &&
-    /Object\.defineProperty\(globalThis,\s*["']document["']/.test(content)
-  );
+    /Object\.defineProperty\(globalThis,\s*["']document["']/.test(content);
+  const shadowsWithStubGlobal =
+    /vi\.stubGlobal\(\s*["']window["']/.test(content) &&
+    /vi\.stubGlobal\(\s*["']document["']/.test(content);
+
+  return shadowsWithDefineProperty || shadowsWithStubGlobal;
+}
+
+/**
+ * @param {import('./test-environment-classify.mjs').ClassifiedTestFile} file
+ * @param {string} content
+ * @returns {boolean}
+ */
+function needsSimulatedDom(file, content) {
+  if (file.layer === "integration") {
+    return true;
+  }
+
+  if (isSsrNoDomTest(content, file)) {
+    return false;
+  }
+
+  if (detectDomSignals(content).length > 0) {
+    return true;
+  }
+
+  return SUPPLEMENTAL_DOM_PATTERNS.some((pattern) => pattern.test(content));
 }
 
 /**
@@ -110,28 +118,20 @@ export function resolveVitestRuntimeEnvironment(file, content, packagesDir) {
     return directive;
   }
 
-  if (isSsrShadowTest(content, file)) {
+  const packageEnv = packageDefaultEnvironment(file.package, packagesDir);
+
+  if (!needsSimulatedDom(file, content)) {
+    if (file.targetEnvironment === "jsdom") {
+      return "jsdom";
+    }
     return "node";
   }
 
-  const packageEnv = packageDefaultEnvironment(file.package, packagesDir);
-  const needsDom =
-    file.layer === "integration" ||
-    file.layer === "accessibility" ||
-    RUNTIME_DOM_PATTERNS.some((pattern) => pattern.test(content));
-
-  if (needsDom) {
-    if (packageEnv === "jsdom") {
-      return "jsdom";
-    }
-    return "happy-dom";
-  }
-
-  if (file.targetEnvironment === "jsdom") {
+  if (packageEnv === "jsdom") {
     return "jsdom";
   }
 
-  return "node";
+  return "happy-dom";
 }
 
 /**

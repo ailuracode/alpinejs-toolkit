@@ -61,7 +61,7 @@ describe("vitest projects", () => {
     expect(assigned.size).toBe(buildTestEnvironmentInventory(root).vitestFileCount);
   });
 
-  it("keeps browser-dependent specs on simulated DOM until ALP-133", () => {
+  it("keeps DOM-only specs on simulated DOM when classification requires it", () => {
     const packagesDir = path.join(root, "packages");
     const attentionPath = path.join(root, "packages/attention/test/attention.test.ts");
     const attentionContent = readFileSync(attentionPath, "utf8");
@@ -76,6 +76,21 @@ describe("vitest projects", () => {
     expect(resolveVitestRuntimeEnvironment(attentionFile, attentionContent, packagesDir)).toBe(
       "happy-dom"
     );
+  });
+
+  it("aligns runtime routing with classification for node-eligible specs", () => {
+    const packagesDir = path.join(root, "packages");
+    const adapterPath = path.join(root, "packages/attention/test/permission-adapter.test.ts");
+    const adapterContent = readFileSync(adapterPath, "utf8");
+    const adapterFile = classifyTestFile({
+      filePath: adapterPath,
+      content: adapterContent,
+      root,
+      packagesDir,
+    });
+
+    expect(adapterFile.targetEnvironment).toBe("node");
+    expect(resolveVitestRuntimeEnvironment(adapterFile, adapterContent, packagesDir)).toBe("node");
   });
 
   it("registers package overlay projects in the root workspace", () => {

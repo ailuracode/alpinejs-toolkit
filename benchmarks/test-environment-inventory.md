@@ -4,7 +4,7 @@ Classification for [ALP-130](https://linear.app/ailuracode/issue/ALP-130/classif
 
 ## Summary
 
-- Generated: 2026-07-14T21:43:16.068Z
+- Generated: 2026-07-14T22:11:47.966Z
 - Vitest files: 230
 - Playwright E2E files: 29
 
@@ -12,9 +12,9 @@ Classification for [ALP-130](https://linear.app/ailuracode/issue/ALP-130/classif
 
 | Environment | Files | Role |
 | --- | ---: | --- |
-| `node` | 137 | Controller, cache, parsing, SSR import, repository checks |
+| `node` | 136 | Controller, cache, parsing, SSR import, repository checks |
 | `happy-dom` | 75 | Alpine stores, directives, simulated DOM integration tests |
-| `jsdom` | 18 | Packages that require jsdom APIs (`theme`, `sidebar`, `scroll`, `collection`, `ui`) |
+| `jsdom` | 19 | Packages that require jsdom APIs (`theme`, `sidebar`, `scroll`, `collection`, `ui`) |
 | `playwright` | 29 | Real browser focus, layout, keyboard, permissions |
 
 ### Responsibility layer
@@ -272,7 +272,7 @@ Machine-readable output: `benchmarks/test-environment-inventory.json`.
 | `packages/scroll/e2e/scroll.e2e.spec.ts` | `scroll` | `e2e` | `playwright` | path |
 | `packages/scroll/test/a11y.spec.ts` | `scroll` | `accessibility` | `jsdom` | content |
 | `packages/scroll/test/alpine-adapters.spec.ts` | `scroll` | `utility` | `jsdom` | content |
-| `packages/scroll/test/contract.spec.ts` | `scroll` | `contract` | `node` | content |
+| `packages/scroll/test/contract.spec.ts` | `scroll` | `contract` | `jsdom` | vitest-directive |
 | `packages/scroll/test/controller.spec.ts` | `scroll` | `controller` | `jsdom` | content |
 | `packages/scroll/test/coverage-gaps.spec.ts` | `scroll` | `utility` | `jsdom` | content |
 | `packages/scroll/test/criticals-fix.spec.ts` | `scroll` | `utility` | `jsdom` | content |
