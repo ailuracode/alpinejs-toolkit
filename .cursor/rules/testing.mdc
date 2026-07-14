@@ -30,7 +30,7 @@ Override per file with `// @vitest-environment node` when classification is wron
 - Store plugins: use `startAlpine()` from `test/helpers.ts`.
 - Magic plugins: use `createMagicHarness()` from `test/mock-alpine.ts`.
 - Query cache: use `createQueryClient()` with `vanillaQueryAdapter`.
-- `matchMedia`: use `setMatchMedia()` from `test/setup.ts`.
+- `matchMedia`: use `setMatchMedia()` from `test/setup/match-media.ts` (install via `installGlobalMatchMedia()` or `installWindowMatchMedia()` when needed).
 - Playwright E2E: use `e2e/fixtures.ts` and package `e2e/fixture/` harnesses.
 
 ## Patterns
@@ -80,7 +80,7 @@ Every behavior change MUST include tests. Global thresholds MUST NOT be lowered.
 | Import `src/index.ts` from `controller.spec.ts` | Import `../src/controller.js` and related modules directly |
 | Contract test imports implementation modules only | Contract/integration tests SHOULD import `../src/index.js` |
 | Theme/media tests fail on `matchMedia` | Call `setMatchMedia(query, matches)` from `test/setup.ts` |
-| Tests leak `localStorage` / DOM state | Rely on `test/setup.ts` `beforeEach` — don't skip cleanup |
+| Tests leak `localStorage` / DOM state | Rely on `test/setup/dom-reset.ts` via project setupFiles — don't skip cleanup |
 | Import test helpers without `.js` | `import { startAlpine } from "../../../test/helpers.js"` |
 | Assert Alpine reactivity without real Alpine | Magic harness uses plain objects — no reactivity there |
 | Put E2E specs in Vitest `test/` | Use `packages/<name>/e2e/*.spec.ts` with Playwright |

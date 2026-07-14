@@ -239,7 +239,7 @@ export function buildRootVitestProjects(root = defaultRoot) {
         environment: "happy-dom",
         include: happyDomIncludes,
         exclude: SHARED_TEST_EXCLUDE,
-        setupFiles: [path.join(root, "test/setup.ts")],
+        setupFiles: [path.join(root, "test/setup/happy-dom.ts")],
       },
     },
     ...VITEST_PROJECT_PACKAGES.map((pkg) => `packages/${pkg}`),

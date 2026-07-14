@@ -1,10 +1,10 @@
 {
-  "generatedAt": "2026-07-14T21:28:26.856Z",
+  "generatedAt": "2026-07-14T21:43:16.068Z",
   "issue": "ALP-130",
-  "vitestFileCount": 229,
+  "vitestFileCount": 230,
   "e2eFileCount": 29,
   "environmentCounts": {
-    "node": 136,
+    "node": 137,
     "happy-dom": 75,
     "jsdom": 18,
     "playwright": 29
@@ -14,7 +14,7 @@
     "contract": 20,
     "integration": 34,
     "accessibility": 6,
-    "utility": 148,
+    "utility": 149,
     "repository": 3,
     "e2e": 29
   },
@@ -2298,6 +2298,15 @@
     },
     {
       "path": "test/repo-check.test.ts",
+      "package": "repository",
+      "layer": "utility",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["no-alpine-import"],
+      "hasPlaywrightSibling": false
+    },
+    {
+      "path": "test/setup-modules.test.ts",
       "package": "repository",
       "layer": "utility",
       "targetEnvironment": "node",

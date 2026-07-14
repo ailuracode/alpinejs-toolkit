@@ -18,6 +18,7 @@ export default defineProject({
     globals: true,
     environment: "jsdom",
     include: packageProjectIncludes(packageName, "jsdom"),
+    setupFiles: ["./test/setup.ts"],
     exclude: ["**/e2e/**"],
   },
 });
