@@ -16,6 +16,7 @@ import { existsSync, mkdirSync, readFileSync, rmSync, unlinkSync, writeFileSync 
 import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { resolveMaxWorkers, runtimeSettingsSnapshot } from "./vitest-runtime-settings.mjs";
 
 const root = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(root, "..");
@@ -434,7 +435,7 @@ function buildOptimizationTargets(baseline) {
       area: `workspace ${phase}`,
       metric:
         `${seconds}s median warm ${breakdownEntries[0][0] === phase ? "(largest phase)" : ""}`.trim(),
-      rationale: `Global happy-dom environment and setup apply to every file; ${phase} dominates non-coverage runs.`,
+      rationale: `Project-split workspace; ${phase} phase in warm non-coverage run.`,
       epic: "ALP-127",
     });
   }
@@ -483,7 +484,7 @@ function renderMarkdown(baseline) {
   const lines = [
     "# Vitest performance baseline",
     "",
-    "Baseline for [ALP-128](https://linear.app/ailuracode/issue/ALP-128/establish-a-reproducible-vitest-performance-baseline) under epic [ALP-127](https://linear.app/ailuracode/issue/ALP-127/epic-optimize-vitest-performance-and-test-environment-layering).",
+    "Benchmark for [ALP-128](https://linear.app/ailuracode/issue/ALP-128/establish-a-reproducible-vitest-performance-baseline) with tuning from [ALP-134](https://linear.app/ailuracode/issue/ALP-134/benchmark-and-tune-vitest-execution-settings) under epic [ALP-127](https://linear.app/ailuracode/issue/ALP-127/epic-optimize-vitest-performance-and-test-environment-layering).",
     "",
     "## How to reproduce",
     "",
@@ -498,6 +499,8 @@ function renderMarkdown(baseline) {
     "- `--skip-workspace` — reuse workspace measurements from an existing baseline JSON",
     "- `--output <dir>` — output directory (default: `benchmarks/`)",
     "",
+    "Tuning evidence: `benchmarks/vitest-tuning-decisions.md`. Regression check: `pnpm run test:benchmark:check`.",
+    "",
     "## Environment",
     "",
     `- Captured: ${baseline.capturedAt}`,
@@ -505,7 +508,10 @@ function renderMarkdown(baseline) {
     `- Platform: ${baseline.environment.platform}`,
     `- CPUs: ${baseline.environment.cpuCount}`,
     `- Vitest: ${baseline.environment.vitestVersion}`,
-    `- Default pool: forks (Vitest default)`,
+    `- Projects: ${baseline.environment.projects}`,
+    `- Max workers: ${baseline.environment.maxWorkers}`,
+    `- Node pool: ${baseline.environment.nodePool}`,
+    `- DOM pool: ${baseline.environment.domPool}`,
     "",
     "## Inventory",
     "",
@@ -598,8 +604,9 @@ function main() {
   const inventory = collectInventory();
 
   const baseline = {
-    schemaVersion: 1,
+    schemaVersion: 2,
     issue: "ALP-128",
+    tuningIssue: "ALP-134",
     epic: "ALP-127",
     capturedAt: new Date().toISOString(),
     environment: {
@@ -607,9 +614,16 @@ function main() {
       platform: `${process.platform} ${os.release()}`,
       cpuCount: os.cpus().length,
       vitestVersion: readPackageVersion("vitest"),
-      defaultEnvironment: "happy-dom",
-      setupFiles: ["test/setup.ts"],
+      projects: "node, happy-dom, package overlays",
+      maxWorkers: resolveMaxWorkers(),
+      nodePool: "threads",
+      domPool: "forks",
+      setupFiles: {
+        node: ["test/setup.node.ts"],
+        happyDom: ["test/setup/happy-dom.ts"],
+      },
     },
+    runtime: runtimeSettingsSnapshot(),
     inventory,
     workspace: {},
     packages: [],

@@ -4,17 +4,16 @@ Classification for [ALP-130](https://linear.app/ailuracode/issue/ALP-130/classif
 
 ## Summary
 
-- Generated: 2026-07-14T22:11:47.966Z
-- Vitest files: 230
+- Generated: 2026-07-14T23:15:52.520Z
+- Vitest files: 227
 - Playwright E2E files: 29
 
 ### Target environment (Vitest + E2E)
 
 | Environment | Files | Role |
 | --- | ---: | --- |
-| `node` | 136 | Controller, cache, parsing, SSR import, repository checks |
-| `happy-dom` | 75 | Alpine stores, directives, simulated DOM integration tests |
-| `jsdom` | 19 | Packages that require jsdom APIs (`theme`, `sidebar`, `scroll`, `collection`, `ui`) |
+| `node` | 135 | Controller, cache, parsing, SSR import, repository checks |
+| `happy-dom` | 92 | Alpine stores, directives, simulated DOM integration tests, and package overlay projects |
 | `playwright` | 29 | Real browser focus, layout, keyboard, permissions |
 
 ### Responsibility layer
@@ -23,9 +22,9 @@ Classification for [ALP-130](https://linear.app/ailuracode/issue/ALP-130/classif
 | --- | ---: |
 | `controller` | 18 |
 | `contract` | 20 |
-| `integration` | 34 |
+| `integration` | 32 |
 | `accessibility` | 6 |
-| `utility` | 149 |
+| `utility` | 148 |
 | `repository` | 3 |
 | `e2e` | 29 |
 
@@ -35,7 +34,7 @@ Classification for [ALP-130](https://linear.app/ailuracode/issue/ALP-130/classif
 | --- | --- | --- | --- |
 | Controller | `controller.test.ts`, `controller.spec.ts` | Direct module imports | `node` |
 | Contract | `contract.*`, `encapsulation.*`, `ssr.*` | Package entrypoint or built surface | `node` (SSR) or DOM when validating browser helpers |
-| Integration | `plugin.*`, `alpine.integration.*`, `adapter.*`, `magic.*` | `startAlpine()` or real Alpine | `happy-dom` / package `jsdom` |
+| Integration | `plugin.*`, `alpine.integration.*`, `adapter.*`, `magic.*` | `startAlpine()` or real Alpine | `happy-dom` |
 | Accessibility | `accessibility.*`, `a11y.*` | Controller or Alpine + DOM assertions | `node` when metadata-only; DOM when focus/roles are asserted |
 | Utility | `parse.*`, `utils.*`, adapter unit tests | Direct modules | `node` |
 | Repository | `test/architecture-check.test.ts`, etc. | Node scripts | `node` |
@@ -53,13 +52,13 @@ Machine-readable output: `benchmarks/test-environment-inventory.json`.
 
 | Package | Vitest | E2E | Overlap | Note |
 | --- | ---: | ---: | --- | --- |
-| `accordion` | 4 | 1 | complementary | DOM integration tests validate Alpine registration and reactivity; Playwright validates real focus, layout, and browser APIs. Keep both unless the same public contract is asserted twice. |
+| `accordion` | 3 | 1 | complementary | DOM integration tests validate Alpine registration and reactivity; Playwright validates real focus, layout, and browser APIs. Keep both unless the same public contract is asserted twice. |
 | `attention` | 2 | 1 | complementary | Browser behavior validated in Playwright; Vitest covers controller/contract layers. |
 | `calendar` | 3 | 0 | review | Simulated DOM integration without Playwright — confirm critical browser behavior is not missing from E2E backlog. |
 | `carousel` | 3 | 1 | complementary | DOM integration tests validate Alpine registration and reactivity; Playwright validates real focus, layout, and browser APIs. Keep both unless the same public contract is asserted twice. |
 | `child` | 2 | 1 | complementary | Browser behavior validated in Playwright; Vitest covers controller/contract layers. |
 | `collection` | 9 | 0 | none | Vitest only — no Playwright project. |
-| `command` | 8 | 1 | complementary | DOM integration tests validate Alpine registration and reactivity; Playwright validates real focus, layout, and browser APIs. Keep both unless the same public contract is asserted twice. |
+| `command` | 7 | 1 | complementary | DOM integration tests validate Alpine registration and reactivity; Playwright validates real focus, layout, and browser APIs. Keep both unless the same public contract is asserted twice. |
 | `core` | 13 | 1 | complementary | Browser behavior validated in Playwright; Vitest covers controller/contract layers. |
 | `dialog` | 4 | 1 | complementary | DOM integration tests validate Alpine registration and reactivity; Playwright validates real focus, layout, and browser APIs. Keep both unless the same public contract is asserted twice. |
 | `env` | 4 | 1 | complementary | Browser behavior validated in Playwright; Vitest covers controller/contract layers. |
@@ -104,7 +103,6 @@ Machine-readable output: `benchmarks/test-environment-inventory.json`.
 | `apps/demo/test/playground-navigation.test.ts` | `demo` | `utility` | `node` | content |
 | `packages/accordion/e2e/accordion.e2e.spec.ts` | `accordion` | `e2e` | `playwright` | path |
 | `packages/accordion/test/accordion.test.ts` | `accordion` | `utility` | `happy-dom` | content |
-| `packages/accordion/test/alpine.integration.test.ts` | `accordion` | `integration` | `happy-dom` | content |
 | `packages/accordion/test/alpine.reactivity.test.ts` | `accordion` | `integration` | `happy-dom` | content |
 | `packages/accordion/test/encapsulation.test.ts` | `accordion` | `contract` | `node` | content |
 | `packages/attention/e2e/attention.e2e.spec.ts` | `attention` | `e2e` | `playwright` | path |
@@ -135,7 +133,6 @@ Machine-readable output: `benchmarks/test-environment-inventory.json`.
 | `packages/command/test/command.test.ts` | `command` | `utility` | `happy-dom` | content |
 | `packages/command/test/contract.test.ts` | `command` | `contract` | `node` | content |
 | `packages/command/test/controller.test.ts` | `command` | `controller` | `node` | filename |
-| `packages/command/test/demo-integration.test.ts` | `command` | `integration` | `happy-dom` | content |
 | `packages/command/test/demo-markup.test.ts` | `command` | `integration` | `happy-dom` | content |
 | `packages/command/test/search.test.ts` | `command` | `utility` | `node` | content |
 | `packages/core/e2e/core.e2e.spec.ts` | `core` | `e2e` | `playwright` | path |
@@ -270,16 +267,16 @@ Machine-readable output: `benchmarks/test-environment-inventory.json`.
 | `packages/realtime/test/reconnect.test.ts` | `realtime` | `utility` | `node` | content |
 | `packages/realtime/test/visibility.test.ts` | `realtime` | `utility` | `node` | content |
 | `packages/scroll/e2e/scroll.e2e.spec.ts` | `scroll` | `e2e` | `playwright` | path |
-| `packages/scroll/test/a11y.spec.ts` | `scroll` | `accessibility` | `jsdom` | content |
-| `packages/scroll/test/alpine-adapters.spec.ts` | `scroll` | `utility` | `jsdom` | content |
-| `packages/scroll/test/contract.spec.ts` | `scroll` | `contract` | `jsdom` | vitest-directive |
-| `packages/scroll/test/controller.spec.ts` | `scroll` | `controller` | `jsdom` | content |
-| `packages/scroll/test/coverage-gaps.spec.ts` | `scroll` | `utility` | `jsdom` | content |
-| `packages/scroll/test/criticals-fix.spec.ts` | `scroll` | `utility` | `jsdom` | content |
-| `packages/scroll/test/internals.spec.ts` | `scroll` | `utility` | `jsdom` | content |
-| `packages/scroll/test/lifecycle.spec.ts` | `scroll` | `utility` | `jsdom` | content |
-| `packages/scroll/test/mount-init-failure.spec.ts` | `scroll` | `utility` | `jsdom` | content |
-| `packages/scroll/test/plugin.spec.ts` | `scroll` | `integration` | `jsdom` | filename |
+| `packages/scroll/test/a11y.spec.ts` | `scroll` | `accessibility` | `happy-dom` | content |
+| `packages/scroll/test/alpine-adapters.spec.ts` | `scroll` | `utility` | `happy-dom` | content |
+| `packages/scroll/test/contract.spec.ts` | `scroll` | `contract` | `happy-dom` | vitest-directive |
+| `packages/scroll/test/controller.spec.ts` | `scroll` | `controller` | `happy-dom` | content |
+| `packages/scroll/test/coverage-gaps.spec.ts` | `scroll` | `utility` | `happy-dom` | content |
+| `packages/scroll/test/criticals-fix.spec.ts` | `scroll` | `utility` | `happy-dom` | content |
+| `packages/scroll/test/internals.spec.ts` | `scroll` | `utility` | `happy-dom` | content |
+| `packages/scroll/test/lifecycle.spec.ts` | `scroll` | `utility` | `happy-dom` | content |
+| `packages/scroll/test/mount-init-failure.spec.ts` | `scroll` | `utility` | `happy-dom` | content |
+| `packages/scroll/test/plugin.spec.ts` | `scroll` | `integration` | `happy-dom` | filename |
 | `packages/scroll/test/ssr.spec.ts` | `scroll` | `contract` | `node` | filename |
 | `packages/selection/e2e/selection.e2e.spec.ts` | `selection` | `e2e` | `playwright` | path |
 | `packages/selection/test/accessibility.test.ts` | `selection` | `accessibility` | `node` | content |
@@ -297,21 +294,21 @@ Machine-readable output: `benchmarks/test-environment-inventory.json`.
 | `packages/selection/test/toggle-range.test.ts` | `selection` | `utility` | `node` | content |
 | `packages/selection/test/transitions.test.ts` | `selection` | `utility` | `node` | content |
 | `packages/sidebar/e2e/sidebar.e2e.spec.ts` | `sidebar` | `e2e` | `playwright` | path |
-| `packages/sidebar/test/manager.spec.ts` | `sidebar` | `utility` | `jsdom` | content |
+| `packages/sidebar/test/manager.spec.ts` | `sidebar` | `utility` | `happy-dom` | content |
 | `packages/sidebar/test/persist.spec.ts` | `sidebar` | `utility` | `node` | content |
-| `packages/sidebar/test/plugin.spec.ts` | `sidebar` | `integration` | `jsdom` | content |
-| `packages/sidebar/test/storage.spec.ts` | `sidebar` | `utility` | `jsdom` | content |
+| `packages/sidebar/test/plugin.spec.ts` | `sidebar` | `integration` | `happy-dom` | content |
+| `packages/sidebar/test/storage.spec.ts` | `sidebar` | `utility` | `happy-dom` | content |
 | `packages/sidebar/test/types.test.ts` | `sidebar` | `utility` | `node` | content |
 | `packages/tabs/e2e/tabs.e2e.spec.ts` | `tabs` | `e2e` | `playwright` | path |
 | `packages/tabs/test/tabs.test.ts` | `tabs` | `utility` | `happy-dom` | content |
 | `packages/theme/e2e/theme.smoke.spec.ts` | `theme` | `e2e` | `playwright` | path |
-| `packages/theme/test/cross-tab.spec.ts` | `theme` | `utility` | `jsdom` | content |
+| `packages/theme/test/cross-tab.spec.ts` | `theme` | `utility` | `happy-dom` | content |
 | `packages/theme/test/id.spec.ts` | `theme` | `utility` | `node` | content |
-| `packages/theme/test/manager.spec.ts` | `theme` | `utility` | `jsdom` | content |
-| `packages/theme/test/plugin.spec.ts` | `theme` | `integration` | `jsdom` | content |
+| `packages/theme/test/manager.spec.ts` | `theme` | `utility` | `happy-dom` | content |
+| `packages/theme/test/plugin.spec.ts` | `theme` | `integration` | `happy-dom` | content |
 | `packages/theme/test/singleton-scope.spec.ts` | `theme` | `utility` | `node` | content |
 | `packages/theme/test/ssr.spec.ts` | `theme` | `contract` | `node` | filename |
-| `packages/theme/test/storage.spec.ts` | `theme` | `utility` | `jsdom` | content |
+| `packages/theme/test/storage.spec.ts` | `theme` | `utility` | `happy-dom` | content |
 | `packages/toast/e2e/toast.e2e.spec.ts` | `toast` | `e2e` | `playwright` | path |
 | `packages/toast/test/alpine.integration.test.ts` | `toast` | `integration` | `happy-dom` | content |
 | `packages/toast/test/inference.test.ts` | `toast` | `utility` | `node` | content |
@@ -329,9 +326,9 @@ Machine-readable output: `benchmarks/test-environment-inventory.json`.
 | `packages/transfer/test/inference.test.ts` | `transfer` | `utility` | `node` | content |
 | `packages/transfer/test/share.test.ts` | `transfer` | `utility` | `node` | content |
 | `packages/transfer/test/transfer.test.ts` | `transfer` | `utility` | `node` | content |
-| `packages/ui/test/contract.spec.ts` | `ui` | `contract` | `jsdom` | content |
+| `packages/ui/test/contract.spec.ts` | `ui` | `contract` | `happy-dom` | content |
 | `packages/ui/test/media.spec.ts` | `ui` | `utility` | `node` | content |
-| `packages/ui/test/storage.spec.ts` | `ui` | `utility` | `jsdom` | content |
+| `packages/ui/test/storage.spec.ts` | `ui` | `utility` | `happy-dom` | content |
 | `packages/virtual/e2e/virtual.e2e.spec.ts` | `virtual` | `e2e` | `playwright` | path |
 | `packages/virtual/test/accessibility.test.ts` | `virtual` | `accessibility` | `node` | content |
 | `packages/virtual/test/benchmark.test.ts` | `virtual` | `utility` | `node` | content |
@@ -341,10 +338,8 @@ Machine-readable output: `benchmarks/test-environment-inventory.json`.
 | `packages/virtual/test/observers.test.ts` | `virtual` | `utility` | `happy-dom` | content |
 | `packages/virtual/test/plugin.test.ts` | `virtual` | `integration` | `happy-dom` | content |
 | `packages/virtual/test/ssr.test.ts` | `virtual` | `contract` | `node` | filename |
-| `test/architecture-boundary.test.ts` | `repository` | `utility` | `node` | content |
 | `test/architecture-check.test.ts` | `repository` | `repository` | `happy-dom` | content |
 | `test/ci-changes.test.ts` | `repository` | `utility` | `node` | content |
-| `test/e2e-run.test.ts` | `repository` | `utility` | `node` | content |
 | `test/headless-css-policy.test.ts` | `repository` | `utility` | `node` | content |
 | `test/pack-check.test.ts` | `repository` | `repository` | `node` | content |
 | `test/package-catalog-check.test.ts` | `repository` | `utility` | `node` | content |
@@ -354,5 +349,6 @@ Machine-readable output: `benchmarks/test-environment-inventory.json`.
 | `test/test-environment-inventory.test.ts` | `repository` | `utility` | `node` | content |
 | `test/tree-shaking-smoke.test.ts` | `repository` | `utility` | `node` | content |
 | `test/vitest-package-scripts.test.ts` | `repository` | `repository` | `node` | content |
+| `test/vitest-performance.test.ts` | `repository` | `utility` | `node` | content |
 | `test/vitest-projects.test.ts` | `repository` | `utility` | `node` | content |
 

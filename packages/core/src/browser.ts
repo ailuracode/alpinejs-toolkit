@@ -27,7 +27,7 @@ export function safeMatchMedia(query: string): MediaQueryList | null {
     return null;
   }
 
-  // Some runtimes (older jsdom, embedded webviews, server-side polyfills)
+  // Some runtimes (older DOM implementations, embedded webviews, server-side polyfills)
   // expose `window` without `matchMedia`. Treat that as "browser, but the
   // API isn't there" and return `null` so consumers can degrade gracefully.
   if (!win.matchMedia) {

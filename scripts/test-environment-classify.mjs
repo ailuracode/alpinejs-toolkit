@@ -19,7 +19,7 @@ const E2E_FILE_RE = /\/e2e\/.*\.spec\.[cm]?[jt]sx?$/;
 const VITEST_ENV_DIRECTIVE_RE = /@vitest-environment\s+([a-z-]+)/;
 
 /** @typedef {'controller'|'contract'|'integration'|'accessibility'|'utility'|'repository'|'e2e'} TestLayer */
-/** @typedef {'node'|'happy-dom'|'jsdom'|'playwright'} TargetEnvironment */
+/** @typedef {'node'|'happy-dom'|'playwright'} TargetEnvironment */
 /** @typedef {'filename'|'content'|'package-config'|'vitest-directive'|'path'} ClassificationSource */
 
 /**
@@ -269,7 +269,11 @@ export function readVitestEnvironmentDirective(content) {
     return null;
   }
   const value = match[1];
-  if (value === "node" || value === "happy-dom" || value === "jsdom") {
+  // Legacy `@vitest-environment jsdom` directives map to happy-dom.
+  if (value === "jsdom") {
+    return "happy-dom";
+  }
+  if (value === "node" || value === "happy-dom") {
     return value;
   }
   return null;
@@ -291,9 +295,6 @@ export function packageDefaultEnvironment(pkg, packagesDir) {
 
   const configPath = path.join(packagesDir, pkg, "vitest.config.ts");
   const config = readFileSync(configPath, "utf8");
-  if (config.includes('environment: "jsdom"') || config.includes("environment: 'jsdom'")) {
-    return "jsdom";
-  }
   if (config.includes('environment: "happy-dom"') || config.includes("environment: 'happy-dom'")) {
     return "happy-dom";
   }
@@ -404,15 +405,16 @@ export function classifyTestFile({ filePath, content, root, packagesDir }) {
     };
   }
 
+  const directiveMatch = content.match(VITEST_ENV_DIRECTIVE_RE);
   const directive = readVitestEnvironmentDirective(content);
-  if (directive) {
+  if (directive && directiveMatch) {
     return {
       path: relativePath,
       package: pkg,
       layer,
       targetEnvironment: directive,
       source: "vitest-directive",
-      signals: [`@vitest-environment ${directive}`],
+      signals: [`@vitest-environment ${directiveMatch[1]}`],
       hasPlaywrightSibling: false,
     };
   }
@@ -533,7 +535,7 @@ export function summarizeOverlapByPackage(files) {
  */
 export function buildInventory(files) {
   /** @type {Record<TargetEnvironment, number>} */
-  const environmentCounts = { node: 0, "happy-dom": 0, jsdom: 0, playwright: 0 };
+  const environmentCounts = { node: 0, "happy-dom": 0, playwright: 0 };
   /** @type {Record<TestLayer, number>} */
   const layerCounts = {
     controller: 0,
@@ -594,8 +596,7 @@ export function renderInventoryMarkdown(inventory) {
     "| Environment | Files | Role |",
     "| --- | ---: | --- |",
     `| \`node\` | ${inventory.environmentCounts.node} | Controller, cache, parsing, SSR import, repository checks |`,
-    `| \`happy-dom\` | ${inventory.environmentCounts["happy-dom"]} | Alpine stores, directives, simulated DOM integration tests |`,
-    `| \`jsdom\` | ${inventory.environmentCounts.jsdom} | Packages that require jsdom APIs (\`theme\`, \`sidebar\`, \`scroll\`, \`collection\`, \`ui\`) |`,
+    `| \`happy-dom\` | ${inventory.environmentCounts["happy-dom"]} | Alpine stores, directives, simulated DOM integration tests, and package overlay projects |`,
     `| \`playwright\` | ${inventory.environmentCounts.playwright} | Real browser focus, layout, keyboard, permissions |`,
     "",
     "### Responsibility layer",
@@ -616,7 +617,7 @@ export function renderInventoryMarkdown(inventory) {
     "| --- | --- | --- | --- |",
     "| Controller | `controller.test.ts`, `controller.spec.ts` | Direct module imports | `node` |",
     "| Contract | `contract.*`, `encapsulation.*`, `ssr.*` | Package entrypoint or built surface | `node` (SSR) or DOM when validating browser helpers |",
-    "| Integration | `plugin.*`, `alpine.integration.*`, `adapter.*`, `magic.*` | `startAlpine()` or real Alpine | `happy-dom` / package `jsdom` |",
+    "| Integration | `plugin.*`, `alpine.integration.*`, `adapter.*`, `magic.*` | `startAlpine()` or real Alpine | `happy-dom` |",
     "| Accessibility | `accessibility.*`, `a11y.*` | Controller or Alpine + DOM assertions | `node` when metadata-only; DOM when focus/roles are asserted |",
     "| Utility | `parse.*`, `utils.*`, adapter unit tests | Direct modules | `node` |",
     "| Repository | `test/architecture-check.test.ts`, etc. | Node scripts | `node` |",
@@ -807,7 +808,7 @@ function main() {
     `Classified ${inventory.vitestFileCount} Vitest files and ${inventory.e2eFileCount} Playwright files.\n`
   );
   process.stdout.write(
-    `  node=${inventory.environmentCounts.node} happy-dom=${inventory.environmentCounts["happy-dom"]} jsdom=${inventory.environmentCounts.jsdom} playwright=${inventory.environmentCounts.playwright}\n`
+    `  node=${inventory.environmentCounts.node} happy-dom=${inventory.environmentCounts["happy-dom"]} playwright=${inventory.environmentCounts.playwright}\n`
   );
 
   if (args.write) {

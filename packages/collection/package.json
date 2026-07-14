@@ -53,7 +53,6 @@
     "@ailuracode/alpine-core": "workspace:*",
     "@types/node": "^26.1.0",
     "@vitest/coverage-v8": "^4.1.9",
-    "jsdom": "^29.1.1",
     "tsup": "^8.5.0"
   },
   "toolkit": {

@@ -20,8 +20,7 @@ pnpm run test:classify
 | Environment | Runner | When to use |
 |-------------|--------|-------------|
 | **`node`** | Vitest | Controller state machines, cache logic, parsing, utilities, SSR-safe imports, repository checks |
-| **`happy-dom`** | Vitest | Alpine stores, magics, directives, and DOM APIs that happy-dom models reliably |
-| **`jsdom`** | Vitest | Packages that depend on jsdom-specific APIs (`localStorage` listeners, `scrollIntoView`, etc.) — see package `vitest.config.ts` |
+| **`happy-dom`** | Vitest | Alpine stores, magics, directives, simulated DOM integration tests, and package overlay projects |
 | **`playwright`** | Playwright | Real focus, keyboard routing, layout, scroll locking, permissions, and browser-only APIs |
 
 **Rule:** pick the cheapest environment that can validate the behavior. Controller logic that never touches DOM belongs in `node` even if it currently runs under happy-dom.
@@ -72,19 +71,35 @@ Root `vitest.config.ts` runs a workspace with explicit projects ([ALP-131](https
 |---------|-------------|-------|
 | `node` | Node | Controller, utility, contract, SSR, and repository tests |
 | `happy-dom` | happy-dom | Simulated DOM integration tests without package-local setup |
-| `<package>-jsdom` | jsdom | jsdom-only files in `theme`, `sidebar`, `scroll`, `collection`, `ui` |
-| `<package>-happy-dom` | happy-dom | happy-dom overlay files in `media`, `realtime` |
+| `<package>-happy-dom` | happy-dom | Package overlay files with optional local setup (`theme`, `sidebar`, `scroll`, `collection`, `ui`, `media`, `realtime`) |
 
 Routing is generated from the live inventory via `scripts/vitest-projects.mjs`. Package `vitest.config.ts` files contribute overlay projects to the root workspace; package `test` scripts scope through `vitest run --config ../../vitest.config.ts packages/<name>`.
 
+## Runtime tuning (ALP-134)
+
+Per-project pool settings are centralized in `scripts/vitest-runtime-settings.mjs`:
+
+| Project kind | Pool | Workers | Isolation |
+|--------------|------|---------|-----------|
+| `node` | `threads` | `max(2, min(6, floor(cpus/2)))` | enabled |
+| DOM overlays | `forks` | same cap | enabled |
+
+Override workers with `VITEST_MAX_WORKERS`. Evidence and rejected options: [`benchmarks/vitest-tuning-decisions.md`](../benchmarks/vitest-tuning-decisions.md).
+
+## Performance regression checks (ALP-135)
+
+- Baseline: `pnpm run test:benchmark` → `benchmarks/vitest-baseline.json`
+- Compare: `pnpm run test:benchmark:check` (warn at 1.25× wall, fail at 1.50× or test failures)
+- Scheduled CI uploads `benchmarks/vitest-performance-report.json` on Monday full runs
+- Affected PR CI runs `vitest run --config vitest.config.ts <package-test-dirs>` so project routing stays explicit
+
 ## Package-local Vitest configs
 
-These packages contribute jsdom or happy-dom overlay projects to the root workspace:
+These packages contribute happy-dom overlay projects to the root workspace:
 
 | Package | Environment | Reason |
 |---------|-------------|--------|
-| `theme`, `sidebar`, `scroll`, `collection`, `ui` | `jsdom` | Storage, scroll, or layout APIs |
-| `media`, `realtime` | `happy-dom` | Scoped setup while keeping happy-dom |
+| `theme`, `sidebar`, `scroll`, `collection`, `ui`, `media`, `realtime` | `happy-dom` | Package-local setup (matchMedia, scroll polyfills, storage resets) |
 
 Individual files inside those packages may still target `node` when they do not touch DOM (see inventory `targetEnvironment` column).
 
@@ -92,3 +107,5 @@ Individual files inside those packages may still target `node` when they do not 
 
 - [ALP-131](https://linear.app/ailuracode/issue/ALP-131/split-vitest-into-node-and-simulated-dom-projects) — split Vitest projects by environment
 - [ALP-133](https://linear.app/ailuracode/issue/ALP-133/move-tests-to-the-cheapest-correct-environment) — migrate tests to their target environment
+- [ALP-134](https://linear.app/ailuracode/issue/ALP-134/benchmark-and-tune-vitest-execution-settings) — pool and worker tuning
+- [ALP-135](https://linear.app/ailuracode/issue/ALP-135/add-vitest-performance-regression-checks-and-finalize-ci-integration) — regression checks and CI reporting

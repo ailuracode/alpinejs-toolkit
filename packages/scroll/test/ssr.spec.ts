@@ -3,7 +3,7 @@
  *
  * Stubs `window` and `document` to `undefined` per-test and verifies
  * the controller's safe-mode path. After each test, the stubs are
- * restored so the next case sees a real jsdom environment.
+ * restored so the next case sees a real happy-dom environment.
  */
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";

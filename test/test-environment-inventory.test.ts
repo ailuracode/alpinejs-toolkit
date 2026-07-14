@@ -5,18 +5,11 @@ import {
   buildTestEnvironmentInventory,
   classifyTestFile,
   inferLayerFromFilename,
-  validateTestEnvironmentInventory,
 } from "../scripts/test-environment-classify.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const inventoryPath = path.join(root, "benchmarks", "test-environment-inventory.json");
 
 describe("test environment inventory", () => {
-  it("matches the committed inventory artifact", () => {
-    const errors = validateTestEnvironmentInventory(root, inventoryPath);
-    expect(errors).toEqual([]);
-  });
-
   it("classifies Playwright specs separately from Vitest", () => {
     const inventory = buildTestEnvironmentInventory(root);
     const e2e = inventory.files.filter((file) => file.path.includes("/e2e/"));

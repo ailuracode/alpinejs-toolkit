@@ -1,6 +1,6 @@
 /**
  * SSR safety — verify the controller can be constructed and used without any
- * browser API. We use jsdom in the test runner so this exercises the
+ * browser API. We use happy-dom in the test runner so this exercises the
  * "no DOM access at construction" invariant indirectly: every code path that
  * builds a controller succeeds without registering a tear-down or starting a
  * timer.

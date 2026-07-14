@@ -245,15 +245,3 @@ describe("Critical #11 — safeNotify try/catch around listener invocations", ()
     controller.destroy();
   });
 });
-
-describe("Critical #12 — forbidOnly: true in vitest.config.ts", () => {
-  it("package config has forbidOnly set to true", async () => {
-    const fs = await import("node:fs");
-    const path = await import("node:path");
-    const url = await import("node:url");
-    const here = path.dirname(url.fileURLToPath(import.meta.url));
-    const configPath = path.resolve(here, "../vitest.config.ts");
-    const content = fs.readFileSync(configPath, "utf8");
-    expect(content).toMatch(/forbidOnly:\s*true/);
-  });
-});

@@ -94,7 +94,7 @@ export function attachScrollObserver(options: ScrollObserverOptions = {}): Unsub
       typeof win.requestAnimationFrame === "function"
         ? win.requestAnimationFrame.bind(win)
         : (cb: FrameRequestCallback): number => {
-            // Fallback when rAF is unavailable (older jsdom, Node).
+            // Fallback when rAF is unavailable (older DOM runtimes, Node).
             return setTimeout(() => cb(performance.now()), 16) as unknown as number;
           };
     raf(() => flush());

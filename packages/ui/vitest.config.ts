@@ -1,23 +1,31 @@
 /**
  * Per-package Vitest project for `@ailuracode/alpine-ui`.
  *
- * jsdom files for this package are routed here from the root workspace.
+ * happy-dom integration specs run here with package-local setup.
  * Node-classified specs run in the root `node` project instead.
  */
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { defineProject } from "vitest/config";
-import { packageProjectIncludes } from "../../scripts/vitest-projects.mjs";
+import { packageProjectIncludesRelative } from "../../scripts/vitest-projects.mjs";
+import { buildVitestAliases } from "../../scripts/vitest-resolve.mjs";
+import { domProjectRuntimeSettings } from "../../scripts/vitest-runtime-settings.mjs";
 
 const packageDir = path.dirname(fileURLToPath(import.meta.url));
 const packageName = path.basename(packageDir);
+const root = path.resolve(packageDir, "../..");
 
 export default defineProject({
+  extends: true,
+  resolve: {
+    alias: buildVitestAliases(root),
+  },
   test: {
-    name: `${packageName}-jsdom`,
+    ...domProjectRuntimeSettings(),
+    name: `${packageName}-happy-dom`,
     globals: true,
-    environment: "jsdom",
-    include: packageProjectIncludes(packageName, "jsdom"),
+    environment: "happy-dom",
+    include: packageProjectIncludesRelative(packageName, "happy-dom"),
     setupFiles: ["./test/setup.ts"],
     exclude: ["**/e2e/**"],
   },

@@ -2,7 +2,7 @@
  * Vitest setup for `@ailuracode/alpine-theme`.
  *
  * Installs a controllable `matchMedia` polyfill on `window` so the
- * system observer can be exercised deterministically. jsdom does NOT
+ * system observer can be exercised deterministically. happy-dom does NOT
  * ship `matchMedia`; the package must work under both the real API and
  * the test stub.
  *

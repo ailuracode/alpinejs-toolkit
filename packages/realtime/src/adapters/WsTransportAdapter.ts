@@ -362,7 +362,7 @@ export class WsTransportAdapter extends BaseEventTargetAdapter {
 
 /**
  * Resolve the global `WebSocket` constructor when available.
- * Returns `undefined` in Node, jsdom-less test environments,
+ * Returns `undefined` in Node, DOM-less test environments,
  * and any other SSR context.
  */
 function globalWebSocketCtor(): WsCtor | undefined {

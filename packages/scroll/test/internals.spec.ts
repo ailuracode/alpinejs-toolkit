@@ -110,7 +110,7 @@ describe("metrics", () => {
 });
 
 describe("util", () => {
-  it("isBrowserWithMedia returns true in jsdom + matchMedia stub", () => {
+  it("isBrowserWithMedia returns true in happy-dom + matchMedia stub", () => {
     expect(isBrowserWithMedia()).toBe(true);
   });
 
@@ -154,7 +154,7 @@ describe("scrollbar-gap", () => {
 
   it("applyScrollbarGap sets the CSS variable", () => {
     applyScrollbarGap();
-    // jsdom doesn't render a scrollbar; the variable should still
+    // happy-dom doesn't render a scrollbar; the variable should still
     // be set to a numeric pixel value (or empty when the measurement
     // is 0 — either way the function must not throw).
     expect(() => applyScrollbarGap()).not.toThrow();

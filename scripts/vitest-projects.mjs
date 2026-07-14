@@ -16,17 +16,26 @@ import {
   packageFromPath,
   readVitestEnvironmentDirective,
 } from "./test-environment-classify.mjs";
+import {
+  domProjectRuntimeSettings,
+  nodeProjectRuntimeSettings,
+} from "./vitest-runtime-settings.mjs";
 
 const defaultRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
-/** Packages that require jsdom APIs and own a root Vitest project. */
-export const JSDOM_PROJECT_PACKAGES = ["collection", "scroll", "sidebar", "theme", "ui"];
-
-/** Packages with happy-dom overlay projects and package-local setup. */
-export const HAPPY_DOM_PROJECT_PACKAGES = ["media", "realtime"];
+/** Packages with happy-dom overlay projects and optional package-local setup. */
+export const HAPPY_DOM_PROJECT_PACKAGES = [
+  "collection",
+  "scroll",
+  "sidebar",
+  "theme",
+  "ui",
+  "media",
+  "realtime",
+];
 
 /** Every package that contributes a `defineProject` config to the root workspace. */
-export const VITEST_PROJECT_PACKAGES = [...JSDOM_PROJECT_PACKAGES, ...HAPPY_DOM_PROJECT_PACKAGES];
+export const VITEST_PROJECT_PACKAGES = HAPPY_DOM_PROJECT_PACKAGES;
 
 const SHARED_TEST_EXCLUDE = [
   "**/node_modules/**",
@@ -110,7 +119,7 @@ function vitestInventoryFiles(root) {
  * @param {import('./test-environment-classify.mjs').ClassifiedTestFile} file
  * @param {string} content
  * @param {string} packagesDir
- * @returns {"node"|"happy-dom"|"jsdom"}
+ * @returns {"node"|"happy-dom"}
  */
 export function resolveVitestRuntimeEnvironment(file, content, packagesDir) {
   const directive = readVitestEnvironmentDirective(content);
@@ -121,14 +130,11 @@ export function resolveVitestRuntimeEnvironment(file, content, packagesDir) {
   const packageEnv = packageDefaultEnvironment(file.package, packagesDir);
 
   if (!needsSimulatedDom(file, content)) {
-    if (file.targetEnvironment === "jsdom") {
-      return "jsdom";
-    }
     return "node";
   }
 
-  if (packageEnv === "jsdom") {
-    return "jsdom";
+  if (packageEnv === "happy-dom") {
+    return "happy-dom";
   }
 
   return "happy-dom";
@@ -137,10 +143,10 @@ export function resolveVitestRuntimeEnvironment(file, content, packagesDir) {
 /**
  * @param {string} root
  * @param {string} packagesDir
- * @returns {Map<string, "node"|"happy-dom"|"jsdom">}
+ * @returns {Map<string, "node"|"happy-dom">}
  */
 export function buildVitestRuntimeEnvironmentMap(root, packagesDir) {
-  /** @type {Map<string, "node"|"happy-dom"|"jsdom">} */
+  /** @type {Map<string, "node"|"happy-dom">} */
   const routing = new Map();
 
   for (const file of vitestInventoryFiles(root)) {
@@ -153,8 +159,8 @@ export function buildVitestRuntimeEnvironmentMap(root, packagesDir) {
 }
 
 /**
- * @param {Map<string, "node"|"happy-dom"|"jsdom">} routing
- * @param {"node"|"happy-dom"|"jsdom"} environment
+ * @param {Map<string, "node"|"happy-dom">} routing
+ * @param {"node"|"happy-dom"} environment
  * @returns {string[]}
  */
 function includesForEnvironment(routing, environment) {
@@ -165,7 +171,7 @@ function includesForEnvironment(routing, environment) {
 
 /**
  * @param {string} root
- * @param {"node"|"happy-dom"|"jsdom"} environment
+ * @param {"node"|"happy-dom"} environment
  * @returns {string[]}
  */
 export function vitestIncludesForEnvironment(root, environment) {
@@ -176,7 +182,7 @@ export function vitestIncludesForEnvironment(root, environment) {
 
 /**
  * @param {string} pkg
- * @param {"node"|"happy-dom"|"jsdom"} environment
+ * @param {"node"|"happy-dom"} environment
  * @param {string} [root]
  * @returns {string[]}
  */
@@ -194,19 +200,33 @@ export function packageProjectIncludes(pkg, environment, root = defaultRoot) {
 }
 
 /**
+ * Package overlay configs resolve `include` relative to `packages/<pkg>/`.
+ *
+ * @param {string} pkg
+ * @param {"node"|"happy-dom"} environment
+ * @param {string} [root]
+ * @returns {string[]}
+ */
+export function packageProjectIncludesRelative(pkg, environment, root = defaultRoot) {
+  const prefix = `packages/${pkg}/`;
+
+  return packageProjectIncludes(pkg, environment, root).map((filePath) => {
+    if (!filePath.startsWith(prefix)) {
+      throw new Error(`Expected ${filePath} to start with ${prefix}`);
+    }
+
+    return filePath.slice(prefix.length);
+  });
+}
+
+/**
  * @param {string} filePath
  * @param {string} root
  * @returns {boolean}
  */
 function isPackageOverlayFile(filePath, root) {
   const pkg = packageFromPath(path.join(root, filePath), root);
-  if (JSDOM_PROJECT_PACKAGES.includes(pkg)) {
-    return true;
-  }
-  if (HAPPY_DOM_PROJECT_PACKAGES.includes(pkg)) {
-    return true;
-  }
-  return false;
+  return HAPPY_DOM_PROJECT_PACKAGES.includes(pkg);
 }
 
 /**
@@ -225,6 +245,7 @@ export function buildRootVitestProjects(root = defaultRoot) {
     {
       extends: true,
       test: {
+        ...nodeProjectRuntimeSettings(),
         name: "node",
         environment: "node",
         include: nodeIncludes,
@@ -235,6 +256,7 @@ export function buildRootVitestProjects(root = defaultRoot) {
     {
       extends: true,
       test: {
+        ...domProjectRuntimeSettings(),
         name: "happy-dom",
         environment: "happy-dom",
         include: happyDomIncludes,

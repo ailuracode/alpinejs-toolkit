@@ -4,7 +4,7 @@
  * Wraps the `document.visibilitychange` event so the realtime
  * controller can pause / resume its transport when the browser tab
  * becomes hidden. The `document` is injected so the manager stays
- * SSR-safe and platform-agnostic (Node, jsdom, happy-dom).
+ * SSR-safe and platform-agnostic (Node, happy-dom).
  *
  * Lifecycle:
  *

@@ -87,7 +87,7 @@ export interface WindowMatchMediaInstall {
 /**
  * Installs a controllable `matchMedia` stub on `window`.
  *
- * Package jsdom projects use this because `@ailuracode/alpine-core`'s
+ * Package happy-dom projects use this because `@ailuracode/alpine-core`'s
  * `safeMatchMedia` reads `window.matchMedia` directly per the SSR contract.
  */
 export function installWindowMatchMedia(): WindowMatchMediaInstall {

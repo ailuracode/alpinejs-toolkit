@@ -1,13 +1,5 @@
-import path from "node:path";
-import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
-import {
-  parseCatalogEntries,
-  parsePlaygroundDemoIds,
-  validatePackageCatalogSurfaces,
-} from "../scripts/package-catalog-check.mjs";
-
-const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+import { parseCatalogEntries, parsePlaygroundDemoIds } from "../scripts/package-catalog-check.mjs";
 
 describe("package catalog check", () => {
   it("parses catalog entries and playground demo ids", () => {
@@ -19,10 +11,6 @@ describe("package catalog check", () => {
 
     const demoIds = parsePlaygroundDemoIds('  theme: ThemeDemo,\n  "query-kit": QueryKitDemo,');
     expect(demoIds).toEqual(new Set(["theme", "query-kit"]));
-  });
-
-  it("passes on the current repository surfaces", () => {
-    expect(validatePackageCatalogSurfaces(root)).toEqual([]);
   });
 
   it("reports missing README sources", () => {

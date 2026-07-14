@@ -1,20 +1,19 @@
 {
-  "generatedAt": "2026-07-14T22:11:47.966Z",
+  "generatedAt": "2026-07-14T23:15:52.520Z",
   "issue": "ALP-130",
-  "vitestFileCount": 230,
+  "vitestFileCount": 227,
   "e2eFileCount": 29,
   "environmentCounts": {
-    "node": 136,
-    "happy-dom": 75,
-    "jsdom": 19,
+    "node": 135,
+    "happy-dom": 92,
     "playwright": 29
   },
   "layerCounts": {
     "controller": 18,
     "contract": 20,
-    "integration": 34,
+    "integration": 32,
     "accessibility": 6,
-    "utility": 149,
+    "utility": 148,
     "repository": 3,
     "e2e": 29
   },
@@ -89,15 +88,6 @@
       "targetEnvironment": "happy-dom",
       "source": "content",
       "signals": ["startAlpine"],
-      "hasPlaywrightSibling": true
-    },
-    {
-      "path": "packages/accordion/test/alpine.integration.test.ts",
-      "package": "accordion",
-      "layer": "integration",
-      "targetEnvironment": "happy-dom",
-      "source": "content",
-      "signals": ["Alpine.start", "document", "innerHTML", "x-data"],
       "hasPlaywrightSibling": true
     },
     {
@@ -368,15 +358,6 @@
       "targetEnvironment": "node",
       "source": "filename",
       "signals": ["layer:controller"],
-      "hasPlaywrightSibling": true
-    },
-    {
-      "path": "packages/command/test/demo-integration.test.ts",
-      "package": "command",
-      "layer": "integration",
-      "targetEnvironment": "happy-dom",
-      "source": "content",
-      "signals": ["Alpine.start", "document", "innerHTML", "x-data", "portal-root"],
       "hasPlaywrightSibling": true
     },
     {
@@ -1589,7 +1570,7 @@
       "path": "packages/scroll/test/a11y.spec.ts",
       "package": "scroll",
       "layer": "accessibility",
-      "targetEnvironment": "jsdom",
+      "targetEnvironment": "happy-dom",
       "source": "content",
       "signals": ["document"],
       "hasPlaywrightSibling": true
@@ -1598,7 +1579,7 @@
       "path": "packages/scroll/test/alpine-adapters.spec.ts",
       "package": "scroll",
       "layer": "utility",
-      "targetEnvironment": "jsdom",
+      "targetEnvironment": "happy-dom",
       "source": "content",
       "signals": ["document", "IntersectionObserver"],
       "hasPlaywrightSibling": true
@@ -1607,16 +1588,16 @@
       "path": "packages/scroll/test/contract.spec.ts",
       "package": "scroll",
       "layer": "contract",
-      "targetEnvironment": "jsdom",
+      "targetEnvironment": "happy-dom",
       "source": "vitest-directive",
-      "signals": ["@vitest-environment jsdom"],
+      "signals": ["@vitest-environment happy-dom"],
       "hasPlaywrightSibling": true
     },
     {
       "path": "packages/scroll/test/controller.spec.ts",
       "package": "scroll",
       "layer": "controller",
-      "targetEnvironment": "jsdom",
+      "targetEnvironment": "happy-dom",
       "source": "content",
       "signals": ["document", "IntersectionObserver"],
       "hasPlaywrightSibling": true
@@ -1625,7 +1606,7 @@
       "path": "packages/scroll/test/coverage-gaps.spec.ts",
       "package": "scroll",
       "layer": "utility",
-      "targetEnvironment": "jsdom",
+      "targetEnvironment": "happy-dom",
       "source": "content",
       "signals": ["document", "innerHTML", "focus"],
       "hasPlaywrightSibling": true
@@ -1634,7 +1615,7 @@
       "path": "packages/scroll/test/criticals-fix.spec.ts",
       "package": "scroll",
       "layer": "utility",
-      "targetEnvironment": "jsdom",
+      "targetEnvironment": "happy-dom",
       "source": "content",
       "signals": ["document", "focus"],
       "hasPlaywrightSibling": true
@@ -1643,7 +1624,7 @@
       "path": "packages/scroll/test/internals.spec.ts",
       "package": "scroll",
       "layer": "utility",
-      "targetEnvironment": "jsdom",
+      "targetEnvironment": "happy-dom",
       "source": "content",
       "signals": ["document", "focus"],
       "hasPlaywrightSibling": true
@@ -1652,7 +1633,7 @@
       "path": "packages/scroll/test/lifecycle.spec.ts",
       "package": "scroll",
       "layer": "utility",
-      "targetEnvironment": "jsdom",
+      "targetEnvironment": "happy-dom",
       "source": "content",
       "signals": ["document"],
       "hasPlaywrightSibling": true
@@ -1661,7 +1642,7 @@
       "path": "packages/scroll/test/mount-init-failure.spec.ts",
       "package": "scroll",
       "layer": "utility",
-      "targetEnvironment": "jsdom",
+      "targetEnvironment": "happy-dom",
       "source": "content",
       "signals": ["document"],
       "hasPlaywrightSibling": true
@@ -1670,7 +1651,7 @@
       "path": "packages/scroll/test/plugin.spec.ts",
       "package": "scroll",
       "layer": "integration",
-      "targetEnvironment": "jsdom",
+      "targetEnvironment": "happy-dom",
       "source": "filename",
       "signals": ["layer:integration"],
       "hasPlaywrightSibling": true
@@ -1832,7 +1813,7 @@
       "path": "packages/sidebar/test/manager.spec.ts",
       "package": "sidebar",
       "layer": "utility",
-      "targetEnvironment": "jsdom",
+      "targetEnvironment": "happy-dom",
       "source": "content",
       "signals": ["localStorage", "matchMedia"],
       "hasPlaywrightSibling": true
@@ -1850,7 +1831,7 @@
       "path": "packages/sidebar/test/plugin.spec.ts",
       "package": "sidebar",
       "layer": "integration",
-      "targetEnvironment": "jsdom",
+      "targetEnvironment": "happy-dom",
       "source": "content",
       "signals": ["x-data"],
       "hasPlaywrightSibling": true
@@ -1859,7 +1840,7 @@
       "path": "packages/sidebar/test/storage.spec.ts",
       "package": "sidebar",
       "layer": "utility",
-      "targetEnvironment": "jsdom",
+      "targetEnvironment": "happy-dom",
       "source": "content",
       "signals": ["localStorage"],
       "hasPlaywrightSibling": true
@@ -1904,7 +1885,7 @@
       "path": "packages/theme/test/cross-tab.spec.ts",
       "package": "theme",
       "layer": "utility",
-      "targetEnvironment": "jsdom",
+      "targetEnvironment": "happy-dom",
       "source": "content",
       "signals": ["localStorage"],
       "hasPlaywrightSibling": true
@@ -1922,7 +1903,7 @@
       "path": "packages/theme/test/manager.spec.ts",
       "package": "theme",
       "layer": "utility",
-      "targetEnvironment": "jsdom",
+      "targetEnvironment": "happy-dom",
       "source": "content",
       "signals": ["document", "localStorage", "matchMedia"],
       "hasPlaywrightSibling": true
@@ -1931,7 +1912,7 @@
       "path": "packages/theme/test/plugin.spec.ts",
       "package": "theme",
       "layer": "integration",
-      "targetEnvironment": "jsdom",
+      "targetEnvironment": "happy-dom",
       "source": "content",
       "signals": ["document", "localStorage"],
       "hasPlaywrightSibling": true
@@ -1958,7 +1939,7 @@
       "path": "packages/theme/test/storage.spec.ts",
       "package": "theme",
       "layer": "utility",
-      "targetEnvironment": "jsdom",
+      "targetEnvironment": "happy-dom",
       "source": "content",
       "signals": ["localStorage"],
       "hasPlaywrightSibling": true
@@ -2120,7 +2101,7 @@
       "path": "packages/ui/test/contract.spec.ts",
       "package": "ui",
       "layer": "contract",
-      "targetEnvironment": "jsdom",
+      "targetEnvironment": "happy-dom",
       "source": "content",
       "signals": ["portal-root"],
       "hasPlaywrightSibling": false
@@ -2138,7 +2119,7 @@
       "path": "packages/ui/test/storage.spec.ts",
       "package": "ui",
       "layer": "utility",
-      "targetEnvironment": "jsdom",
+      "targetEnvironment": "happy-dom",
       "source": "content",
       "signals": ["localStorage"],
       "hasPlaywrightSibling": false
@@ -2225,15 +2206,6 @@
       "hasPlaywrightSibling": true
     },
     {
-      "path": "test/architecture-boundary.test.ts",
-      "package": "repository",
-      "layer": "utility",
-      "targetEnvironment": "node",
-      "source": "content",
-      "signals": ["no-alpine-import"],
-      "hasPlaywrightSibling": false
-    },
-    {
       "path": "test/architecture-check.test.ts",
       "package": "repository",
       "layer": "repository",
@@ -2244,15 +2216,6 @@
     },
     {
       "path": "test/ci-changes.test.ts",
-      "package": "repository",
-      "layer": "utility",
-      "targetEnvironment": "node",
-      "source": "content",
-      "signals": ["no-alpine-import"],
-      "hasPlaywrightSibling": false
-    },
-    {
-      "path": "test/e2e-run.test.ts",
       "package": "repository",
       "layer": "utility",
       "targetEnvironment": "node",
@@ -2342,6 +2305,15 @@
       "hasPlaywrightSibling": false
     },
     {
+      "path": "test/vitest-performance.test.ts",
+      "package": "repository",
+      "layer": "utility",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["no-alpine-import"],
+      "hasPlaywrightSibling": false
+    },
+    {
       "path": "test/vitest-projects.test.ts",
       "package": "repository",
       "layer": "utility",
@@ -2354,12 +2326,9 @@
   "overlapByPackage": [
     {
       "package": "accordion",
-      "vitestFiles": 4,
+      "vitestFiles": 3,
       "e2eFiles": 1,
-      "vitestIntegration": [
-        "packages/accordion/test/alpine.integration.test.ts",
-        "packages/accordion/test/alpine.reactivity.test.ts"
-      ],
+      "vitestIntegration": ["packages/accordion/test/alpine.reactivity.test.ts"],
       "e2eSpecs": ["packages/accordion/e2e/accordion.e2e.spec.ts"],
       "overlap": "complementary",
       "note": "DOM integration tests validate Alpine registration and reactivity; Playwright validates real focus, layout, and browser APIs. Keep both unless the same public contract is asserted twice."
@@ -2411,12 +2380,11 @@
     },
     {
       "package": "command",
-      "vitestFiles": 8,
+      "vitestFiles": 7,
       "e2eFiles": 1,
       "vitestIntegration": [
         "packages/command/test/accessibility.test.ts",
         "packages/command/test/alpine-reactivity.test.ts",
-        "packages/command/test/demo-integration.test.ts",
         "packages/command/test/demo-markup.test.ts"
       ],
       "e2eSpecs": ["packages/command/e2e/command.e2e.spec.ts"],

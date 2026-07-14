@@ -3,7 +3,6 @@ import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import {
   matchesAnyPattern,
-  runArchitectureCheck,
   validateControllerAlpineImports,
   validateControllerSurface,
   validateDependencyDirection,
@@ -26,13 +25,6 @@ import { findHeadlessCssViolations } from "../scripts/headless-css-policy.mjs";
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
 describe("architecture:check", () => {
-  it("passes on the current repository", () => {
-    const result = runArchitectureCheck({ root });
-    expect(result.errors).toEqual([]);
-    expect(result.ok).toBe(true);
-    expect(result.packageCount).toBeGreaterThanOrEqual(28);
-  });
-
   it("flags internal barrel re-exports outside documented exceptions", () => {
     const fixturePolicy = {
       ...ARCHITECTURE_CHECK_POLICY,

@@ -6,7 +6,7 @@
  * reports each section flip via the supplied listener.
  *
  * SSR-safe: when `IntersectionObserver` is unavailable (Node,
- * older jsdom) the factory returns a no-op cleanup and the
+ * older DOM runtimes) the factory returns a no-op cleanup and the
  * controller degrades to "no active section" — consumers that
  * need section tracking under SSR must opt into a polyfill.
  *

@@ -1,3 +1,4 @@
+import { spawnSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -8,9 +9,8 @@ import {
 } from "../scripts/test-environment-classify.mjs";
 import {
   buildRootVitestProjects,
-  HAPPY_DOM_PROJECT_PACKAGES,
-  JSDOM_PROJECT_PACKAGES,
   packageProjectIncludes,
+  packageProjectIncludesRelative,
   resolveVitestRuntimeEnvironment,
   VITEST_PROJECT_PACKAGES,
   vitestIncludesForEnvironment,
@@ -36,18 +36,11 @@ describe("vitest projects", () => {
   it("routes every Vitest file exactly once across root and overlay projects", () => {
     const nodeIncludes = vitestIncludesForEnvironment(root, "node");
     const happyDomIncludes = vitestIncludesForEnvironment(root, "happy-dom");
-    const jsdomIncludes = vitestIncludesForEnvironment(root, "jsdom");
     const rootProjects = buildRootVitestProjects(root);
 
-    const overlayIncludes = VITEST_PROJECT_PACKAGES.flatMap((pkg) => {
-      if (JSDOM_PROJECT_PACKAGES.includes(pkg)) {
-        return packageProjectIncludes(pkg, "jsdom", root);
-      }
-      if (HAPPY_DOM_PROJECT_PACKAGES.includes(pkg)) {
-        return packageProjectIncludes(pkg, "happy-dom", root);
-      }
-      return [];
-    });
+    const overlayIncludes = VITEST_PROJECT_PACKAGES.flatMap((pkg) =>
+      packageProjectIncludes(pkg, "happy-dom", root)
+    );
 
     const assigned = new Set([
       ...nodeIncludes,
@@ -55,7 +48,7 @@ describe("vitest projects", () => {
       ...overlayIncludes,
     ]);
 
-    const expected = new Set([...nodeIncludes, ...happyDomIncludes, ...jsdomIncludes]);
+    const expected = new Set([...nodeIncludes, ...happyDomIncludes]);
 
     expect(assigned).toEqual(expected);
     expect(assigned.size).toBe(buildTestEnvironmentInventory(root).vitestFileCount);
@@ -98,5 +91,33 @@ describe("vitest projects", () => {
     for (const pkg of VITEST_PROJECT_PACKAGES) {
       expect(projects).toContain(`packages/${pkg}`);
     }
+  });
+
+  it("uses package-relative include paths for overlay configs", () => {
+    const relative = packageProjectIncludesRelative("theme", "happy-dom", root);
+    expect(relative.every((filePath) => !filePath.startsWith("packages/"))).toBe(true);
+    expect(relative).toContain("test/plugin.spec.ts");
+  });
+
+  it("collects every inventory file in the Vitest workspace", () => {
+    const inventory = buildTestEnvironmentInventory(root);
+    const listResult = spawnSync("pnpm", ["exec", "vitest", "list", "--filesOnly"], {
+      cwd: root,
+      encoding: "utf8",
+    });
+
+    const listed = new Set(
+      (listResult.stdout ?? "")
+        .split("\n")
+        .map((line) => line.replace(/^\[[^\]]+\]\s*/, "").trim())
+        .filter(Boolean)
+    );
+
+    const expected = inventory.files
+      .filter((file) => file.layer !== "e2e")
+      .map((file) => file.path);
+
+    expect(listed.size).toBe(expected.length);
+    expect([...listed].sort()).toEqual([...expected].sort());
   });
 });

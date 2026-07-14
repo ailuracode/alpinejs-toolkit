@@ -496,7 +496,7 @@ describe("SidebarController — safeMatchMedia contract", () => {
 
 describe("SidebarController — SSR", () => {
   afterEach(() => {
-    // Re-stub `window` after each SSR test so the next test's jsdom
+    // Re-stub `window` after each SSR test so the next test's happy-dom
     // session sees a real window again. We avoid `unstubAllGlobals`
     // because it would also clear `safeMatchMedia`'s environment.
     vi.unstubAllGlobals();
@@ -703,7 +703,7 @@ describe("SidebarController + storage — cross-tab", () => {
     // Set visible to true (write 'true' to storage).
     controller.show();
     // Clear storage via the adapter — this drops a real `storage` event
-    // in jsdom, but we dispatch the cross-tab event manually for control.
+    // in happy-dom, but we dispatch the cross-tab event manually for control.
     const before = events.length;
     fireStorage("kf", null);
 

@@ -1,912 +1,383 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "issue": "ALP-128",
+  "tuningIssue": "ALP-134",
   "epic": "ALP-127",
-  "capturedAt": "2026-07-14T20:32:50.031Z",
+  "capturedAt": "2026-07-14T22:39:24.271Z",
   "environment": {
     "nodeVersion": "v24.15.0",
     "platform": "linux 6.18.33.2-microsoft-standard-WSL2",
     "cpuCount": 12,
     "vitestVersion": "4.1.10",
-    "defaultEnvironment": "happy-dom",
-    "setupFiles": ["test/setup.ts"]
+    "projects": "node, happy-dom, package overlays",
+    "maxWorkers": 6,
+    "nodePool": "threads",
+    "domPool": "forks",
+    "setupFiles": {
+      "node": ["test/setup.node.ts"],
+      "happyDom": ["test/setup/happy-dom.ts"]
+    }
+  },
+  "runtime": {
+    "issue": "ALP-134",
+    "maxWorkers": 6,
+    "node": {
+      "pool": "threads",
+      "isolate": true,
+      "fileParallelism": true
+    },
+    "dom": {
+      "pool": "forks",
+      "isolate": true,
+      "fileParallelism": true
+    },
+    "rejected": [
+      {
+        "setting": "isolate: false on node project",
+        "reason": "40+ failures on first run and 25+ on rerun — singleton cleanup is not sufficient for shared module state."
+      },
+      {
+        "setting": "pool: vmThreads",
+        "reason": "Not benchmarked — forks/threads covered the measured workspace gains without VM pool risk."
+      },
+      {
+        "setting": "deps.optimizer",
+        "reason": "No measurable warm-run gain after project split; adds transform-cache complexity across seven overlay configs."
+      }
+    ]
   },
   "inventory": {
-    "fileCount": 226,
-    "testCount": 2293
+    "fileCount": 209,
+    "testCount": 1883
   },
   "workspace": {
     "test": {
       "label": "pnpm test",
       "cold": {
-        "count": 3,
+        "count": 1,
         "wallMs": {
-          "min": 67770,
-          "median": 68990,
-          "max": 69470
+          "min": 65570,
+          "median": 65570,
+          "max": 65570
         },
         "maxRssKb": {
-          "min": 463760,
-          "median": 464316,
-          "max": 468328
+          "min": 1302004,
+          "median": 1302004,
+          "max": 1302004
         },
         "timingBreakdownSec": {
-          "total": 60.96,
-          "transform": 17.79,
-          "setup": 21.99,
-          "import": 43.24,
-          "tests": 71.97,
-          "environment": 166.9
+          "total": 58.2,
+          "transform": 9.22,
+          "setup": 12.39,
+          "import": 26.52,
+          "tests": 53.98,
+          "environment": 45.22
         },
-        "success": false,
+        "success": true,
         "runs": [
           {
             "label": "pnpm test",
-            "wallMs": 68990,
-            "maxRssKb": 464316,
-            "exitCode": 1,
-            "success": false,
+            "wallMs": 65570,
+            "maxRssKb": 1302004,
+            "exitCode": 0,
+            "success": true,
             "timingBreakdownSec": {
-              "total": 61.32,
-              "transform": 18.53,
-              "setup": 22.54,
-              "import": 44.27,
-              "tests": 71.96,
-              "environment": 169.2
+              "total": 58.2,
+              "transform": 9.22,
+              "setup": 12.39,
+              "import": 26.52,
+              "tests": 53.98,
+              "environment": 45.22
             },
-            "testFiles": "1 failed | 225 passed (226)",
-            "tests": "1 failed | 2292 passed | 3 skipped (2296)",
+            "testFiles": "209 passed (209)",
+            "tests": "1883 passed | 3 skipped (1886)",
             "slowestFiles": [
               {
                 "file": "test/pack-check.test.ts",
-                "durationMs": 38661.376,
+                "durationMs": 35699.026,
                 "testCount": 4,
                 "package": "repository"
               },
               {
-                "file": "packages/ui/test/contract.spec.ts",
-                "durationMs": 7668.167,
-                "testCount": 1,
-                "package": "ui"
-              },
-              {
                 "file": "packages/query-kit/test/devtools.test.ts",
-                "durationMs": 4593.66,
+                "durationMs": 6207.522,
                 "testCount": 27,
                 "package": "query-kit"
               },
               {
                 "file": "test/architecture-check.test.ts",
-                "durationMs": 4268.848,
+                "durationMs": 3207.517,
                 "testCount": 18,
                 "package": "repository"
               },
               {
+                "file": "test/vitest-projects.test.ts",
+                "durationMs": 1411.725,
+                "testCount": 4,
+                "package": "repository"
+              },
+              {
                 "file": "packages/gesture/test/controller.test.ts",
-                "durationMs": 1007.352,
+                "durationMs": 965.345,
                 "testCount": 32,
                 "package": "gesture"
               },
               {
-                "file": "test/architecture-boundary.test.ts",
-                "durationMs": 336.387,
-                "testCount": 6,
-                "package": "repository"
-              },
-              {
                 "file": "packages/query/test/devtools.test.ts",
-                "durationMs": 297.448,
+                "durationMs": 264.033,
                 "testCount": 7,
                 "package": "query"
               },
               {
                 "file": "packages/query-kit/test/merge-stores.test.ts",
-                "durationMs": 258.743,
+                "durationMs": 219.242,
                 "testCount": 15,
                 "package": "query-kit"
               },
               {
                 "file": "test/repo-check.test.ts",
-                "durationMs": 207.097,
+                "durationMs": 210.098,
                 "testCount": 9,
                 "package": "repository"
               },
               {
-                "file": "packages/scroll/test/coverage-gaps.spec.ts",
-                "durationMs": 204.552,
-                "testCount": 29,
-                "package": "scroll"
-              }
-            ],
-            "packageTotals": [
-              {
-                "package": "repository",
-                "durationMs": 43968.508,
-                "fileCount": 10,
-                "testCount": 70
-              },
-              {
-                "package": "ui",
-                "durationMs": 7791.902,
-                "fileCount": 3,
-                "testCount": 32
-              },
-              {
-                "package": "query-kit",
-                "durationMs": 5607.023,
-                "fileCount": 16,
-                "testCount": 135
-              },
-              {
-                "package": "gesture",
-                "durationMs": 1262.811,
-                "fileCount": 7,
-                "testCount": 75
-              },
-              {
-                "package": "scroll",
-                "durationMs": 1113.823,
-                "fileCount": 11,
-                "testCount": 183
-              },
-              {
-                "package": "query",
-                "durationMs": 1058.287,
-                "fileCount": 11,
-                "testCount": 156
-              },
-              {
-                "package": "selection",
-                "durationMs": 784.58,
-                "fileCount": 14,
-                "testCount": 86
-              },
-              {
-                "package": "command",
-                "durationMs": 732.351,
-                "fileCount": 8,
-                "testCount": 46
-              },
-              {
-                "package": "realtime",
-                "durationMs": 605.427,
-                "fileCount": 9,
-                "testCount": 121
-              },
-              {
-                "package": "overlay",
-                "durationMs": 581.412,
-                "fileCount": 12,
-                "testCount": 72
-              }
-            ]
-          },
-          {
-            "label": "pnpm test",
-            "wallMs": 67770,
-            "maxRssKb": 463760,
-            "exitCode": 1,
-            "success": false,
-            "timingBreakdownSec": {
-              "total": 59.96,
-              "transform": 17.03,
-              "setup": 20.99,
-              "import": 41.95,
-              "tests": 71.03,
-              "environment": 162.71
-            },
-            "testFiles": "1 failed | 225 passed (226)",
-            "tests": "1 failed | 2292 passed | 3 skipped (2296)",
-            "slowestFiles": [
-              {
-                "file": "test/pack-check.test.ts",
-                "durationMs": 38669.524,
-                "testCount": 4,
-                "package": "repository"
-              },
-              {
-                "file": "packages/ui/test/contract.spec.ts",
-                "durationMs": 7900.312,
-                "testCount": 1,
-                "package": "ui"
-              },
-              {
-                "file": "test/architecture-check.test.ts",
-                "durationMs": 4300.069,
-                "testCount": 18,
-                "package": "repository"
-              },
-              {
-                "file": "packages/query-kit/test/devtools.test.ts",
-                "durationMs": 4213.765,
-                "testCount": 27,
-                "package": "query-kit"
-              },
-              {
-                "file": "packages/gesture/test/controller.test.ts",
-                "durationMs": 1008.545,
-                "testCount": 32,
-                "package": "gesture"
-              },
-              {
-                "file": "packages/query/test/devtools.test.ts",
-                "durationMs": 309.2,
-                "testCount": 7,
-                "package": "query"
-              },
-              {
                 "file": "test/architecture-boundary.test.ts",
-                "durationMs": 274.601,
+                "durationMs": 190.31,
                 "testCount": 6,
                 "package": "repository"
               },
               {
-                "file": "packages/query-kit/test/merge-stores.test.ts",
-                "durationMs": 271.86,
-                "testCount": 15,
-                "package": "query-kit"
-              },
-              {
-                "file": "test/repo-check.test.ts",
-                "durationMs": 232.216,
-                "testCount": 9,
+                "file": "test/test-environment-inventory.test.ts",
+                "durationMs": 181.757,
+                "testCount": 4,
                 "package": "repository"
-              },
-              {
-                "file": "packages/scroll/test/coverage-gaps.spec.ts",
-                "durationMs": 200.195,
-                "testCount": 29,
-                "package": "scroll"
               }
             ],
             "packageTotals": [
               {
                 "package": "repository",
-                "durationMs": 43990.38,
-                "fileCount": 10,
-                "testCount": 70
-              },
-              {
-                "package": "ui",
-                "durationMs": 8004.275,
-                "fileCount": 3,
-                "testCount": 32
+                "durationMs": 41344.031,
+                "fileCount": 15,
+                "testCount": 92
               },
               {
                 "package": "query-kit",
-                "durationMs": 5233.849,
+                "durationMs": 6942.462,
                 "fileCount": 16,
                 "testCount": 135
               },
               {
                 "package": "gesture",
-                "durationMs": 1244.332,
+                "durationMs": 1090.772,
                 "fileCount": 7,
                 "testCount": 75
               },
               {
-                "package": "scroll",
-                "durationMs": 1063.241,
-                "fileCount": 11,
-                "testCount": 183
-              },
-              {
                 "package": "query",
-                "durationMs": 980.904,
+                "durationMs": 723.273,
                 "fileCount": 11,
                 "testCount": 156
               },
               {
                 "package": "command",
-                "durationMs": 741.005,
+                "durationMs": 531.492,
                 "fileCount": 8,
                 "testCount": 46
               },
               {
                 "package": "selection",
-                "durationMs": 684.928,
+                "durationMs": 458.58,
                 "fileCount": 14,
                 "testCount": 86
-              },
-              {
-                "package": "realtime",
-                "durationMs": 554.01,
-                "fileCount": 9,
-                "testCount": 121
               },
               {
                 "package": "overlay",
-                "durationMs": 547.938,
+                "durationMs": 398.86,
                 "fileCount": 12,
                 "testCount": 72
-              }
-            ]
-          },
-          {
-            "label": "pnpm test",
-            "wallMs": 69470,
-            "maxRssKb": 468328,
-            "exitCode": 1,
-            "success": false,
-            "timingBreakdownSec": {
-              "total": 61.6,
-              "transform": 17.8,
-              "setup": 22.44,
-              "import": 43.5,
-              "tests": 72.92,
-              "environment": 168.79
-            },
-            "testFiles": "1 failed | 225 passed (226)",
-            "tests": "1 failed | 2292 passed | 3 skipped (2296)",
-            "slowestFiles": [
-              {
-                "file": "test/pack-check.test.ts",
-                "durationMs": 39164.275,
-                "testCount": 4,
-                "package": "repository"
-              },
-              {
-                "file": "packages/ui/test/contract.spec.ts",
-                "durationMs": 7623.402,
-                "testCount": 1,
-                "package": "ui"
-              },
-              {
-                "file": "packages/query-kit/test/devtools.test.ts",
-                "durationMs": 5003.55,
-                "testCount": 27,
-                "package": "query-kit"
-              },
-              {
-                "file": "test/architecture-check.test.ts",
-                "durationMs": 4482.127,
-                "testCount": 18,
-                "package": "repository"
-              },
-              {
-                "file": "packages/gesture/test/controller.test.ts",
-                "durationMs": 1000.364,
-                "testCount": 32,
-                "package": "gesture"
-              },
-              {
-                "file": "test/architecture-boundary.test.ts",
-                "durationMs": 331.247,
-                "testCount": 6,
-                "package": "repository"
-              },
-              {
-                "file": "packages/query/test/devtools.test.ts",
-                "durationMs": 323.75,
-                "testCount": 7,
-                "package": "query"
-              },
-              {
-                "file": "packages/command/test/alpine-reactivity.test.ts",
-                "durationMs": 277.571,
-                "testCount": 2,
-                "package": "command"
-              },
-              {
-                "file": "packages/query-kit/test/merge-stores.test.ts",
-                "durationMs": 263.068,
-                "testCount": 15,
-                "package": "query-kit"
-              },
-              {
-                "file": "packages/selection/test/demo-interaction.test.ts",
-                "durationMs": 207.086,
-                "testCount": 3,
-                "package": "selection"
-              }
-            ],
-            "packageTotals": [
-              {
-                "package": "repository",
-                "durationMs": 44641.577,
-                "fileCount": 10,
-                "testCount": 70
-              },
-              {
-                "package": "ui",
-                "durationMs": 7721.606,
-                "fileCount": 3,
-                "testCount": 32
-              },
-              {
-                "package": "query-kit",
-                "durationMs": 6031.635,
-                "fileCount": 16,
-                "testCount": 135
-              },
-              {
-                "package": "gesture",
-                "durationMs": 1329.246,
-                "fileCount": 7,
-                "testCount": 75
-              },
-              {
-                "package": "query",
-                "durationMs": 1073.518,
-                "fileCount": 11,
-                "testCount": 156
-              },
-              {
-                "package": "scroll",
-                "durationMs": 1066.515,
-                "fileCount": 11,
-                "testCount": 183
-              },
-              {
-                "package": "command",
-                "durationMs": 835.355,
-                "fileCount": 8,
-                "testCount": 46
-              },
-              {
-                "package": "selection",
-                "durationMs": 722.343,
-                "fileCount": 14,
-                "testCount": 86
               },
               {
                 "package": "realtime",
-                "durationMs": 590.76,
-                "fileCount": 9,
-                "testCount": 121
+                "durationMs": 360.202,
+                "fileCount": 8,
+                "testCount": 110
               },
               {
-                "package": "core",
-                "durationMs": 556.58,
-                "fileCount": 13,
-                "testCount": 140
+                "package": "tooltip",
+                "durationMs": 313.894,
+                "fileCount": 4,
+                "testCount": 20
+              },
+              {
+                "package": "env",
+                "durationMs": 295.552,
+                "fileCount": 4,
+                "testCount": 59
               }
             ]
           }
         ]
       },
       "warm": {
-        "count": 3,
+        "count": 1,
         "wallMs": {
-          "min": 54030,
-          "median": 57510,
-          "max": 59240
+          "min": 60740,
+          "median": 60740,
+          "max": 60740
         },
         "maxRssKb": {
-          "min": 465380,
-          "median": 472760,
-          "max": 484300
+          "min": 1373552,
+          "median": 1373552,
+          "max": 1373552
         },
         "timingBreakdownSec": {
-          "total": 50.25,
-          "transform": 17.37,
-          "setup": 20.93,
-          "import": 43.03,
-          "tests": 82.57,
-          "environment": 168.56
+          "total": 53.34,
+          "transform": 9.57,
+          "setup": 12.08,
+          "import": 27.24,
+          "tests": 54.99,
+          "environment": 44.79
         },
-        "success": false,
+        "success": true,
         "runs": [
           {
             "label": "pnpm test",
-            "wallMs": 54030,
-            "maxRssKb": 465380,
-            "exitCode": 1,
-            "success": false,
+            "wallMs": 60740,
+            "maxRssKb": 1373552,
+            "exitCode": 0,
+            "success": true,
             "timingBreakdownSec": {
-              "total": 49.77,
-              "transform": 16.93,
-              "setup": 21.17,
-              "import": 42.57,
-              "tests": 81.08,
-              "environment": 168.29
+              "total": 53.34,
+              "transform": 9.57,
+              "setup": 12.08,
+              "import": 27.24,
+              "tests": 54.99,
+              "environment": 44.79
             },
-            "testFiles": "1 failed | 225 passed (226)",
-            "tests": "1 failed | 2292 passed | 3 skipped (2296)",
+            "testFiles": "209 passed (209)",
+            "tests": "1883 passed | 3 skipped (1886)",
             "slowestFiles": [
               {
                 "file": "test/pack-check.test.ts",
-                "durationMs": 47834.656,
+                "durationMs": 37340.506,
                 "testCount": 4,
                 "package": "repository"
               },
               {
-                "file": "packages/ui/test/contract.spec.ts",
-                "durationMs": 7213.289,
-                "testCount": 1,
-                "package": "ui"
-              },
-              {
                 "file": "packages/query-kit/test/devtools.test.ts",
-                "durationMs": 4800.895,
+                "durationMs": 3365.676,
                 "testCount": 27,
                 "package": "query-kit"
               },
               {
                 "file": "test/architecture-check.test.ts",
-                "durationMs": 4441.256,
+                "durationMs": 2867.726,
                 "testCount": 18,
                 "package": "repository"
               },
               {
-                "file": "packages/query-kit/test/panel-preferences.test.ts",
-                "durationMs": 3596.492,
-                "testCount": 6,
-                "package": "query-kit"
-              },
-              {
-                "file": "packages/gesture/test/controller.test.ts",
-                "durationMs": 1025.455,
-                "testCount": 32,
-                "package": "gesture"
-              },
-              {
-                "file": "test/architecture-boundary.test.ts",
-                "durationMs": 310.696,
-                "testCount": 6,
-                "package": "repository"
-              },
-              {
-                "file": "packages/query/test/devtools.test.ts",
-                "durationMs": 281.14,
-                "testCount": 7,
-                "package": "query"
-              },
-              {
-                "file": "packages/query-kit/test/merge-stores.test.ts",
-                "durationMs": 256.056,
-                "testCount": 15,
-                "package": "query-kit"
-              },
-              {
-                "file": "test/repo-check.test.ts",
-                "durationMs": 248.897,
-                "testCount": 9,
-                "package": "repository"
-              }
-            ],
-            "packageTotals": [
-              {
-                "package": "repository",
-                "durationMs": 53383.907,
-                "fileCount": 10,
-                "testCount": 70
-              },
-              {
-                "package": "query-kit",
-                "durationMs": 9399,
-                "fileCount": 16,
-                "testCount": 135
-              },
-              {
-                "package": "ui",
-                "durationMs": 7335.043,
-                "fileCount": 3,
-                "testCount": 32
-              },
-              {
-                "package": "gesture",
-                "durationMs": 1290.762,
-                "fileCount": 7,
-                "testCount": 75
-              },
-              {
-                "package": "query",
-                "durationMs": 1062.867,
-                "fileCount": 11,
-                "testCount": 156
-              },
-              {
-                "package": "scroll",
-                "durationMs": 1058.817,
-                "fileCount": 11,
-                "testCount": 183
-              },
-              {
-                "package": "command",
-                "durationMs": 766.723,
-                "fileCount": 8,
-                "testCount": 46
-              },
-              {
-                "package": "realtime",
-                "durationMs": 640.198,
-                "fileCount": 9,
-                "testCount": 121
-              },
-              {
-                "package": "selection",
-                "durationMs": 631.776,
-                "fileCount": 14,
-                "testCount": 86
-              },
-              {
-                "package": "menu",
-                "durationMs": 565.574,
-                "fileCount": 4,
-                "testCount": 48
-              }
-            ]
-          },
-          {
-            "label": "pnpm test",
-            "wallMs": 57510,
-            "maxRssKb": 472760,
-            "exitCode": 1,
-            "success": false,
-            "timingBreakdownSec": {
-              "total": 49.63,
-              "transform": 16.97,
-              "setup": 20.22,
-              "import": 42.42,
-              "tests": 80.49,
-              "environment": 165.65
-            },
-            "testFiles": "1 failed | 225 passed (226)",
-            "tests": "1 failed | 2292 passed | 3 skipped (2296)",
-            "slowestFiles": [
-              {
-                "file": "test/pack-check.test.ts",
-                "durationMs": 47583.879,
-                "testCount": 4,
-                "package": "repository"
-              },
-              {
-                "file": "test/architecture-check.test.ts",
-                "durationMs": 8364.49,
-                "testCount": 18,
-                "package": "repository"
-              },
-              {
-                "file": "packages/query-kit/test/devtools.test.ts",
-                "durationMs": 8356.3,
-                "testCount": 27,
-                "package": "query-kit"
-              },
-              {
-                "file": "packages/ui/test/contract.spec.ts",
-                "durationMs": 6909.695,
-                "testCount": 1,
-                "package": "ui"
-              },
-              {
-                "file": "packages/gesture/test/controller.test.ts",
-                "durationMs": 1010.966,
-                "testCount": 32,
-                "package": "gesture"
-              },
-              {
-                "file": "packages/query/test/devtools.test.ts",
-                "durationMs": 268.724,
-                "testCount": 7,
-                "package": "query"
-              },
-              {
-                "file": "test/architecture-boundary.test.ts",
-                "durationMs": 258.291,
-                "testCount": 6,
-                "package": "repository"
-              },
-              {
-                "file": "packages/query-kit/test/merge-stores.test.ts",
-                "durationMs": 242.74,
-                "testCount": 15,
-                "package": "query-kit"
-              },
-              {
-                "file": "packages/scroll/test/coverage-gaps.spec.ts",
-                "durationMs": 215.849,
-                "testCount": 29,
-                "package": "scroll"
-              },
-              {
-                "file": "packages/selection/test/demo-interaction.test.ts",
-                "durationMs": 214.072,
+                "file": "packages/toast/test/alpine.integration.test.ts",
+                "durationMs": 2851.024,
                 "testCount": 3,
-                "package": "selection"
-              }
-            ],
-            "packageTotals": [
-              {
-                "package": "repository",
-                "durationMs": 56876.833,
-                "fileCount": 10,
-                "testCount": 70
+                "package": "toast"
               },
               {
-                "package": "query-kit",
-                "durationMs": 9358.806,
-                "fileCount": 16,
-                "testCount": 135
-              },
-              {
-                "package": "ui",
-                "durationMs": 7026.653,
-                "fileCount": 3,
-                "testCount": 32
-              },
-              {
-                "package": "gesture",
-                "durationMs": 1260.918,
-                "fileCount": 7,
-                "testCount": 75
-              },
-              {
-                "package": "scroll",
-                "durationMs": 1087.367,
-                "fileCount": 11,
-                "testCount": 183
-              },
-              {
-                "package": "query",
-                "durationMs": 1034.519,
-                "fileCount": 11,
-                "testCount": 156
-              },
-              {
-                "package": "command",
-                "durationMs": 805.185,
-                "fileCount": 8,
-                "testCount": 46
-              },
-              {
-                "package": "selection",
-                "durationMs": 720.709,
-                "fileCount": 14,
-                "testCount": 86
-              },
-              {
-                "package": "realtime",
-                "durationMs": 575.679,
-                "fileCount": 9,
-                "testCount": 121
-              },
-              {
-                "package": "overlay",
-                "durationMs": 540.378,
-                "fileCount": 12,
-                "testCount": 72
-              }
-            ]
-          },
-          {
-            "label": "pnpm test",
-            "wallMs": 59240,
-            "maxRssKb": 484300,
-            "exitCode": 1,
-            "success": false,
-            "timingBreakdownSec": {
-              "total": 51.35,
-              "transform": 18.22,
-              "setup": 21.41,
-              "import": 44.09,
-              "tests": 86.13,
-              "environment": 171.73
-            },
-            "testFiles": "1 failed | 225 passed (226)",
-            "tests": "1 failed | 2292 passed | 3 skipped (2296)",
-            "slowestFiles": [
-              {
-                "file": "test/pack-check.test.ts",
-                "durationMs": 49012.134,
+                "file": "test/vitest-projects.test.ts",
+                "durationMs": 1375.624,
                 "testCount": 4,
                 "package": "repository"
               },
               {
-                "file": "packages/ui/test/contract.spec.ts",
-                "durationMs": 8281.751,
-                "testCount": 1,
-                "package": "ui"
-              },
-              {
-                "file": "packages/query-kit/test/devtools.test.ts",
-                "durationMs": 5802.491,
-                "testCount": 27,
-                "package": "query-kit"
-              },
-              {
-                "file": "test/architecture-check.test.ts",
-                "durationMs": 5200.789,
-                "testCount": 18,
-                "package": "repository"
-              },
-              {
                 "file": "packages/gesture/test/controller.test.ts",
-                "durationMs": 1013.067,
+                "durationMs": 975.512,
                 "testCount": 32,
                 "package": "gesture"
               },
               {
-                "file": "packages/query/test/cache-coverage.test.ts",
-                "durationMs": 360.495,
-                "testCount": 67,
-                "package": "query"
-              },
-              {
-                "file": "test/repo-check.test.ts",
-                "durationMs": 349.269,
-                "testCount": 9,
-                "package": "repository"
-              },
-              {
                 "file": "packages/query/test/devtools.test.ts",
-                "durationMs": 322.944,
+                "durationMs": 262.17,
                 "testCount": 7,
                 "package": "query"
               },
               {
-                "file": "test/architecture-boundary.test.ts",
-                "durationMs": 298.642,
-                "testCount": 6,
+                "file": "test/repo-check.test.ts",
+                "durationMs": 223.156,
+                "testCount": 9,
                 "package": "repository"
               },
               {
                 "file": "packages/query-kit/test/merge-stores.test.ts",
-                "durationMs": 281.788,
+                "durationMs": 215.018,
                 "testCount": 15,
                 "package": "query-kit"
+              },
+              {
+                "file": "packages/command/test/alpine-reactivity.test.ts",
+                "durationMs": 171.593,
+                "testCount": 2,
+                "package": "command"
               }
             ],
             "packageTotals": [
               {
                 "package": "repository",
-                "durationMs": 55369.758,
-                "fileCount": 10,
-                "testCount": 70
-              },
-              {
-                "package": "ui",
-                "durationMs": 8383.667,
-                "fileCount": 3,
-                "testCount": 32
+                "durationMs": 42577.254,
+                "fileCount": 15,
+                "testCount": 92
               },
               {
                 "package": "query-kit",
-                "durationMs": 6868.126,
+                "durationMs": 4072.679,
                 "fileCount": 16,
                 "testCount": 135
               },
               {
-                "package": "query",
-                "durationMs": 1360.398,
-                "fileCount": 11,
-                "testCount": 156
+                "package": "toast",
+                "durationMs": 2930.87,
+                "fileCount": 3,
+                "testCount": 58
               },
               {
                 "package": "gesture",
-                "durationMs": 1310.235,
+                "durationMs": 1098.13,
                 "fileCount": 7,
                 "testCount": 75
               },
               {
-                "package": "scroll",
-                "durationMs": 1139.774,
+                "package": "query",
+                "durationMs": 750.829,
                 "fileCount": 11,
-                "testCount": 183
+                "testCount": 156
               },
               {
                 "package": "command",
-                "durationMs": 815.882,
+                "durationMs": 542.674,
                 "fileCount": 8,
                 "testCount": 46
               },
               {
                 "package": "selection",
-                "durationMs": 732.069,
+                "durationMs": 461.29,
                 "fileCount": 14,
                 "testCount": 86
               },
               {
                 "package": "realtime",
-                "durationMs": 615.272,
-                "fileCount": 9,
-                "testCount": 121
+                "durationMs": 367.444,
+                "fileCount": 8,
+                "testCount": 110
               },
               {
                 "package": "overlay",
-                "durationMs": 545.754,
+                "durationMs": 350.828,
                 "fileCount": 12,
                 "testCount": 72
+              },
+              {
+                "package": "tooltip",
+                "durationMs": 294.808,
+                "fileCount": 4,
+                "testCount": 20
               }
             ]
           }
@@ -916,830 +387,266 @@
     "test:coverage": {
       "label": "pnpm run test:coverage",
       "cold": {
-        "count": 3,
+        "count": 1,
         "wallMs": {
-          "min": 74860,
-          "median": 74950,
-          "max": 75080
+          "min": 73140,
+          "median": 73140,
+          "max": 73140
         },
         "maxRssKb": {
-          "min": 604596,
-          "median": 617712,
-          "max": 626060
+          "min": 1320204,
+          "median": 1320204,
+          "max": 1320204
         },
         "timingBreakdownSec": {
-          "total": 66.68,
-          "transform": 17.67,
-          "setup": 22.91,
-          "import": 45.12,
-          "tests": 85.6,
-          "environment": 169.45
+          "total": 65.67,
+          "transform": 9.4,
+          "setup": 13.76,
+          "import": 27.64,
+          "tests": 62.74,
+          "environment": 44.65
         },
         "success": false,
         "runs": [
           {
             "label": "pnpm run test:coverage",
-            "wallMs": 75080,
-            "maxRssKb": 604596,
+            "wallMs": 73140,
+            "maxRssKb": 1320204,
             "exitCode": 1,
             "success": false,
             "timingBreakdownSec": {
-              "total": 66.67,
-              "transform": 17.37,
-              "setup": 22.3,
-              "import": 44.71,
-              "tests": 85.91,
-              "environment": 169.32
+              "total": 65.67,
+              "transform": 9.4,
+              "setup": 13.76,
+              "import": 27.64,
+              "tests": 62.74,
+              "environment": 44.65
             },
-            "testFiles": "2 failed | 224 passed (226)",
-            "tests": "2 failed | 2291 passed | 3 skipped (2296)",
+            "testFiles": "1 failed | 208 passed (209)",
+            "tests": "1 failed | 1882 passed | 3 skipped (1886)",
             "slowestFiles": [
               {
                 "file": "test/pack-check.test.ts",
-                "durationMs": 38658.867,
+                "durationMs": 35728.723,
                 "testCount": 4,
                 "package": "repository"
               },
               {
                 "file": "test/architecture-check.test.ts",
-                "durationMs": 15601.538,
+                "durationMs": 10815.781,
                 "testCount": 18,
                 "package": "repository"
               },
               {
-                "file": "packages/ui/test/contract.spec.ts",
-                "durationMs": 7681.552,
-                "testCount": 1,
-                "package": "ui"
-              },
-              {
                 "file": "packages/query-kit/test/devtools.test.ts",
-                "durationMs": 5526.866,
+                "durationMs": 3597.452,
                 "testCount": 27,
                 "package": "query-kit"
               },
               {
-                "file": "packages/gesture/test/controller.test.ts",
-                "durationMs": 1010.74,
-                "testCount": 32,
-                "package": "gesture"
-              },
-              {
-                "file": "test/architecture-boundary.test.ts",
-                "durationMs": 661.485,
-                "testCount": 6,
-                "package": "repository"
-              },
-              {
-                "file": "packages/query/test/devtools.test.ts",
-                "durationMs": 310.9,
-                "testCount": 7,
-                "package": "query"
-              },
-              {
-                "file": "packages/query-kit/test/merge-stores.test.ts",
-                "durationMs": 261.381,
-                "testCount": 15,
-                "package": "query-kit"
-              },
-              {
-                "file": "test/repo-check.test.ts",
-                "durationMs": 248.881,
-                "testCount": 9,
-                "package": "repository"
-              },
-              {
-                "file": "packages/scroll/test/coverage-gaps.spec.ts",
-                "durationMs": 219.482,
-                "testCount": 29,
-                "package": "scroll"
-              }
-            ],
-            "packageTotals": [
-              {
-                "package": "repository",
-                "durationMs": 55688.31,
-                "fileCount": 10,
-                "testCount": 70
-              },
-              {
-                "package": "ui",
-                "durationMs": 7832.682,
-                "fileCount": 3,
-                "testCount": 32
-              },
-              {
-                "package": "query-kit",
-                "durationMs": 6631.392,
-                "fileCount": 16,
-                "testCount": 135
-              },
-              {
-                "package": "gesture",
-                "durationMs": 1318.509,
-                "fileCount": 7,
-                "testCount": 75
-              },
-              {
-                "package": "scroll",
-                "durationMs": 1205.131,
-                "fileCount": 11,
-                "testCount": 183
-              },
-              {
-                "package": "query",
-                "durationMs": 1108.608,
-                "fileCount": 11,
-                "testCount": 156
-              },
-              {
-                "package": "command",
-                "durationMs": 807.54,
-                "fileCount": 8,
-                "testCount": 46
-              },
-              {
-                "package": "selection",
-                "durationMs": 764.524,
-                "fileCount": 14,
-                "testCount": 86
-              },
-              {
-                "package": "realtime",
-                "durationMs": 655.9,
-                "fileCount": 9,
-                "testCount": 121
-              },
-              {
-                "package": "overlay",
-                "durationMs": 588.479,
-                "fileCount": 12,
-                "testCount": 72
-              }
-            ]
-          },
-          {
-            "label": "pnpm run test:coverage",
-            "wallMs": 74950,
-            "maxRssKb": 626060,
-            "exitCode": 1,
-            "success": false,
-            "timingBreakdownSec": {
-              "total": 66.73,
-              "transform": 18.18,
-              "setup": 22.86,
-              "import": 45.65,
-              "tests": 85.56,
-              "environment": 170.18
-            },
-            "testFiles": "2 failed | 224 passed (226)",
-            "tests": "2 failed | 2291 passed | 3 skipped (2296)",
-            "slowestFiles": [
-              {
-                "file": "test/pack-check.test.ts",
-                "durationMs": 38883.894,
+                "file": "test/vitest-projects.test.ts",
+                "durationMs": 1454.766,
                 "testCount": 4,
                 "package": "repository"
               },
               {
-                "file": "test/architecture-check.test.ts",
-                "durationMs": 15301.33,
-                "testCount": 18,
-                "package": "repository"
-              },
-              {
-                "file": "packages/ui/test/contract.spec.ts",
-                "durationMs": 8175.487,
-                "testCount": 1,
-                "package": "ui"
-              },
-              {
-                "file": "packages/query-kit/test/devtools.test.ts",
-                "durationMs": 5109.034,
-                "testCount": 27,
-                "package": "query-kit"
-              },
-              {
                 "file": "packages/gesture/test/controller.test.ts",
-                "durationMs": 1036.782,
+                "durationMs": 976.41,
                 "testCount": 32,
                 "package": "gesture"
               },
               {
                 "file": "test/architecture-boundary.test.ts",
-                "durationMs": 656.303,
+                "durationMs": 408.951,
                 "testCount": 6,
                 "package": "repository"
               },
               {
                 "file": "packages/query/test/devtools.test.ts",
-                "durationMs": 312.282,
+                "durationMs": 269.966,
                 "testCount": 7,
                 "package": "query"
               },
               {
                 "file": "packages/query-kit/test/merge-stores.test.ts",
-                "durationMs": 291.787,
+                "durationMs": 231.494,
                 "testCount": 15,
                 "package": "query-kit"
               },
               {
                 "file": "test/repo-check.test.ts",
-                "durationMs": 226.805,
+                "durationMs": 229.066,
                 "testCount": 9,
                 "package": "repository"
               },
               {
-                "file": "packages/attention/test/attention.test.ts",
-                "durationMs": 226.175,
-                "testCount": 36,
-                "package": "attention"
-              }
-            ],
-            "packageTotals": [
-              {
-                "package": "repository",
-                "durationMs": 55626.029,
-                "fileCount": 10,
-                "testCount": 70
-              },
-              {
-                "package": "ui",
-                "durationMs": 8267.406,
-                "fileCount": 3,
-                "testCount": 32
-              },
-              {
-                "package": "query-kit",
-                "durationMs": 6236.968,
-                "fileCount": 16,
-                "testCount": 135
-              },
-              {
-                "package": "gesture",
-                "durationMs": 1301.58,
-                "fileCount": 7,
-                "testCount": 75
-              },
-              {
-                "package": "scroll",
-                "durationMs": 1140.308,
-                "fileCount": 11,
-                "testCount": 183
-              },
-              {
-                "package": "query",
-                "durationMs": 1125.165,
-                "fileCount": 11,
-                "testCount": 156
-              },
-              {
-                "package": "command",
-                "durationMs": 832.952,
-                "fileCount": 8,
-                "testCount": 46
-              },
-              {
-                "package": "selection",
-                "durationMs": 787.968,
-                "fileCount": 14,
-                "testCount": 86
-              },
-              {
-                "package": "realtime",
-                "durationMs": 596.67,
-                "fileCount": 9,
-                "testCount": 121
-              },
-              {
-                "package": "overlay",
-                "durationMs": 571.624,
-                "fileCount": 12,
-                "testCount": 72
-              }
-            ]
-          },
-          {
-            "label": "pnpm run test:coverage",
-            "wallMs": 74860,
-            "maxRssKb": 617712,
-            "exitCode": 1,
-            "success": false,
-            "timingBreakdownSec": {
-              "total": 66.64,
-              "transform": 17.47,
-              "setup": 23.56,
-              "import": 45.01,
-              "tests": 85.33,
-              "environment": 168.84
-            },
-            "testFiles": "2 failed | 224 passed (226)",
-            "tests": "2 failed | 2291 passed | 3 skipped (2296)",
-            "slowestFiles": [
-              {
-                "file": "test/pack-check.test.ts",
-                "durationMs": 38952.395,
+                "file": "test/test-environment-inventory.test.ts",
+                "durationMs": 189.845,
                 "testCount": 4,
                 "package": "repository"
-              },
-              {
-                "file": "test/architecture-check.test.ts",
-                "durationMs": 19068.361,
-                "testCount": 18,
-                "package": "repository"
-              },
-              {
-                "file": "packages/ui/test/contract.spec.ts",
-                "durationMs": 7593.687,
-                "testCount": 1,
-                "package": "ui"
-              },
-              {
-                "file": "packages/query-kit/test/devtools.test.ts",
-                "durationMs": 5156.687,
-                "testCount": 27,
-                "package": "query-kit"
-              },
-              {
-                "file": "packages/selection/test/demo-interaction.test.ts",
-                "durationMs": 3776.315,
-                "testCount": 3,
-                "package": "selection"
-              },
-              {
-                "file": "packages/gesture/test/controller.test.ts",
-                "durationMs": 1012.604,
-                "testCount": 32,
-                "package": "gesture"
-              },
-              {
-                "file": "test/architecture-boundary.test.ts",
-                "durationMs": 597.501,
-                "testCount": 6,
-                "package": "repository"
-              },
-              {
-                "file": "test/repo-check.test.ts",
-                "durationMs": 337.258,
-                "testCount": 9,
-                "package": "repository"
-              },
-              {
-                "file": "packages/query/test/devtools.test.ts",
-                "durationMs": 320.034,
-                "testCount": 7,
-                "package": "query"
-              },
-              {
-                "file": "packages/query-kit/test/merge-stores.test.ts",
-                "durationMs": 307.579,
-                "testCount": 15,
-                "package": "query-kit"
               }
             ],
             "packageTotals": [
               {
                 "package": "repository",
-                "durationMs": 59458.852,
-                "fileCount": 10,
-                "testCount": 70
-              },
-              {
-                "package": "ui",
-                "durationMs": 7691.416,
-                "fileCount": 3,
-                "testCount": 32
+                "durationMs": 49304.205,
+                "fileCount": 15,
+                "testCount": 92
               },
               {
                 "package": "query-kit",
-                "durationMs": 6234.364,
+                "durationMs": 4383.066,
                 "fileCount": 16,
                 "testCount": 135
               },
               {
-                "package": "selection",
-                "durationMs": 4307.689,
-                "fileCount": 14,
-                "testCount": 86
-              },
-              {
                 "package": "gesture",
-                "durationMs": 1307.374,
+                "durationMs": 1117.171,
                 "fileCount": 7,
                 "testCount": 75
               },
               {
                 "package": "query",
-                "durationMs": 1129.795,
+                "durationMs": 786.815,
                 "fileCount": 11,
                 "testCount": 156
               },
               {
-                "package": "scroll",
-                "durationMs": 1118.36,
-                "fileCount": 11,
-                "testCount": 183
-              },
-              {
                 "package": "command",
-                "durationMs": 805.639,
+                "durationMs": 572.248,
                 "fileCount": 8,
                 "testCount": 46
               },
               {
+                "package": "selection",
+                "durationMs": 468.345,
+                "fileCount": 14,
+                "testCount": 86
+              },
+              {
                 "package": "overlay",
-                "durationMs": 600.29,
+                "durationMs": 393.048,
                 "fileCount": 12,
                 "testCount": 72
               },
               {
                 "package": "realtime",
-                "durationMs": 579.801,
-                "fileCount": 9,
-                "testCount": 121
+                "durationMs": 392.994,
+                "fileCount": 8,
+                "testCount": 110
+              },
+              {
+                "package": "tooltip",
+                "durationMs": 339.343,
+                "fileCount": 4,
+                "testCount": 20
+              },
+              {
+                "package": "env",
+                "durationMs": 294.426,
+                "fileCount": 4,
+                "testCount": 59
               }
             ]
           }
         ]
       },
       "warm": {
-        "count": 3,
+        "count": 1,
         "wallMs": {
-          "min": 59860,
-          "median": 62370,
-          "max": 62930
+          "min": 70300,
+          "median": 70300,
+          "max": 70300
         },
         "maxRssKb": {
-          "min": 583564,
-          "median": 589940,
-          "max": 611556
+          "min": 1402372,
+          "median": 1402372,
+          "max": 1402372
         },
         "timingBreakdownSec": {
-          "total": 55.02,
-          "transform": 17.78,
-          "setup": 22.55,
-          "import": 45.38,
-          "tests": 96.11,
-          "environment": 170
+          "total": 62.01,
+          "transform": 9.9,
+          "setup": 13.95,
+          "import": 28.42,
+          "tests": 66.34,
+          "environment": 45.43
         },
         "success": false,
         "runs": [
           {
             "label": "pnpm run test:coverage",
-            "wallMs": 62930,
-            "maxRssKb": 583564,
+            "wallMs": 70300,
+            "maxRssKb": 1402372,
             "exitCode": 1,
             "success": false,
             "timingBreakdownSec": {
-              "total": 55.17,
-              "transform": 16.92,
-              "setup": 22.69,
-              "import": 44.35,
-              "tests": 95.94,
-              "environment": 172.91
+              "total": 62.01,
+              "transform": 9.9,
+              "setup": 13.95,
+              "import": 28.42,
+              "tests": 66.34,
+              "environment": 45.43
             },
-            "testFiles": "2 failed | 224 passed (226)",
-            "tests": "2 failed | 2291 passed | 3 skipped (2296)",
+            "testFiles": "1 failed | 208 passed (209)",
+            "tests": "1 failed | 1882 passed | 3 skipped (1886)",
             "slowestFiles": [
               {
                 "file": "test/pack-check.test.ts",
-                "durationMs": 50304.264,
+                "durationMs": 38358.569,
                 "testCount": 4,
                 "package": "repository"
               },
               {
                 "file": "test/architecture-check.test.ts",
-                "durationMs": 15309.441,
+                "durationMs": 14478.194,
                 "testCount": 18,
                 "package": "repository"
               },
               {
-                "file": "packages/ui/test/contract.spec.ts",
-                "durationMs": 6849.526,
-                "testCount": 1,
-                "package": "ui"
-              },
-              {
                 "file": "packages/query-kit/test/devtools.test.ts",
-                "durationMs": 5304.487,
+                "durationMs": 3690.684,
                 "testCount": 27,
                 "package": "query-kit"
               },
               {
-                "file": "packages/transfer/test/clipboard.test.ts",
-                "durationMs": 3636.406,
+                "file": "test/vitest-projects.test.ts",
+                "durationMs": 1384.255,
+                "testCount": 4,
+                "package": "repository"
+              },
+              {
+                "file": "packages/gesture/test/controller.test.ts",
+                "durationMs": 978.327,
+                "testCount": 32,
+                "package": "gesture"
+              },
+              {
+                "file": "test/architecture-boundary.test.ts",
+                "durationMs": 367.641,
+                "testCount": 6,
+                "package": "repository"
+              },
+              {
+                "file": "packages/query/test/devtools.test.ts",
+                "durationMs": 270.927,
+                "testCount": 7,
+                "package": "query"
+              },
+              {
+                "file": "packages/query-kit/test/merge-stores.test.ts",
+                "durationMs": 218.398,
+                "testCount": 15,
+                "package": "query-kit"
+              },
+              {
+                "file": "test/repo-check.test.ts",
+                "durationMs": 197.833,
                 "testCount": 9,
-                "package": "transfer"
-              },
-              {
-                "file": "packages/gesture/test/controller.test.ts",
-                "durationMs": 1053.874,
-                "testCount": 32,
-                "package": "gesture"
-              },
-              {
-                "file": "test/architecture-boundary.test.ts",
-                "durationMs": 549.611,
-                "testCount": 6,
                 "package": "repository"
-              },
-              {
-                "file": "packages/query/test/devtools.test.ts",
-                "durationMs": 289.999,
-                "testCount": 7,
-                "package": "query"
               },
               {
                 "file": "packages/query/test/cache-coverage.test.ts",
-                "durationMs": 256.002,
-                "testCount": 67,
-                "package": "query"
-              },
-              {
-                "file": "packages/query-kit/test/merge-stores.test.ts",
-                "durationMs": 238.264,
-                "testCount": 15,
-                "package": "query-kit"
-              }
-            ],
-            "packageTotals": [
-              {
-                "package": "repository",
-                "durationMs": 66943.69,
-                "fileCount": 10,
-                "testCount": 70
-              },
-              {
-                "package": "ui",
-                "durationMs": 6948.49,
-                "fileCount": 3,
-                "testCount": 32
-              },
-              {
-                "package": "query-kit",
-                "durationMs": 6413.292,
-                "fileCount": 16,
-                "testCount": 135
-              },
-              {
-                "package": "transfer",
-                "durationMs": 3790.051,
-                "fileCount": 5,
-                "testCount": 36
-              },
-              {
-                "package": "gesture",
-                "durationMs": 1310.237,
-                "fileCount": 7,
-                "testCount": 75
-              },
-              {
-                "package": "query",
-                "durationMs": 1169.076,
-                "fileCount": 11,
-                "testCount": 156
-              },
-              {
-                "package": "scroll",
-                "durationMs": 1156.062,
-                "fileCount": 11,
-                "testCount": 183
-              },
-              {
-                "package": "command",
-                "durationMs": 817.3,
-                "fileCount": 8,
-                "testCount": 46
-              },
-              {
-                "package": "selection",
-                "durationMs": 806.945,
-                "fileCount": 14,
-                "testCount": 86
-              },
-              {
-                "package": "realtime",
-                "durationMs": 591.273,
-                "fileCount": 9,
-                "testCount": 121
-              }
-            ]
-          },
-          {
-            "label": "pnpm run test:coverage",
-            "wallMs": 59860,
-            "maxRssKb": 589940,
-            "exitCode": 1,
-            "success": false,
-            "timingBreakdownSec": {
-              "total": 55.16,
-              "transform": 19.31,
-              "setup": 22.3,
-              "import": 47.12,
-              "tests": 96.35,
-              "environment": 168.48
-            },
-            "testFiles": "2 failed | 224 passed (226)",
-            "tests": "2 failed | 2291 passed | 3 skipped (2296)",
-            "slowestFiles": [
-              {
-                "file": "test/pack-check.test.ts",
-                "durationMs": 50058.718,
-                "testCount": 4,
-                "package": "repository"
-              },
-              {
-                "file": "test/architecture-check.test.ts",
-                "durationMs": 15080.294,
-                "testCount": 18,
-                "package": "repository"
-              },
-              {
-                "file": "packages/ui/test/contract.spec.ts",
-                "durationMs": 7212.954,
-                "testCount": 1,
-                "package": "ui"
-              },
-              {
-                "file": "packages/query-kit/test/devtools.test.ts",
-                "durationMs": 5598.894,
-                "testCount": 27,
-                "package": "query-kit"
-              },
-              {
-                "file": "packages/core/test/load-error.spec.ts",
-                "durationMs": 3669.305,
-                "testCount": 6,
-                "package": "core"
-              },
-              {
-                "file": "packages/core/test/contract.spec.ts",
-                "durationMs": 3659.314,
-                "testCount": 6,
-                "package": "core"
-              },
-              {
-                "file": "packages/gesture/test/controller.test.ts",
-                "durationMs": 1019.87,
-                "testCount": 32,
-                "package": "gesture"
-              },
-              {
-                "file": "test/architecture-boundary.test.ts",
-                "durationMs": 621.298,
-                "testCount": 6,
-                "package": "repository"
-              },
-              {
-                "file": "packages/query/test/devtools.test.ts",
-                "durationMs": 302.396,
-                "testCount": 7,
-                "package": "query"
-              },
-              {
-                "file": "packages/query-kit/test/merge-stores.test.ts",
-                "durationMs": 258.715,
-                "testCount": 15,
-                "package": "query-kit"
-              }
-            ],
-            "packageTotals": [
-              {
-                "package": "repository",
-                "durationMs": 66516.324,
-                "fileCount": 10,
-                "testCount": 70
-              },
-              {
-                "package": "core",
-                "durationMs": 7752.398,
-                "fileCount": 13,
-                "testCount": 140
-              },
-              {
-                "package": "ui",
-                "durationMs": 7336.954,
-                "fileCount": 3,
-                "testCount": 32
-              },
-              {
-                "package": "query-kit",
-                "durationMs": 6731.863,
-                "fileCount": 16,
-                "testCount": 135
-              },
-              {
-                "package": "gesture",
-                "durationMs": 1370.781,
-                "fileCount": 7,
-                "testCount": 75
-              },
-              {
-                "package": "scroll",
-                "durationMs": 1164.357,
-                "fileCount": 11,
-                "testCount": 183
-              },
-              {
-                "package": "query",
-                "durationMs": 1160.619,
-                "fileCount": 11,
-                "testCount": 156
-              },
-              {
-                "package": "command",
-                "durationMs": 820.836,
-                "fileCount": 8,
-                "testCount": 46
-              },
-              {
-                "package": "selection",
-                "durationMs": 786.762,
-                "fileCount": 14,
-                "testCount": 86
-              },
-              {
-                "package": "realtime",
-                "durationMs": 660.649,
-                "fileCount": 9,
-                "testCount": 121
-              }
-            ]
-          },
-          {
-            "label": "pnpm run test:coverage",
-            "wallMs": 62370,
-            "maxRssKb": 611556,
-            "exitCode": 1,
-            "success": false,
-            "timingBreakdownSec": {
-              "total": 54.73,
-              "transform": 17.12,
-              "setup": 22.65,
-              "import": 44.68,
-              "tests": 96.04,
-              "environment": 168.6
-            },
-            "testFiles": "2 failed | 224 passed (226)",
-            "tests": "2 failed | 2291 passed | 3 skipped (2296)",
-            "slowestFiles": [
-              {
-                "file": "test/pack-check.test.ts",
-                "durationMs": 50162.548,
-                "testCount": 4,
-                "package": "repository"
-              },
-              {
-                "file": "test/architecture-check.test.ts",
-                "durationMs": 18434.353,
-                "testCount": 18,
-                "package": "repository"
-              },
-              {
-                "file": "packages/query-kit/test/devtools.test.ts",
-                "durationMs": 8242.269,
-                "testCount": 27,
-                "package": "query-kit"
-              },
-              {
-                "file": "packages/ui/test/contract.spec.ts",
-                "durationMs": 6814.63,
-                "testCount": 1,
-                "package": "ui"
-              },
-              {
-                "file": "packages/theme/test/id.spec.ts",
-                "durationMs": 3573.615,
-                "testCount": 3,
-                "package": "theme"
-              },
-              {
-                "file": "packages/gesture/test/controller.test.ts",
-                "durationMs": 1009.73,
-                "testCount": 32,
-                "package": "gesture"
-              },
-              {
-                "file": "test/architecture-boundary.test.ts",
-                "durationMs": 617.73,
-                "testCount": 6,
-                "package": "repository"
-              },
-              {
-                "file": "packages/query/test/devtools.test.ts",
-                "durationMs": 295.192,
-                "testCount": 7,
-                "package": "query"
-              },
-              {
-                "file": "packages/query-kit/test/merge-stores.test.ts",
-                "durationMs": 247.489,
-                "testCount": 15,
-                "package": "query-kit"
-              },
-              {
-                "file": "packages/query/test/cache-coverage.test.ts",
-                "durationMs": 238.184,
+                "durationMs": 177.646,
                 "testCount": 67,
                 "package": "query"
               }
@@ -1747,63 +654,63 @@
             "packageTotals": [
               {
                 "package": "repository",
-                "durationMs": 69929.834,
-                "fileCount": 10,
-                "testCount": 70
+                "durationMs": 55421.233,
+                "fileCount": 15,
+                "testCount": 92
               },
               {
                 "package": "query-kit",
-                "durationMs": 9281.202,
+                "durationMs": 4433.211,
                 "fileCount": 16,
                 "testCount": 135
               },
               {
-                "package": "ui",
-                "durationMs": 6950.277,
-                "fileCount": 3,
-                "testCount": 32
-              },
-              {
-                "package": "theme",
-                "durationMs": 3943.766,
-                "fileCount": 7,
-                "testCount": 91
-              },
-              {
                 "package": "gesture",
-                "durationMs": 1270.566,
+                "durationMs": 1130.246,
                 "fileCount": 7,
                 "testCount": 75
               },
               {
-                "package": "scroll",
-                "durationMs": 1199.529,
-                "fileCount": 11,
-                "testCount": 183
-              },
-              {
                 "package": "query",
-                "durationMs": 1158.81,
+                "durationMs": 832.774,
                 "fileCount": 11,
                 "testCount": 156
               },
               {
-                "package": "selection",
-                "durationMs": 930.441,
-                "fileCount": 14,
-                "testCount": 86
-              },
-              {
                 "package": "command",
-                "durationMs": 787.167,
+                "durationMs": 567.857,
                 "fileCount": 8,
                 "testCount": 46
               },
               {
+                "package": "selection",
+                "durationMs": 546.017,
+                "fileCount": 14,
+                "testCount": 86
+              },
+              {
                 "package": "realtime",
-                "durationMs": 615.306,
-                "fileCount": 9,
-                "testCount": 121
+                "durationMs": 434.374,
+                "fileCount": 8,
+                "testCount": 110
+              },
+              {
+                "package": "overlay",
+                "durationMs": 392.249,
+                "fileCount": 12,
+                "testCount": 72
+              },
+              {
+                "package": "tooltip",
+                "durationMs": 345.573,
+                "fileCount": 4,
+                "testCount": 20
+              },
+              {
+                "package": "env",
+                "durationMs": 290.545,
+                "fileCount": 4,
+                "testCount": 59
               }
             ]
           }
@@ -1811,2346 +718,7 @@
       }
     }
   },
-  "packages": [
-    {
-      "id": "core",
-      "label": "@ailuracode/alpine-core",
-      "category": "pure-controller",
-      "filterNote": "Scoped to packages/core (correct).",
-      "cold": {
-        "count": 3,
-        "wallMs": {
-          "min": 2810,
-          "median": 2850,
-          "max": 2960
-        },
-        "maxRssKb": {
-          "min": 199048,
-          "median": 199960,
-          "max": 202264
-        },
-        "timingBreakdownSec": {
-          "total": 2.87,
-          "transform": null,
-          "setup": null,
-          "import": null,
-          "tests": null,
-          "environment": null
-        },
-        "success": true,
-        "runs": [
-          {
-            "label": "@ailuracode/alpine-core",
-            "wallMs": 2810,
-            "maxRssKb": 199048,
-            "exitCode": 0,
-            "success": true,
-            "timingBreakdownSec": {
-              "total": 2.81,
-              "transform": null,
-              "setup": null,
-              "import": null,
-              "tests": null,
-              "environment": null,
-              "note": "Vitest did not emit a duration breakdown; total approximated from wall clock."
-            },
-            "testFiles": "13 passed (13)",
-            "tests": "140 passed (140)",
-            "slowestFiles": [
-              {
-                "file": "packages/core/test/singleton.spec.ts",
-                "durationMs": 51.928,
-                "testCount": 25,
-                "package": "core"
-              },
-              {
-                "file": "packages/core/test/init.spec.ts",
-                "durationMs": 50.663,
-                "testCount": 18,
-                "package": "core"
-              },
-              {
-                "file": "packages/core/test/plugin-registry.spec.ts",
-                "durationMs": 40.567,
-                "testCount": 14,
-                "package": "core"
-              },
-              {
-                "file": "packages/core/test/core-primitives.spec.ts",
-                "durationMs": 38.536,
-                "testCount": 23,
-                "package": "core"
-              },
-              {
-                "file": "packages/core/test/load-error.spec.ts",
-                "durationMs": 30.195,
-                "testCount": 6,
-                "package": "core"
-              },
-              {
-                "file": "packages/core/test/contract.spec.ts",
-                "durationMs": 28.981,
-                "testCount": 6,
-                "package": "core"
-              },
-              {
-                "file": "packages/core/test/base-controller.spec.ts",
-                "durationMs": 28.232,
-                "testCount": 10,
-                "package": "core"
-              },
-              {
-                "file": "packages/core/test/alpine-types.spec.ts",
-                "durationMs": 26.273,
-                "testCount": 8,
-                "package": "core"
-              },
-              {
-                "file": "packages/core/test/loader.spec.ts",
-                "durationMs": 25.771,
-                "testCount": 8,
-                "package": "core"
-              },
-              {
-                "file": "packages/core/test/lifecycle-bridge.spec.ts",
-                "durationMs": 25.109,
-                "testCount": 9,
-                "package": "core"
-              }
-            ],
-            "packageTotals": [
-              {
-                "package": "core",
-                "durationMs": 391.363,
-                "fileCount": 13,
-                "testCount": 140
-              }
-            ]
-          },
-          {
-            "label": "@ailuracode/alpine-core",
-            "wallMs": 2960,
-            "maxRssKb": 199960,
-            "exitCode": 0,
-            "success": true,
-            "timingBreakdownSec": {
-              "total": 2.96,
-              "transform": null,
-              "setup": null,
-              "import": null,
-              "tests": null,
-              "environment": null,
-              "note": "Vitest did not emit a duration breakdown; total approximated from wall clock."
-            },
-            "testFiles": "13 passed (13)",
-            "tests": "140 passed (140)"
-          },
-          {
-            "label": "@ailuracode/alpine-core",
-            "wallMs": 2850,
-            "maxRssKb": 202264,
-            "exitCode": 0,
-            "success": true,
-            "timingBreakdownSec": {
-              "total": 2.85,
-              "transform": null,
-              "setup": null,
-              "import": null,
-              "tests": null,
-              "environment": null,
-              "note": "Vitest did not emit a duration breakdown; total approximated from wall clock."
-            },
-            "testFiles": "13 passed (13)",
-            "tests": "140 passed (140)"
-          }
-        ]
-      },
-      "warm": {
-        "count": 3,
-        "wallMs": {
-          "min": 2790,
-          "median": 3140,
-          "max": 6570
-        },
-        "maxRssKb": {
-          "min": 199132,
-          "median": 199660,
-          "max": 202628
-        },
-        "timingBreakdownSec": {
-          "total": 4.17,
-          "transform": null,
-          "setup": null,
-          "import": null,
-          "tests": null,
-          "environment": null
-        },
-        "success": true,
-        "runs": [
-          {
-            "label": "@ailuracode/alpine-core",
-            "wallMs": 3140,
-            "maxRssKb": 199132,
-            "exitCode": 0,
-            "success": true,
-            "timingBreakdownSec": {
-              "total": 3.14,
-              "transform": null,
-              "setup": null,
-              "import": null,
-              "tests": null,
-              "environment": null,
-              "note": "Vitest did not emit a duration breakdown; total approximated from wall clock."
-            },
-            "testFiles": "13 passed (13)",
-            "tests": "140 passed (140)",
-            "slowestFiles": [
-              {
-                "file": "packages/core/test/singleton.spec.ts",
-                "durationMs": 54.569,
-                "testCount": 25,
-                "package": "core"
-              },
-              {
-                "file": "packages/core/test/plugin-registry.spec.ts",
-                "durationMs": 45.582,
-                "testCount": 14,
-                "package": "core"
-              },
-              {
-                "file": "packages/core/test/base-controller.spec.ts",
-                "durationMs": 39.988,
-                "testCount": 10,
-                "package": "core"
-              },
-              {
-                "file": "packages/core/test/lifecycle-bridge.spec.ts",
-                "durationMs": 37.225,
-                "testCount": 9,
-                "package": "core"
-              },
-              {
-                "file": "packages/core/test/core-primitives.spec.ts",
-                "durationMs": 36.779,
-                "testCount": 23,
-                "package": "core"
-              },
-              {
-                "file": "packages/core/test/lazy-plugin.spec.ts",
-                "durationMs": 36.277,
-                "testCount": 6,
-                "package": "core"
-              },
-              {
-                "file": "packages/core/test/loader.spec.ts",
-                "durationMs": 34.348,
-                "testCount": 8,
-                "package": "core"
-              },
-              {
-                "file": "packages/core/test/init.spec.ts",
-                "durationMs": 33.221,
-                "testCount": 18,
-                "package": "core"
-              },
-              {
-                "file": "packages/core/test/contract.spec.ts",
-                "durationMs": 32.027,
-                "testCount": 6,
-                "package": "core"
-              },
-              {
-                "file": "packages/core/test/alpine-types.spec.ts",
-                "durationMs": 31.536,
-                "testCount": 8,
-                "package": "core"
-              }
-            ],
-            "packageTotals": [
-              {
-                "package": "core",
-                "durationMs": 435.828,
-                "fileCount": 13,
-                "testCount": 140
-              }
-            ]
-          },
-          {
-            "label": "@ailuracode/alpine-core",
-            "wallMs": 6570,
-            "maxRssKb": 199660,
-            "exitCode": 0,
-            "success": true,
-            "timingBreakdownSec": {
-              "total": 6.57,
-              "transform": null,
-              "setup": null,
-              "import": null,
-              "tests": null,
-              "environment": null,
-              "note": "Vitest did not emit a duration breakdown; total approximated from wall clock."
-            },
-            "testFiles": "13 passed (13)",
-            "tests": "140 passed (140)"
-          },
-          {
-            "label": "@ailuracode/alpine-core",
-            "wallMs": 2790,
-            "maxRssKb": 202628,
-            "exitCode": 0,
-            "success": true,
-            "timingBreakdownSec": {
-              "total": 2.79,
-              "transform": null,
-              "setup": null,
-              "import": null,
-              "tests": null,
-              "environment": null,
-              "note": "Vitest did not emit a duration breakdown; total approximated from wall clock."
-            },
-            "testFiles": "13 passed (13)",
-            "tests": "140 passed (140)"
-          }
-        ]
-      }
-    },
-    {
-      "id": "dialog",
-      "label": "@ailuracode/alpine-dialog",
-      "category": "dom-heavy",
-      "filterNote": "Package script passes `test` as a path filter — currently matches the full workspace suite.",
-      "inheritsWorkspace": "test",
-      "cold": {
-        "count": 3,
-        "wallMs": {
-          "min": 67770,
-          "median": 68990,
-          "max": 69470
-        },
-        "maxRssKb": {
-          "min": 463760,
-          "median": 464316,
-          "max": 468328
-        },
-        "timingBreakdownSec": {
-          "total": 60.96,
-          "transform": 17.79,
-          "setup": 21.99,
-          "import": 43.24,
-          "tests": 71.97,
-          "environment": 166.9
-        },
-        "success": false,
-        "runs": [
-          {
-            "label": "pnpm test",
-            "wallMs": 68990,
-            "maxRssKb": 464316,
-            "exitCode": 1,
-            "success": false,
-            "timingBreakdownSec": {
-              "total": 61.32,
-              "transform": 18.53,
-              "setup": 22.54,
-              "import": 44.27,
-              "tests": 71.96,
-              "environment": 169.2
-            },
-            "testFiles": "1 failed | 225 passed (226)",
-            "tests": "1 failed | 2292 passed | 3 skipped (2296)",
-            "slowestFiles": [
-              {
-                "file": "test/pack-check.test.ts",
-                "durationMs": 38661.376,
-                "testCount": 4,
-                "package": "repository"
-              },
-              {
-                "file": "packages/ui/test/contract.spec.ts",
-                "durationMs": 7668.167,
-                "testCount": 1,
-                "package": "ui"
-              },
-              {
-                "file": "packages/query-kit/test/devtools.test.ts",
-                "durationMs": 4593.66,
-                "testCount": 27,
-                "package": "query-kit"
-              },
-              {
-                "file": "test/architecture-check.test.ts",
-                "durationMs": 4268.848,
-                "testCount": 18,
-                "package": "repository"
-              },
-              {
-                "file": "packages/gesture/test/controller.test.ts",
-                "durationMs": 1007.352,
-                "testCount": 32,
-                "package": "gesture"
-              },
-              {
-                "file": "test/architecture-boundary.test.ts",
-                "durationMs": 336.387,
-                "testCount": 6,
-                "package": "repository"
-              },
-              {
-                "file": "packages/query/test/devtools.test.ts",
-                "durationMs": 297.448,
-                "testCount": 7,
-                "package": "query"
-              },
-              {
-                "file": "packages/query-kit/test/merge-stores.test.ts",
-                "durationMs": 258.743,
-                "testCount": 15,
-                "package": "query-kit"
-              },
-              {
-                "file": "test/repo-check.test.ts",
-                "durationMs": 207.097,
-                "testCount": 9,
-                "package": "repository"
-              },
-              {
-                "file": "packages/scroll/test/coverage-gaps.spec.ts",
-                "durationMs": 204.552,
-                "testCount": 29,
-                "package": "scroll"
-              }
-            ],
-            "packageTotals": [
-              {
-                "package": "repository",
-                "durationMs": 43968.508,
-                "fileCount": 10,
-                "testCount": 70
-              },
-              {
-                "package": "ui",
-                "durationMs": 7791.902,
-                "fileCount": 3,
-                "testCount": 32
-              },
-              {
-                "package": "query-kit",
-                "durationMs": 5607.023,
-                "fileCount": 16,
-                "testCount": 135
-              },
-              {
-                "package": "gesture",
-                "durationMs": 1262.811,
-                "fileCount": 7,
-                "testCount": 75
-              },
-              {
-                "package": "scroll",
-                "durationMs": 1113.823,
-                "fileCount": 11,
-                "testCount": 183
-              },
-              {
-                "package": "query",
-                "durationMs": 1058.287,
-                "fileCount": 11,
-                "testCount": 156
-              },
-              {
-                "package": "selection",
-                "durationMs": 784.58,
-                "fileCount": 14,
-                "testCount": 86
-              },
-              {
-                "package": "command",
-                "durationMs": 732.351,
-                "fileCount": 8,
-                "testCount": 46
-              },
-              {
-                "package": "realtime",
-                "durationMs": 605.427,
-                "fileCount": 9,
-                "testCount": 121
-              },
-              {
-                "package": "overlay",
-                "durationMs": 581.412,
-                "fileCount": 12,
-                "testCount": 72
-              }
-            ]
-          },
-          {
-            "label": "pnpm test",
-            "wallMs": 67770,
-            "maxRssKb": 463760,
-            "exitCode": 1,
-            "success": false,
-            "timingBreakdownSec": {
-              "total": 59.96,
-              "transform": 17.03,
-              "setup": 20.99,
-              "import": 41.95,
-              "tests": 71.03,
-              "environment": 162.71
-            },
-            "testFiles": "1 failed | 225 passed (226)",
-            "tests": "1 failed | 2292 passed | 3 skipped (2296)",
-            "slowestFiles": [
-              {
-                "file": "test/pack-check.test.ts",
-                "durationMs": 38669.524,
-                "testCount": 4,
-                "package": "repository"
-              },
-              {
-                "file": "packages/ui/test/contract.spec.ts",
-                "durationMs": 7900.312,
-                "testCount": 1,
-                "package": "ui"
-              },
-              {
-                "file": "test/architecture-check.test.ts",
-                "durationMs": 4300.069,
-                "testCount": 18,
-                "package": "repository"
-              },
-              {
-                "file": "packages/query-kit/test/devtools.test.ts",
-                "durationMs": 4213.765,
-                "testCount": 27,
-                "package": "query-kit"
-              },
-              {
-                "file": "packages/gesture/test/controller.test.ts",
-                "durationMs": 1008.545,
-                "testCount": 32,
-                "package": "gesture"
-              },
-              {
-                "file": "packages/query/test/devtools.test.ts",
-                "durationMs": 309.2,
-                "testCount": 7,
-                "package": "query"
-              },
-              {
-                "file": "test/architecture-boundary.test.ts",
-                "durationMs": 274.601,
-                "testCount": 6,
-                "package": "repository"
-              },
-              {
-                "file": "packages/query-kit/test/merge-stores.test.ts",
-                "durationMs": 271.86,
-                "testCount": 15,
-                "package": "query-kit"
-              },
-              {
-                "file": "test/repo-check.test.ts",
-                "durationMs": 232.216,
-                "testCount": 9,
-                "package": "repository"
-              },
-              {
-                "file": "packages/scroll/test/coverage-gaps.spec.ts",
-                "durationMs": 200.195,
-                "testCount": 29,
-                "package": "scroll"
-              }
-            ],
-            "packageTotals": [
-              {
-                "package": "repository",
-                "durationMs": 43990.38,
-                "fileCount": 10,
-                "testCount": 70
-              },
-              {
-                "package": "ui",
-                "durationMs": 8004.275,
-                "fileCount": 3,
-                "testCount": 32
-              },
-              {
-                "package": "query-kit",
-                "durationMs": 5233.849,
-                "fileCount": 16,
-                "testCount": 135
-              },
-              {
-                "package": "gesture",
-                "durationMs": 1244.332,
-                "fileCount": 7,
-                "testCount": 75
-              },
-              {
-                "package": "scroll",
-                "durationMs": 1063.241,
-                "fileCount": 11,
-                "testCount": 183
-              },
-              {
-                "package": "query",
-                "durationMs": 980.904,
-                "fileCount": 11,
-                "testCount": 156
-              },
-              {
-                "package": "command",
-                "durationMs": 741.005,
-                "fileCount": 8,
-                "testCount": 46
-              },
-              {
-                "package": "selection",
-                "durationMs": 684.928,
-                "fileCount": 14,
-                "testCount": 86
-              },
-              {
-                "package": "realtime",
-                "durationMs": 554.01,
-                "fileCount": 9,
-                "testCount": 121
-              },
-              {
-                "package": "overlay",
-                "durationMs": 547.938,
-                "fileCount": 12,
-                "testCount": 72
-              }
-            ]
-          },
-          {
-            "label": "pnpm test",
-            "wallMs": 69470,
-            "maxRssKb": 468328,
-            "exitCode": 1,
-            "success": false,
-            "timingBreakdownSec": {
-              "total": 61.6,
-              "transform": 17.8,
-              "setup": 22.44,
-              "import": 43.5,
-              "tests": 72.92,
-              "environment": 168.79
-            },
-            "testFiles": "1 failed | 225 passed (226)",
-            "tests": "1 failed | 2292 passed | 3 skipped (2296)",
-            "slowestFiles": [
-              {
-                "file": "test/pack-check.test.ts",
-                "durationMs": 39164.275,
-                "testCount": 4,
-                "package": "repository"
-              },
-              {
-                "file": "packages/ui/test/contract.spec.ts",
-                "durationMs": 7623.402,
-                "testCount": 1,
-                "package": "ui"
-              },
-              {
-                "file": "packages/query-kit/test/devtools.test.ts",
-                "durationMs": 5003.55,
-                "testCount": 27,
-                "package": "query-kit"
-              },
-              {
-                "file": "test/architecture-check.test.ts",
-                "durationMs": 4482.127,
-                "testCount": 18,
-                "package": "repository"
-              },
-              {
-                "file": "packages/gesture/test/controller.test.ts",
-                "durationMs": 1000.364,
-                "testCount": 32,
-                "package": "gesture"
-              },
-              {
-                "file": "test/architecture-boundary.test.ts",
-                "durationMs": 331.247,
-                "testCount": 6,
-                "package": "repository"
-              },
-              {
-                "file": "packages/query/test/devtools.test.ts",
-                "durationMs": 323.75,
-                "testCount": 7,
-                "package": "query"
-              },
-              {
-                "file": "packages/command/test/alpine-reactivity.test.ts",
-                "durationMs": 277.571,
-                "testCount": 2,
-                "package": "command"
-              },
-              {
-                "file": "packages/query-kit/test/merge-stores.test.ts",
-                "durationMs": 263.068,
-                "testCount": 15,
-                "package": "query-kit"
-              },
-              {
-                "file": "packages/selection/test/demo-interaction.test.ts",
-                "durationMs": 207.086,
-                "testCount": 3,
-                "package": "selection"
-              }
-            ],
-            "packageTotals": [
-              {
-                "package": "repository",
-                "durationMs": 44641.577,
-                "fileCount": 10,
-                "testCount": 70
-              },
-              {
-                "package": "ui",
-                "durationMs": 7721.606,
-                "fileCount": 3,
-                "testCount": 32
-              },
-              {
-                "package": "query-kit",
-                "durationMs": 6031.635,
-                "fileCount": 16,
-                "testCount": 135
-              },
-              {
-                "package": "gesture",
-                "durationMs": 1329.246,
-                "fileCount": 7,
-                "testCount": 75
-              },
-              {
-                "package": "query",
-                "durationMs": 1073.518,
-                "fileCount": 11,
-                "testCount": 156
-              },
-              {
-                "package": "scroll",
-                "durationMs": 1066.515,
-                "fileCount": 11,
-                "testCount": 183
-              },
-              {
-                "package": "command",
-                "durationMs": 835.355,
-                "fileCount": 8,
-                "testCount": 46
-              },
-              {
-                "package": "selection",
-                "durationMs": 722.343,
-                "fileCount": 14,
-                "testCount": 86
-              },
-              {
-                "package": "realtime",
-                "durationMs": 590.76,
-                "fileCount": 9,
-                "testCount": 121
-              },
-              {
-                "package": "core",
-                "durationMs": 556.58,
-                "fileCount": 13,
-                "testCount": 140
-              }
-            ]
-          }
-        ],
-        "inherited": true
-      },
-      "warm": {
-        "count": 3,
-        "wallMs": {
-          "min": 54030,
-          "median": 57510,
-          "max": 59240
-        },
-        "maxRssKb": {
-          "min": 465380,
-          "median": 472760,
-          "max": 484300
-        },
-        "timingBreakdownSec": {
-          "total": 50.25,
-          "transform": 17.37,
-          "setup": 20.93,
-          "import": 43.03,
-          "tests": 82.57,
-          "environment": 168.56
-        },
-        "success": false,
-        "runs": [
-          {
-            "label": "pnpm test",
-            "wallMs": 54030,
-            "maxRssKb": 465380,
-            "exitCode": 1,
-            "success": false,
-            "timingBreakdownSec": {
-              "total": 49.77,
-              "transform": 16.93,
-              "setup": 21.17,
-              "import": 42.57,
-              "tests": 81.08,
-              "environment": 168.29
-            },
-            "testFiles": "1 failed | 225 passed (226)",
-            "tests": "1 failed | 2292 passed | 3 skipped (2296)",
-            "slowestFiles": [
-              {
-                "file": "test/pack-check.test.ts",
-                "durationMs": 47834.656,
-                "testCount": 4,
-                "package": "repository"
-              },
-              {
-                "file": "packages/ui/test/contract.spec.ts",
-                "durationMs": 7213.289,
-                "testCount": 1,
-                "package": "ui"
-              },
-              {
-                "file": "packages/query-kit/test/devtools.test.ts",
-                "durationMs": 4800.895,
-                "testCount": 27,
-                "package": "query-kit"
-              },
-              {
-                "file": "test/architecture-check.test.ts",
-                "durationMs": 4441.256,
-                "testCount": 18,
-                "package": "repository"
-              },
-              {
-                "file": "packages/query-kit/test/panel-preferences.test.ts",
-                "durationMs": 3596.492,
-                "testCount": 6,
-                "package": "query-kit"
-              },
-              {
-                "file": "packages/gesture/test/controller.test.ts",
-                "durationMs": 1025.455,
-                "testCount": 32,
-                "package": "gesture"
-              },
-              {
-                "file": "test/architecture-boundary.test.ts",
-                "durationMs": 310.696,
-                "testCount": 6,
-                "package": "repository"
-              },
-              {
-                "file": "packages/query/test/devtools.test.ts",
-                "durationMs": 281.14,
-                "testCount": 7,
-                "package": "query"
-              },
-              {
-                "file": "packages/query-kit/test/merge-stores.test.ts",
-                "durationMs": 256.056,
-                "testCount": 15,
-                "package": "query-kit"
-              },
-              {
-                "file": "test/repo-check.test.ts",
-                "durationMs": 248.897,
-                "testCount": 9,
-                "package": "repository"
-              }
-            ],
-            "packageTotals": [
-              {
-                "package": "repository",
-                "durationMs": 53383.907,
-                "fileCount": 10,
-                "testCount": 70
-              },
-              {
-                "package": "query-kit",
-                "durationMs": 9399,
-                "fileCount": 16,
-                "testCount": 135
-              },
-              {
-                "package": "ui",
-                "durationMs": 7335.043,
-                "fileCount": 3,
-                "testCount": 32
-              },
-              {
-                "package": "gesture",
-                "durationMs": 1290.762,
-                "fileCount": 7,
-                "testCount": 75
-              },
-              {
-                "package": "query",
-                "durationMs": 1062.867,
-                "fileCount": 11,
-                "testCount": 156
-              },
-              {
-                "package": "scroll",
-                "durationMs": 1058.817,
-                "fileCount": 11,
-                "testCount": 183
-              },
-              {
-                "package": "command",
-                "durationMs": 766.723,
-                "fileCount": 8,
-                "testCount": 46
-              },
-              {
-                "package": "realtime",
-                "durationMs": 640.198,
-                "fileCount": 9,
-                "testCount": 121
-              },
-              {
-                "package": "selection",
-                "durationMs": 631.776,
-                "fileCount": 14,
-                "testCount": 86
-              },
-              {
-                "package": "menu",
-                "durationMs": 565.574,
-                "fileCount": 4,
-                "testCount": 48
-              }
-            ]
-          },
-          {
-            "label": "pnpm test",
-            "wallMs": 57510,
-            "maxRssKb": 472760,
-            "exitCode": 1,
-            "success": false,
-            "timingBreakdownSec": {
-              "total": 49.63,
-              "transform": 16.97,
-              "setup": 20.22,
-              "import": 42.42,
-              "tests": 80.49,
-              "environment": 165.65
-            },
-            "testFiles": "1 failed | 225 passed (226)",
-            "tests": "1 failed | 2292 passed | 3 skipped (2296)",
-            "slowestFiles": [
-              {
-                "file": "test/pack-check.test.ts",
-                "durationMs": 47583.879,
-                "testCount": 4,
-                "package": "repository"
-              },
-              {
-                "file": "test/architecture-check.test.ts",
-                "durationMs": 8364.49,
-                "testCount": 18,
-                "package": "repository"
-              },
-              {
-                "file": "packages/query-kit/test/devtools.test.ts",
-                "durationMs": 8356.3,
-                "testCount": 27,
-                "package": "query-kit"
-              },
-              {
-                "file": "packages/ui/test/contract.spec.ts",
-                "durationMs": 6909.695,
-                "testCount": 1,
-                "package": "ui"
-              },
-              {
-                "file": "packages/gesture/test/controller.test.ts",
-                "durationMs": 1010.966,
-                "testCount": 32,
-                "package": "gesture"
-              },
-              {
-                "file": "packages/query/test/devtools.test.ts",
-                "durationMs": 268.724,
-                "testCount": 7,
-                "package": "query"
-              },
-              {
-                "file": "test/architecture-boundary.test.ts",
-                "durationMs": 258.291,
-                "testCount": 6,
-                "package": "repository"
-              },
-              {
-                "file": "packages/query-kit/test/merge-stores.test.ts",
-                "durationMs": 242.74,
-                "testCount": 15,
-                "package": "query-kit"
-              },
-              {
-                "file": "packages/scroll/test/coverage-gaps.spec.ts",
-                "durationMs": 215.849,
-                "testCount": 29,
-                "package": "scroll"
-              },
-              {
-                "file": "packages/selection/test/demo-interaction.test.ts",
-                "durationMs": 214.072,
-                "testCount": 3,
-                "package": "selection"
-              }
-            ],
-            "packageTotals": [
-              {
-                "package": "repository",
-                "durationMs": 56876.833,
-                "fileCount": 10,
-                "testCount": 70
-              },
-              {
-                "package": "query-kit",
-                "durationMs": 9358.806,
-                "fileCount": 16,
-                "testCount": 135
-              },
-              {
-                "package": "ui",
-                "durationMs": 7026.653,
-                "fileCount": 3,
-                "testCount": 32
-              },
-              {
-                "package": "gesture",
-                "durationMs": 1260.918,
-                "fileCount": 7,
-                "testCount": 75
-              },
-              {
-                "package": "scroll",
-                "durationMs": 1087.367,
-                "fileCount": 11,
-                "testCount": 183
-              },
-              {
-                "package": "query",
-                "durationMs": 1034.519,
-                "fileCount": 11,
-                "testCount": 156
-              },
-              {
-                "package": "command",
-                "durationMs": 805.185,
-                "fileCount": 8,
-                "testCount": 46
-              },
-              {
-                "package": "selection",
-                "durationMs": 720.709,
-                "fileCount": 14,
-                "testCount": 86
-              },
-              {
-                "package": "realtime",
-                "durationMs": 575.679,
-                "fileCount": 9,
-                "testCount": 121
-              },
-              {
-                "package": "overlay",
-                "durationMs": 540.378,
-                "fileCount": 12,
-                "testCount": 72
-              }
-            ]
-          },
-          {
-            "label": "pnpm test",
-            "wallMs": 59240,
-            "maxRssKb": 484300,
-            "exitCode": 1,
-            "success": false,
-            "timingBreakdownSec": {
-              "total": 51.35,
-              "transform": 18.22,
-              "setup": 21.41,
-              "import": 44.09,
-              "tests": 86.13,
-              "environment": 171.73
-            },
-            "testFiles": "1 failed | 225 passed (226)",
-            "tests": "1 failed | 2292 passed | 3 skipped (2296)",
-            "slowestFiles": [
-              {
-                "file": "test/pack-check.test.ts",
-                "durationMs": 49012.134,
-                "testCount": 4,
-                "package": "repository"
-              },
-              {
-                "file": "packages/ui/test/contract.spec.ts",
-                "durationMs": 8281.751,
-                "testCount": 1,
-                "package": "ui"
-              },
-              {
-                "file": "packages/query-kit/test/devtools.test.ts",
-                "durationMs": 5802.491,
-                "testCount": 27,
-                "package": "query-kit"
-              },
-              {
-                "file": "test/architecture-check.test.ts",
-                "durationMs": 5200.789,
-                "testCount": 18,
-                "package": "repository"
-              },
-              {
-                "file": "packages/gesture/test/controller.test.ts",
-                "durationMs": 1013.067,
-                "testCount": 32,
-                "package": "gesture"
-              },
-              {
-                "file": "packages/query/test/cache-coverage.test.ts",
-                "durationMs": 360.495,
-                "testCount": 67,
-                "package": "query"
-              },
-              {
-                "file": "test/repo-check.test.ts",
-                "durationMs": 349.269,
-                "testCount": 9,
-                "package": "repository"
-              },
-              {
-                "file": "packages/query/test/devtools.test.ts",
-                "durationMs": 322.944,
-                "testCount": 7,
-                "package": "query"
-              },
-              {
-                "file": "test/architecture-boundary.test.ts",
-                "durationMs": 298.642,
-                "testCount": 6,
-                "package": "repository"
-              },
-              {
-                "file": "packages/query-kit/test/merge-stores.test.ts",
-                "durationMs": 281.788,
-                "testCount": 15,
-                "package": "query-kit"
-              }
-            ],
-            "packageTotals": [
-              {
-                "package": "repository",
-                "durationMs": 55369.758,
-                "fileCount": 10,
-                "testCount": 70
-              },
-              {
-                "package": "ui",
-                "durationMs": 8383.667,
-                "fileCount": 3,
-                "testCount": 32
-              },
-              {
-                "package": "query-kit",
-                "durationMs": 6868.126,
-                "fileCount": 16,
-                "testCount": 135
-              },
-              {
-                "package": "query",
-                "durationMs": 1360.398,
-                "fileCount": 11,
-                "testCount": 156
-              },
-              {
-                "package": "gesture",
-                "durationMs": 1310.235,
-                "fileCount": 7,
-                "testCount": 75
-              },
-              {
-                "package": "scroll",
-                "durationMs": 1139.774,
-                "fileCount": 11,
-                "testCount": 183
-              },
-              {
-                "package": "command",
-                "durationMs": 815.882,
-                "fileCount": 8,
-                "testCount": 46
-              },
-              {
-                "package": "selection",
-                "durationMs": 732.069,
-                "fileCount": 14,
-                "testCount": 86
-              },
-              {
-                "package": "realtime",
-                "durationMs": 615.272,
-                "fileCount": 9,
-                "testCount": 121
-              },
-              {
-                "package": "overlay",
-                "durationMs": 545.754,
-                "fileCount": 12,
-                "testCount": 72
-              }
-            ]
-          }
-        ],
-        "inherited": true
-      }
-    },
-    {
-      "id": "query",
-      "label": "@ailuracode/alpine-query",
-      "category": "async-cache",
-      "filterNote": "Package script passes `test` as a path filter — currently matches the full workspace suite.",
-      "inheritsWorkspace": "test",
-      "cold": {
-        "count": 3,
-        "wallMs": {
-          "min": 67770,
-          "median": 68990,
-          "max": 69470
-        },
-        "maxRssKb": {
-          "min": 463760,
-          "median": 464316,
-          "max": 468328
-        },
-        "timingBreakdownSec": {
-          "total": 60.96,
-          "transform": 17.79,
-          "setup": 21.99,
-          "import": 43.24,
-          "tests": 71.97,
-          "environment": 166.9
-        },
-        "success": false,
-        "runs": [
-          {
-            "label": "pnpm test",
-            "wallMs": 68990,
-            "maxRssKb": 464316,
-            "exitCode": 1,
-            "success": false,
-            "timingBreakdownSec": {
-              "total": 61.32,
-              "transform": 18.53,
-              "setup": 22.54,
-              "import": 44.27,
-              "tests": 71.96,
-              "environment": 169.2
-            },
-            "testFiles": "1 failed | 225 passed (226)",
-            "tests": "1 failed | 2292 passed | 3 skipped (2296)",
-            "slowestFiles": [
-              {
-                "file": "test/pack-check.test.ts",
-                "durationMs": 38661.376,
-                "testCount": 4,
-                "package": "repository"
-              },
-              {
-                "file": "packages/ui/test/contract.spec.ts",
-                "durationMs": 7668.167,
-                "testCount": 1,
-                "package": "ui"
-              },
-              {
-                "file": "packages/query-kit/test/devtools.test.ts",
-                "durationMs": 4593.66,
-                "testCount": 27,
-                "package": "query-kit"
-              },
-              {
-                "file": "test/architecture-check.test.ts",
-                "durationMs": 4268.848,
-                "testCount": 18,
-                "package": "repository"
-              },
-              {
-                "file": "packages/gesture/test/controller.test.ts",
-                "durationMs": 1007.352,
-                "testCount": 32,
-                "package": "gesture"
-              },
-              {
-                "file": "test/architecture-boundary.test.ts",
-                "durationMs": 336.387,
-                "testCount": 6,
-                "package": "repository"
-              },
-              {
-                "file": "packages/query/test/devtools.test.ts",
-                "durationMs": 297.448,
-                "testCount": 7,
-                "package": "query"
-              },
-              {
-                "file": "packages/query-kit/test/merge-stores.test.ts",
-                "durationMs": 258.743,
-                "testCount": 15,
-                "package": "query-kit"
-              },
-              {
-                "file": "test/repo-check.test.ts",
-                "durationMs": 207.097,
-                "testCount": 9,
-                "package": "repository"
-              },
-              {
-                "file": "packages/scroll/test/coverage-gaps.spec.ts",
-                "durationMs": 204.552,
-                "testCount": 29,
-                "package": "scroll"
-              }
-            ],
-            "packageTotals": [
-              {
-                "package": "repository",
-                "durationMs": 43968.508,
-                "fileCount": 10,
-                "testCount": 70
-              },
-              {
-                "package": "ui",
-                "durationMs": 7791.902,
-                "fileCount": 3,
-                "testCount": 32
-              },
-              {
-                "package": "query-kit",
-                "durationMs": 5607.023,
-                "fileCount": 16,
-                "testCount": 135
-              },
-              {
-                "package": "gesture",
-                "durationMs": 1262.811,
-                "fileCount": 7,
-                "testCount": 75
-              },
-              {
-                "package": "scroll",
-                "durationMs": 1113.823,
-                "fileCount": 11,
-                "testCount": 183
-              },
-              {
-                "package": "query",
-                "durationMs": 1058.287,
-                "fileCount": 11,
-                "testCount": 156
-              },
-              {
-                "package": "selection",
-                "durationMs": 784.58,
-                "fileCount": 14,
-                "testCount": 86
-              },
-              {
-                "package": "command",
-                "durationMs": 732.351,
-                "fileCount": 8,
-                "testCount": 46
-              },
-              {
-                "package": "realtime",
-                "durationMs": 605.427,
-                "fileCount": 9,
-                "testCount": 121
-              },
-              {
-                "package": "overlay",
-                "durationMs": 581.412,
-                "fileCount": 12,
-                "testCount": 72
-              }
-            ]
-          },
-          {
-            "label": "pnpm test",
-            "wallMs": 67770,
-            "maxRssKb": 463760,
-            "exitCode": 1,
-            "success": false,
-            "timingBreakdownSec": {
-              "total": 59.96,
-              "transform": 17.03,
-              "setup": 20.99,
-              "import": 41.95,
-              "tests": 71.03,
-              "environment": 162.71
-            },
-            "testFiles": "1 failed | 225 passed (226)",
-            "tests": "1 failed | 2292 passed | 3 skipped (2296)",
-            "slowestFiles": [
-              {
-                "file": "test/pack-check.test.ts",
-                "durationMs": 38669.524,
-                "testCount": 4,
-                "package": "repository"
-              },
-              {
-                "file": "packages/ui/test/contract.spec.ts",
-                "durationMs": 7900.312,
-                "testCount": 1,
-                "package": "ui"
-              },
-              {
-                "file": "test/architecture-check.test.ts",
-                "durationMs": 4300.069,
-                "testCount": 18,
-                "package": "repository"
-              },
-              {
-                "file": "packages/query-kit/test/devtools.test.ts",
-                "durationMs": 4213.765,
-                "testCount": 27,
-                "package": "query-kit"
-              },
-              {
-                "file": "packages/gesture/test/controller.test.ts",
-                "durationMs": 1008.545,
-                "testCount": 32,
-                "package": "gesture"
-              },
-              {
-                "file": "packages/query/test/devtools.test.ts",
-                "durationMs": 309.2,
-                "testCount": 7,
-                "package": "query"
-              },
-              {
-                "file": "test/architecture-boundary.test.ts",
-                "durationMs": 274.601,
-                "testCount": 6,
-                "package": "repository"
-              },
-              {
-                "file": "packages/query-kit/test/merge-stores.test.ts",
-                "durationMs": 271.86,
-                "testCount": 15,
-                "package": "query-kit"
-              },
-              {
-                "file": "test/repo-check.test.ts",
-                "durationMs": 232.216,
-                "testCount": 9,
-                "package": "repository"
-              },
-              {
-                "file": "packages/scroll/test/coverage-gaps.spec.ts",
-                "durationMs": 200.195,
-                "testCount": 29,
-                "package": "scroll"
-              }
-            ],
-            "packageTotals": [
-              {
-                "package": "repository",
-                "durationMs": 43990.38,
-                "fileCount": 10,
-                "testCount": 70
-              },
-              {
-                "package": "ui",
-                "durationMs": 8004.275,
-                "fileCount": 3,
-                "testCount": 32
-              },
-              {
-                "package": "query-kit",
-                "durationMs": 5233.849,
-                "fileCount": 16,
-                "testCount": 135
-              },
-              {
-                "package": "gesture",
-                "durationMs": 1244.332,
-                "fileCount": 7,
-                "testCount": 75
-              },
-              {
-                "package": "scroll",
-                "durationMs": 1063.241,
-                "fileCount": 11,
-                "testCount": 183
-              },
-              {
-                "package": "query",
-                "durationMs": 980.904,
-                "fileCount": 11,
-                "testCount": 156
-              },
-              {
-                "package": "command",
-                "durationMs": 741.005,
-                "fileCount": 8,
-                "testCount": 46
-              },
-              {
-                "package": "selection",
-                "durationMs": 684.928,
-                "fileCount": 14,
-                "testCount": 86
-              },
-              {
-                "package": "realtime",
-                "durationMs": 554.01,
-                "fileCount": 9,
-                "testCount": 121
-              },
-              {
-                "package": "overlay",
-                "durationMs": 547.938,
-                "fileCount": 12,
-                "testCount": 72
-              }
-            ]
-          },
-          {
-            "label": "pnpm test",
-            "wallMs": 69470,
-            "maxRssKb": 468328,
-            "exitCode": 1,
-            "success": false,
-            "timingBreakdownSec": {
-              "total": 61.6,
-              "transform": 17.8,
-              "setup": 22.44,
-              "import": 43.5,
-              "tests": 72.92,
-              "environment": 168.79
-            },
-            "testFiles": "1 failed | 225 passed (226)",
-            "tests": "1 failed | 2292 passed | 3 skipped (2296)",
-            "slowestFiles": [
-              {
-                "file": "test/pack-check.test.ts",
-                "durationMs": 39164.275,
-                "testCount": 4,
-                "package": "repository"
-              },
-              {
-                "file": "packages/ui/test/contract.spec.ts",
-                "durationMs": 7623.402,
-                "testCount": 1,
-                "package": "ui"
-              },
-              {
-                "file": "packages/query-kit/test/devtools.test.ts",
-                "durationMs": 5003.55,
-                "testCount": 27,
-                "package": "query-kit"
-              },
-              {
-                "file": "test/architecture-check.test.ts",
-                "durationMs": 4482.127,
-                "testCount": 18,
-                "package": "repository"
-              },
-              {
-                "file": "packages/gesture/test/controller.test.ts",
-                "durationMs": 1000.364,
-                "testCount": 32,
-                "package": "gesture"
-              },
-              {
-                "file": "test/architecture-boundary.test.ts",
-                "durationMs": 331.247,
-                "testCount": 6,
-                "package": "repository"
-              },
-              {
-                "file": "packages/query/test/devtools.test.ts",
-                "durationMs": 323.75,
-                "testCount": 7,
-                "package": "query"
-              },
-              {
-                "file": "packages/command/test/alpine-reactivity.test.ts",
-                "durationMs": 277.571,
-                "testCount": 2,
-                "package": "command"
-              },
-              {
-                "file": "packages/query-kit/test/merge-stores.test.ts",
-                "durationMs": 263.068,
-                "testCount": 15,
-                "package": "query-kit"
-              },
-              {
-                "file": "packages/selection/test/demo-interaction.test.ts",
-                "durationMs": 207.086,
-                "testCount": 3,
-                "package": "selection"
-              }
-            ],
-            "packageTotals": [
-              {
-                "package": "repository",
-                "durationMs": 44641.577,
-                "fileCount": 10,
-                "testCount": 70
-              },
-              {
-                "package": "ui",
-                "durationMs": 7721.606,
-                "fileCount": 3,
-                "testCount": 32
-              },
-              {
-                "package": "query-kit",
-                "durationMs": 6031.635,
-                "fileCount": 16,
-                "testCount": 135
-              },
-              {
-                "package": "gesture",
-                "durationMs": 1329.246,
-                "fileCount": 7,
-                "testCount": 75
-              },
-              {
-                "package": "query",
-                "durationMs": 1073.518,
-                "fileCount": 11,
-                "testCount": 156
-              },
-              {
-                "package": "scroll",
-                "durationMs": 1066.515,
-                "fileCount": 11,
-                "testCount": 183
-              },
-              {
-                "package": "command",
-                "durationMs": 835.355,
-                "fileCount": 8,
-                "testCount": 46
-              },
-              {
-                "package": "selection",
-                "durationMs": 722.343,
-                "fileCount": 14,
-                "testCount": 86
-              },
-              {
-                "package": "realtime",
-                "durationMs": 590.76,
-                "fileCount": 9,
-                "testCount": 121
-              },
-              {
-                "package": "core",
-                "durationMs": 556.58,
-                "fileCount": 13,
-                "testCount": 140
-              }
-            ]
-          }
-        ],
-        "inherited": true
-      },
-      "warm": {
-        "count": 3,
-        "wallMs": {
-          "min": 54030,
-          "median": 57510,
-          "max": 59240
-        },
-        "maxRssKb": {
-          "min": 465380,
-          "median": 472760,
-          "max": 484300
-        },
-        "timingBreakdownSec": {
-          "total": 50.25,
-          "transform": 17.37,
-          "setup": 20.93,
-          "import": 43.03,
-          "tests": 82.57,
-          "environment": 168.56
-        },
-        "success": false,
-        "runs": [
-          {
-            "label": "pnpm test",
-            "wallMs": 54030,
-            "maxRssKb": 465380,
-            "exitCode": 1,
-            "success": false,
-            "timingBreakdownSec": {
-              "total": 49.77,
-              "transform": 16.93,
-              "setup": 21.17,
-              "import": 42.57,
-              "tests": 81.08,
-              "environment": 168.29
-            },
-            "testFiles": "1 failed | 225 passed (226)",
-            "tests": "1 failed | 2292 passed | 3 skipped (2296)",
-            "slowestFiles": [
-              {
-                "file": "test/pack-check.test.ts",
-                "durationMs": 47834.656,
-                "testCount": 4,
-                "package": "repository"
-              },
-              {
-                "file": "packages/ui/test/contract.spec.ts",
-                "durationMs": 7213.289,
-                "testCount": 1,
-                "package": "ui"
-              },
-              {
-                "file": "packages/query-kit/test/devtools.test.ts",
-                "durationMs": 4800.895,
-                "testCount": 27,
-                "package": "query-kit"
-              },
-              {
-                "file": "test/architecture-check.test.ts",
-                "durationMs": 4441.256,
-                "testCount": 18,
-                "package": "repository"
-              },
-              {
-                "file": "packages/query-kit/test/panel-preferences.test.ts",
-                "durationMs": 3596.492,
-                "testCount": 6,
-                "package": "query-kit"
-              },
-              {
-                "file": "packages/gesture/test/controller.test.ts",
-                "durationMs": 1025.455,
-                "testCount": 32,
-                "package": "gesture"
-              },
-              {
-                "file": "test/architecture-boundary.test.ts",
-                "durationMs": 310.696,
-                "testCount": 6,
-                "package": "repository"
-              },
-              {
-                "file": "packages/query/test/devtools.test.ts",
-                "durationMs": 281.14,
-                "testCount": 7,
-                "package": "query"
-              },
-              {
-                "file": "packages/query-kit/test/merge-stores.test.ts",
-                "durationMs": 256.056,
-                "testCount": 15,
-                "package": "query-kit"
-              },
-              {
-                "file": "test/repo-check.test.ts",
-                "durationMs": 248.897,
-                "testCount": 9,
-                "package": "repository"
-              }
-            ],
-            "packageTotals": [
-              {
-                "package": "repository",
-                "durationMs": 53383.907,
-                "fileCount": 10,
-                "testCount": 70
-              },
-              {
-                "package": "query-kit",
-                "durationMs": 9399,
-                "fileCount": 16,
-                "testCount": 135
-              },
-              {
-                "package": "ui",
-                "durationMs": 7335.043,
-                "fileCount": 3,
-                "testCount": 32
-              },
-              {
-                "package": "gesture",
-                "durationMs": 1290.762,
-                "fileCount": 7,
-                "testCount": 75
-              },
-              {
-                "package": "query",
-                "durationMs": 1062.867,
-                "fileCount": 11,
-                "testCount": 156
-              },
-              {
-                "package": "scroll",
-                "durationMs": 1058.817,
-                "fileCount": 11,
-                "testCount": 183
-              },
-              {
-                "package": "command",
-                "durationMs": 766.723,
-                "fileCount": 8,
-                "testCount": 46
-              },
-              {
-                "package": "realtime",
-                "durationMs": 640.198,
-                "fileCount": 9,
-                "testCount": 121
-              },
-              {
-                "package": "selection",
-                "durationMs": 631.776,
-                "fileCount": 14,
-                "testCount": 86
-              },
-              {
-                "package": "menu",
-                "durationMs": 565.574,
-                "fileCount": 4,
-                "testCount": 48
-              }
-            ]
-          },
-          {
-            "label": "pnpm test",
-            "wallMs": 57510,
-            "maxRssKb": 472760,
-            "exitCode": 1,
-            "success": false,
-            "timingBreakdownSec": {
-              "total": 49.63,
-              "transform": 16.97,
-              "setup": 20.22,
-              "import": 42.42,
-              "tests": 80.49,
-              "environment": 165.65
-            },
-            "testFiles": "1 failed | 225 passed (226)",
-            "tests": "1 failed | 2292 passed | 3 skipped (2296)",
-            "slowestFiles": [
-              {
-                "file": "test/pack-check.test.ts",
-                "durationMs": 47583.879,
-                "testCount": 4,
-                "package": "repository"
-              },
-              {
-                "file": "test/architecture-check.test.ts",
-                "durationMs": 8364.49,
-                "testCount": 18,
-                "package": "repository"
-              },
-              {
-                "file": "packages/query-kit/test/devtools.test.ts",
-                "durationMs": 8356.3,
-                "testCount": 27,
-                "package": "query-kit"
-              },
-              {
-                "file": "packages/ui/test/contract.spec.ts",
-                "durationMs": 6909.695,
-                "testCount": 1,
-                "package": "ui"
-              },
-              {
-                "file": "packages/gesture/test/controller.test.ts",
-                "durationMs": 1010.966,
-                "testCount": 32,
-                "package": "gesture"
-              },
-              {
-                "file": "packages/query/test/devtools.test.ts",
-                "durationMs": 268.724,
-                "testCount": 7,
-                "package": "query"
-              },
-              {
-                "file": "test/architecture-boundary.test.ts",
-                "durationMs": 258.291,
-                "testCount": 6,
-                "package": "repository"
-              },
-              {
-                "file": "packages/query-kit/test/merge-stores.test.ts",
-                "durationMs": 242.74,
-                "testCount": 15,
-                "package": "query-kit"
-              },
-              {
-                "file": "packages/scroll/test/coverage-gaps.spec.ts",
-                "durationMs": 215.849,
-                "testCount": 29,
-                "package": "scroll"
-              },
-              {
-                "file": "packages/selection/test/demo-interaction.test.ts",
-                "durationMs": 214.072,
-                "testCount": 3,
-                "package": "selection"
-              }
-            ],
-            "packageTotals": [
-              {
-                "package": "repository",
-                "durationMs": 56876.833,
-                "fileCount": 10,
-                "testCount": 70
-              },
-              {
-                "package": "query-kit",
-                "durationMs": 9358.806,
-                "fileCount": 16,
-                "testCount": 135
-              },
-              {
-                "package": "ui",
-                "durationMs": 7026.653,
-                "fileCount": 3,
-                "testCount": 32
-              },
-              {
-                "package": "gesture",
-                "durationMs": 1260.918,
-                "fileCount": 7,
-                "testCount": 75
-              },
-              {
-                "package": "scroll",
-                "durationMs": 1087.367,
-                "fileCount": 11,
-                "testCount": 183
-              },
-              {
-                "package": "query",
-                "durationMs": 1034.519,
-                "fileCount": 11,
-                "testCount": 156
-              },
-              {
-                "package": "command",
-                "durationMs": 805.185,
-                "fileCount": 8,
-                "testCount": 46
-              },
-              {
-                "package": "selection",
-                "durationMs": 720.709,
-                "fileCount": 14,
-                "testCount": 86
-              },
-              {
-                "package": "realtime",
-                "durationMs": 575.679,
-                "fileCount": 9,
-                "testCount": 121
-              },
-              {
-                "package": "overlay",
-                "durationMs": 540.378,
-                "fileCount": 12,
-                "testCount": 72
-              }
-            ]
-          },
-          {
-            "label": "pnpm test",
-            "wallMs": 59240,
-            "maxRssKb": 484300,
-            "exitCode": 1,
-            "success": false,
-            "timingBreakdownSec": {
-              "total": 51.35,
-              "transform": 18.22,
-              "setup": 21.41,
-              "import": 44.09,
-              "tests": 86.13,
-              "environment": 171.73
-            },
-            "testFiles": "1 failed | 225 passed (226)",
-            "tests": "1 failed | 2292 passed | 3 skipped (2296)",
-            "slowestFiles": [
-              {
-                "file": "test/pack-check.test.ts",
-                "durationMs": 49012.134,
-                "testCount": 4,
-                "package": "repository"
-              },
-              {
-                "file": "packages/ui/test/contract.spec.ts",
-                "durationMs": 8281.751,
-                "testCount": 1,
-                "package": "ui"
-              },
-              {
-                "file": "packages/query-kit/test/devtools.test.ts",
-                "durationMs": 5802.491,
-                "testCount": 27,
-                "package": "query-kit"
-              },
-              {
-                "file": "test/architecture-check.test.ts",
-                "durationMs": 5200.789,
-                "testCount": 18,
-                "package": "repository"
-              },
-              {
-                "file": "packages/gesture/test/controller.test.ts",
-                "durationMs": 1013.067,
-                "testCount": 32,
-                "package": "gesture"
-              },
-              {
-                "file": "packages/query/test/cache-coverage.test.ts",
-                "durationMs": 360.495,
-                "testCount": 67,
-                "package": "query"
-              },
-              {
-                "file": "test/repo-check.test.ts",
-                "durationMs": 349.269,
-                "testCount": 9,
-                "package": "repository"
-              },
-              {
-                "file": "packages/query/test/devtools.test.ts",
-                "durationMs": 322.944,
-                "testCount": 7,
-                "package": "query"
-              },
-              {
-                "file": "test/architecture-boundary.test.ts",
-                "durationMs": 298.642,
-                "testCount": 6,
-                "package": "repository"
-              },
-              {
-                "file": "packages/query-kit/test/merge-stores.test.ts",
-                "durationMs": 281.788,
-                "testCount": 15,
-                "package": "query-kit"
-              }
-            ],
-            "packageTotals": [
-              {
-                "package": "repository",
-                "durationMs": 55369.758,
-                "fileCount": 10,
-                "testCount": 70
-              },
-              {
-                "package": "ui",
-                "durationMs": 8383.667,
-                "fileCount": 3,
-                "testCount": 32
-              },
-              {
-                "package": "query-kit",
-                "durationMs": 6868.126,
-                "fileCount": 16,
-                "testCount": 135
-              },
-              {
-                "package": "query",
-                "durationMs": 1360.398,
-                "fileCount": 11,
-                "testCount": 156
-              },
-              {
-                "package": "gesture",
-                "durationMs": 1310.235,
-                "fileCount": 7,
-                "testCount": 75
-              },
-              {
-                "package": "scroll",
-                "durationMs": 1139.774,
-                "fileCount": 11,
-                "testCount": 183
-              },
-              {
-                "package": "command",
-                "durationMs": 815.882,
-                "fileCount": 8,
-                "testCount": 46
-              },
-              {
-                "package": "selection",
-                "durationMs": 732.069,
-                "fileCount": 14,
-                "testCount": 86
-              },
-              {
-                "package": "realtime",
-                "durationMs": 615.272,
-                "fileCount": 9,
-                "testCount": 121
-              },
-              {
-                "package": "overlay",
-                "durationMs": 545.754,
-                "fileCount": 12,
-                "testCount": 72
-              }
-            ]
-          }
-        ],
-        "inherited": true
-      }
-    },
-    {
-      "id": "dialog-scoped",
-      "label": "@ailuracode/alpine-dialog (intended scope)",
-      "category": "dom-heavy",
-      "filterNote": "Reference run for the intended package-only scope.",
-      "cold": {
-        "count": 3,
-        "wallMs": {
-          "min": 1640,
-          "median": 1650,
-          "max": 1760
-        },
-        "maxRssKb": {
-          "min": 182196,
-          "median": 183768,
-          "max": 188304
-        },
-        "timingBreakdownSec": {
-          "total": 1.68,
-          "transform": null,
-          "setup": null,
-          "import": null,
-          "tests": null,
-          "environment": null
-        },
-        "success": true,
-        "runs": [
-          {
-            "label": "@ailuracode/alpine-dialog (intended scope)",
-            "wallMs": 1760,
-            "maxRssKb": 182196,
-            "exitCode": 0,
-            "success": true,
-            "timingBreakdownSec": {
-              "total": 1.76,
-              "transform": null,
-              "setup": null,
-              "import": null,
-              "tests": null,
-              "environment": null,
-              "note": "Vitest did not emit a duration breakdown; total approximated from wall clock."
-            },
-            "testFiles": "4 passed (4)",
-            "tests": "27 passed (27)",
-            "slowestFiles": [
-              {
-                "file": "packages/dialog/test/alpine.teleport.integration.test.ts",
-                "durationMs": 74,
-                "testCount": 3,
-                "package": "dialog"
-              },
-              {
-                "file": "packages/dialog/test/dialog.test.ts",
-                "durationMs": 61.452,
-                "testCount": 20,
-                "package": "dialog"
-              },
-              {
-                "file": "packages/dialog/test/alpine.integration.test.ts",
-                "durationMs": 42.097,
-                "testCount": 1,
-                "package": "dialog"
-              },
-              {
-                "file": "packages/dialog/test/encapsulation.test.ts",
-                "durationMs": 16.042,
-                "testCount": 3,
-                "package": "dialog"
-              }
-            ],
-            "packageTotals": [
-              {
-                "package": "dialog",
-                "durationMs": 193.591,
-                "fileCount": 4,
-                "testCount": 27
-              }
-            ]
-          },
-          {
-            "label": "@ailuracode/alpine-dialog (intended scope)",
-            "wallMs": 1650,
-            "maxRssKb": 188304,
-            "exitCode": 0,
-            "success": true,
-            "timingBreakdownSec": {
-              "total": 1.65,
-              "transform": null,
-              "setup": null,
-              "import": null,
-              "tests": null,
-              "environment": null,
-              "note": "Vitest did not emit a duration breakdown; total approximated from wall clock."
-            },
-            "testFiles": "4 passed (4)",
-            "tests": "27 passed (27)"
-          },
-          {
-            "label": "@ailuracode/alpine-dialog (intended scope)",
-            "wallMs": 1640,
-            "maxRssKb": 183768,
-            "exitCode": 0,
-            "success": true,
-            "timingBreakdownSec": {
-              "total": 1.64,
-              "transform": null,
-              "setup": null,
-              "import": null,
-              "tests": null,
-              "environment": null,
-              "note": "Vitest did not emit a duration breakdown; total approximated from wall clock."
-            },
-            "testFiles": "4 passed (4)",
-            "tests": "27 passed (27)"
-          }
-        ]
-      },
-      "warm": {
-        "count": 3,
-        "wallMs": {
-          "min": 1650,
-          "median": 1660,
-          "max": 1670
-        },
-        "maxRssKb": {
-          "min": 180364,
-          "median": 181936,
-          "max": 184016
-        },
-        "timingBreakdownSec": {
-          "total": 1.66,
-          "transform": null,
-          "setup": null,
-          "import": null,
-          "tests": null,
-          "environment": null
-        },
-        "success": true,
-        "runs": [
-          {
-            "label": "@ailuracode/alpine-dialog (intended scope)",
-            "wallMs": 1660,
-            "maxRssKb": 181936,
-            "exitCode": 0,
-            "success": true,
-            "timingBreakdownSec": {
-              "total": 1.66,
-              "transform": null,
-              "setup": null,
-              "import": null,
-              "tests": null,
-              "environment": null,
-              "note": "Vitest did not emit a duration breakdown; total approximated from wall clock."
-            },
-            "testFiles": "4 passed (4)",
-            "tests": "27 passed (27)",
-            "slowestFiles": [
-              {
-                "file": "packages/dialog/test/alpine.teleport.integration.test.ts",
-                "durationMs": 66.273,
-                "testCount": 3,
-                "package": "dialog"
-              },
-              {
-                "file": "packages/dialog/test/dialog.test.ts",
-                "durationMs": 56.403,
-                "testCount": 20,
-                "package": "dialog"
-              },
-              {
-                "file": "packages/dialog/test/alpine.integration.test.ts",
-                "durationMs": 39.063,
-                "testCount": 1,
-                "package": "dialog"
-              },
-              {
-                "file": "packages/dialog/test/encapsulation.test.ts",
-                "durationMs": 14.274,
-                "testCount": 3,
-                "package": "dialog"
-              }
-            ],
-            "packageTotals": [
-              {
-                "package": "dialog",
-                "durationMs": 176.013,
-                "fileCount": 4,
-                "testCount": 27
-              }
-            ]
-          },
-          {
-            "label": "@ailuracode/alpine-dialog (intended scope)",
-            "wallMs": 1670,
-            "maxRssKb": 184016,
-            "exitCode": 0,
-            "success": true,
-            "timingBreakdownSec": {
-              "total": 1.67,
-              "transform": null,
-              "setup": null,
-              "import": null,
-              "tests": null,
-              "environment": null,
-              "note": "Vitest did not emit a duration breakdown; total approximated from wall clock."
-            },
-            "testFiles": "4 passed (4)",
-            "tests": "27 passed (27)"
-          },
-          {
-            "label": "@ailuracode/alpine-dialog (intended scope)",
-            "wallMs": 1650,
-            "maxRssKb": 180364,
-            "exitCode": 0,
-            "success": true,
-            "timingBreakdownSec": {
-              "total": 1.65,
-              "transform": null,
-              "setup": null,
-              "import": null,
-              "tests": null,
-              "environment": null,
-              "note": "Vitest did not emit a duration breakdown; total approximated from wall clock."
-            },
-            "testFiles": "4 passed (4)",
-            "tests": "27 passed (27)"
-          }
-        ]
-      }
-    }
-  ],
+  "packages": [],
   "ci": {
     "note": "Representative GitHub Actions timings from workflow runs on ubuntu-latest (Node 22).",
     "references": [
@@ -4173,106 +741,92 @@
   "optimizationTargets": [
     {
       "rank": 1,
-      "area": "workspace environment",
-      "metric": "168.56s median warm (largest phase)",
-      "rationale": "Global happy-dom environment and setup apply to every file; environment dominates non-coverage runs.",
+      "area": "workspace tests",
+      "metric": "54.99s median warm (largest phase)",
+      "rationale": "Project-split workspace; tests phase in warm non-coverage run.",
       "epic": "ALP-127"
     },
     {
       "rank": 2,
-      "area": "workspace tests",
-      "metric": "82.57s median warm",
-      "rationale": "Global happy-dom environment and setup apply to every file; tests dominates non-coverage runs.",
+      "area": "workspace environment",
+      "metric": "44.79s median warm",
+      "rationale": "Project-split workspace; environment phase in warm non-coverage run.",
       "epic": "ALP-127"
     },
     {
       "rank": 3,
       "area": "workspace import",
-      "metric": "43.03s median warm",
-      "rationale": "Global happy-dom environment and setup apply to every file; import dominates non-coverage runs.",
+      "metric": "27.24s median warm",
+      "rationale": "Project-split workspace; import phase in warm non-coverage run.",
       "epic": "ALP-127"
     },
     {
       "rank": 4,
-      "area": "@ailuracode/alpine-dialog package script",
-      "metric": "57510ms median warm",
-      "rationale": "Package script passes `test` as a path filter — currently matches the full workspace suite.",
+      "area": "package:repository",
+      "metric": "42577.254ms aggregated file time",
+      "rationale": "15 files / 92 tests in warm workspace run.",
       "epic": "ALP-127"
     },
     {
       "rank": 5,
-      "area": "@ailuracode/alpine-query package script",
-      "metric": "57510ms median warm",
-      "rationale": "Package script passes `test` as a path filter — currently matches the full workspace suite.",
-      "epic": "ALP-127"
-    },
-    {
-      "rank": 6,
-      "area": "package:repository",
-      "metric": "53383.907ms aggregated file time",
-      "rationale": "10 files / 70 tests in warm workspace run.",
-      "epic": "ALP-127"
-    },
-    {
-      "rank": 7,
       "area": "package:query-kit",
-      "metric": "9399ms aggregated file time",
+      "metric": "4072.679ms aggregated file time",
       "rationale": "16 files / 135 tests in warm workspace run.",
       "epic": "ALP-127"
     },
     {
-      "rank": 8,
-      "area": "package:ui",
-      "metric": "7335.043ms aggregated file time",
-      "rationale": "3 files / 32 tests in warm workspace run.",
+      "rank": 6,
+      "area": "package:toast",
+      "metric": "2930.87ms aggregated file time",
+      "rationale": "3 files / 58 tests in warm workspace run.",
       "epic": "ALP-127"
     },
     {
-      "rank": 9,
+      "rank": 7,
       "area": "package:gesture",
-      "metric": "1290.762ms aggregated file time",
+      "metric": "1098.13ms aggregated file time",
       "rationale": "7 files / 75 tests in warm workspace run.",
       "epic": "ALP-127"
     },
     {
-      "rank": 10,
+      "rank": 8,
       "area": "package:query",
-      "metric": "1062.867ms aggregated file time",
+      "metric": "750.829ms aggregated file time",
       "rationale": "11 files / 156 tests in warm workspace run.",
       "epic": "ALP-127"
     },
     {
-      "rank": 11,
+      "rank": 9,
       "area": "test/pack-check.test.ts",
-      "metric": "47834.656ms file duration",
+      "metric": "37340.506ms file duration",
+      "rationale": "Slowest individual test file in warm workspace run.",
+      "epic": "ALP-127"
+    },
+    {
+      "rank": 10,
+      "area": "packages/query-kit/test/devtools.test.ts",
+      "metric": "3365.676ms file duration",
+      "rationale": "Slowest individual test file in warm workspace run.",
+      "epic": "ALP-127"
+    },
+    {
+      "rank": 11,
+      "area": "test/architecture-check.test.ts",
+      "metric": "2867.726ms file duration",
       "rationale": "Slowest individual test file in warm workspace run.",
       "epic": "ALP-127"
     },
     {
       "rank": 12,
-      "area": "packages/ui/test/contract.spec.ts",
-      "metric": "7213.289ms file duration",
+      "area": "packages/toast/test/alpine.integration.test.ts",
+      "metric": "2851.024ms file duration",
       "rationale": "Slowest individual test file in warm workspace run.",
       "epic": "ALP-127"
     },
     {
       "rank": 13,
-      "area": "packages/query-kit/test/devtools.test.ts",
-      "metric": "4800.895ms file duration",
-      "rationale": "Slowest individual test file in warm workspace run.",
-      "epic": "ALP-127"
-    },
-    {
-      "rank": 14,
-      "area": "test/architecture-check.test.ts",
-      "metric": "4441.256ms file duration",
-      "rationale": "Slowest individual test file in warm workspace run.",
-      "epic": "ALP-127"
-    },
-    {
-      "rank": 15,
-      "area": "packages/query-kit/test/panel-preferences.test.ts",
-      "metric": "3596.492ms file duration",
+      "area": "test/vitest-projects.test.ts",
+      "metric": "1375.624ms file duration",
       "rationale": "Slowest individual test file in warm workspace run.",
       "epic": "ALP-127"
     }

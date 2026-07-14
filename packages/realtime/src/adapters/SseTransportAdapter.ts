@@ -54,7 +54,7 @@ export interface SseEventSourceLike {
 /**
  * Constructor signature for the native `EventSource`. Tests
  * inject a mock implementation so the adapter can be exercised in
- * Node / jsdom-less environments.
+ * Node / DOM-less environments.
  */
 export type SseEventSourceCtor = new (url: string, init?: EventSourceInit) => SseEventSourceLike;
 
@@ -362,7 +362,7 @@ export class SseTransportAdapter extends BaseEventTargetAdapter {
 
 /**
  * Resolve the global `EventSource` constructor when available.
- * Returns `undefined` in Node, jsdom-less test environments,
+ * Returns `undefined` in Node, DOM-less test environments,
  * and any other SSR context.
  */
 function globalEventSourceCtor(): SseEventSourceCtor | undefined {

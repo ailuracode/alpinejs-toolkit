@@ -8,19 +8,20 @@ alwaysApply: false
 
 ## Framework
 
-- Vitest projects: `node` (default), `happy-dom`, and package overlay projects for jsdom/happy-dom ([ALP-131](https://linear.app/ailuracode/issue/ALP-131/split-vitest-into-node-and-simulated-dom-projects))
+- Vitest projects: `node` (default), `happy-dom`, and package overlay projects ([ALP-131](https://linear.app/ailuracode/issue/ALP-131/split-vitest-into-node-and-simulated-dom-projects))
 - Include pattern: `packages/*/test/**/*.{test,spec}.ts`
 - Playwright E2E (root `e2e/playwright.base.ts`, per-package `playwright.config.ts`)
 - E2E include pattern: `packages/*/e2e/**/*.spec.ts`
 - Inventory: `benchmarks/test-environment-inventory.json` — regenerate with `pnpm run test:classify` (enforced by `repo:check`)
+- Performance baseline: `benchmarks/vitest-baseline.json` — refresh with `pnpm run test:benchmark`; compare with `pnpm run test:benchmark:check`
+- Tuning evidence: `benchmarks/vitest-tuning-decisions.md` (ALP-134 pool/worker settings in `scripts/vitest-runtime-settings.mjs`)
 
 ## Environments
 
 | Target | Use for |
 |--------|---------|
 | `node` | Controllers, cache, parsing, utilities, SSR imports, repository checks |
-| `happy-dom` | Alpine stores, magics, directives, and simulated DOM integration tests |
-| `jsdom` | Package-local configs when jsdom APIs are required (`theme`, `sidebar`, `scroll`, `collection`, `ui`) |
+| `happy-dom` | Alpine stores, magics, directives, and simulated DOM integration tests (including package overlays) |
 | `playwright` | Real browser focus, layout, keyboard, permissions (`packages/<name>/e2e/`) |
 
 Override per file with `// @vitest-environment node` when classification is wrong. Root routing is driven by `scripts/vitest-projects.mjs` and the inventory from `pnpm run test:classify`.
@@ -47,7 +48,7 @@ Tests MUST be split by layer. Each file has a documented **target environment** 
 |-------|----------|-------------------|
 | Controller | `controller.*`, `*Controller.test.ts` | `node` (DOM only when exercising events) |
 | Contract | `contract.*`, `encapsulation.*`, `ssr.*` | `node` for SSR; DOM when browser helpers are under test |
-| Integration | `plugin.*`, `alpine.integration.*`, `adapter.*`, `magic.*` | `happy-dom` or package `jsdom` |
+| Integration | `plugin.*`, `alpine.integration.*`, `adapter.*`, `magic.*` | `happy-dom` |
 | Accessibility | `accessibility.*`, `a11y.*` | `node` or DOM depending on assertions |
 | Utility | `parse.*`, `utils.*`, `adapters/**` | `node` |
 | Repository | `test/architecture-check.test.ts`, etc. | `node` |

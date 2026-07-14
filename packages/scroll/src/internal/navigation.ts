@@ -169,7 +169,7 @@ export function scrollIntoViewElement(
       inline: "nearest",
     });
   } else {
-    // Defensive fallback for jsdom or environments that lack
+    // Defensive fallback for DOM runtimes or environments that lack
     // Element.scrollIntoView — just scroll to the element's
     // bounding-rect top.
     const rect = element.getBoundingClientRect();

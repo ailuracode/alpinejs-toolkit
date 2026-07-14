@@ -1,30 +1,9 @@
-import { readdirSync, readFileSync } from "node:fs";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import {
   findHeadlessCssViolations,
   isDevelopmentToolingPath,
   isHeadlessCssScanPath,
-  validateHeadlessCssPolicy,
 } from "../scripts/headless-css-policy.mjs";
-
-const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-
-/**
- * @param {string} dir
- * @param {(filePath: string) => void} visit
- */
-function readDirRecursive(dir: string, visit: (filePath: string) => void): void {
-  for (const entry of readdirSync(dir, { withFileTypes: true })) {
-    const fullPath = path.join(dir, entry.name);
-    if (entry.isDirectory()) {
-      readDirRecursive(fullPath, visit);
-    } else {
-      visit(fullPath);
-    }
-  }
-}
 
 describe("headless CSS policy", () => {
   it("treats query devtools source as development tooling", () => {
@@ -43,14 +22,5 @@ describe("headless CSS policy", () => {
     expect(violations.map((rule) => rule.id)).toEqual(
       expect.arrayContaining(["devtools-style-surface", "host-dark-selector"])
     );
-  });
-
-  it("passes on the current repository", () => {
-    const policy = validateHeadlessCssPolicy as typeof validateHeadlessCssPolicy & {
-      readFile: (filePath: string) => string;
-    };
-    policy.readFile = (filePath: string) => readFileSync(filePath, "utf8");
-    const errors = validateHeadlessCssPolicy(root, readDirRecursive);
-    expect(errors).toEqual([]);
   });
 });

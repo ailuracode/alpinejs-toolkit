@@ -1,6 +1,6 @@
 # Vitest performance baseline
 
-Baseline for [ALP-128](https://linear.app/ailuracode/issue/ALP-128/establish-a-reproducible-vitest-performance-baseline) under epic [ALP-127](https://linear.app/ailuracode/issue/ALP-127/epic-optimize-vitest-performance-and-test-environment-layering).
+Benchmark for [ALP-128](https://linear.app/ailuracode/issue/ALP-128/establish-a-reproducible-vitest-performance-baseline) with tuning from [ALP-134](https://linear.app/ailuracode/issue/ALP-134/benchmark-and-tune-vitest-execution-settings) under epic [ALP-127](https://linear.app/ailuracode/issue/ALP-127/epic-optimize-vitest-performance-and-test-environment-layering).
 
 ## How to reproduce
 
@@ -15,59 +15,54 @@ Options:
 - `--skip-workspace` — reuse workspace measurements from an existing baseline JSON
 - `--output <dir>` — output directory (default: `benchmarks/`)
 
+Tuning evidence: `benchmarks/vitest-tuning-decisions.md`. Regression check: `pnpm run test:benchmark:check`.
+
 ## Environment
 
-- Captured: 2026-07-14T20:32:50.031Z
+- Captured: 2026-07-14T22:39:24.271Z
 - Node: v24.15.0
 - Platform: linux 6.18.33.2-microsoft-standard-WSL2
 - CPUs: 12
 - Vitest: 4.1.10
-- Default pool: forks (Vitest default)
+- Projects: node, happy-dom, package overlays
+- Max workers: 6
+- Node pool: threads
+- DOM pool: forks
 
 ## Inventory
 
-- Test files: 226
-- Listed tests: 2293
+- Test files: 209
+- Listed tests: 1883
 
 ## Workspace commands
 
 | Command | Mode | Median wall | Median RSS | Transform | Setup | Import | Tests | Environment |
 | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| `pnpm test` | cold | 68990ms | 464316KB | 17.79s | 21.99s | 43.24s | 71.97s | 166.9s |
-| `pnpm test` | warm | 57510ms | 472760KB | 17.37s | 20.93s | 43.03s | 82.57s | 168.56s |
-| `pnpm run test:coverage` | cold | 74950ms | 617712KB | 17.67s | 22.91s | 45.12s | 85.6s | 169.45s |
-| `pnpm run test:coverage` | warm | 62370ms | 589940KB | 17.78s | 22.55s | 45.38s | 96.11s | 170s |
+| `pnpm test` | cold | 65570ms | 1302004KB | 9.22s | 12.39s | 26.52s | 53.98s | 45.22s |
+| `pnpm test` | warm | 60740ms | 1373552KB | 9.57s | 12.08s | 27.24s | 54.99s | 44.79s |
+| `pnpm run test:coverage` | cold | 73140ms | 1320204KB | 9.4s | 13.76s | 27.64s | 62.74s | 44.65s |
+| `pnpm run test:coverage` | warm | 70300ms | 1402372KB | 9.9s | 13.95s | 28.42s | 66.34s | 45.43s |
 
 ## Package-level commands
 
 | Package | Category | Mode | Median wall | Files summary | Note |
 | --- | --- | --- | ---: | --- | --- |
-| @ailuracode/alpine-core | pure-controller | cold | 2850ms | 13 passed (13) | Scoped to packages/core (correct). |
-| @ailuracode/alpine-core | pure-controller | warm | 3140ms | 13 passed (13) | Scoped to packages/core (correct). |
-| @ailuracode/alpine-dialog | dom-heavy | cold | 68990ms | 1 failed / 225 passed (226) | Package script passes `test` as a path filter — currently matches the full workspace suite. (inherits workspace test) |
-| @ailuracode/alpine-dialog | dom-heavy | warm | 57510ms | 1 failed / 225 passed (226) | Package script passes `test` as a path filter — currently matches the full workspace suite. (inherits workspace test) |
-| @ailuracode/alpine-query | async-cache | cold | 68990ms | 1 failed / 225 passed (226) | Package script passes `test` as a path filter — currently matches the full workspace suite. (inherits workspace test) |
-| @ailuracode/alpine-query | async-cache | warm | 57510ms | 1 failed / 225 passed (226) | Package script passes `test` as a path filter — currently matches the full workspace suite. (inherits workspace test) |
-| @ailuracode/alpine-dialog (intended scope) | dom-heavy | cold | 1650ms | 4 passed (4) | Reference run for the intended package-only scope. |
-| @ailuracode/alpine-dialog (intended scope) | dom-heavy | warm | 1660ms | 4 passed (4) | Reference run for the intended package-only scope. |
 
 ## Ranked optimization targets
 
-1. **workspace environment** — 168.56s median warm (largest phase). Global happy-dom environment and setup apply to every file; environment dominates non-coverage runs.
-2. **workspace tests** — 82.57s median warm. Global happy-dom environment and setup apply to every file; tests dominates non-coverage runs.
-3. **workspace import** — 43.03s median warm. Global happy-dom environment and setup apply to every file; import dominates non-coverage runs.
-4. **@ailuracode/alpine-dialog package script** — 57510ms median warm. Package script passes `test` as a path filter — currently matches the full workspace suite.
-5. **@ailuracode/alpine-query package script** — 57510ms median warm. Package script passes `test` as a path filter — currently matches the full workspace suite.
-6. **package:repository** — 53383.907ms aggregated file time. 10 files / 70 tests in warm workspace run.
-7. **package:query-kit** — 9399ms aggregated file time. 16 files / 135 tests in warm workspace run.
-8. **package:ui** — 7335.043ms aggregated file time. 3 files / 32 tests in warm workspace run.
-9. **package:gesture** — 1290.762ms aggregated file time. 7 files / 75 tests in warm workspace run.
-10. **package:query** — 1062.867ms aggregated file time. 11 files / 156 tests in warm workspace run.
-11. **test/pack-check.test.ts** — 47834.656ms file duration. Slowest individual test file in warm workspace run.
-12. **packages/ui/test/contract.spec.ts** — 7213.289ms file duration. Slowest individual test file in warm workspace run.
-13. **packages/query-kit/test/devtools.test.ts** — 4800.895ms file duration. Slowest individual test file in warm workspace run.
-14. **test/architecture-check.test.ts** — 4441.256ms file duration. Slowest individual test file in warm workspace run.
-15. **packages/query-kit/test/panel-preferences.test.ts** — 3596.492ms file duration. Slowest individual test file in warm workspace run.
+1. **workspace tests** — 54.99s median warm (largest phase). Project-split workspace; tests phase in warm non-coverage run.
+2. **workspace environment** — 44.79s median warm. Project-split workspace; environment phase in warm non-coverage run.
+3. **workspace import** — 27.24s median warm. Project-split workspace; import phase in warm non-coverage run.
+4. **package:repository** — 42577.254ms aggregated file time. 15 files / 92 tests in warm workspace run.
+5. **package:query-kit** — 4072.679ms aggregated file time. 16 files / 135 tests in warm workspace run.
+6. **package:toast** — 2930.87ms aggregated file time. 3 files / 58 tests in warm workspace run.
+7. **package:gesture** — 1098.13ms aggregated file time. 7 files / 75 tests in warm workspace run.
+8. **package:query** — 750.829ms aggregated file time. 11 files / 156 tests in warm workspace run.
+9. **test/pack-check.test.ts** — 37340.506ms file duration. Slowest individual test file in warm workspace run.
+10. **packages/query-kit/test/devtools.test.ts** — 3365.676ms file duration. Slowest individual test file in warm workspace run.
+11. **test/architecture-check.test.ts** — 2867.726ms file duration. Slowest individual test file in warm workspace run.
+12. **packages/toast/test/alpine.integration.test.ts** — 2851.024ms file duration. Slowest individual test file in warm workspace run.
+13. **test/vitest-projects.test.ts** — 1375.624ms file duration. Slowest individual test file in warm workspace run.
 
 ## CI reference
 
