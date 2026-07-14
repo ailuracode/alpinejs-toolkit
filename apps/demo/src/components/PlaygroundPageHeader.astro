@@ -1,5 +1,6 @@
 ---
 import { Card, CardContent } from "@/components/ui/card";
+import { getPlaygroundBreadcrumbs } from "../catalog/playground-navigation.js";
 import { type PluginNavItem, pluginDocsPath } from "../plugin-nav";
 import Badge from "./astro/Badge.astro";
 import DemoButton from "./astro/DemoButton.astro";
@@ -11,6 +12,7 @@ interface Props {
 }
 
 const { item } = Astro.props;
+const breadcrumbs = getPlaygroundBreadcrumbs(item.id);
 
 const kindLabel =
   item.kind === "store"
@@ -34,18 +36,29 @@ const kindColor =
 <header class="mb-6 scroll-mt-20 fade-in-up">
 	<nav class="mb-3 text-sm text-[var(--ios-label-secondary)]" aria-label="Breadcrumb">
 		<ol class="flex flex-wrap items-center gap-1.5">
-			<li>
-				<a
-					href="/playground/"
-					class="rounded-full px-2 py-0.5 transition-colors hover:text-[var(--ios-label)] focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-[var(--ios-blue)]/50"
-				>
-					Playground
-				</a>
-			</li>
-			<li aria-hidden="true" class="text-[var(--ios-label-tertiary)]">
-				<svg class="size-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" /></svg>
-			</li>
-			<li aria-current="page" class="font-medium text-[var(--ios-label)]">{item.title}</li>
+			{
+				breadcrumbs.map((crumb, index) => (
+					<>
+						{index > 0 ? (
+							<li aria-hidden="true" class="text-[var(--ios-label-tertiary)]">
+								<svg class="size-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" /></svg>
+							</li>
+						) : null}
+						<li>
+							{index === breadcrumbs.length - 1 ? (
+								<span aria-current="page" class="font-medium text-[var(--ios-label)]">{crumb.label}</span>
+							) : (
+								<a
+									href={crumb.href}
+									class="rounded-full px-2 py-0.5 transition-colors hover:text-[var(--ios-label)] focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-[var(--ios-blue)]/50"
+								>
+									{crumb.label}
+								</a>
+							)}
+						</li>
+					</>
+				))
+			}
 		</ol>
 	</nav>
 

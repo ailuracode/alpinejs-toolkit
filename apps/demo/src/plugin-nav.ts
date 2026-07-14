@@ -7,6 +7,7 @@ import {
   PACKAGE_CATEGORIES,
   type PackageCatalogEntry,
 } from "./catalog/index.js";
+import { getAdjacentPlaygroundEntries } from "./catalog/playground-navigation.js";
 
 export type PluginKind = PackageCatalogEntry["surface"];
 
@@ -64,14 +65,10 @@ export function getAdjacentPlugins(id: string): {
   prev?: PluginNavItem;
   next?: PluginNavItem;
 } {
-  const index = PLUGIN_NAV_ITEMS.findIndex((item) => item.id === id);
-  if (index === -1) {
-    return {};
-  }
-
+  const { prev, next } = getAdjacentPlaygroundEntries(id);
   return {
-    prev: index > 0 ? PLUGIN_NAV_ITEMS[index - 1] : undefined,
-    next: index < PLUGIN_NAV_ITEMS.length - 1 ? PLUGIN_NAV_ITEMS[index + 1] : undefined,
+    prev: prev ? toNavItem(prev) : undefined,
+    next: next ? toNavItem(next) : undefined,
   };
 }
 
