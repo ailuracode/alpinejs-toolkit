@@ -105,6 +105,10 @@ export function buildDocsSidebar(): SidebarGroup[] {
           label: "Permissions composition",
           link: "/guides/permissions/",
         },
+        {
+          label: "Query stack composition",
+          link: "/guides/query-stack/",
+        },
       ],
     },
     {
