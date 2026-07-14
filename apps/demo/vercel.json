@@ -3,6 +3,5 @@
   "framework": "astro",
   "installCommand": "cd ../.. && corepack enable && pnpm install --frozen-lockfile",
   "buildCommand": "pnpm run build",
-  "outputDirectory": "dist",
-  "ignoreCommand": "bash scripts/vercel-should-build.sh"
+  "outputDirectory": "dist"
 }
