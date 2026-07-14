@@ -2,6 +2,7 @@ import { existsSync, readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { validateHeadlessCssPolicy } from "./headless-css-policy.mjs";
+import { validatePackageCatalogSurfaces } from "./package-catalog-check.mjs";
 import { REPO_CHECK_POLICY } from "./repo-check-policy.mjs";
 
 const SCOPE = "@ailuracode/alpine-";
@@ -757,6 +758,7 @@ export function runRepoCheck(options = {}) {
     errors.push(
       ...validateRepositorySurfaces(root, packages, catalog, demo),
       ...validateDocumentedCounts(root, catalog.length),
+      ...validatePackageCatalogSurfaces(root),
       ...validateSizeBudgets(packages, root),
       ...validatePackageTests(packages),
       ...validateTooling(root, publishable),
