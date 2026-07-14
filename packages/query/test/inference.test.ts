@@ -100,7 +100,53 @@ describe("@ailuracode/alpine-query type inference", () => {
     query.destroy();
   });
 
-  it("types untyped mocks as unknown instead of any", () => {
+  it("fetch() infers query data from queryFn return type", () => {
+    const query = client.fetch(["todos"], async (): Promise<Todo[]> => [{ id: 1, title: "Learn" }]);
+
+    expectTypeOf(query.data).toEqualTypeOf<Todo[] | undefined>();
+    expectTypeOf(query.refetch).returns.toEqualTypeOf<Promise<void>>();
+  });
+
+  it("fetch() accepts queryOptions definitions", async () => {
+    const definition = queryOptions({
+      queryKey: ["profile"] as const,
+      queryFn: async (): Promise<string> => "cached",
+      staleTime: 60_000,
+    });
+
+    const query = client.fetch(definition);
+    expectTypeOf(query.data).toEqualTypeOf<string | undefined>();
+
+    await vi.runAllTimersAsync();
+
+    expect(query.data).toBe("cached");
+  });
+
+  it("prefetch() infers Promise<void> from key-based queryFn", () => {
+    const result = client.prefetch(
+      ["todos"],
+      async (): Promise<Todo[]> => [{ id: 1, title: "Learn" }]
+    );
+
+    expectTypeOf(result).toEqualTypeOf<Promise<void>>();
+  });
+
+  it("prefetch() accepts queryOptions definitions", async () => {
+    const definition = queryOptions({
+      queryKey: ["profile"] as const,
+      queryFn: async (): Promise<string> => "cached",
+      staleTime: 60_000,
+    });
+
+    const result = client.prefetch(definition);
+    expectTypeOf(result).toEqualTypeOf<Promise<void>>();
+
+    await vi.runAllTimersAsync();
+
+    expect(client.get(["profile"])?.data).toBe("cached");
+  });
+
+  it("types untyped mocks as any instead of any", () => {
     const queryFn = vi.fn().mockResolvedValue([{ id: 1, title: "Learn" }]);
     const query = client.observe(["todos"], queryFn);
 

@@ -74,6 +74,11 @@ export class DevtoolsRegistry {
     this.notify();
   }
 
+  destroy(): void {
+    this.listeners.clear();
+    this.mutations.length = 0;
+  }
+
   private serializeQuery(entry: QueryEntry): QueryDevtoolsEntry {
     const record = entry.handle.get();
     const { staleTime } = entry.options;

@@ -1,0 +1,70 @@
+{
+  "name": "@ailuracode/alpine-gesture",
+  "version": "0.0.0",
+  "description": "Headless gesture recognition — tap, swipe, pan, pinch, and long press via pointer events",
+  "type": "module",
+  "sideEffects": false,
+  "license": "MIT",
+  "author": "ailuracode",
+  "homepage": "https://github.com/ailuracode/alpinejs-toolkit/tree/main/packages/gesture#readme",
+  "bugs": {
+    "url": "https://github.com/ailuracode/alpinejs-toolkit/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ailuracode/alpinejs-toolkit.git",
+    "directory": "packages/gesture"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./global": {
+      "types": "./dist/global.d.ts"
+    }
+  },
+  "types": "./dist/global.d.ts",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsup src/index.ts --format esm --dts --clean --out-dir dist && cp src/global.d.ts dist/global.d.ts",
+    "size": "size-limit",
+    "test": "vitest run",
+    "test:e2e": "playwright test --config playwright.config.ts",
+    "test:e2e:report": "playwright show-report e2e/playwright-report"
+  },
+  "peerDependencies": {
+    "alpinejs": "^3.0.0",
+    "@ailuracode/alpine-core": "^0.2.0"
+  },
+  "devDependencies": {
+    "@ailuracode/alpine-core": "workspace:*",
+    "@playwright/test": "^1.56.1",
+    "@types/alpinejs": "^3.13.10"
+  },
+  "toolkit": {
+    "bundleBudget": {
+      "category": "infrastructure"
+    }
+  },
+  "size-limit": [
+    {
+      "name": "full surface",
+      "path": "dist/index.js",
+      "import": "*",
+      "ignore": [
+        "alpinejs",
+        "@ailuracode/alpine-core"
+      ],
+      "gzip": true,
+      "brotli": true,
+      "limit": "5.9 kB"
+    }
+  ]
+}

@@ -10,7 +10,7 @@ Lógica de calendário leve para Alpine.js, com [date-fns](https://date-fns.org/
 ## Instalação
 
 ```bash
-npm install @ailuracode/alpine-calendar alpinejs
+pnpm install @ailuracode/alpine-calendar alpinejs
 ```
 
 ## Configuração

@@ -1,5 +1,5 @@
 import { execFileSync } from "node:child_process";
-import { appendFileSync, existsSync, readFileSync } from "node:fs";
+import { appendFileSync, existsSync, readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { discoverPackages } from "./repo-check.mjs";
@@ -24,7 +24,10 @@ const GLOBAL_PATTERNS = [
   /^\.github\/actions\//,
   /^\.github\/workflows\//,
   /^test\//,
+  /^e2e\//,
 ];
+
+const E2E_INFRA_PATTERNS = [/^e2e\//, /^scripts\/e2e-run\.mjs$/];
 
 const DEPS_PATTERNS = [
   /^package\.json$/,
@@ -76,12 +79,14 @@ const DEPENDENCY_FIELDS = [
  * @property {boolean} runPack
  * @property {boolean} runSize
  * @property {boolean} runDemo
+ * @property {boolean} runE2e
  * @property {string[]} changedFolders
  * @property {string[]} buildFolders
  * @property {string[]} testFolders
  * @property {string[]} packFolders
  * @property {string[]} buildFilters
  * @property {string[]} testPaths
+ * @property {string[]} e2eFolders
  * @property {string} summary
  */
 
@@ -323,6 +328,40 @@ export function buildPnpmFilters(names) {
  * @param {string[]} folders
  * @returns {string[]}
  */
+/**
+ * @param {string} packagesDir
+ * @returns {Set<string>}
+ */
+function discoverE2ePackageFolders(packagesDir) {
+  if (!existsSync(packagesDir)) {
+    return new Set();
+  }
+
+  return new Set(
+    readdirSync(packagesDir, { withFileTypes: true })
+      .filter((entry) => entry.isDirectory())
+      .map((entry) => entry.name)
+      .filter((folder) => existsSync(path.join(packagesDir, folder, "playwright.config.ts")))
+  );
+}
+
+/**
+ * @param {string[]} folders
+ * @param {Set<string>} available
+ * @returns {string[]}
+ */
+export function e2eFoldersForPackages(folders, available) {
+  return folders.filter((folder) => available.has(folder)).sort((a, b) => a.localeCompare(b));
+}
+
+/**
+ * @param {string[]} files
+ * @returns {boolean}
+ */
+export function hasE2eInfraChanges(files) {
+  return files.some((file) => matchesAny(file, E2E_INFRA_PATTERNS));
+}
+
 export function vitestPathsForFolders(folders) {
   const paths = folders.map((folder) => `packages/${folder}/test`);
 
@@ -339,6 +378,10 @@ export function vitestPathsForFolders(folders) {
  * @returns {CiChangesResult}
  */
 function createFullCiResult(summary, overrides = {}) {
+  const allPackages = discoverPackages(path.join(root, "packages"));
+  const allFolders = allPackages.map((pkg) => pkg.folder);
+  const testPaths = vitestPathsForFolders(allFolders);
+
   return {
     docsOnly: false,
     runFull: true,
@@ -349,12 +392,14 @@ function createFullCiResult(summary, overrides = {}) {
     runPack: true,
     runSize: true,
     runDemo: true,
+    runE2e: true,
     changedFolders: [],
-    buildFolders: [],
-    testFolders: [],
+    buildFolders: allFolders,
+    testFolders: allFolders,
     packFolders: [],
     buildFilters: [],
-    testPaths: [],
+    testPaths,
+    e2eFolders: [],
     summary,
     ...overrides,
   };
@@ -374,12 +419,14 @@ function createDocsOnlyResult() {
     runPack: false,
     runSize: false,
     runDemo: false,
+    runE2e: false,
     changedFolders: [],
     buildFolders: [],
     testFolders: [],
     packFolders: [],
     buildFilters: [],
     testPaths: [],
+    e2eFolders: [],
     summary: "Documentation-only changes",
   };
 }
@@ -416,6 +463,9 @@ function analyzeAffectedPackageChanges(files, rootDir, coverage) {
   const buildFilterNames =
     changedNames.length > 0 ? changedNames : demoChanged ? [...demoDeps] : [];
   const testPaths = vitestPathsForFolders(testFolders);
+  const e2eAvailable = discoverE2ePackageFolders(path.join(rootDir, "packages"));
+  const e2eFolders = e2eFoldersForPackages(testFolders, e2eAvailable);
+  const e2eInfraChanged = hasE2eInfraChanges(files);
 
   if (demoChanged || affectsDemo) {
     testPaths.push("apps/demo/test");
@@ -431,12 +481,14 @@ function analyzeAffectedPackageChanges(files, rootDir, coverage) {
     runPack: publishableChanged.length > 0,
     runSize: publishableChanged.length > 0,
     runDemo: demoChanged || affectsDemo,
+    runE2e: e2eInfraChanged || e2eFolders.length > 0,
     changedFolders,
     buildFolders,
     testFolders,
     packFolders: publishableChanged,
     buildFilters: buildPnpmFilters(buildFilterNames),
     testPaths,
+    e2eFolders,
     summary:
       changedFolders.length > 0
         ? `Affected packages: ${changedFolders.join(", ")}`
@@ -483,17 +535,10 @@ export function analyzeCiChanges(options = {}) {
   const rootDir = options.root ?? root;
   const eventName = options.eventName ?? process.env.GITHUB_EVENT_NAME ?? "pull_request";
   const forceFull = options.forceFull === true || process.env.FORCE_FULL_CI === "true";
-  const coverage =
-    options.coverage === true ||
-    eventName === "schedule" ||
-    (eventName === "push" && process.env.GITHUB_REF === "refs/heads/master");
+  const coverage = options.coverage === true || eventName === "schedule";
 
   if (forceFull || eventName === "schedule") {
     return analyzeChangedFiles([], { ...options, forceFull: true, eventName });
-  }
-
-  if (eventName === "push" && process.env.GITHUB_REF === "refs/heads/master") {
-    return analyzeChangedFiles([], { ...options, forceFull: true, eventName, coverage: true });
   }
 
   const base = options.base ?? process.env.CI_BASE_REF ?? "origin/master";
@@ -517,12 +562,14 @@ export function toGithubOutputs(result) {
     run_pack: String(result.runPack),
     run_size: String(result.runSize),
     run_demo: String(result.runDemo),
+    run_e2e: String(result.runE2e),
     changed_packages: result.changedFolders.join(","),
     build_packages: result.buildFolders.join(","),
     test_packages: result.testFolders.join(","),
     pack_packages: result.packFolders.join(","),
-    build_filters: result.buildFilters.join("\n"),
+    build_filters: result.buildFilters.join(","),
     test_paths: result.testPaths.join(" "),
+    e2e_packages: result.e2eFolders.join(","),
     summary: result.summary,
   };
 }

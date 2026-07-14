@@ -227,7 +227,7 @@ jobs:
 Install a snapshot release for testing:
 
 ```bash
-npm install @scope/package@pr123
+pnpm install @scope/package@pr123
 ```
 
 ## Prerelease Channels

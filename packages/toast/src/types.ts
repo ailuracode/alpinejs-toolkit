@@ -7,7 +7,7 @@
  * or type are breaking changes.
  */
 
-import type { Alpine, PluginCallback, Unsubscribe } from "@ailuracode/alpine-core";
+import type { Alpine, PluginCallback, SingletonScope, Unsubscribe } from "@ailuracode/alpine-core";
 import type { Alpine as AlpineBase } from "alpinejs";
 
 // --- Shared re-exports ----------------------------------------------------
@@ -316,6 +316,13 @@ export interface CreateToastControllerOptions<
    * the store in a proxy and observe timer-fired dismissals.
    */
   readonly getStore?: () => ToastStore<readonly [], TPositions, unknown>;
+  /**
+   * Singleton scope for this controller. Defaults to the active
+   * `document`, an ambient `runWithSingletonScope()` context, or —
+   * in SSR — must be provided explicitly via
+   * `createSingletonScope()`.
+   */
+  readonly scope?: SingletonScope;
 }
 
 /**

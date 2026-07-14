@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ailuracode/alpine-dialog E2E fixture</title>
+  </head>
+  <body>
+    <main
+      id="app"
+      data-e2e-ready="true"
+      x-data
+      x-init="$store.dialog.register('settings')"
+      @keydown.window="$store.dialog.handleKeydown('settings', $event)"
+    >
+      <h1>Dialog E2E fixture</h1>
+      <button id="open-dialog" type="button" @click="$store.dialog.open('settings')">Open dialog</button>
+      <output id="dialog-open" x-text="$store.dialog.isOpen('settings')"></output>
+      <div
+        id="dialog-panel"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Settings"
+        x-show="$store.dialog.isOpen('settings')"
+        x-bind="$store.dialog.dialogProps('settings')"
+      >
+        <button id="dialog-close" type="button" @click="$store.dialog.close('settings')">Close</button>
+        <input id="dialog-input" type="text" aria-label="Name" />
+      </div>
+    </main>
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>

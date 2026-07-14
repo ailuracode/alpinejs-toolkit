@@ -8,6 +8,7 @@
  * idempotent reset.
  */
 import assert from "node:assert/strict";
+import type { Alpine } from "alpinejs";
 import { afterEach, describe, it } from "vitest";
 import {
   definePlugin,
@@ -20,6 +21,18 @@ import {
   ToolkitError,
   unregisterPlugin,
 } from "../src/index";
+
+interface MockAlpine {
+  id: string;
+}
+
+function createMockAlpine(id = "runtime"): MockAlpine {
+  return { id };
+}
+
+function asAlpine(mock: MockAlpine): Alpine {
+  return mock as unknown as Alpine;
+}
 
 interface TrackedCallback {
   (): void;
@@ -199,19 +212,31 @@ describe("registry mutations", () => {
 
   it("keeps initialization independent of registration", () => {
     registerPlugin("share", definePlugin(["magic"], { names: ["share"], plugin: tracker() }));
+    const Alpine = createMockAlpine();
 
-    assert.equal(isPluginInitialized("share"), false);
-    markPluginInitialized("share");
-    assert.equal(isPluginInitialized("share"), true);
+    assert.equal(isPluginInitialized("share", asAlpine(Alpine)), false);
+    markPluginInitialized("share", asAlpine(Alpine));
+    assert.equal(isPluginInitialized("share", asAlpine(Alpine)), true);
 
     assert.throws(
-      () => markPluginInitialized("missing"),
+      () => markPluginInitialized("missing", asAlpine(Alpine)),
       (error: unknown) => {
         assert.ok(error instanceof ToolkitError);
         assert.equal((error as ToolkitError).code, "PLUGIN_UNKNOWN");
         return true;
       }
     );
+  });
+
+  it("tracks initialization per Alpine runtime", () => {
+    registerPlugin("share", definePlugin(["magic"], { names: ["share"], plugin: tracker() }));
+    const alpineA = createMockAlpine("a");
+    const alpineB = createMockAlpine("b");
+
+    markPluginInitialized("share", asAlpine(alpineA));
+
+    assert.equal(isPluginInitialized("share", asAlpine(alpineA)), true);
+    assert.equal(isPluginInitialized("share", asAlpine(alpineB)), false);
   });
 
   it("resetPluginRegistry() clears everything", () => {
@@ -221,6 +246,6 @@ describe("registry mutations", () => {
     resetPluginRegistry();
 
     assert.equal(getRegisteredPlugins().length, 0);
-    assert.equal(isPluginInitialized("share"), false);
+    assert.equal(isPluginInitialized("share", asAlpine(createMockAlpine())), false);
   });
 });

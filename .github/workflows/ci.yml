@@ -4,23 +4,11 @@ name: CI
 # checks required for the detected change category. A final gate job always runs
 # on pull requests so documentation-only changes remain mergeable.
 
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 on:
-  push:
-    branches: [master]
-    paths:
-      - "packages/**"
-      - "apps/demo/**"
-      - "test/**"
-      - "scripts/**"
-      - "patches/**"
-      - ".github/actions/**"
-      - ".github/workflows/ci.yml"
-      - "package.json"
-      - "pnpm-lock.yaml"
-      - "pnpm-workspace.yaml"
-      - "tsconfig.json"
-      - "vitest.config.ts"
-      - "biome.json"
   pull_request:
     branches: [master]
     paths:
@@ -35,6 +23,7 @@ on:
       - "pnpm-workspace.yaml"
       - "tsconfig.json"
       - "vitest.config.ts"
+      - "e2e/**"
       - "biome.json"
       - "docs/**"
       - "AGENTS.md"
@@ -58,19 +47,20 @@ jobs:
       run_pack: ${{ steps.changes.outputs.run_pack }}
       run_size: ${{ steps.changes.outputs.run_size }}
       run_demo: ${{ steps.changes.outputs.run_demo }}
+      run_e2e: ${{ steps.changes.outputs.run_e2e }}
       pack_packages: ${{ steps.changes.outputs.pack_packages }}
       build_filters: ${{ steps.changes.outputs.build_filters }}
       test_paths: ${{ steps.changes.outputs.test_paths }}
+      e2e_packages: ${{ steps.changes.outputs.e2e_packages }}
       summary: ${{ steps.changes.outputs.summary }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Fetch base branch
-        if: github.event_name == 'pull_request'
-        run: git fetch --no-tags origin "${{ github.base_ref }}"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
 
       - name: Detect changes
         id: changes
@@ -88,57 +78,57 @@ jobs:
 
   validate:
     needs: detect
-    if: needs.detect.outputs.run_validate == 'true'
+    if: needs.detect.outputs.run_validate == 'true' || needs.detect.outputs.run_audit == 'true'
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - uses: ./.github/actions/setup
 
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
       - name: Lint
+        if: needs.detect.outputs.run_validate == 'true'
         run: pnpm run lint
 
       - name: Typecheck
+        if: needs.detect.outputs.run_validate == 'true'
         run: pnpm run typecheck
 
       - name: Architecture invariants
+        if: needs.detect.outputs.run_validate == 'true'
         run: pnpm run architecture:check
 
       - name: Repository consistency
-        if: needs.detect.outputs.run_repo_check == 'true' || needs.detect.outputs.run_full == 'true'
+        if: needs.detect.outputs.run_validate == 'true' && (needs.detect.outputs.run_repo_check == 'true' || needs.detect.outputs.run_full == 'true')
         run: pnpm run repo:check
 
       - name: Build all packages
-        if: needs.detect.outputs.run_full == 'true'
+        if: needs.detect.outputs.run_validate == 'true' && needs.detect.outputs.run_full == 'true'
         run: pnpm run build
 
       - name: Build affected packages
-        if: needs.detect.outputs.run_full != 'true' && needs.detect.outputs.build_filters != ''
+        if: needs.detect.outputs.run_validate == 'true' && needs.detect.outputs.run_full != 'true' && needs.detect.outputs.build_filters != ''
         run: |
           set -euo pipefail
           cmd=(pnpm -r)
-          while IFS= read -r filter; do
+          IFS=',' read -ra filters <<< "${{ needs.detect.outputs.build_filters }}"
+          for filter in "${filters[@]}"; do
             if [ -n "$filter" ]; then
               cmd+=(--filter "$filter")
             fi
-          done <<< "${{ needs.detect.outputs.build_filters }}"
+          done
           cmd+=(build)
           "${cmd[@]}"
 
       - name: Run tests with coverage
-        if: needs.detect.outputs.run_coverage == 'true'
+        if: needs.detect.outputs.run_validate == 'true' && needs.detect.outputs.run_coverage == 'true'
         run: pnpm run test:coverage
 
       - name: Run affected tests
-        if: needs.detect.outputs.run_coverage != 'true' && needs.detect.outputs.test_paths != ''
+        if: needs.detect.outputs.run_validate == 'true' && needs.detect.outputs.run_coverage != 'true' && needs.detect.outputs.test_paths != ''
         run: pnpm exec vitest run ${{ needs.detect.outputs.test_paths }}
 
       - name: Validate package tarballs
-        if: needs.detect.outputs.run_pack == 'true'
+        if: needs.detect.outputs.run_validate == 'true' && needs.detect.outputs.run_pack == 'true'
         run: |
           set -euo pipefail
           if [ "${{ needs.detect.outputs.run_full }}" = "true" ]; then
@@ -148,7 +138,7 @@ jobs:
           fi
 
       - name: Validate built export surfaces
-        if: needs.detect.outputs.run_pack == 'true'
+        if: needs.detect.outputs.run_validate == 'true' && needs.detect.outputs.run_pack == 'true'
         run: |
           set -euo pipefail
           if [ "${{ needs.detect.outputs.run_full }}" = "true" ]; then
@@ -158,7 +148,7 @@ jobs:
           fi
 
       - name: Enforce bundle-size budgets
-        if: needs.detect.outputs.run_size == 'true'
+        if: needs.detect.outputs.run_validate == 'true' && needs.detect.outputs.run_size == 'true'
         run: |
           set -euo pipefail
           if [ "${{ needs.detect.outputs.run_full }}" = "true" ]; then
@@ -176,27 +166,51 @@ jobs:
           fi
 
       - name: Build demo app
-        if: needs.detect.outputs.run_demo == 'true'
+        if: needs.detect.outputs.run_validate == 'true' && needs.detect.outputs.run_demo == 'true'
         run: pnpm run build:demo
 
-  audit:
+      - name: Audit critical vulnerabilities
+        if: needs.detect.outputs.run_audit == 'true'
+        run: pnpm audit --audit-level critical
+
+  e2e:
     needs: detect
-    if: needs.detect.outputs.run_audit == 'true'
+    if: needs.detect.outputs.run_e2e == 'true'
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - uses: ./.github/actions/setup
 
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+      - name: Install Playwright browsers
+        run: |
+          set -euo pipefail
+          if [ "${{ needs.detect.outputs.run_full }}" = "true" ] && [ "${{ github.event_name }}" = "schedule" ]; then
+            pnpm run playwright:install:all
+          else
+            pnpm run playwright:install
+          fi
 
-      - name: Audit critical vulnerabilities
-        run: pnpm audit --audit-level critical
+      - name: Run Playwright E2E (full browser matrix)
+        if: needs.detect.outputs.run_full == 'true' && github.event_name == 'schedule'
+        run: pnpm run test:e2e:full
+
+      - name: Run Playwright E2E (Chromium baseline)
+        if: needs.detect.outputs.run_full != 'true' || github.event_name != 'schedule'
+        env:
+          E2E_BROWSER_PROFILE: pr
+        run: |
+          set -euo pipefail
+          if [ "${{ needs.detect.outputs.run_full }}" = "true" ]; then
+            pnpm run test:e2e
+          elif [ -n "${{ needs.detect.outputs.e2e_packages }}" ]; then
+            node scripts/e2e-run.mjs --packages "${{ needs.detect.outputs.e2e_packages }}"
+          else
+            echo "No affected E2E packages"
+          fi
 
   gate:
-    needs: [detect, validate, audit]
+    needs: [detect, validate, e2e]
     if: always()
     runs-on: ubuntu-latest
     steps:
@@ -205,9 +219,10 @@ jobs:
           DOCS_ONLY: ${{ needs.detect.outputs.docs_only }}
           RUN_VALIDATE: ${{ needs.detect.outputs.run_validate }}
           RUN_AUDIT: ${{ needs.detect.outputs.run_audit }}
+          RUN_E2E: ${{ needs.detect.outputs.run_e2e }}
           DETECT_RESULT: ${{ needs.detect.result }}
           VALIDATE_RESULT: ${{ needs.validate.result }}
-          AUDIT_RESULT: ${{ needs.audit.result }}
+          E2E_RESULT: ${{ needs.e2e.result }}
         run: |
           set -euo pipefail
 
@@ -221,13 +236,13 @@ jobs:
             exit 0
           fi
 
-          if [ "$RUN_VALIDATE" = "true" ] && [ "$VALIDATE_RESULT" != "success" ]; then
+          if { [ "$RUN_VALIDATE" = "true" ] || [ "$RUN_AUDIT" = "true" ]; } && [ "$VALIDATE_RESULT" != "success" ]; then
             echo "validate job did not succeed"
             exit 1
           fi
 
-          if [ "$RUN_AUDIT" = "true" ] && [ "$AUDIT_RESULT" != "success" ]; then
-            echo "audit job did not succeed"
+          if [ "$RUN_E2E" = "true" ] && [ "$E2E_RESULT" != "success" ]; then
+            echo "e2e job did not succeed"
             exit 1
           fi
 

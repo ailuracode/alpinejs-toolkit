@@ -23,7 +23,7 @@ import {
   type SidebarChangeDetail,
   type SidebarController,
 } from "../src/index";
-import { setMatchMedia } from "./setup";
+import { installMatchMediaMock, setMatchMedia } from "./setup";
 
 const MIN_WIDTH_1024 = "(min-width: 1024px)";
 
@@ -118,6 +118,149 @@ describe("SidebarController — toggle", () => {
     expect(controller.visible).toBe(false);
     controller.toggle();
     expect(controller.visible).toBe(true);
+  });
+});
+
+describe("SidebarController — breakpoint snapshots (ALP-102)", () => {
+  it("reports the true previous matchesBreakpoint on keep mismatch", async () => {
+    setMatchMedia(MIN_WIDTH_1024, true);
+    const controller = createSidebar({
+      breakpoint: { query: MIN_WIDTH_1024, onMismatch: "keep" },
+    });
+    const events: SidebarChangeDetail[] = [];
+    controller.on("change", (detail) => events.push(detail));
+    await Promise.resolve();
+
+    setMatchMedia(MIN_WIDTH_1024, false);
+    const breakpointEvent = events.find((e) => e.source === "breakpoint");
+    expect(breakpointEvent?.matchesBreakpoint).toBe(false);
+    expect(breakpointEvent?.previous?.matchesBreakpoint).toBe(true);
+    expect(breakpointEvent?.previous?.visible).toBe(false);
+    controller.destroy();
+  });
+
+  it("reports the true previous matchesBreakpoint on hide mismatch", async () => {
+    setMatchMedia(MIN_WIDTH_1024, true);
+    const controller = createSidebar({
+      breakpoint: { query: MIN_WIDTH_1024, onMismatch: "hide" },
+    });
+    const events: SidebarChangeDetail[] = [];
+    controller.on("change", (detail) => events.push(detail));
+    await Promise.resolve();
+
+    controller.show();
+    events.length = 0;
+    setMatchMedia(MIN_WIDTH_1024, false);
+    await Promise.resolve();
+
+    const breakpointEvents = events.filter((e) => e.source === "breakpoint");
+    expect(breakpointEvents).toHaveLength(1);
+    expect(breakpointEvents[0]?.matchesBreakpoint).toBe(false);
+    expect(breakpointEvents[0]?.previous?.matchesBreakpoint).toBe(true);
+    expect(breakpointEvents[0]?.previous?.visible).toBe(true);
+    expect(breakpointEvents[0]?.visible).toBe(false);
+    controller.destroy();
+  });
+
+  it("re-match reports the true previous matchesBreakpoint without auto-show", async () => {
+    setMatchMedia(MIN_WIDTH_1024, true);
+    const controller = createSidebar({
+      breakpoint: { query: MIN_WIDTH_1024, onMismatch: "hide" },
+    });
+    const events: SidebarChangeDetail[] = [];
+    controller.on("change", (detail) => events.push(detail));
+    await Promise.resolve();
+
+    controller.show();
+    setMatchMedia(MIN_WIDTH_1024, false);
+    await Promise.resolve();
+    events.length = 0;
+
+    setMatchMedia(MIN_WIDTH_1024, true);
+    await Promise.resolve();
+
+    const breakpointEvent = events.find((e) => e.source === "breakpoint");
+    expect(breakpointEvent?.matchesBreakpoint).toBe(true);
+    expect(breakpointEvent?.previous?.matchesBreakpoint).toBe(false);
+    expect(breakpointEvent?.visible).toBe(false);
+    controller.destroy();
+  });
+
+  it("initialization snapshot reflects the seeded matchesBreakpoint", async () => {
+    setMatchMedia(MIN_WIDTH_1024, true);
+    const controller = createSidebar({
+      breakpoint: { query: MIN_WIDTH_1024, onMismatch: "hide" },
+    });
+    const events: SidebarChangeDetail[] = [];
+    controller.on("change", (detail) => events.push(detail));
+    await Promise.resolve();
+
+    const init = events.find((e) => e.source === "initialization");
+    expect(init?.matchesBreakpoint).toBe(true);
+    expect(init?.previous).toBeNull();
+    controller.destroy();
+  });
+});
+
+describe("SidebarController — reset snapshots (ALP-102)", () => {
+  it("emits once when only breakpoint state changes", async () => {
+    setMatchMedia(MIN_WIDTH_1024, true);
+    const controller = createSidebar({
+      breakpoint: { query: MIN_WIDTH_1024, onMismatch: "keep" },
+    });
+    const events: SidebarChangeDetail[] = [];
+    controller.on("change", (detail) => events.push(detail));
+    await Promise.resolve();
+
+    setMatchMedia(MIN_WIDTH_1024, false);
+    await Promise.resolve();
+    events.length = 0;
+
+    controller.reset();
+    expect(events).toHaveLength(1);
+    expect(events[0]).toEqual({
+      visible: false,
+      matchesBreakpoint: true,
+      source: "reset",
+      previous: { visible: false, matchesBreakpoint: false },
+    });
+    controller.destroy();
+  });
+
+  it("is a no-op when neither visible nor matchesBreakpoint changes", async () => {
+    setMatchMedia(MIN_WIDTH_1024, true);
+    const controller = createSidebar({
+      breakpoint: { query: MIN_WIDTH_1024, onMismatch: "keep" },
+    });
+    const events: SidebarChangeDetail[] = [];
+    controller.on("change", (detail) => events.push(detail));
+    await Promise.resolve();
+    events.length = 0;
+
+    controller.reset();
+    expect(events).toHaveLength(0);
+    controller.destroy();
+  });
+
+  it("emits once when both visible and breakpoint state change", () => {
+    setMatchMedia(MIN_WIDTH_1024, true);
+    const controller = createSidebar({
+      breakpoint: { query: MIN_WIDTH_1024, onMismatch: "keep" },
+    });
+    const events: SidebarChangeDetail[] = [];
+    controller.on("change", (detail) => events.push(detail));
+
+    controller.show();
+    setMatchMedia(MIN_WIDTH_1024, false);
+    events.length = 0;
+
+    controller.reset();
+    expect(events).toHaveLength(1);
+    expect(events[0]?.source).toBe("reset");
+    expect(events[0]?.visible).toBe(false);
+    expect(events[0]?.matchesBreakpoint).toBe(true);
+    expect(events[0]?.previous).toEqual({ visible: true, matchesBreakpoint: false });
+    controller.destroy();
   });
 });
 
@@ -357,6 +500,7 @@ describe("SidebarController — SSR", () => {
     // session sees a real window again. We avoid `unstubAllGlobals`
     // because it would also clear `safeMatchMedia`'s environment.
     vi.unstubAllGlobals();
+    installMatchMediaMock();
   });
 
   it("constructing under missing window does not throw; matchesBreakpoint === false", () => {
@@ -365,18 +509,15 @@ describe("SidebarController — SSR", () => {
     // every browser-API access, so the construction path stays
     // inert.
     vi.stubGlobal("window", undefined);
-    expect(() =>
-      createSidebar({
+    let controller: SidebarController | undefined;
+    expect(() => {
+      controller = createSidebar({
         breakpoint: { query: MIN_WIDTH_1024, onMismatch: "hide" },
         closeOnEscape: true,
-      })
-    ).not.toThrow();
-    // Re-read after the fact: the stubbed window is gone but the
-    // controller was built before the test scope exited. Reach for
-    // the live singleton via a fresh construction under SSR.
-    const fresh = createSidebar();
-    expect(fresh.matchesBreakpoint).toBe(false);
-    fresh.destroy();
+      });
+    }).not.toThrow();
+    expect(controller?.matchesBreakpoint).toBe(false);
+    controller?.destroy();
   });
 });
 
@@ -688,7 +829,7 @@ describe("SidebarController — scroll option (body lock via @ailuracode/alpine-
     controller.destroy();
   });
 
-  it("Escape hide does NOT release the lock (only user source triggers release)", () => {
+  it("Escape hide releases the lock and hides the sidebar", () => {
     const spy = makeScrollSpy();
     const controller = createSidebar({
       closeOnEscape: true,
@@ -696,12 +837,14 @@ describe("SidebarController — scroll option (body lock via @ailuracode/alpine-
     });
     controller.show();
     expect(spy.locks).toEqual(["sidebar"]);
+    expect(controller.visible).toBe(true);
     window.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }));
-    expect(spy.unlocks).toEqual([]);
+    expect(controller.visible).toBe(false);
+    expect(spy.unlocks).toEqual(["h1"]);
     controller.destroy();
   });
 
-  it("breakpoint-driven hide does NOT release the lock", () => {
+  it("breakpoint-driven hide releases the lock and hides the sidebar", async () => {
     const spy = makeScrollSpy();
     setMatchMedia(MIN_WIDTH_1024, true);
     const controller = createSidebar({
@@ -710,8 +853,46 @@ describe("SidebarController — scroll option (body lock via @ailuracode/alpine-
     });
     controller.show();
     expect(spy.locks).toEqual(["sidebar"]);
+    expect(controller.visible).toBe(true);
     setMatchMedia(MIN_WIDTH_1024, false);
-    expect(spy.unlocks).toEqual([]);
+    await Promise.resolve();
+    expect(controller.visible).toBe(false);
+    expect(spy.unlocks).toEqual(["h1"]);
+    controller.destroy();
+  });
+
+  it("reset() releases the lock when it hides the sidebar", () => {
+    const spy = makeScrollSpy();
+    const controller = createSidebar({ scroll: spy.scroll });
+    controller.show();
+    expect(spy.locks).toEqual(["sidebar"]);
+    expect(controller.visible).toBe(true);
+    controller.reset();
+    expect(controller.visible).toBe(false);
+    expect(spy.unlocks).toEqual(["h1"]);
+    controller.destroy();
+  });
+
+  it("storage-driven hide releases the lock and hides the sidebar", () => {
+    const spy = makeScrollSpy();
+    const storage = createLocalStorageSidebarStorage({ key: "scroll-lock" });
+    const controller = createSidebar({ scroll: spy.scroll, storage });
+    controller.show();
+    expect(spy.locks).toEqual(["sidebar"]);
+    expect(controller.visible).toBe(true);
+    fireStorage("scroll-lock", "false");
+    expect(controller.visible).toBe(false);
+    expect(spy.unlocks).toEqual(["h1"]);
+    controller.destroy();
+  });
+
+  it("storage-driven show does NOT acquire a lock", () => {
+    const spy = makeScrollSpy();
+    const storage = createLocalStorageSidebarStorage({ key: "scroll-open" });
+    const controller = createSidebar({ scroll: spy.scroll, storage });
+    fireStorage("scroll-open", "true");
+    expect(controller.visible).toBe(true);
+    expect(spy.locks).toEqual([]);
     controller.destroy();
   });
 

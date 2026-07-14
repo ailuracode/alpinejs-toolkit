@@ -1,8 +1,6 @@
 # @ailuracode/alpine-notify
 
-Web Notifications API wrapper for Alpine.js via the `$notify` magic.
-
-**[Full documentation →](../../docs/plugins/notify.md)**
+Thin wrapper around the [Web Notifications API](https://developer.mozilla.org/en-US/docs/Web/API/Notifications_API) via the `$notify` magic. Handles unsupported browsers and permission states without throwing.
 
 ## Install
 
@@ -10,9 +8,9 @@ Web Notifications API wrapper for Alpine.js via the `$notify` magic.
 pnpm add @ailuracode/alpine-notify alpinejs
 ```
 
-## Quick example
+## Setup
 
-```ts
+```js
 import Alpine from "alpinejs";
 import notify from "@ailuracode/alpine-notify";
 
@@ -20,15 +18,60 @@ Alpine.plugin(notify);
 Alpine.start();
 ```
 
-Copy the service worker to your public folder:
+Copy the bundled service worker to your site root (or another same-origin path):
 
 ```bash
 cp node_modules/@ailuracode/alpine-notify/dist/notify-sw.js public/notify-sw.js
 ```
 
-```html
-<button @click="await $notify.sendAsync('Hello')">Notify</button>
+The plugin registers `/notify-sw.js` automatically. Use a custom path when needed:
 
+```js
+Alpine.plugin(
+  notify({
+    serviceWorkerUrl: "/assets/notify-sw.js",
+  }),
+);
+```
+
+## Magic API
+
+| Member | Type | Description |
+|--------|------|-------------|
+| `isSupported` | `boolean` (getter) | `true` when notifications can be shown in this environment |
+| `requiresHomeScreenInstall` | `boolean` (getter) | `true` on iOS/iPadOS Safari tabs that need a Home Screen install |
+| `permission` | `NotificationPermission` (getter) | `granted`, `denied`, or `default` |
+| `requestPermission()` | `Promise<NotificationPermission>` | Prompts the user when permission is `default` |
+| `send(title, options?)` | `Notification \| null` | Creates a desktop notification synchronously |
+| `sendAsync(title, options?)` | `Promise<Notification \| null>` | Preferred on mobile; uses a service worker when needed |
+| `sendIfPermitted(title, options?)` | `Notification \| null` | Same as `send` — explicit intent in templates |
+| `sendIfPermittedAsync(title, options?)` | `Promise<Notification \| null>` | Same as `sendAsync` |
+| `close(notification)` | `void` | Closes a notification safely |
+
+Use getters without parentheses in templates: `$notify.isSupported`, `$notify.permission`.
+
+All methods except `requestPermission()` are synchronous. Nothing throws when notifications are unavailable.
+
+## Usage examples
+
+### Simple notification
+
+```js
+$notify.send("Hello");
+```
+
+### With options
+
+```js
+$notify.send("Order completed", {
+  body: "Your payment was successful.",
+  icon: "/logo.png",
+});
+```
+
+### Request permission first
+
+```html
 <button
   x-show="$notify.isSupported && $notify.permission === 'default'"
   @click="await $notify.requestPermission()"
@@ -37,34 +80,113 @@ cp node_modules/@ailuracode/alpine-notify/dist/notify-sw.js public/notify-sw.js
 </button>
 ```
 
-## API summary
+```js
+await $notify.requestPermission();
+await $notify.sendAsync("You are subscribed");
+```
 
-| Member | Returns | Description |
-|--------|---------|-------------|
-| `isSupported` | `boolean` (getter) | Whether notifications can be shown |
-| `requiresHomeScreenInstall` | `boolean` (getter) | iOS/iPadOS Safari tab limitation |
-| `permission` | `NotificationPermission` (getter) | Current permission state |
-| `requestPermission()` | `Promise<NotificationPermission>` | Prompt when `default` |
-| `send(title, options?)` | `Notification \| null` | Desktop synchronous delivery |
-| `sendAsync(title, options?)` | `Promise<Notification \| null>` | Mobile-safe delivery |
-| `sendIfPermitted(title, options?)` | `Notification \| null` | Same as `send` |
-| `sendIfPermittedAsync(title, options?)` | `Promise<Notification \| null>` | Same as `sendAsync` |
-| `close(notification)` | `void` | Close without throwing |
+### Only notify when already allowed
+
+```js
+$notify.sendIfPermitted("Background job finished");
+```
+
+### Close programmatically
+
+```html
+<div
+  x-data="{ note: null }"
+  @job-complete.window="note = $notify.sendIfPermitted('Done')"
+>
+  <button x-show="note" @click="$notify.close(note); note = null">
+    Dismiss
+  </button>
+</div>
+```
+
+### Feature detection in templates
+
+```html
+<div x-show="!$notify.isSupported && !$notify.requiresHomeScreenInstall">
+  Notifications are not supported in this browser.
+</div>
+
+<div x-show="$notify.requiresHomeScreenInstall">
+  Add this site to your Home Screen on iPhone or iPad to enable notifications.
+</div>
+
+<div x-show="$notify.isSupported && $notify.permission === 'denied'">
+  Notifications are blocked. Enable them in browser settings.
+</div>
+```
+
+## Behavior
+
+- **Unsupported browsers** — `isSupported` is `false`, `permission` returns `denied`, `send` / `sendIfPermitted` return `null`.
+- **iOS/iPadOS Safari tabs** — `requiresHomeScreenInstall` is `true`; notifications only work after the user adds the site to the Home Screen and opens it from there.
+- **Android and mobile Chrome** — `new Notification()` is not available; the plugin uses `ServiceWorkerRegistration.showNotification()` via the bundled `notify-sw.js`.
+- **Denied permission** — `Notification` is never constructed; methods return `null` or `denied` without throwing.
+- **Default permission** — `send` returns `null` until the user grants access via `requestPermission()`.
+- **Granted permission** — use `sendAsync()` on mobile and `send()` on desktop.
+
+The plugin does not render UI, manage toast stacks, or persist preferences. Use your own components for in-app messaging and permission UX.
 
 ## Browser compatibility
 
-| Feature | Support |
-|---------|---------|
-| Chrome / Edge (desktop) | Full |
-| Firefox (desktop) | Full |
-| Safari (macOS 16.4+) | Full |
-| Chrome (Android) | Service worker + `sendAsync()` |
-| Safari (iOS) | Home Screen web app only |
-| Secure context (HTTPS) | Required |
-| Unsupported browsers | API returns `null` / `denied`; never throws |
+| Environment | Notes |
+|-------------|-------|
+| Chrome, Edge, Opera (desktop) | Supported in secure contexts via `new Notification()` |
+| Firefox (desktop) | Supported in secure contexts |
+| Safari (macOS 16.4+) | Supported in secure contexts |
+| Chrome (Android) | Requires the bundled service worker and `sendAsync()` |
+| Safari (iOS / iPadOS) | Home Screen web app only; regular Safari tabs cannot receive notifications |
+| HTTP (non-localhost) | Blocked — requires HTTPS |
+| Web Workers / Service Workers | This plugin targets `window` / Alpine templates in the main document |
 
-See [docs/notify.md](../../docs/plugins/notify.md) for details and usage patterns.
+Always check `isSupported`, `requiresHomeScreenInstall`, and `permission` before showing permission prompts or assuming notifications will appear.
 
-## License
+## Unified permissions adapter
 
-MIT
+Register with `@ailuracode/alpine-permissions` for a normalized snapshot across capabilities:
+
+```ts
+import { permissionsPlugin } from "@ailuracode/alpine-permissions";
+import { createNotificationPermissionAdapter } from "@ailuracode/alpine-notify";
+
+Alpine.plugin(
+  permissionsPlugin({
+    adapters: [createNotificationPermissionAdapter()],
+  })
+);
+```
+
+Registry key: `notifications`. See [permissions.md](./permissions.md).
+
+## TypeScript
+
+```ts
+/// <reference types="@types/alpinejs" />
+/// <reference types="@ailuracode/alpine-notify" />
+```
+
+Or import the plugin module:
+
+```ts
+import notify from "@ailuracode/alpine-notify";
+```
+
+Individual helpers are also exported for non-Alpine use:
+
+```ts
+import {
+  createNotifyMagic,
+  isNotifySupported,
+  sendNotification,
+} from "@ailuracode/alpine-notify";
+```
+
+## Design notes
+
+- **Magic, not store** — notifications are one-off actions, not shared reactive state.
+- **Fail silent** — returning `null` keeps Alpine expressions and event handlers simple.
+- **No UI coupling** — framework-agnostic; pair with your own toast or banner components for in-page feedback.

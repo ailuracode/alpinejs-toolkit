@@ -10,7 +10,7 @@ Reactive viewport breakpoints, dimensions, and browser media features in a singl
 ## Instalación
 
 ```bash
-npm install @ailuracode/alpine-media alpinejs
+pnpm install @ailuracode/alpine-media alpinejs
 ```
 
 ## Configuración
@@ -128,11 +128,11 @@ media.on("change", (detail: MediaChangeDetail) => {
 <p x-show="$store.media.prefersReducedMotion">Reduced motion preferred</p>
 ```
 
-## Tema vs esquema de color del SO
+## Tema vs esquema de color del SO {#theme-vs-media-color-scheme}
 
 `prefersColorScheme` reporta la preferencia del **sistema operativo** desde `(prefers-color-scheme: dark)`. No refleja un override manual del tema en tu app.
 
-Para **estilar la app**, usa [`@ailuracode/alpine-theme`](./theme.md) y lee `$store.theme.resolved`. Ese valor tiene en cuenta la elección del usuario (`light`, `dark`, o seguir el sistema con `mode: 'system'`).
+Para **estilar la app**, usa [`@ailuracode/alpine-theme`](/plugins/theme/) y lee `$store.theme.resolved`. Ese valor tiene en cuenta la elección del usuario (`light`, `dark`, o seguir el sistema con `mode: 'system'`).
 
 | Pregunta | Usar |
 |----------|------|
@@ -149,7 +149,7 @@ Para **estilar la app**, usa [`@ailuracode/alpine-theme`](./theme.md) y lee `$st
 </p>
 ```
 
-Ver [Theme — `resolved` vs `prefersColorScheme`](./theme.md#resolved-vs-preferscolorscheme) para la comparación completa.
+Ver [Theme — `resolved` vs `prefersColorScheme`](/plugins/theme/#resolved-vs-preferscolorscheme) para la comparación completa.
 
 ## Helpers exportados
 

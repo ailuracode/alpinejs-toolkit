@@ -13,7 +13,7 @@ description: "Instalá el toolkit modular de Alpine — lazy init, esenciales y 
 Empezá con el registro core y los cinco módulos esenciales:
 
 ```bash
-npm install alpinejs \
+pnpm install alpinejs \
   @ailuracode/alpine-core \
   @ailuracode/alpine-theme \
   @ailuracode/alpine-media \

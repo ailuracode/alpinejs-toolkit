@@ -1,5 +1,5 @@
 import accordion from "@ailuracode/alpine-accordion";
-import attention from "@ailuracode/alpine-attention";
+import attention, { createIdlePermissionAdapter } from "@ailuracode/alpine-attention";
 import calendar from "@ailuracode/alpine-calendar";
 import carousel from "@ailuracode/alpine-carousel";
 import child from "@ailuracode/alpine-child";
@@ -7,16 +7,21 @@ import command from "@ailuracode/alpine-command";
 import dialog from "@ailuracode/alpine-dialog";
 import env from "@ailuracode/alpine-env";
 import form from "@ailuracode/alpine-form";
-import geo from "@ailuracode/alpine-geo";
+import geo, { createGeoPermissionAdapter } from "@ailuracode/alpine-geo";
+import gesture from "@ailuracode/alpine-gesture";
+import history from "@ailuracode/alpine-history";
 import jsonApi from "@ailuracode/alpine-json-api";
+import keyboard from "@ailuracode/alpine-keyboard";
 import lang from "@ailuracode/alpine-lang";
 import media from "@ailuracode/alpine-media";
 import menu from "@ailuracode/alpine-menu";
-import notify from "@ailuracode/alpine-notify";
+import notify, { createNotificationPermissionAdapter } from "@ailuracode/alpine-notify";
 import overlay from "@ailuracode/alpine-overlay";
+import permissions from "@ailuracode/alpine-permissions";
 import query from "@ailuracode/alpine-query-adapter-alpine";
 import queryKit, { createAlpineNanostoresAdapter, NanoStores } from "@ailuracode/alpine-query-kit";
 import scroll from "@ailuracode/alpine-scroll";
+import selection from "@ailuracode/alpine-selection";
 import sidebar from "@ailuracode/alpine-sidebar";
 import tabs from "@ailuracode/alpine-tabs";
 import theme from "@ailuracode/alpine-theme";
@@ -24,6 +29,7 @@ import toast, { toastPositions, toastVariants } from "@ailuracode/alpine-toast";
 import toggle from "@ailuracode/alpine-toggle";
 import tooltip from "@ailuracode/alpine-tooltip";
 import transfer from "@ailuracode/alpine-transfer";
+import virtual from "@ailuracode/alpine-virtual";
 import anchor from "@alpinejs/anchor";
 import collapse from "@alpinejs/collapse";
 import morph from "@alpinejs/morph";
@@ -60,6 +66,16 @@ export async function startAlpineDemo(): Promise<void> {
   alpine.plugin([persist, anchor, collapse, morph]);
 
   alpine.plugin([
+    permissions({
+      adapters: [
+        createNotificationPermissionAdapter(),
+        createGeoPermissionAdapter(),
+        createIdlePermissionAdapter(),
+      ],
+    }),
+    keyboard({
+      options: { pauseWhileScopesActive: ["modal"] },
+    }),
     toast({
       variants: toastDemoVariants,
       positions: toastDemoPositions,
@@ -72,12 +88,15 @@ export async function startAlpineDemo(): Promise<void> {
       maxVisible: 3,
     }),
     env(),
+    gesture(),
+    history(),
     transfer(),
     tooltip(),
     tabs(),
     accordion(),
-    command(),
     carousel(),
+    virtual(),
+    selection(),
     calendar,
     attention,
     geo(),
@@ -114,6 +133,7 @@ export async function startAlpineDemo(): Promise<void> {
     }),
     dialog({ scroll: scrollStore }),
     menu({ scroll: scrollStore }),
+    command({ scroll: scrollStore }),
   ]);
 
   await document.fonts.ready;

@@ -56,7 +56,8 @@ describe("calendarPlugin — Alpine integration", () => {
     magic({ month: JAN_2024 });
 
     expect(reactive).toHaveBeenCalledTimes(1);
-    expect((reactive.mock.calls[0]?.[0] as { month: Date }).month.getMonth()).toBe(0);
+    const callArg = reactive.mock.calls[0]?.[0] as { month: Date } | undefined;
+    expect(callArg?.month.getMonth()).toBe(0);
   });
 
   it("plugin methods use `this` so Alpine.reactive Proxy tracks mutations", () => {

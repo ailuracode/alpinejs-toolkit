@@ -20,6 +20,10 @@ export type { Unsubscribe } from "@ailuracode/alpine-core";
 export { createGeoController, createGeoStore, GeoController } from "./controller";
 // --- Event surface -------------------------------------------------------
 export type { GeoErrorDetail, GeoEvents, GeoPositionDetail } from "./events";
+export {
+  createGeoPermissionAdapter,
+  GEOLOCATION_PERMISSION_NAME,
+} from "./permission-adapter";
 // --- Alpine integration --------------------------------------------------
 export { geoOptions, geoPlugin, geoPlugin as default } from "./plugin";
 // --- Public types ---------------------------------------------------------

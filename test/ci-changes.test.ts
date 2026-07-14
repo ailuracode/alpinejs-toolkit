@@ -5,6 +5,7 @@ import {
   analyzeChangedFiles,
   changedPackageFolders,
   isDocumentationOnlyChange,
+  toGithubOutputs,
 } from "../scripts/ci-changes.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -60,11 +61,33 @@ describe("ci:changes", () => {
     expect(result.runRepoCheck).toBe(false);
   });
 
+  it("emits comma-separated pnpm build filters for multi-package changes", () => {
+    const result = analyzeChangedFiles(
+      ["packages/query/src/cache.ts", "packages/query-adapter-alpine/src/plugin.ts"],
+      { root }
+    );
+
+    expect(result.buildFilters).toEqual([
+      "@ailuracode/alpine-query...",
+      "@ailuracode/alpine-query-adapter-alpine...",
+    ]);
+    expect(toGithubOutputs(result).build_filters).toBe(
+      "@ailuracode/alpine-query...,@ailuracode/alpine-query-adapter-alpine..."
+    );
+  });
+
   it("runs audit only when dependency manifests change", () => {
     const sourceOnly = analyzeChangedFiles(["packages/theme/src/plugin.ts"], { root });
     const lockfile = analyzeChangedFiles(["pnpm-lock.yaml", "vitest.config.ts"], { root });
 
     expect(sourceOnly.runAudit).toBe(false);
     expect(lockfile.runAudit).toBe(true);
+  });
+
+  it("enables E2E for packages with Playwright projects", () => {
+    const result = analyzeChangedFiles(["packages/theme/e2e/theme.smoke.spec.ts"], { root });
+
+    expect(result.runE2e).toBe(true);
+    expect(result.e2eFolders).toEqual(["theme"]);
   });
 });

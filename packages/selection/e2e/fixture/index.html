@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ailuracode/alpine-selection E2E fixture</title>
+  </head>
+  <body>
+    <main
+      id="app"
+      data-e2e-ready="true"
+      x-data
+      x-init="
+        $store.selection.create('list', { mode: 'single' });
+      "
+    >
+      <h1>Selection E2E fixture</h1>
+      <ul role="listbox" x-bind="$store.selection.listProps('list', { label: 'Items' })">
+        <li role="presentation">
+          <button type="button" role="option" x-bind="$store.selection.itemProps('list', 'a')" @click="$store.selection.select('list', 'a')">Alpha</button>
+        </li>
+        <li role="presentation">
+          <button type="button" role="option" x-bind="$store.selection.itemProps('list', 'b')" @click="$store.selection.select('list', 'b')">Beta</button>
+        </li>
+      </ul>
+      <output id="selected" x-text="$store.selection.instances.list?.selectedKeys.join(',') ?? ''"></output>
+    </main>
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>

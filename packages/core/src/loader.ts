@@ -1,6 +1,7 @@
 /**
- * Plugin loader resolution — converts a {@link PluginLoader} into an
- * {@link PluginCallback} either synchronously or asynchronously.
+ * Plugin loader resolution — converts a {@link PluginSource} or raw
+ * {@link AlpinePluginCallback} into an {@link PluginCallback} either
+ * synchronously or asynchronously.
  *
  * When a loader throws or returns a non-function, the failure is
  * surfaced both as a {@link PluginLoaderError} and as a `load-error`
@@ -11,7 +12,16 @@
 import type { PluginCallback } from "alpinejs";
 import { ToolkitError } from "./core/error";
 import { emitLoadError } from "./registry";
-import type { PluginLoader } from "./types";
+import type {
+  AlpinePluginCallback,
+  PluginCallbackSource,
+  PluginLoaderSource,
+  PluginSource,
+} from "./types";
+
+const LOADER_MUST_FUNCTION = "Plugin loader must resolve to a function";
+const LOADER_ASYNC_REQUIRES_INIT =
+  "Async plugin loaders require initPlugins() before Alpine.start()";
 
 /**
  * Public error thrown when a plugin loader cannot be resolved.
@@ -27,80 +37,134 @@ export class PluginLoaderError extends ToolkitError {
   }
 }
 
-function isPluginCallback(value: unknown): value is PluginCallback {
-  return typeof value === "function";
+export function isPluginSource(value: unknown): value is PluginSource {
+  if (typeof value !== "object" || value === null || !("source" in value)) {
+    return false;
+  }
+
+  const source = (value as PluginSource).source;
+  return source === "callback" || source === "loader";
+}
+
+/** Marks a direct Alpine plugin callback. */
+export function pluginCallback(callback: AlpinePluginCallback): PluginCallbackSource {
+  return { source: "callback", callback };
+}
+
+/** Marks a lazy loader that resolves to an Alpine plugin callback. */
+export function pluginLoader(
+  load: () => AlpinePluginCallback | Promise<AlpinePluginCallback>
+): PluginLoaderSource {
+  return { source: "loader", load };
 }
 
 /**
- * A "lazy factory" is a function with arity 0 that returns either an
- * {@link PluginCallback} or a `Promise<PluginCallback>`. Higher-arity
- * loaders are rejected because they would force consumers to think in terms
- * of sync vs. async inference rules.
+ * Normalizes plugin input for consumers that need a stored {@link PluginSource}.
+ * Raw callbacks are wrapped; explicit sources pass through unchanged.
  */
-function isLazyFactory(
-  loader: PluginLoader
-): loader is (() => PluginCallback) | (() => Promise<PluginCallback>) {
-  return typeof loader === "function" && loader.length === 0;
+export function normalizePluginInput(plugin: PluginSource | AlpinePluginCallback): PluginSource {
+  return typeof plugin === "function" ? pluginCallback(plugin) : plugin;
 }
 
-/** Resolves a lazy plugin loader to an Alpine plugin callback. */
-export async function resolvePluginLoader(
-  loader: PluginLoader,
+function directCallback(source: PluginSource | AlpinePluginCallback): PluginCallback | null {
+  if (typeof source === "function") {
+    return source;
+  }
+
+  if (source.source === "callback") {
+    return source.callback;
+  }
+
+  return null;
+}
+
+function loadThrown(error: unknown, pluginName?: string): never {
+  const reason = error instanceof Error ? error.message : String(error);
+  emitLoadError(pluginName ?? "<anonymous>", reason);
+  throw error;
+}
+
+function loaderFailure(message: string, pluginName?: string, cause?: unknown): never {
+  emitLoadError(pluginName ?? "<anonymous>", message);
+  throw new PluginLoaderError(message, cause === undefined ? undefined : { cause });
+}
+
+async function invokeLoad(
+  source: PluginLoaderSource,
   pluginName?: string
 ): Promise<PluginCallback> {
-  if (!isLazyFactory(loader)) {
-    return loader;
-  }
-
   let resolved: unknown;
   try {
-    const candidate = loader();
+    const candidate = source.load();
     resolved = candidate instanceof Promise ? await candidate : candidate;
   } catch (error) {
-    const reason = error instanceof Error ? error.message : String(error);
-    emitLoadError(pluginName ?? "<anonymous>", reason);
-    throw error;
+    loadThrown(error, pluginName);
   }
 
-  if (!isPluginCallback(resolved)) {
-    const reason = "Plugin loader must resolve to a function";
-    emitLoadError(pluginName ?? "<anonymous>", reason);
-    throw new PluginLoaderError(reason);
+  if (typeof resolved !== "function") {
+    loaderFailure(LOADER_MUST_FUNCTION, pluginName);
   }
 
-  return resolved;
+  return resolved as PluginCallback;
 }
 
-/**
- * Resolves a lazy plugin loader synchronously. Throws when the loader is
- * async, because there is no way to defer `Alpine.start()` without a separate
- * code path — and that path is exactly what `initPlugins()` exists for.
- */
-export function resolvePluginLoaderSync(loader: PluginLoader, pluginName?: string): PluginCallback {
-  if (!isLazyFactory(loader)) {
-    return loader;
-  }
-
+function invokeLoadSync(source: PluginLoaderSource, pluginName?: string): PluginCallback {
   let candidate: unknown;
   try {
-    candidate = loader();
+    candidate = source.load();
   } catch (error) {
-    const reason = error instanceof Error ? error.message : String(error);
-    emitLoadError(pluginName ?? "<anonymous>", reason);
-    throw error;
+    loadThrown(error, pluginName);
   }
 
   if (candidate instanceof Promise) {
-    const reason = "Async plugin loaders require initPlugins() before Alpine.start()";
-    emitLoadError(pluginName ?? "<anonymous>", reason);
-    throw new PluginLoaderError(reason, { cause: candidate });
+    loaderFailure(LOADER_ASYNC_REQUIRES_INIT, pluginName, candidate);
   }
 
-  if (!isPluginCallback(candidate)) {
-    const reason = "Plugin loader must resolve to a function";
-    emitLoadError(pluginName ?? "<anonymous>", reason);
-    throw new PluginLoaderError(reason);
+  if (typeof candidate !== "function") {
+    loaderFailure(LOADER_MUST_FUNCTION, pluginName);
   }
 
-  return candidate;
+  return candidate as PluginCallback;
+}
+
+function isLoaderSource(source: PluginSource | AlpinePluginCallback): source is PluginLoaderSource {
+  return typeof source === "object" && source !== null && source.source === "loader";
+}
+
+/** Resolves a plugin source to an Alpine plugin callback. */
+export async function resolvePluginLoader(
+  source: PluginSource | AlpinePluginCallback,
+  pluginName?: string
+): Promise<PluginCallback> {
+  const direct = directCallback(source);
+  if (direct !== null) {
+    return direct;
+  }
+
+  if (!isLoaderSource(source)) {
+    loaderFailure(LOADER_MUST_FUNCTION, pluginName);
+  }
+
+  return await invokeLoad(source, pluginName);
+}
+
+/**
+ * Resolves a plugin source synchronously. Throws when the loader is
+ * async, because there is no way to defer `Alpine.start()` without a separate
+ * code path — and that path is exactly what `initPlugins()` exists for.
+ */
+export function resolvePluginLoaderSync(
+  source: PluginSource | AlpinePluginCallback,
+  pluginName?: string
+): PluginCallback {
+  const direct = directCallback(source);
+  if (direct !== null) {
+    return direct;
+  }
+
+  if (!isLoaderSource(source)) {
+    loaderFailure(LOADER_MUST_FUNCTION, pluginName);
+  }
+
+  return invokeLoadSync(source, pluginName);
 }

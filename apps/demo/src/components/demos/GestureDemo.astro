@@ -1,0 +1,89 @@
+---
+import { getPluginNavItem } from "../../plugin-nav";
+import Badge from "../astro/Badge.astro";
+import DemoSection from "../DemoSection.astro";
+
+const plugin = getPluginNavItem("gesture")!;
+---
+
+<DemoSection id={plugin.id} title={plugin.title} api={plugin.api} description={plugin.description}>
+	<div class="grid gap-4">
+		<div
+			x-data="{
+				lastGesture: 'none',
+				panX: 0,
+				panY: 0,
+				pinchScale: 1,
+				pinchOrigin: 1,
+				handleTap(d) { this.lastGesture = 'tap' },
+				handleDoubleTap(d) { this.lastGesture = 'doubletap' },
+				handleLongPress(d) { this.lastGesture = 'longpress' },
+				handleSwipe(d) { this.lastGesture = 'swipe ' + (d.state ? d.state.direction : d.direction) },
+				handlePan(d) {
+					const s = d.state || d;
+					if (s.active && s.kind === 'pan' && this.lastGesture !== 'pan move') {
+						this.lastGesture = 'pan move';
+					}
+					this.panX = s.distanceX || 0;
+					this.panY = s.distanceY || 0;
+					if (!s.active && this.lastGesture.startsWith('pan')) {
+						this.lastGesture = 'pan end';
+					}
+				},
+				handlePinch(d) {
+					const scale = d.state?.scale ?? d.scale ?? 1;
+					this.pinchScale = Math.min(3, Math.max(0.5, this.pinchOrigin * scale));
+					this.lastGesture = scale > 1 ? 'pinch zoom in' : scale < 1 ? 'pinch zoom out' : 'pinch';
+				},
+				commitPinch() {
+					this.pinchOrigin = this.pinchScale;
+				}
+			}"
+			class="rounded-lg border bg-[var(--ios-bg-secondary)] p-6"
+		>
+			<p class="text-sm font-medium mb-4">Try the gestures below on the touch area:</p>
+
+			<div
+				x-gesture:tap="handleTap"
+				x-gesture:doubletap="handleDoubleTap"
+				x-gesture:longpress="handleLongPress"
+				x-gesture:swipe="handleSwipe"
+				x-gesture:pan="handlePan"
+				class="flex h-40 select-none items-center justify-center rounded-md border-2 border-dashed text-sm text-[var(--ios-label-secondary)] touch-none"
+			>
+				Interact here
+			</div>
+
+			<div class="mt-3 flex flex-wrap items-center gap-2">
+				<span class="text-sm">Last:</span>
+			<Badge
+				variant="outline"
+				x-text="lastGesture"
+			></Badge>
+				<template x-if="lastGesture === 'pan move'">
+					<span class="text-xs text-[var(--ios-label-secondary)] flex flex-col gap-0.5">
+						<span>dx=<span x-text="panX.toFixed(4)"></span></span>
+						<span>dy=<span x-text="panY.toFixed(4)"></span></span>
+					</span>
+				</template>
+			</div>
+
+			<p class="text-sm font-medium mt-6 mb-3">Pinch to zoom (two fingers or two pointers):</p>
+			<div
+				x-gesture:pinch="handlePinch"
+				@pointerup="commitPinch()"
+				class="flex h-40 select-none items-center justify-center overflow-hidden rounded-md border-2 border-dashed touch-none"
+			>
+				<div
+					class="flex h-24 w-24 items-center justify-center rounded-md border bg-[var(--ios-fill-quaternary)] text-xs text-[var(--ios-label-secondary)]"
+					:style="'transform: scale(' + pinchScale + ')'"
+				>
+					<span x-text="'×' + pinchScale.toFixed(2)"></span>
+				</div>
+			</div>
+		</div>
+	</div>
+	<p class="text-xs text-[var(--ios-label-secondary)] mt-3">
+		Package: <code>{plugin.package}</code>
+	</p>
+</DemoSection>

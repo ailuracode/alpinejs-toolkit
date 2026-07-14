@@ -12,8 +12,16 @@ import type { ResolvedTheme, ThemeDomStrategy } from "../../types";
 
 /** Public contract every DOM strategy implements. */
 export interface DomStrategy {
-  /** Applies the current resolved theme to the configured target. */
-  apply(resolved: ResolvedTheme): void;
+  /**
+   * Applies the current resolved theme to the configured target.
+   *
+   * When `force` is true, implementations bypass the internal cache
+   * of the last-applied value and re-write to the DOM unconditionally.
+   * This is needed after external mutations (Astro View Transitions
+   * synchronizing `<html>` attributes, browser extensions, hot reloads)
+   * where the controller's internal view of the DOM has drifted.
+   */
+  apply(resolved: ResolvedTheme, force?: boolean): void;
   /** Releases the reference to the target. Idempotent. */
   destroy(): void;
 }

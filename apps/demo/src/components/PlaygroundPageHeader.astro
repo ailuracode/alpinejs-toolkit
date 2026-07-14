@@ -1,5 +1,6 @@
 ---
 import { Card, CardContent } from "@/components/ui/card";
+import { getPlaygroundBreadcrumbs } from "../catalog/playground-navigation.js";
 import { type PluginNavItem, pluginDocsPath } from "../plugin-nav";
 import Badge from "./astro/Badge.astro";
 import DemoButton from "./astro/DemoButton.astro";
@@ -11,6 +12,7 @@ interface Props {
 }
 
 const { item } = Astro.props;
+const breadcrumbs = getPlaygroundBreadcrumbs(item.id);
 
 const kindLabel =
   item.kind === "store"
@@ -20,37 +22,59 @@ const kindLabel =
       : item.kind === "directive"
         ? "Directive"
         : "Core";
+
+const kindColor =
+  item.kind === "store"
+    ? "bg-[var(--ios-blue)]/10 text-[var(--ios-blue)]"
+    : item.kind === "magic"
+      ? "bg-[var(--ios-purple)]/10 text-[var(--ios-purple)]"
+      : item.kind === "directive"
+        ? "bg-[var(--ios-green)]/10 text-[var(--ios-green)]"
+        : "bg-[var(--ios-orange)]/10 text-[var(--ios-orange)]";
 ---
 
-<header class="mb-6 scroll-mt-20">
-	<nav class="mb-3 text-sm text-muted-foreground" aria-label="Breadcrumb">
+<header class="mb-6 scroll-mt-20 fade-in-up">
+	<nav class="mb-3 text-sm text-[var(--ios-label-secondary)]" aria-label="Breadcrumb">
 		<ol class="flex flex-wrap items-center gap-1.5">
-			<li>
-				<a
-					href="/playground/"
-					class="rounded-sm transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
-				>
-					Playground
-				</a>
-			</li>
-			<li aria-hidden="true" class="text-border">/</li>
-			<li aria-current="page" class="font-medium text-foreground">{item.title}</li>
+			{
+				breadcrumbs.map((crumb, index) => (
+					<>
+						{index > 0 ? (
+							<li aria-hidden="true" class="text-[var(--ios-label-tertiary)]">
+								<svg class="size-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" /></svg>
+							</li>
+						) : null}
+						<li>
+							{index === breadcrumbs.length - 1 ? (
+								<span aria-current="page" class="font-medium text-[var(--ios-label)]">{crumb.label}</span>
+							) : (
+								<a
+									href={crumb.href}
+									class="rounded-full px-2 py-0.5 transition-colors hover:text-[var(--ios-label)] focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-[var(--ios-blue)]/50"
+								>
+									{crumb.label}
+								</a>
+							)}
+						</li>
+					</>
+				))
+			}
 		</ol>
 	</nav>
 
-	<Card size="sm" class="overflow-hidden">
+	<Card size="sm" class="overflow-hidden border-[var(--ios-separator)]">
 		<CardContent class="pt-4">
 			<div class="flex flex-col gap-4 sm:flex-row sm:items-start">
 				<span
-					class="flex size-11 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary"
+					class:list={["flex size-12 shrink-0 items-center justify-center rounded-[var(--ios-radius-lg)]", kindColor]}
 					aria-hidden="true"
 				>
-					<DemoNavIcon id={item.id} class="size-5" />
+					<DemoNavIcon id={item.id} class="size-6" />
 				</span>
 				<div class="min-w-0 flex-1 space-y-3">
 					<div class="space-y-2">
-						<h1 class="text-2xl font-semibold tracking-tight text-balance">{item.title}</h1>
-						<p class="text-sm text-muted-foreground text-pretty">{item.description}</p>
+						<h1 class="text-3xl font-bold tracking-tight text-balance">{item.title}</h1>
+						<p class="text-sm leading-relaxed text-[var(--ios-label-secondary)] text-pretty">{item.description}</p>
 					</div>
 					<div class="flex flex-wrap gap-2">
 						<Badge variant="secondary">{kindLabel}</Badge>
@@ -62,7 +86,7 @@ const kindLabel =
 						<DemoButton href={pluginDocsPath(item.id)} variant="default">
 							Read Documentation
 						</DemoButton>
-						<span class="truncate font-mono text-xs text-muted-foreground" translate="no">
+						<span class="truncate rounded-[var(--ios-radius-sm)] bg-[var(--ios-fill-quaternary)] px-2 py-0.5 font-mono text-xs text-[var(--ios-label-secondary)]" translate="no">
 							{item.package}
 						</span>
 					</div>

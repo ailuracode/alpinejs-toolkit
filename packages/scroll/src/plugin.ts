@@ -26,6 +26,7 @@
  *    `typeof === "function"` check for older Alpine versions).
  */
 
+import { bridgeControllerStore } from "@ailuracode/alpine-core";
 import type { Alpine } from "alpinejs";
 import { createScrollStore as buildStore } from "./alpine/store";
 import { createScroll, type ScrollController } from "./controller";
@@ -65,43 +66,27 @@ export function scrollPlugin(options: ScrollOptions = {}): ScrollPluginCallback 
     const controller = createScroll(options);
 
     const store = buildStore(controller);
-    Alpine.store(SCROLL_STORE_KEY, store);
-    // Alpine wraps the value in a reactive proxy on registration.
-    // Re-target the subscription so mutations land on the proxy, not
-    // on the unwrapped original — otherwise `x-text` bindings on the
-    // `$scroll` magic / `$store.scroll` never re-render. We cache the
-    // proxy so the `$scroll` magic returns the SAME reference instead
-    // of forcing Alpine to re-resolve the store on every access.
-    const reactiveStore = Alpine.store(SCROLL_STORE_KEY);
-    const unsubscribe = controller.on("change", (detail) => {
-      const state: ScrollState = detail.state;
-      reactiveStore.x = state.x;
-      reactiveStore.y = state.y;
-      reactiveStore.direction = state.direction;
-      reactiveStore.atTop = state.atTop;
-      reactiveStore.atBottom = state.atBottom;
-      reactiveStore.progress = state.progress;
-      reactiveStore.locked = state.locked;
-      reactiveStore.lockCount = state.lockCount;
-      reactiveStore.activeSection = state.activeSection;
-      reactiveStore.visibleSections = state.visibleSections.slice();
-    });
-    Alpine.magic(SCROLL_STORE_KEY, () => reactiveStore);
 
-    // Forward destroy() through Alpine's cleanup mechanism when
-    // available. Older Alpine versions don't expose `cleanup`; the
-    // integration guards every call with a `typeof === "function"`
-    // check. We tear the subscription down first so a second plugin
-    // registration does not leak listeners through the same closure.
-    // `controller.destroy()` clears the singleton slot, so a fresh
-    // `createScroll()` call after teardown builds a brand-new
-    // controller.
-    if (typeof Alpine.cleanup === "function") {
-      Alpine.cleanup(() => {
-        unsubscribe();
-        controller.destroy();
-      });
-    }
+    bridgeControllerStore<ScrollStore, ScrollController>({
+      alpine: Alpine,
+      storeKey: SCROLL_STORE_KEY,
+      store,
+      controller,
+      subscribe: (reactiveStore) =>
+        controller.on("change", (detail) => {
+          const state: ScrollState = detail.state;
+          reactiveStore.x = state.x;
+          reactiveStore.y = state.y;
+          reactiveStore.direction = state.direction;
+          reactiveStore.atTop = state.atTop;
+          reactiveStore.atBottom = state.atBottom;
+          reactiveStore.progress = state.progress;
+          reactiveStore.locked = state.locked;
+          reactiveStore.lockCount = state.lockCount;
+          reactiveStore.activeSection = state.activeSection;
+          reactiveStore.visibleSections = state.visibleSections.slice();
+        }),
+    });
   };
 }
 

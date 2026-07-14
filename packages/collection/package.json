@@ -1,0 +1,77 @@
+{
+  "name": "@ailuracode/alpine-collection",
+  "version": "0.0.0",
+  "description": "Framework-agnostic collection primitives for Alpine.js — filtering, sorting, grouping, pagination, and active-item navigation over a stable key registry.",
+  "keywords": [
+    "alpinejs",
+    "alpine",
+    "collection",
+    "filter",
+    "sort",
+    "group",
+    "paginate",
+    "headless",
+    "controller"
+  ],
+  "homepage": "https://github.com/ailuracode/alpinejs-toolkit/tree/master/packages/collection#readme",
+  "bugs": {
+    "url": "https://github.com/ailuracode/alpinejs-toolkit/issues"
+  },
+  "license": "MIT",
+  "author": "ailuracode",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ailuracode/alpinejs-toolkit.git",
+    "directory": "packages/collection"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "type": "module",
+  "sideEffects": false,
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsup src/index.ts --format esm --dts --clean --out-dir dist --external @ailuracode/alpine-core",
+    "clean": "rm -rf dist",
+    "size": "size-limit",
+    "test": "vitest run --config ../../vitest.config.ts test",
+    "test:coverage": "vitest run --config ../../vitest.config.ts --coverage test",
+    "test:watch": "vitest --config ../../vitest.config.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@ailuracode/alpine-core": "workspace:*",
+    "@types/node": "^26.1.0",
+    "@vitest/coverage-v8": "^4.1.9",
+    "jsdom": "^29.1.1",
+    "tsup": "^8.5.0"
+  },
+  "toolkit": {
+    "bundleBudget": {
+      "category": "complex-feature"
+    }
+  },
+  "size-limit": [
+    {
+      "name": "full surface",
+      "path": "dist/index.js",
+      "import": "*",
+      "ignore": [
+        "alpinejs"
+      ],
+      "gzip": true,
+      "brotli": true,
+      "limit": "4 kB"
+    }
+  ]
+}

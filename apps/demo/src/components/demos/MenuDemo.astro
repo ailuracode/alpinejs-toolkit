@@ -1,11 +1,12 @@
 ---
 import { getPluginNavItem } from "../../plugin-nav";
 import DemoButton from "../astro/DemoButton.astro";
+import Kbd from "../astro/Kbd.astro";
 import DemoSection from "../DemoSection.astro";
 
 const plugin = getPluginNavItem("menu")!;
 const itemClasses =
-  "block w-full text-left rounded-md px-3 py-2 text-sm hover:bg-accent focus:outline-none focus-visible:ring-2 focus-visible:ring-ring";
+  "block w-full text-left rounded-md px-3 py-2 text-sm hover:bg-[var(--ios-fill-quaternary)] focus:outline-none focus-visible:ring-2 focus-visible:ring-ring";
 const menuIds = "['user-menu', 'actions-menu']";
 const menuData = `{
 	userIds: ['profile', 'settings', 'billing', 'logout'],
@@ -40,7 +41,7 @@ const menuData = `{
 	>
 		<div>
 			<h3 class="text-sm font-medium mb-2">Exclusive dropdowns</h3>
-			<p class="text-xs text-muted-foreground mb-3">
+			<p class="text-xs text-[var(--ios-label-secondary)] mb-3">
 				By default, opening one menu closes any other. Account:
 				<strong x-text="$store.menu.isOpen('user-menu')"></strong> · Actions:
 				<strong x-text="$store.menu.isOpen('actions-menu')"></strong> · Active:
@@ -74,7 +75,7 @@ const menuData = `{
 					x-anchor.bottom-start.offset.8.fixed="$refs.userMenuTrigger"
 					x-bind="$store.menu.menuProps('user-menu')"
 					x-init="$store.menu.bindMenu('user-menu', $el)"
-					class="min-w-48 rounded-md border bg-popover p-1 shadow-md"
+					class="min-w-48 rounded-md border bg-[var(--ios-bg-elevated)] p-1 shadow-md"
 					:style="{ zIndex: $store.overlay.zIndexOf('menu', 'user-menu') }"
 				>
 					<template x-for="id in userIds" :key="id">
@@ -83,7 +84,7 @@ const menuData = `{
 								type="button"
 								class={itemClasses}
 								x-bind="$store.menu.itemProps('user-menu', id)"
-								:class="$store.menu.activeItem('user-menu') === id ? 'bg-accent' : ''"
+								:class="$store.menu.activeItem('user-menu') === id ? 'bg-[var(--ios-fill-quaternary)]' : ''"
 								@click="$store.menu.selectItem('user-menu', id)"
 								x-text="id"
 							></button>
@@ -99,7 +100,7 @@ const menuData = `{
 					x-anchor.bottom-start.offset.8.fixed="$refs.actionsMenuTrigger"
 					x-bind="$store.menu.menuProps('actions-menu')"
 					x-init="$store.menu.bindMenu('actions-menu', $el)"
-					class="min-w-48 rounded-md border bg-popover p-1 shadow-md"
+					class="min-w-48 rounded-md border bg-[var(--ios-bg-elevated)] p-1 shadow-md"
 					:style="{ zIndex: $store.overlay.zIndexOf('menu', 'actions-menu') }"
 				>
 					<template x-for="id in actionIds" :key="id">
@@ -108,7 +109,7 @@ const menuData = `{
 								type="button"
 								class={itemClasses}
 								x-bind="$store.menu.itemProps('actions-menu', id)"
-								:class="$store.menu.activeItem('actions-menu') === id ? 'bg-accent' : ''"
+								:class="$store.menu.activeItem('actions-menu') === id ? 'bg-[var(--ios-fill-quaternary)]' : ''"
 								@click="$store.menu.selectItem('actions-menu', id)"
 								x-text="id"
 							></button>
@@ -120,7 +121,7 @@ const menuData = `{
 
 		<div>
 			<h3 class="text-sm font-medium mb-2">Exclusive mode</h3>
-			<ul class="text-xs text-muted-foreground list-disc pl-5 space-y-1">
+			<ul class="text-xs text-[var(--ios-label-secondary)] list-disc pl-5 space-y-1">
 				<li><code>exclusive: true</code> (default) — <code>open()</code> / <code>toggle()</code> close every other open menu</li>
 				<li>Scroll lock stays in sync when one menu replaces another</li>
 				<li>Pass <code>exclusive: false</code> for multiple open menus, or use per-menu <code>group</code> for menubar-style exclusivity</li>
@@ -129,14 +130,14 @@ const menuData = `{
 
 		<div>
 			<h3 class="text-sm font-medium mb-2">Keyboard</h3>
-			<p class="text-xs text-muted-foreground">
-				<kbd class="px-1 rounded border">↑</kbd>/<kbd class="px-1 rounded border">↓</kbd> move focus,
-				<kbd class="px-1 rounded border">Enter</kbd> selects,
-				<kbd class="px-1 rounded border">Escape</kbd> closes. Position with
+			<p class="text-xs text-[var(--ios-label-secondary)]">
+				<Kbd>↑</Kbd>/<Kbd>↓</Kbd> move focus,
+				<Kbd>Enter</Kbd> selects,
+				<Kbd>Escape</Kbd> closes. Position with
 				<code>x-anchor.bottom-start.fixed</code> via <code>@alpinejs/anchor</code> — the store handles state, keyboard, and scroll lock only.
 			</p>
 		</div>
 	</div>
 
-	<p class="text-xs text-muted-foreground mt-6">Package: <code>{plugin.package}</code></p>
+	<p class="text-xs text-[var(--ios-label-secondary)] mt-6">Package: <code>{plugin.package}</code></p>
 </DemoSection>

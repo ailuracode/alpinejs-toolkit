@@ -8,7 +8,7 @@ Cliente JSON:API fortemente tipado para Alpine.js.
 ## Instalação
 
 ```bash
-npm install @ailuracode/alpine-json-api @ailuracode/alpine-query alpinejs
+pnpm install @ailuracode/alpine-json-api @ailuracode/alpine-query alpinejs
 ```
 
 ## Tipos orientados por schema

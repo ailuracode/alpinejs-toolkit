@@ -1,0 +1,90 @@
+---
+import { getCatalogEntriesByFamily } from "../../catalog/index.js";
+import { playgroundPath, pluginDocsPath } from "../../plugin-nav";
+import QueryDemo from "../demos/QueryDemo.astro";
+import PlaygroundModuleCard from "../PlaygroundModuleCard.astro";
+
+const entries = getCatalogEntriesByFamily("query-stack");
+const foundation = entries.find((entry) => entry.role === "foundation");
+const adapters = entries.filter((entry) => entry.role === "adapter");
+const bundle = entries.find((entry) => entry.role === "bundle");
+---
+
+<section class="mb-10 rounded-[var(--ios-radius-xl)] border border-[var(--ios-separator)] bg-[var(--ios-bg-secondary)] p-5">
+  <h2 class="text-lg font-semibold">Shared query scenarios</h2>
+  <p class="mt-2 text-sm text-[var(--ios-label-secondary)]">
+    The demo below runs equivalent loading, success, error, invalidation, and refetch flows across Nanostores,
+    Alpine.reactive, and Zustand adapters. Open Query Devtools from the page chrome to inspect observers.
+  </p>
+  <div class="mt-4">
+    <QueryDemo />
+  </div>
+</section>
+
+<section class="mb-8">
+  <h2 class="text-lg font-semibold">Stack roles</h2>
+  <dl class="mt-4 grid gap-4 sm:grid-cols-2">
+    {
+      foundation ? (
+        <div class="rounded-lg border border-[var(--ios-separator)] p-4">
+          <dt class="text-xs font-semibold uppercase tracking-wide text-[var(--ios-label-tertiary)]">Foundation</dt>
+          <dd class="mt-2 font-semibold">{foundation.title}</dd>
+          <dd class="mt-1 text-sm text-[var(--ios-label-secondary)]">{foundation.summary}</dd>
+          <a href={pluginDocsPath(foundation.id)} class="mt-3 inline-block text-sm font-medium text-[var(--ios-blue)]">
+            Read docs
+          </a>
+        </div>
+      ) : null
+    }
+    {
+      bundle ? (
+        <div class="rounded-lg border border-[var(--ios-separator)] p-4">
+          <dt class="text-xs font-semibold uppercase tracking-wide text-[var(--ios-label-tertiary)]">Recommended bundle</dt>
+          <dd class="mt-2 font-semibold">{bundle.title}</dd>
+          <dd class="mt-1 text-sm text-[var(--ios-label-secondary)]">{bundle.summary}</dd>
+          <a href={playgroundPath(bundle.id)} class="mt-3 mr-4 inline-block text-sm font-medium text-[var(--ios-blue)]">
+            Open demo
+          </a>
+          <a href={pluginDocsPath(bundle.id)} class="mt-3 inline-block text-sm font-medium text-[var(--ios-blue)]">
+            Read docs
+          </a>
+        </div>
+      ) : null
+    }
+    {
+      adapters.map((entry) => (
+        <div class="rounded-lg border border-[var(--ios-separator)] p-4">
+          <dt class="text-xs font-semibold uppercase tracking-wide text-[var(--ios-label-tertiary)]">Adapter</dt>
+          <dd class="mt-2 font-semibold">{entry.title}</dd>
+          <dd class="mt-1 text-sm text-[var(--ios-label-secondary)]">{entry.summary}</dd>
+        </div>
+      ))
+    }
+  </dl>
+</section>
+
+<section>
+  <h2 class="mb-4 text-lg font-semibold">Focused package demos</h2>
+  <div class="grid gap-4 sm:grid-cols-2">
+    {
+      entries
+        .filter((entry) => entry.demo?.available)
+        .map((entry) => (
+          <PlaygroundModuleCard item={{
+            id: entry.id,
+            title: entry.title,
+            package: entry.npmPackage,
+            api: entry.api,
+            kind: entry.surface,
+            tier: entry.tier,
+            description: entry.summary,
+          }} />
+        ))
+    }
+  </div>
+</section>
+
+<p class="mt-8 text-sm text-[var(--ios-label-secondary)]">
+  <a href="/guides/query-stack/" class="font-medium text-[var(--ios-blue)]">Read the composition guide</a>
+  for install paths and dependency direction.
+</p>

@@ -8,18 +8,18 @@ const plugin = getPluginNavItem("query")!;
 ---
 
 <DemoSection id={plugin.id} title={plugin.title} api={plugin.api} description={plugin.description}>
-	<p class="text-sm text-muted-foreground text-pretty">
-		Three adapters — pick one for <code class="rounded bg-muted px-1 py-0.5 font-mono text-xs">query(&#123; adapter &#125;)</code>.
+	<p class="text-sm text-[var(--ios-label-secondary)] text-pretty">
+		Three adapters — pick one for <code class="rounded bg-[var(--ios-fill-quaternary)] px-1 py-0.5 font-mono text-xs">query(&#123; adapter &#125;)</code>.
 		Each card runs the same paginated PokeAPI demo. Use <strong>Invalidate</strong>, <strong>Prefetch Next</strong>, and
 		<strong>Remove Cache</strong> to exercise the cache API. Open <strong>Query Devtools</strong> (bottom-right) to inspect observers.
 	</p>
 	<div class="grid gap-4">
-		<PokeapiQueryDemo dataName="queryNanostoresAdapterDemo" title="Nanostores" badgeClass="bg-primary text-primary-foreground" />
+		<PokeapiQueryDemo dataName="queryNanostoresAdapterDemo" title="Nanostores" badgeClass="bg-[var(--ios-blue)] text-white" />
 		<PokeapiQueryDemo dataName="queryAlpineAdapterDemo" title="Alpine.reactive" />
 		<PokeapiQueryDemo dataName="queryZustandAdapterDemo" title="Zustand" />
 	</div>
 	<QueryAdvancedDemo />
-	<p class="text-xs text-muted-foreground mt-3">
+	<p class="text-xs text-[var(--ios-label-secondary)] mt-3">
 		Packages: <code>{plugin.package}</code>,
 		<code>@ailuracode/alpine-query-kit</code>,
 		<code>@ailuracode/alpine-query-adapter-alpine</code>,

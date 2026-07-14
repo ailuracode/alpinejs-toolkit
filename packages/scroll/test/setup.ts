@@ -13,7 +13,8 @@
  * `setMatchMedia(query, matches)` is called.
  */
 
-import { beforeEach, vi } from "vitest";
+import { clearAllSingletons } from "@ailuracode/alpine-core";
+import { afterEach, beforeEach, vi } from "vitest";
 
 interface MockMediaQueryList {
   matches: boolean;
@@ -300,6 +301,14 @@ beforeEach(() => {
   document.body.className = "";
   document.documentElement.className = "";
   document.documentElement.style.cssText = "";
+});
+
+afterEach(() => {
+  // Reset the singleton registry so each test gets a fresh
+  // `createScroll()` instance. Tests that don't call `destroy()`
+  // (or that pass different options on re-registration) would
+  // otherwise leak the previous controller into the next case.
+  clearAllSingletons();
 });
 
 /** Cleanup — runs once after the suite. */

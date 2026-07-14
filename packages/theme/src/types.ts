@@ -7,7 +7,7 @@
  * or type are breaking changes.
  */
 
-import type { Alpine, PluginCallback, Unsubscribe } from "@ailuracode/alpine-core";
+import type { Alpine, PluginCallback, SingletonScope, Unsubscribe } from "@ailuracode/alpine-core";
 import type { Alpine as AlpineBase } from "alpinejs";
 
 /** The values the user can select. `'system'` defers to the OS preference. */
@@ -160,6 +160,13 @@ export interface CreateThemeOptions {
    * changes. The default localStorage adapter enables this.
    */
   readonly crossTab?: boolean;
+  /**
+   * Singleton scope for this controller. Defaults to the active
+   * `document`, an ambient `runWithSingletonScope()` context, or —
+   * in SSR — must be provided explicitly via
+   * `createSingletonScope()`.
+   */
+  readonly scope?: SingletonScope;
 }
 
 /** Public, framework-agnostic manager returned by {@link createTheme}. */
@@ -182,6 +189,17 @@ export interface ThemeManager {
   toggle(): void;
   /** Resets to the configured default and removes the persisted value. */
   reset(): void;
+  /**
+   * Re-applies the currently resolved theme to the DOM, bypassing
+   * the strategy's last-applied cache. Use after external DOM
+   * mutations (Astro View Transitions, browser extensions, hot
+   * reloads) that may have removed the class or attribute the
+   * strategy set on mount.
+   *
+   * Does not modify internal state, persistence, or emit a `change`
+   * event — purely a DOM re-sync.
+   */
+  apply(): void;
   /**
    * Subscribes to a `change` event. Returns an unsubscribe function.
    * Detail payload carries `current`, `system`, `resolved`, `source`,
@@ -225,6 +243,12 @@ export interface ThemeStore {
   set(value: ThemePreference): void;
   toggle(): void;
   reset(): void;
+  /**
+   * Re-applies the currently resolved theme to the DOM. Useful in
+   * Alpine `$store.theme.apply()` expressions after navigation
+   * events from routers that mutate `<html>` externally.
+   */
+  apply(): void;
 }
 
 /**

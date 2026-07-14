@@ -1,0 +1,61 @@
+---
+import { getPluginNavItem } from "../../plugin-nav";
+import DemoButton from "../astro/DemoButton.astro";
+import Kbd from "../astro/Kbd.astro";
+import DemoSection from "../DemoSection.astro";
+
+const plugin = getPluginNavItem("keyboard")!;
+---
+
+<DemoSection id={plugin.id} title={plugin.title} api={plugin.api} description={plugin.description}>
+	<div
+		class="space-y-4 text-sm"
+		x-data="{
+			log: [],
+			push(message) {
+				this.log = [message, ...this.log].slice(0, 6);
+			},
+		}"
+		x-init="
+			$keyboard.register('mod+shift+k', () => push('Chord: mod+shift+k'), {
+				id: 'demo-chord',
+				metadata: { label: 'Demo chord', group: 'Demo' },
+			});
+			$keyboard.register('g h', () => push('Sequence: g then h'), {
+				id: 'demo-sequence',
+				metadata: { label: 'Go home sequence', group: 'Demo' },
+			});
+			$keyboard.register('x', () => push('Editor scope: x'), {
+				id: 'demo-editor',
+				scope: 'editor',
+				metadata: { label: 'Editor action', group: 'Editor' },
+			});
+		"
+	>
+		<p>
+			Try <Kbd>mod+shift+k</Kbd>, the sequence <Kbd>g</Kbd> then <Kbd>h</Kbd>, or toggle the editor scope and press <Kbd>x</Kbd>.
+		</p>
+		<div class="flex flex-wrap gap-2">
+			<DemoButton @click="$keyboard.activateScope('editor')">activateScope('editor')</DemoButton>
+			<DemoButton @click="$keyboard.deactivateScope('editor')">deactivateScope('editor')</DemoButton>
+			<DemoButton @click="$keyboard.suspendScope('editor')">suspendScope('editor')</DemoButton>
+			<DemoButton @click="$keyboard.resumeScope('editor')">resumeScope('editor')</DemoButton>
+		</div>
+		<p>
+			Active scopes:
+			<strong x-text="$keyboard.activeScopes.join(', ')"></strong>
+		</p>
+		<ul class="list-disc list-inside space-y-1">
+			<template x-for="entry in log" :key="entry">
+				<li x-text="entry"></li>
+			</template>
+		</ul>
+		<p class="text-xs text-[var(--ios-label-secondary)]">
+			Registered commands:
+			<span x-text="$keyboard.commands.map((command) => command.label ?? command.id).join(', ')"></span>
+		</p>
+	</div>
+	<p class="text-xs text-[var(--ios-label-secondary)] mt-3">
+		Package: <code>{plugin.package}</code>
+	</p>
+</DemoSection>

@@ -7,7 +7,7 @@
  * to a field name or type are breaking changes.
  */
 
-import type { Alpine, PluginCallback, Unsubscribe } from "@ailuracode/alpine-core";
+import type { Alpine, PluginCallback, SingletonScope, Unsubscribe } from "@ailuracode/alpine-core";
 import type { Alpine as AlpineBase } from "alpinejs";
 
 /** Re-exported so consumers can grab every lang type from one path. */
@@ -82,6 +82,13 @@ export interface CreateLangOptions {
    * SSR adapters — production code can ignore the option.
    */
   readonly navigator?: NavigatorLike | null;
+  /**
+   * Singleton scope for this controller. Defaults to the active
+   * `document`, an ambient `runWithSingletonScope()` context, or —
+   * in SSR — must be provided explicitly via
+   * `createSingletonScope()`.
+   */
+  readonly scope?: SingletonScope;
 }
 
 /**

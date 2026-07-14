@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   DEFAULT_TOGGLE_CORNER_STORAGE_KEY,
   isToggleCorner,
@@ -26,5 +26,31 @@ describe("toggle-corner", () => {
     expect(loadToggleCorner(DEFAULT_TOGGLE_CORNER_STORAGE_KEY, "top-left")).toBe("top-left");
     localStorage.setItem(DEFAULT_TOGGLE_CORNER_STORAGE_KEY, "invalid");
     expect(loadToggleCorner(DEFAULT_TOGGLE_CORNER_STORAGE_KEY, "bottom-left")).toBe("bottom-left");
+  });
+
+  it("falls back when localStorage is undefined", () => {
+    const original = globalThis.localStorage;
+    (globalThis as Record<string, unknown>).localStorage = undefined;
+    expect(loadToggleCorner(DEFAULT_TOGGLE_CORNER_STORAGE_KEY, "top-left")).toBe("top-left");
+    saveToggleCorner(DEFAULT_TOGGLE_CORNER_STORAGE_KEY, "top-right");
+    globalThis.localStorage = original;
+  });
+
+  it("handles localStorage throwing on get", () => {
+    const original = localStorage.getItem;
+    localStorage.getItem = vi.fn(() => {
+      throw new Error("quota");
+    }) as typeof original;
+    expect(loadToggleCorner(DEFAULT_TOGGLE_CORNER_STORAGE_KEY, "bottom-left")).toBe("bottom-left");
+    localStorage.getItem = original;
+  });
+
+  it("handles localStorage throwing on set", () => {
+    const original = localStorage.setItem;
+    localStorage.setItem = vi.fn(() => {
+      throw new Error("quota");
+    }) as typeof original;
+    saveToggleCorner(DEFAULT_TOGGLE_CORNER_STORAGE_KEY, "top-right");
+    localStorage.setItem = original;
   });
 });

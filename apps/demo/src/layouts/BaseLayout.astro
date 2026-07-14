@@ -1,6 +1,7 @@
 ---
+import { ClientRouter } from "astro:transitions";
 import geistLatin from "@fontsource-variable/geist/files/geist-latin-wght-normal.woff2?url";
-import Button from "../components/astro/Button.astro";
+import DemoButton from "../components/astro/DemoButton.astro";
 import SonnerToasts from "../components/SonnerToasts.astro";
 import "../styles/global.css";
 
@@ -18,10 +19,10 @@ const pathname = Astro.url.pathname;
 const isPlayground = pathname.startsWith("/playground");
 const navLinkClass = (active: boolean) =>
   [
-    "rounded-lg px-2.5 py-1.5 text-sm transition-colors focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/50 touch-manipulation",
+    "rounded-full px-3.5 py-1.5 text-sm font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-[var(--ios-blue)]/50 touch-manipulation",
     active
-      ? "bg-muted font-medium text-foreground"
-      : "text-muted-foreground hover:bg-muted hover:text-foreground",
+      ? "bg-[var(--ios-blue)] text-white shadow-sm"
+      : "text-[var(--ios-label-secondary)] hover:bg-[var(--ios-fill-tertiary)] hover:text-[var(--ios-label)]",
   ].join(" ");
 ---
 
@@ -48,74 +49,84 @@ const navLinkClass = (active: boolean) =>
 		<meta name="generator" content={Astro.generator} />
 		<title>{title}</title>
 		<link rel="preload" href={geistLatin} as="font" type="font/woff2" crossorigin="anonymous" />
+		<ClientRouter />
 	</head>
-	<body class="min-h-screen bg-background text-foreground" x-data="demoShell" x-cloak>
+	<body class="min-h-screen bg-[var(--ios-bg-primary)] text-[var(--ios-label)]" x-data="demoShell" x-cloak>
 		<a
 			href="#main"
-			class="sr-only focus:not-sr-only focus:absolute focus:top-3 focus:left-3 focus:z-50 focus:rounded-lg focus:bg-primary focus:px-3 focus:py-2 focus:text-primary-foreground focus:outline-none"
+			class="sr-only focus:not-sr-only focus:absolute focus:top-3 focus:left-3 focus:z-50 focus:rounded-xl focus:bg-[var(--ios-blue)] focus:px-3 focus:py-2 focus:text-white focus:outline-none"
 		>
 			Skip to content
 		</a>
 
-		<div class="flex min-h-screen flex-col">
-			<header
-				class="sticky top-0 z-30 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 transition-[margin] duration-300 motion-reduce:transition-none"
-				x-bind:class="$store.media.breakpoint === 'desktop' ? (expanded ? 'ml-64' : 'ml-16') : ''"
-			>
-				<div class="flex h-14 items-center gap-3 px-4">
-					<Button
+		<div id="overlay-root" transition:persist></div>
+
+		<div class="flex min-h-screen">
+			<slot name="sidebar" />
+
+			<div class="flex min-h-screen min-w-0 flex-1 flex-col overflow-x-clip">
+				<header
+					class="sticky top-0 z-30 border-b border-[var(--ios-separator)] bg-[var(--ios-bg-primary)]/80 backdrop-blur-xl backdrop-saturate-150 supports-[backdrop-filter]:bg-[var(--ios-bg-primary)]/70 transition-[margin-left] duration-300 motion-reduce:transition-none"
+					x-bind:class="$store.media.breakpoint === 'desktop' ? (expanded ? 'ml-64' : 'ml-16') : ''"
+					transition:persist
+				>
+					<div class="flex h-12 items-center gap-3 px-4">
+					<DemoButton
 						variant="ghost"
 						size="icon"
-						aria-label="Toggle sidebar"
-						x-on:click="$store.media.breakpoint === 'desktop' ? expanded = !expanded : $store.sidebar.toggle()"
-					>
-						<svg
-							xmlns="http://www.w3.org/2000/svg"
-							class="size-5"
-							fill="none"
-							viewBox="0 0 24 24"
-							stroke="currentColor"
-							stroke-width="2"
-							aria-hidden="true"
+							aria-label="Toggle sidebar"
+							class="rounded-full text-[var(--ios-label-secondary)] hover:bg-[var(--ios-fill-tertiary)] hover:text-[var(--ios-label)]"
+							x-on:click="$store.media.breakpoint === 'desktop' ? expanded = !expanded : $store.sidebar.toggle()"
 						>
-							<path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
-						</svg>
-					</Button>
-					<div class="min-w-0 flex-1">
-						<p class="truncate text-lg font-semibold text-balance">Alpine.js Toolkit · @ailuracode</p>
-						<p class="truncate text-xs leading-tight text-muted-foreground">
-							Interactive plugin demos · Astro · shadcn/ui
-						</p>
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								class="size-5"
+								fill="none"
+								viewBox="0 0 24 24"
+								stroke="currentColor"
+								stroke-width="2"
+								aria-hidden="true"
+							>
+								<path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+							</svg>
+						</DemoButton>
+						<div class="min-w-0 flex-1">
+							<p class="truncate text-base font-semibold tracking-tight text-balance">Alpine.js Toolkit</p>
+							<p class="truncate text-[11px] leading-tight text-[var(--ios-label-secondary)]">
+								@ailuracode · Interactive plugin demos
+							</p>
+						</div>
+						<nav class="hidden items-center gap-1 sm:flex" aria-label="Site">
+							<a
+								href="/"
+								class={navLinkClass(!isPlayground)}
+								aria-current={!isPlayground ? "page" : undefined}
+							>
+								Docs
+							</a>
+							{!isPlayground && (
+								<a
+									href="/playground/"
+									class={navLinkClass(false)}
+								>
+									Playground
+								</a>
+							)}
+						</nav>
 					</div>
-					<nav class="hidden items-center gap-1 sm:flex" aria-label="Site">
-						<a
-							href="/"
-							class={navLinkClass(!isPlayground)}
-							aria-current={!isPlayground ? "page" : undefined}
-						>
-							Docs
-						</a>
-						<a
-							href="/playground/"
-							class={navLinkClass(isPlayground)}
-							aria-current={isPlayground ? "page" : undefined}
-						>
-							Playground
-						</a>
-					</nav>
+				</header>
+
+				<div class="fixed top-0 left-0 right-0 z-50 h-[2px] bg-[var(--ios-fill-quaternary)] motion-reduce:hidden" aria-hidden="true">
+					<div
+						class="h-full bg-[var(--ios-blue)] transition-[width] duration-100 linear motion-reduce:transition-none"
+						x-bind:style="'width: ' + $store.scroll.progress + '%'"
+					></div>
 				</div>
-			</header>
 
-			<div class="fixed top-0 left-0 right-0 z-50 h-1 bg-muted motion-reduce:hidden" aria-hidden="true">
-				<div
-					class="h-full bg-primary transition-[width] duration-100 linear motion-reduce:transition-none"
-					x-bind:style="'width: ' + $store.scroll.progress + '%'"
-				></div>
+				<slot />
+
+				<SonnerToasts />
 			</div>
-
-			<slot />
-
-			<SonnerToasts />
 		</div>
 
 		<script>

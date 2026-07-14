@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ailuracode/alpine-carousel E2E fixture</title>
+    <style>
+      .viewport { overflow: hidden; width: 300px; }
+      .container { display: flex; }
+      .slide { flex: 0 0 100%; min-height: 80px; }
+    </style>
+  </head>
+  <body>
+    <main
+      id="app"
+      data-e2e-ready="true"
+      x-data
+      x-init="
+        $store.carousel.create('demo');
+        $nextTick(() => $store.carousel.bindViewport('demo', $refs.viewport));
+      "
+      @keydown.window="$store.carousel.handleKeydown('demo', $event)"
+    >
+      <h1>Carousel E2E fixture</h1>
+      <div class="viewport" x-ref="viewport">
+        <div class="container">
+          <div class="slide" x-bind="$store.carousel.slideProps('demo', 0)">Slide 1</div>
+          <div class="slide" x-bind="$store.carousel.slideProps('demo', 1)">Slide 2</div>
+          <div class="slide" x-bind="$store.carousel.slideProps('demo', 2)">Slide 3</div>
+        </div>
+      </div>
+      <button type="button" @click="$store.carousel.goTo('demo', 1)">Go to slide 2</button>
+      <output id="carousel-index" x-text="$store.carousel.current('demo')"></output>
+    </main>
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>

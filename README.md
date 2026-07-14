@@ -2,7 +2,7 @@
 
 Modular **Alpine.js toolkit** — lazy plugin init, headless stores and magics, TypeScript-first DX. Framework-agnostic: works with Vite, Astro, static HTML, or any ESM bundler.
 
-Built by **ailuracode**. 29 independent npm packages; install only what you need.
+Built by **ailuracode**. 37 independent npm packages; install only what you need.
 
 ## Why this exists
 
@@ -85,12 +85,15 @@ Start here for most Alpine apps.
 | [`@ailuracode/alpine-toggle`](./packages/toggle/README.md) | `$toggle` | Binary and ternary toggle state |
 | [`@ailuracode/alpine-form`](./packages/form/README.md) | `$store.form` | Headless form state, validation, and submission lifecycle |
 | [`@ailuracode/alpine-child`](./packages/child/README.md) | `x-child` | asChild-style attribute transfer to first child |
+| [`@ailuracode/alpine-gesture`](./packages/gesture/README.md) | `$store.gesture`, `x-gesture` | Headless gesture recognition — tap, swipe, pan, pinch, long press |
 
 ### Headless UI
 
 | Package | API | Description |
 |---------|-----|-------------|
 | [`@ailuracode/alpine-overlay`](./packages/overlay/README.md) | `$store.overlay` | Portal root, z-index stack, overlay registry |
+| [`@ailuracode/alpine-permissions`](./packages/permissions/README.md) | `$store.permissions` | Unified browser permission registry and adapter contract |
+| [`@ailuracode/alpine-keyboard`](./packages/keyboard/README.md) | `$store.keyboard` | Scoped keyboard shortcut registry with chords and sequences |
 | [`@ailuracode/alpine-dialog`](./packages/dialog/README.md) | `$store.dialog` | Accessible modal state and focus trap |
 | [`@ailuracode/alpine-menu`](./packages/menu/README.md) | `$store.menu` | Exclusive dropdown/context menu keyboard navigation |
 | [`@ailuracode/alpine-tooltip`](./packages/tooltip/README.md) | `$store.tooltip` | Tooltip positioning and delays |
@@ -99,6 +102,11 @@ Start here for most Alpine apps.
 | [`@ailuracode/alpine-accordion`](./packages/accordion/README.md) | `$store.accordion` | Single/multi accordion state |
 | [`@ailuracode/alpine-command`](./packages/command/README.md) | `$store.command` | Command palette / Spotlight |
 | [`@ailuracode/alpine-carousel`](./packages/carousel/README.md) | `$store.carousel` | Embla-powered accessible carousel |
+| [`@ailuracode/alpine-virtual`](./packages/virtual/README.md) | `$store.virtual` | Headless virtual list controller |
+| [`@ailuracode/alpine-selection`](./packages/selection/README.md) | `$store.selection` | Framework-agnostic selection primitives |
+| [`@ailuracode/alpine-collection`](./packages/collection/README.md) | `createCollectionController<T, K>()` | Headless collection primitives — filter, sort, group, paginate |
+| [`@ailuracode/alpine-history`](./packages/history/README.md) | `$store.history` | Headless undo/redo history controller |
+| [`@ailuracode/alpine-realtime`](./packages/realtime/README.md) | `$store.realtime` | Headless realtime transport (SSE/WebSocket) |
 
 ### Advanced
 
@@ -138,7 +146,7 @@ See [AGENTS.md](./AGENTS.md) for the full checklist when adding a plugin.
 - [Getting started](./docs/getting-started.md) — lazy init, essentials, HTML usage
 - [Core](./docs/core.md) — plugin registry
 - **Essentials** — [theme](./docs/plugins/theme.md), [media](./docs/plugins/media.md), [scroll](./docs/plugins/scroll.md), [sidebar](./docs/plugins/sidebar.md), [lang](./docs/plugins/lang.md)
-- **Headless UI** — [dialog](./docs/plugins/dialog.md), [menu](./docs/plugins/menu.md), [tooltip](./docs/plugins/tooltip.md), [toast](./docs/plugins/toast.md), [tabs](./docs/plugins/tabs.md), [accordion](./docs/plugins/accordion.md), [command](./docs/plugins/command.md), [carousel](./docs/plugins/carousel.md)
+- **Headless UI** — [dialog](./docs/plugins/dialog.md), [menu](./docs/plugins/menu.md), [tooltip](./docs/plugins/tooltip.md), [toast](./docs/plugins/toast.md), [tabs](./docs/plugins/tabs.md), [accordion](./docs/plugins/accordion.md), [command](./docs/plugins/command.md), [carousel](./docs/plugins/carousel.md), [virtual](./docs/plugins/virtual.md)
 - [Query](./docs/query.md) · [Query devtools](./docs/plugins/query-kit.md#devtools)
 - [AGENTS.md](./AGENTS.md) — guide for AI agents and maintainers
 

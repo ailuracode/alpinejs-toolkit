@@ -26,9 +26,11 @@ describe("core public surface", () => {
   });
 
   describe("plugin definition", () => {
-    it("exports definePlugin / lazyPlugin", () => {
+    it("exports definePlugin / lazyPlugin / pluginCallback / pluginLoader", () => {
       expect(typeof core.definePlugin).toBe("function");
       expect(typeof core.lazyPlugin).toBe("function");
+      expect(typeof core.pluginCallback).toBe("function");
+      expect(typeof core.pluginLoader).toBe("function");
     });
   });
 
@@ -56,12 +58,16 @@ describe("core public surface", () => {
   });
 
   describe("singleton helper", () => {
-    it("exports createSingleton / getSingleton / setSingleton / clearSingleton / clearAllSingletons", () => {
+    it("exports scoped singleton helpers", () => {
       expect(typeof core.createSingleton).toBe("function");
+      expect(typeof core.createSingletonScope).toBe("function");
       expect(typeof core.getSingleton).toBe("function");
       expect(typeof core.setSingleton).toBe("function");
       expect(typeof core.clearSingleton).toBe("function");
       expect(typeof core.clearAllSingletons).toBe("function");
+      expect(typeof core.releaseSingleton).toBe("function");
+      expect(typeof core.resolveSingletonScope).toBe("function");
+      expect(typeof core.runWithSingletonScope).toBe("function");
     });
   });
 

@@ -10,7 +10,7 @@ Diretiva `x-child` inspirada no padrão **asChild** do Radix UI e shadcn/ui. Tra
 ## Instalação
 
 ```bash
-npm install @ailuracode/alpine-child alpinejs
+pnpm install @ailuracode/alpine-child alpinejs
 ```
 
 ## Configuração

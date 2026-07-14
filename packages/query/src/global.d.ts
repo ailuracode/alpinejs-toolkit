@@ -53,6 +53,14 @@ export interface QueryState<TData = unknown> {
   refetch(): Promise<void>;
 }
 
+/** Per-subscription handle returned by `observe()`. Shares `state` with other observers. */
+export interface QueryObserver<TData = unknown> extends QueryState<TData> {
+  /** Shared reactive query state for this cache entry. */
+  readonly state: QueryState<TData>;
+  /** Release this observer subscription. Idempotent. */
+  destroy(): void;
+}
+
 export interface MutationOptions<TData = unknown, TVariables = void, TContext = unknown> {
   mutationFn: (variables: TVariables) => Promise<TData>;
   onMutate?: (variables: TVariables) => Promise<TContext> | TContext;
@@ -137,12 +145,12 @@ export interface QueryStore {
     key: QueryKey,
     queryFn: QueryFunction<TData>,
     options?: QueryOptions<TData>
-  ): QueryState<TData> & { destroy(): void };
+  ): QueryObserver<TData>;
   observe<TQueryFn extends QueryFunction<unknown>, TData = InferQueryData<TQueryFn>>(
     key: QueryKey,
     queryFn: TQueryFn,
     options?: QueryOptions<TData>
-  ): QueryState<TData> & { destroy(): void };
+  ): QueryObserver<TData>;
   observe<
     const TKey extends QueryKey,
     TQueryFn extends QueryFunction<unknown>,
@@ -152,7 +160,7 @@ export interface QueryStore {
       queryKey: TKey;
       queryFn: TQueryFn;
     } & QueryOptions<TData>
-  ): QueryState<TData> & { destroy(): void };
+  ): QueryObserver<TData>;
   fetch<TData>(
     key: QueryKey,
     queryFn: QueryFunction<TData>,
@@ -201,6 +209,8 @@ export interface QueryStore {
   reset(): void;
   resetQueries(key?: QueryKey | QueryKey[]): void;
   clearMutations(): void;
+  /** Tear down global listeners, timers, in-flight requests, and adapter handles. Idempotent. */
+  destroy(): void;
   mutate<TData, TVariables = void, TContext = unknown>(
     options: MutationOptions<TData, TVariables, TContext>
   ): MutationState<QueryData<TData>, QueryData<TVariables>>;

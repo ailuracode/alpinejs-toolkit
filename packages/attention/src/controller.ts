@@ -31,6 +31,10 @@ export {
   MIN_IDLE_THRESHOLD,
   normalizeIdleThreshold,
 } from "./idle-controller.js";
+export {
+  createIdlePermissionAdapter,
+  IDLE_PERMISSION_NAME,
+} from "./permission-adapter.js";
 // ── Public types ─────────────────────────────────────────────────
 export type {
   IdleDetectorConstructor,

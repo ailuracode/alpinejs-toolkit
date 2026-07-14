@@ -9,21 +9,21 @@ const { item } = Astro.props;
 const { prev, next } = getAdjacentPlugins(item.id);
 
 const linkClass =
-  "inline-flex min-w-0 max-w-[48%] items-center gap-1.5 rounded-lg border border-border bg-card px-3 py-2 text-sm transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/50 touch-manipulation";
+  "inline-flex min-w-0 max-w-[48%] items-center gap-2 rounded-[var(--ios-radius-md)] bg-[var(--ios-fill-quaternary)] px-3 py-2.5 text-sm transition-all hover:bg-[var(--ios-fill-tertiary)] focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-[var(--ios-blue)]/50 touch-manipulation";
 ---
 
 <nav
-	class="mt-6 flex items-stretch justify-between gap-3 border-t border-border pt-4"
+	class="mt-6 flex items-stretch justify-between gap-3 border-t border-[var(--ios-separator)] pt-4"
 	aria-label="Plugin demos"
 >
 	{
 		prev ? (
 			<a href={playgroundPath(prev.id)} class={linkClass}>
-				<span aria-hidden="true" class="shrink-0 text-muted-foreground">
-					←
+				<span aria-hidden="true" class="shrink-0 text-[var(--ios-label-tertiary)]">
+					<svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" /></svg>
 				</span>
 				<span class="min-w-0 truncate">
-					<span class="block text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
+					<span class="block text-[10px] font-semibold uppercase tracking-wider text-[var(--ios-label-tertiary)]">
 						Previous
 					</span>
 					<span class="block truncate font-medium">{prev.title}</span>
@@ -37,13 +37,13 @@ const linkClass =
 		next ? (
 			<a href={playgroundPath(next.id)} class:list={[linkClass, "ml-auto text-right"]}>
 				<span class="min-w-0 truncate">
-					<span class="block text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
+					<span class="block text-[10px] font-semibold uppercase tracking-wider text-[var(--ios-label-tertiary)]">
 						Next
 					</span>
 					<span class="block truncate font-medium">{next.title}</span>
 				</span>
-				<span aria-hidden="true" class="shrink-0 text-muted-foreground">
-					→
+				<span aria-hidden="true" class="shrink-0 text-[var(--ios-label-tertiary)]">
+					<svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" /></svg>
 				</span>
 			</a>
 		) : (

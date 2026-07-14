@@ -34,10 +34,13 @@ export type { Alpine, PluginCallback } from "./core/type";
 // --- Base plugin contracts (from ./types) ------------------------------
 export type {
   AlpinePluginCallback,
+  PluginCallbackSource,
   PluginDefinition,
   PluginKind,
   PluginLoader,
+  PluginLoaderSource,
   PluginNames,
   PluginRegistryEntry,
+  PluginSource,
   RegisteredPlugin,
 } from "./types";

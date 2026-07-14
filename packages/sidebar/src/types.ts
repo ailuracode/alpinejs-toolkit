@@ -13,7 +13,7 @@
  * `$store.sidebar` and `$sidebar` magic.
  */
 
-import type { Alpine, PluginCallback, Unsubscribe } from "@ailuracode/alpine-core";
+import type { Alpine, PluginCallback, SingletonScope, Unsubscribe } from "@ailuracode/alpine-core";
 import type { ScrollStore } from "@ailuracode/alpine-scroll";
 import type { Alpine as AlpineBase } from "alpinejs";
 
@@ -146,15 +146,16 @@ export interface CreateSidebarOptions {
    *
    * - `show()` / `toggle()` from user input call
    *   `scroll.lock("sidebar")` and stash the handle.
-   * - The matching hide calls `scroll.unlock(handle)`.
+   * - Any transition to `visible: false` releases the held handle
+   *   via `scroll.unlock(handle)` — including Escape, breakpoint
+   *   auto-hide, `reset()`, and cross-tab storage sync.
    * - `destroy()` releases the held handle so the page does not
    *   stay locked when the sidebar is torn down without an
    *   explicit hide.
    *
-   * Lock / unlock fire ONLY on `source: 'user'` transitions.
-   * Escape, breakpoint, reset, storage, and initialization
-   * changes do NOT touch the lock — the page stays locked until
-   * the user closes the menu (or the sidebar is destroyed).
+   * Lock acquisition is user-driven only. Lock release follows
+   * visibility: the page never stays locked after the sidebar
+   * hides, regardless of transition source.
    *
    * `@ailuracode/alpine-scroll` is an optional peer dep — install
    * it (and call `scrollPlugin(...)` before `sidebarPlugin(...)`)
@@ -192,6 +193,13 @@ export interface CreateSidebarOptions {
    * already in their target shape by the time the callback runs.
    */
   readonly onVisibilityChange?: (visible: boolean, source: SidebarChangeSource) => void;
+  /**
+   * Singleton scope for this controller. Defaults to the active
+   * `document`, an ambient `runWithSingletonScope()` context, or —
+   * in SSR — must be provided explicitly via
+   * `createSingletonScope()`.
+   */
+  readonly scope?: SingletonScope;
 }
 
 /** Default `localStorage` key used by {@link createLocalStorageSidebarStorage}. */

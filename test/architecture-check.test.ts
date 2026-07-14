@@ -2,10 +2,6 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import {
-  extractConstructorBodies,
-  findConstructorSideEffectViolations,
-  findCrossPackageInternalImportViolations,
-  findUnitTestImportViolations,
   matchesAnyPattern,
   runArchitectureCheck,
   validateControllerAlpineImports,
@@ -14,11 +10,20 @@ import {
   validateInternalBarrelExports,
   validateUnitTestImports,
 } from "../scripts/architecture-check.mjs";
+import {
+  exportsControllerClass,
+  extractConstructorBodies,
+  findConstructorSideEffectsInSource,
+  findConstructorSideEffectViolations,
+  findCrossPackageInternalImportViolations,
+  findForbiddenBarrelReExports,
+  hasRuntimeAlpineImport,
+  importsPackageEntrypoint,
+} from "../scripts/architecture-check-ast.mjs";
 import { ARCHITECTURE_CHECK_POLICY } from "../scripts/architecture-check-policy.mjs";
 import { findHeadlessCssViolations } from "../scripts/headless-css-policy.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const VALUE_ALPINE_IMPORT_RE = /^import\s+(?!type\b)[\s\S]*?\sfrom\s+["']alpinejs["']/m;
 
 describe("architecture:check", () => {
   it("passes on the current repository", () => {
@@ -39,6 +44,23 @@ describe("architecture:check", () => {
     expect(errors.some((error) => error.includes("packages/scroll/src/index.ts"))).toBe(true);
     expect(errors.some((error) => error.includes("packages/sidebar/src/index.ts"))).toBe(true);
     expect(errors.some((error) => error.includes("packages/core/src/index.ts"))).toBe(false);
+  });
+
+  it("flags alpine/, adapter/, and bindings/ adapter imports in public barrels", () => {
+    const syntheticSource = [
+      'export { x } from "./alpine/store.js";',
+      'export { y } from "./adapter/bridge.js";',
+      'export { z } from "./bindings/dom.js";',
+      'export { w } from "./internal/foo.js";',
+    ].join("\n");
+
+    const violations = findForbiddenBarrelReExports(syntheticSource);
+    expect(violations.map((violation) => violation.specifier)).toEqual([
+      "./alpine/store.js",
+      "./adapter/bridge.js",
+      "./bindings/dom.js",
+      "./internal/foo.js",
+    ]);
   });
 
   it("allows documented internal barrel exceptions", () => {
@@ -65,8 +87,17 @@ describe("architecture:check", () => {
       false
     );
 
-    const syntheticSource = 'import Alpine from "alpinejs";\nexport class DemoController {}';
-    expect(VALUE_ALPINE_IMPORT_RE.test(syntheticSource)).toBe(true);
+    expect(
+      hasRuntimeAlpineImport('import Alpine from "alpinejs";\nexport class DemoController {}')
+    ).toBe(true);
+    expect(
+      hasRuntimeAlpineImport('import type Alpine from "alpinejs";\nexport class DemoController {}')
+    ).toBe(false);
+    expect(
+      hasRuntimeAlpineImport(
+        'import { type AlpineType } from "alpinejs";\nexport class DemoController {}'
+      )
+    ).toBe(false);
     expect(errors.every((error) => !error.includes("import type"))).toBe(true);
   });
 
@@ -105,20 +136,28 @@ describe("architecture:check", () => {
     expect(strictErrors.some((error) => error.includes("@ailuracode/alpine-attention"))).toBe(
       false
     );
+
+    expect(exportsControllerClass("export class ThemeController {}")).toBe(true);
+    expect(exportsControllerClass('export { ThemeController } from "./controller.js";')).toBe(true);
+    expect(exportsControllerClass("export const helper = 1;")).toBe(false);
   });
 
   it("requires controller tests to import implementation modules directly", () => {
     const errors = validateUnitTestImports(root, ARCHITECTURE_CHECK_POLICY);
     expect(errors).toEqual([]);
 
-    const violation = findUnitTestImportViolations(
-      "packages/demo/test/controller.spec.ts",
-      'import { DemoController } from "../src/index.js";',
-      ARCHITECTURE_CHECK_POLICY
-    );
-    expect(violation).toEqual([
-      "packages/demo/test/controller.spec.ts: controller tests must import implementation modules directly, not src/index.ts (contract/integration tests may import the entrypoint)",
-    ]);
+    expect(
+      importsPackageEntrypoint(
+        'import { DemoController } from "../src/index.js";',
+        "packages/demo/test/controller.spec.ts"
+      )
+    ).toBe(true);
+    expect(
+      importsPackageEntrypoint(
+        'import { DemoController } from "../src/controller.js";',
+        "packages/demo/test/controller.spec.ts"
+      )
+    ).toBe(false);
   });
 
   it("keeps package dependency direction acyclic and core independent", () => {
@@ -147,5 +186,83 @@ describe("architecture:check", () => {
   it("flags prohibited headless styling markers", () => {
     const violations = findHeadlessCssViolations(":root.dark { color: red; }");
     expect(violations.map((rule) => rule.id)).toContain("host-dark-selector");
+  });
+});
+
+describe("architecture:check AST fixtures", () => {
+  it("ignores constructor side effects inside comments, strings, and templates", () => {
+    const source = `
+      class Demo {
+        constructor() {
+          // window.addEventListener("resize", () => undefined);
+          const message = "window.setTimeout(() => undefined)";
+          const template = \`document.body && localStorage.getItem("x")\`;
+        }
+      }
+    `;
+
+    expect(findConstructorSideEffectsInSource(source)).toEqual([]);
+  });
+
+  it("flags nested constructor side effects but allows typeof guards with optional chaining", () => {
+    const source = `
+      class Demo {
+        constructor() {
+          if (typeof navigator !== "undefined" && typeof navigator.geolocation?.getCurrentPosition === "function") {
+            this.ready = true;
+          }
+        }
+      }
+    `;
+
+    expect(findConstructorSideEffectsInSource(source)).toEqual([]);
+
+    const violatingSource = `
+      class Demo {
+        constructor() {
+          if (typeof navigator !== "undefined") {
+            navigator.geolocation.getCurrentPosition(() => undefined);
+          }
+        }
+      }
+    `;
+
+    expect(findConstructorSideEffectsInSource(violatingSource)).toContain("navigator-access");
+  });
+
+  it("distinguishes type-only and value alpine imports across import forms", () => {
+    expect(hasRuntimeAlpineImport('import type Alpine from "alpinejs";')).toBe(false);
+    expect(hasRuntimeAlpineImport('import { type AlpineType } from "alpinejs";')).toBe(false);
+    expect(hasRuntimeAlpineImport('import Alpine from "alpinejs";')).toBe(true);
+    expect(hasRuntimeAlpineImport('import { reactive } from "alpinejs";')).toBe(true);
+    expect(hasRuntimeAlpineImport('import "alpinejs";')).toBe(true);
+  });
+
+  it("detects forbidden barrel re-exports from export declarations only", () => {
+    const source = `
+      const internalPath = "./internal/hidden.js";
+      export { helper } from "./internal/helper.js";
+      export * from "./adapter/bridge.js";
+    `;
+
+    const violations = findForbiddenBarrelReExports(source);
+    expect(violations.map((violation) => violation.specifier)).toEqual([
+      "./internal/helper.js",
+      "./adapter/bridge.js",
+    ]);
+  });
+
+  it("detects cross-package internal imports in export-from statements", () => {
+    const violations = findCrossPackageInternalImportViolations(`
+      export { helper } from "@ailuracode/alpine-theme/src/internal/helper.js";
+    `);
+
+    expect(violations).toHaveLength(1);
+    expect(violations[0]).toContain("@ailuracode/alpine-theme/src/internal/helper.js");
+  });
+
+  it("detects index entrypoint imports in controller tests only", () => {
+    expect(importsPackageEntrypoint('import { x } from "../../src/index.ts";')).toBe(true);
+    expect(importsPackageEntrypoint('import { x } from "../../src/controller.ts";')).toBe(false);
   });
 });

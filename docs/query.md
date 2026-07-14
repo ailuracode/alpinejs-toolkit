@@ -8,7 +8,7 @@ TanStack Query-style async data fetching for Alpine.js: caching, stale-while-rev
 ## Install
 
 ```bash
-npm install @ailuracode/alpine-query @ailuracode/alpine-query-kit alpinejs nanostores @nanostores/alpine
+pnpm install @ailuracode/alpine-query @ailuracode/alpine-query-kit alpinejs nanostores @nanostores/alpine
 ```
 
 ## Quick start
@@ -104,7 +104,7 @@ Use the page number in the query key so each page is cached independently:
 
 Navigating back to a previous page serves cached data instantly while `staleTime` has not expired.
 
-See the [package README](../packages/query/README.md) for the full API.
+See the [package reference](/plugins/query/) for the full API.
 
 ## Custom adapter
 
@@ -142,7 +142,7 @@ import {
 const client = createQueryClient({ adapter: vanillaQueryAdapter });
 ```
 
-See [`packages/query/src/adapters/vanilla.ts`](../packages/query/src/adapters/vanilla.ts) for the full implementation.
+See [`packages/query/src/adapters/vanilla.ts`](https://github.com/ailuracode/alpinejs-toolkit/blob/master/packages/query/src/adapters/vanilla.ts) for the full implementation.
 
 ### Store-backed adapter
 
@@ -204,8 +204,8 @@ export const myStoreAdapter: QueryStateAdapter = {
 
 Wire the store's native `subscribe` / `listen` into `listen` instead of a manual `Set` when available. Existing adapters:
 
-- [`query-kit`](../packages/query-kit/src/nanostores/adapter.ts) — Nanostores `map()`
-- [`query-adapter-zustand`](../packages/query-adapter-zustand/src/adapter.ts) — Zustand vanilla `createStore`
+- [`query-kit`](https://github.com/ailuracode/alpinejs-toolkit/blob/master/packages/query-kit/src/nanostores/adapter.ts) — Nanostores `map()`
+- [`query-adapter-zustand`](https://github.com/ailuracode/alpinejs-toolkit/blob/master/packages/query-adapter-zustand/src/adapter.ts) — Zustand vanilla `createStore`
 
 ### Alpine plugin from a custom adapter
 
@@ -229,7 +229,7 @@ Alpine.plugin(
 );
 ```
 
-For native `Alpine.reactive` storage, use [`createAlpineStoreAdapter`](../packages/query-adapter-alpine/src/adapter.ts) as a reference — it calls `attachQueryFlags` / `attachMutationFlags` directly on the reactive object.
+For native `Alpine.reactive` storage, use [`createAlpineStoreAdapter`](https://github.com/ailuracode/alpinejs-toolkit/blob/master/packages/query-adapter-alpine/src/adapter.ts) as a reference — it calls `attachQueryFlags` / `attachMutationFlags` directly on the reactive object.
 
 ### Adapter factory
 

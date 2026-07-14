@@ -255,7 +255,10 @@ describe("ToggleController — silent hydration", () => {
   });
 
   it("setSilently() before mount() preserves the hydrated value in the init event", async () => {
-    const toggle = new ToggleController({ states: { on: 1, off: 0 }, initial: 1 });
+    const toggle = new ToggleController<number, number, undefined>({
+      states: { on: 1, off: 0 },
+      initial: 1,
+    });
     toggle.setSilently(0);
     toggle.mount();
     const events: ToggleChangeDetail<number, number, undefined>[] = [];
@@ -305,7 +308,10 @@ describe("ToggleController — lifecycle", () => {
   });
 
   it("direct construction does not mount or emit until mount() is called", async () => {
-    const toggle = new ToggleController({ states: { on: 1, off: 0 }, initial: 1 });
+    const toggle = new ToggleController<number, number, undefined>({
+      states: { on: 1, off: 0 },
+      initial: 1,
+    });
     const events: ToggleChangeDetail<number, number, undefined>[] = [];
     toggle.on("change", (detail) => events.push(detail));
 
@@ -321,7 +327,10 @@ describe("ToggleController — lifecycle", () => {
   });
 
   it("mount() is idempotent", async () => {
-    const toggle = new ToggleController({ states: { on: 1, off: 0 }, initial: 1 });
+    const toggle = new ToggleController<number, number, undefined>({
+      states: { on: 1, off: 0 },
+      initial: 1,
+    });
     const events: ToggleChangeDetail<number, number, undefined>[] = [];
     toggle.on("change", (detail) => events.push(detail));
 
@@ -332,7 +341,10 @@ describe("ToggleController — lifecycle", () => {
   });
 
   it("destroy() before mount() suppresses the initialization event", async () => {
-    const toggle = new ToggleController({ states: { on: 1, off: 0 }, initial: 1 });
+    const toggle = new ToggleController<number, number, undefined>({
+      states: { on: 1, off: 0 },
+      initial: 1,
+    });
     const events: ToggleChangeDetail<number, number, undefined>[] = [];
     toggle.on("change", (detail) => events.push(detail));
 

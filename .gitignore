@@ -5,6 +5,10 @@ node_modules/
 # Build outputs
 dist/
 coverage/
+playwright-report/
+test-results/
+**/e2e/fixture/.bundled/
+blob-report/
 
 # Logs
 *.log
@@ -18,3 +22,5 @@ coverage/
 # Development tools
 .atl/
 .codegraph/
+.opencode/
+graphify-out/

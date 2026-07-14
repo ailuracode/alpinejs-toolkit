@@ -12,7 +12,7 @@ O plugin é **headless** por design e não conhece largura, modo nem aparência 
 ## Instalação
 
 ```bash
-npm install @ailuracode/alpine-sidebar alpinejs
+pnpm install @ailuracode/alpine-sidebar alpinejs
 ```
 
 ## Configuração

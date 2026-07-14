@@ -78,15 +78,20 @@ const matchMediaMock = vi.fn((query: string): MockMediaQueryList => {
   return entry;
 });
 
+/** Re-applies the controllable `matchMedia` stub on `window`. */
+export function installMatchMediaMock(): void {
+  Object.defineProperty(window, "matchMedia", {
+    configurable: true,
+    writable: true,
+    value: matchMediaMock,
+  });
+}
+
 // Save the original `window.matchMedia` so we can restore it during
 // `afterAll`. The core spec does the same dance — see
 // `packages/core/test/match-media.spec.ts`.
 const originalMatchMedia = Object.getOwnPropertyDescriptor(window, "matchMedia");
-Object.defineProperty(window, "matchMedia", {
-  configurable: true,
-  writable: true,
-  value: matchMediaMock,
-});
+installMatchMediaMock();
 
 /** Sets the current `matches` value of a query and fires its listeners. */
 export function setMatchMedia(query: string, matches: boolean): void {

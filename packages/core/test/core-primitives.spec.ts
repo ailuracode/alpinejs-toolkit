@@ -7,6 +7,7 @@
  */
 import assert from "node:assert/strict";
 import { describe, it } from "vitest";
+import type { Unsubscribe } from "../src/core/event.js";
 import { CleanupStack, EventEmitter, InstanceRegistry, ToolkitError } from "../src/index";
 
 describe("ToolkitError", () => {
@@ -120,6 +121,104 @@ describe("EventEmitter", () => {
     });
 
     events.emit("ping", undefined);
+    events.emit("ping", undefined);
+
+    assert.equal(calls, 1);
+  });
+
+  it("self-unsubscribe during emit does not skip subsequent listeners", () => {
+    const events = new EventEmitter<{ ping: undefined }>();
+    const order: string[] = [];
+
+    const unsubscribeFirst = events.on("ping", () => {
+      order.push("first");
+      unsubscribeFirst();
+    });
+    events.on("ping", () => {
+      order.push("second");
+    });
+    events.on("ping", () => {
+      order.push("third");
+    });
+
+    events.emit("ping", undefined);
+
+    assert.deepEqual(order, ["first", "second", "third"]);
+  });
+
+  it("unsubscribing another listener during emit still invokes listeners in the snapshot", () => {
+    const events = new EventEmitter<{ ping: undefined }>();
+    const order: string[] = [];
+    let second: Unsubscribe = () => undefined;
+
+    events.on("ping", () => {
+      order.push("first");
+      second();
+    });
+    second = events.on("ping", () => {
+      order.push("second");
+    });
+    events.on("ping", () => {
+      order.push("third");
+    });
+
+    events.emit("ping", undefined);
+
+    assert.deepEqual(order, ["first", "second", "third"]);
+    assert.equal(events.listenerCount("ping"), 2);
+  });
+
+  it("listeners added during emit do not run in the current pass", () => {
+    const events = new EventEmitter<{ ping: undefined }>();
+    const order: string[] = [];
+
+    events.on("ping", () => {
+      order.push("first");
+      events.on("ping", () => {
+        order.push("late");
+      });
+    });
+    events.on("ping", () => {
+      order.push("second");
+    });
+
+    events.emit("ping", undefined);
+
+    assert.deepEqual(order, ["first", "second"]);
+    assert.equal(events.listenerCount("ping"), 3);
+
+    events.emit("ping", undefined);
+
+    assert.deepEqual(order, ["first", "second", "first", "second", "late"]);
+  });
+
+  it("once() remains exactly-once under re-entrant emit", () => {
+    const events = new EventEmitter<{ ping: undefined }>();
+    let calls = 0;
+
+    events.once("ping", () => {
+      calls += 1;
+      events.emit("ping", undefined);
+    });
+
+    events.emit("ping", undefined);
+    events.emit("ping", undefined);
+
+    assert.equal(calls, 1);
+  });
+
+  it("off() inside a listener does not skip later listeners in the snapshot", () => {
+    const events = new EventEmitter<{ ping: undefined }>();
+    let calls = 0;
+    const second = (): void => {
+      calls += 1;
+    };
+
+    events.on("ping", () => {
+      events.off("ping", second);
+    });
+    events.on("ping", second);
+
     events.emit("ping", undefined);
 
     assert.equal(calls, 1);

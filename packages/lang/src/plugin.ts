@@ -6,6 +6,7 @@
  * (see `AGENTS.md` for the integration contract).
  */
 
+import { bridgeControllerStore } from "@ailuracode/alpine-core";
 import type { Alpine } from "alpinejs";
 import type { LangController } from "./controller";
 import { createLang } from "./controller";
@@ -36,27 +37,21 @@ export function langPlugin(options: LangPluginOptions = {}): LangPluginCallback 
     // detection when no navigator is injected.
     const manager = createLang(options);
     const store = createLangStore(manager);
-    Alpine.store(LANG_STORE_KEY, store);
-    // Alpine wraps the value in a reactive proxy on registration.
-    // Re-target the subscription so mutations land on the proxy, not
-    // on the unwrapped original — otherwise `x-text` bindings on the
-    // `$lang` magic / `$store.lang` never re-render. We cache the
-    // proxy so the `$lang` magic returns the SAME reference instead
-    // of forcing Alpine to re-resolve the store on every access.
-    const reactiveStore = Alpine.store(LANG_STORE_KEY);
-    manager.on("change", (detail) => {
-      reactiveStore.current = detail.current;
-      reactiveStore.base = detail.base;
-      reactiveStore.region = detail.region;
-      reactiveStore.languages = [...detail.languages];
-      reactiveStore.isDetected = detail.isDetected;
-    });
-    Alpine.magic(LANG_STORE_KEY, () => reactiveStore);
 
-    // Forward destroy() through Alpine's cleanup mechanism when available.
-    if (typeof Alpine.cleanup === "function") {
-      Alpine.cleanup(() => manager.destroy());
-    }
+    bridgeControllerStore<LangStore, LangController>({
+      alpine: Alpine,
+      storeKey: LANG_STORE_KEY,
+      store,
+      controller: manager,
+      subscribe: (reactiveStore) =>
+        manager.on("change", (detail) => {
+          reactiveStore.current = detail.current;
+          reactiveStore.base = detail.base;
+          reactiveStore.region = detail.region;
+          reactiveStore.languages = [...detail.languages];
+          reactiveStore.isDetected = detail.isDetected;
+        }),
+    });
   };
 }
 

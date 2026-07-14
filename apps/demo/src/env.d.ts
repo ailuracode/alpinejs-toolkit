@@ -26,6 +26,8 @@ type ExportMagic = import("@ailuracode/alpine-transfer").ExportMagic;
 type CalendarMagic = import("@ailuracode/alpine-calendar").CalendarMagic;
 type ToggleMagic = import("@ailuracode/alpine-toggle").ToggleMagic;
 type PlatformMagic = import("@ailuracode/alpine-env").PlatformMagic;
+type PermissionsStore = import("@ailuracode/alpine-permissions").PermissionsStore;
+type PermissionsMagic = import("@ailuracode/alpine-permissions").PermissionsMagic;
 type NotifyMagic = import("@ailuracode/alpine-notify").NotifyMagic;
 type ShareMagic = import("@ailuracode/alpine-transfer").ShareMagic;
 type WakeLockMagic = import("@ailuracode/alpine-attention").WakeLockMagic;
@@ -33,6 +35,8 @@ type IdleMagic = import("@ailuracode/alpine-attention").IdleMagic;
 type JsonApiMagic = import("@ailuracode/alpine-json-api").JsonApiClient;
 type AccordionStore = import("@ailuracode/alpine-accordion").AccordionStore;
 type CarouselStore = import("@ailuracode/alpine-carousel").CarouselStore;
+type VirtualStore = import("@ailuracode/alpine-virtual").VirtualStore;
+type SelectionStore = import("@ailuracode/alpine-selection").SelectionStore;
 type CommandStore = import("@ailuracode/alpine-command").CommandStore;
 type DialogStore = import("@ailuracode/alpine-dialog").DialogStore;
 type MenuStore = import("@ailuracode/alpine-menu").MenuStore;
@@ -60,6 +64,8 @@ declare module "alpinejs" {
       toast: ToastStore;
       accordion: AccordionStore;
       carousel: CarouselStore;
+      virtual: VirtualStore;
+      selection: SelectionStore;
       command: CommandStore;
       dialog: DialogStore;
       menu: MenuStore;
@@ -67,6 +73,7 @@ declare module "alpinejs" {
       tooltip: TooltipStore;
       lang: LangStore;
       form: FormStore;
+      permissions: PermissionsStore;
     }
     interface Magics<T> {
       $theme: ThemeStore;
@@ -90,6 +97,8 @@ declare module "alpinejs" {
       $jsonapi: JsonApiMagic;
       $accordion: AccordionStore;
       $carousel: CarouselStore;
+      $virtual: VirtualStore;
+      $selection: SelectionStore;
       $command: CommandStore;
       $dialog: DialogStore;
       $menu: MenuStore;
@@ -97,6 +106,7 @@ declare module "alpinejs" {
       $tooltip: TooltipStore;
       $lang: LangStore;
       $form: FormStore;
+      $permissions: PermissionsMagic;
     }
   }
 }

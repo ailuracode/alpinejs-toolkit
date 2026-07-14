@@ -3,8 +3,8 @@ import react from "@astrojs/react";
 import starlight from "@astrojs/starlight";
 import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "astro/config";
+import { buildDocsSidebar } from "./src/catalog/docs-navigation.ts";
 import { getLocaleDetectScript } from "./src/locale-detect.ts";
-import { pluginDocsSidebarItems } from "./src/plugin-nav.ts";
 
 const root = fileURLToPath(new URL(".", import.meta.url));
 const pkg = (name: string) => `${root}../../packages/${name}/src/index.ts`;
@@ -16,70 +16,7 @@ const site =
       ? `https://${process.env.VERCEL_URL}`
       : "https://alpine-demo-ten.vercel.app";
 
-const sidebar = [
-  {
-    label: "Playground",
-    translations: { es: "Playground", pt: "Playground" },
-    link: "/playground/",
-  },
-  {
-    label: "Guides",
-    translations: { es: "Guías", pt: "Guias" },
-    items: [
-      {
-        label: "Getting started",
-        translations: { es: "Primeros pasos", pt: "Primeiros passos" },
-        link: "/getting-started/",
-      },
-      {
-        label: "Core",
-        translations: { es: "Core", pt: "Core" },
-        link: "/core/",
-      },
-      {
-        label: "Device detection",
-        translations: { es: "Detección de dispositivo", pt: "Detecção de dispositivo" },
-        link: "/device-detection/",
-      },
-    ],
-  },
-  {
-    label: "Essentials",
-    translations: { es: "Esenciales", pt: "Essenciais" },
-    items: pluginDocsSidebarItems("essential"),
-  },
-  {
-    label: "Extended",
-    translations: { es: "Extendidos", pt: "Estendidos" },
-    items: pluginDocsSidebarItems("extended"),
-  },
-  {
-    label: "Headless UI",
-    translations: { es: "Headless UI", pt: "Headless UI" },
-    items: pluginDocsSidebarItems("headless"),
-  },
-  {
-    label: "Advanced",
-    translations: { es: "Avanzados", pt: "Avançados" },
-    items: pluginDocsSidebarItems("advanced"),
-  },
-  {
-    label: "Query",
-    translations: { es: "Query", pt: "Query" },
-    items: [
-      {
-        label: "Query cache",
-        translations: { es: "Caché de consultas", pt: "Cache de consultas" },
-        link: "/query/",
-      },
-      {
-        label: "Query devtools",
-        translations: { es: "Query devtools", pt: "Query devtools" },
-        link: "/plugins/query-kit/#devtools",
-      },
-    ],
-  },
-];
+const sidebar = buildDocsSidebar();
 
 // https://astro.build/config
 export default defineConfig({
@@ -117,7 +54,7 @@ export default defineConfig({
         },
       ],
       editLink: {
-        baseUrl: "https://github.com/ailuracode/alpinejs-toolkit/edit/master/docs/",
+        baseUrl: "https://github.com/ailuracode/alpinejs-toolkit/edit/master/packages/",
       },
       head: [
         {
@@ -131,15 +68,20 @@ export default defineConfig({
   ],
   vite: {
     plugins: [tailwindcss()],
+    ssr: {
+      noExternal: ["@lucide/astro"],
+    },
     resolve: {
       alias: {
         "@": `${root}src`,
         "@ailuracode/alpine-env": pkg("env"),
+        "@ailuracode/alpine-gesture": pkg("gesture"),
         "@ailuracode/alpine-transfer": pkg("transfer"),
         "@ailuracode/alpine-query-kit/devtools": `${root}../../packages/query-kit/src/devtools-entry.ts`,
         "@ailuracode/alpine-query-kit": pkg("query-kit"),
         "@ailuracode/alpine-attention": pkg("attention"),
         "@ailuracode/alpine-calendar": pkg("calendar"),
+        "@ailuracode/alpine-collection": pkg("collection"),
         "@ailuracode/alpine-child": pkg("child"),
         "@ailuracode/alpine-dialog": pkg("dialog"),
         "@ailuracode/alpine-menu": pkg("menu"),
@@ -148,14 +90,18 @@ export default defineConfig({
         "@ailuracode/alpine-accordion": pkg("accordion"),
         "@ailuracode/alpine-command": pkg("command"),
         "@ailuracode/alpine-carousel": pkg("carousel"),
+        "@ailuracode/alpine-virtual": pkg("virtual"),
+        "@ailuracode/alpine-selection": pkg("selection"),
         "@ailuracode/alpine-core": pkg("core"),
         "@ailuracode/alpine-toast": pkg("toast"),
         "@ailuracode/alpine-geo": pkg("geo"),
         "@ailuracode/alpine-json-api": pkg("json-api"),
         "@ailuracode/alpine-form": pkg("form"),
+        "@ailuracode/alpine-keyboard": pkg("keyboard"),
         "@ailuracode/alpine-lang": pkg("lang"),
         "@ailuracode/alpine-notify": pkg("notify"),
         "@ailuracode/alpine-overlay": pkg("overlay"),
+        "@ailuracode/alpine-permissions": pkg("permissions"),
         "@ailuracode/alpine-query": pkg("query"),
         "@ailuracode/alpine-query-adapter-alpine": pkg("query-adapter-alpine"),
         "@ailuracode/alpine-query-adapter-zustand": pkg("query-adapter-zustand"),
@@ -164,6 +110,8 @@ export default defineConfig({
         "@ailuracode/alpine-scroll": pkg("scroll"),
         "@ailuracode/alpine-theme": pkg("theme"),
         "@ailuracode/alpine-toggle": pkg("toggle"),
+        "@ailuracode/alpine-history": pkg("history"),
+        "@ailuracode/alpine-realtime": pkg("realtime"),
       },
     },
   },

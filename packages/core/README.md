@@ -44,17 +44,40 @@ pnpm add @ailuracode/alpine-core alpinejs
 
 ```ts
 import Alpine from 'alpinejs';
-import { createAlpinePlugin, definePlugin, registerPlugin } from '@ailuracode/alpine-core';
+import {
+  createAlpinePlugin,
+  definePlugin,
+  pluginLoader,
+  registerPlugin,
+} from '@ailuracode/alpine-core';
 import { themePlugin } from '@ailuracode/alpine-theme';
 
 registerPlugin(
   'theme',
-  definePlugin(['store'], { names: ['theme'], plugin: () => themePlugin() })
+  definePlugin(['store'], {
+    names: ['theme'],
+    plugin: pluginLoader(() => themePlugin()),
+  }),
 );
 
 // Sync entry — every loader is pre-resolved.
 Alpine.plugin(createAlpinePlugin(['theme']));
 Alpine.start();
+```
+
+Direct Alpine callbacks can be passed without wrapping:
+
+```ts
+definePlugin(['magic'], { names: ['share'], plugin: (Alpine) => { /* ... */ } });
+```
+
+Lazy sync or async factories **must** use `pluginLoader()`:
+
+```ts
+definePlugin(['store'], {
+  names: ['theme'],
+  plugin: pluginLoader(() => themePlugin()),
+});
 ```
 
 A plugin can register multiple kinds at once — pass the kind list and an
@@ -63,8 +86,7 @@ object mapping each kind to its names:
 ```ts
 definePlugin(['magic', 'store'], {
   names: { magic: ['wakelock'], store: ['attention'] },
-  plugin: () => {
-    const Alpine = /* ... */;
+  plugin: (Alpine) => {
     Alpine.magic('wakelock', () => ({ request: /* ... */ }));
     Alpine.store('attention', { /* ... */ });
   },
@@ -112,9 +134,9 @@ registerPlugin(
   'share',
   lazyPlugin(['magic'], {
     names: ['share'],
-    // The imported module's `default` export MUST itself be a PluginLoader
-    // — either a direct `AlpinePluginCallback` or a 0-arg factory returning
-    // one (sync or async). `initPlugins()` resolves the loader later.
+    // The imported module's `default` export is a direct callback or an
+    // explicit `pluginLoader()` / `pluginCallback()` source.
+    // `initPlugins()` resolves the loader later.
     import: () => import('@ailuracode/alpine-transfer'),
   }),
 );
@@ -139,8 +161,8 @@ Alpine.start();
 | `unregisterPlugin(name)`           | Remove a plugin from the registry                                       |
 | `getRegisteredPlugin(name)`        | Look up a registered plugin                                             |
 | `getRegisteredPlugins()`           | List every plugin in registration order                                 |
-| `isPluginInitialized(name)`        | Whether a plugin has run with Alpine                                    |
-| `markPluginInitialized(name)`      | Mark a plugin as initialized (for adapters / sync paths)                |
+| `isPluginInitialized(name, Alpine)`        | Whether a plugin has run on the given Alpine runtime                    |
+| `markPluginInitialized(name, Alpine)`      | Mark a plugin as initialized on a runtime (adapters / sync paths)       |
 | `resetPluginRegistry()`            | Clear the registry (tests / storybook)                                  |
 | `resolvePluginEntries(names?)`     | Resolve names to registry entries (internal helper, exported for tests) |
 | `setRegistryDebugSink(sink)`       | Forward registry events to a `DebugLogger`                              |
@@ -160,6 +182,8 @@ Alpine.start();
 | ------------------------------ | ------------------------------------------------------------------------------------------ |
 | `definePlugin(kinds, options)` | Build a typed plugin definition; `kinds` is `readonly ('magic' \| 'store' \| 'directive')[]` |
 | `lazyPlugin(kinds, options)`   | Same as `definePlugin` but with a deferred `import()` loader                               |
+| `pluginCallback(callback)`     | Mark a direct Alpine callback (optional — raw callbacks are accepted)                      |
+| `pluginLoader(load)`           | Mark a lazy sync or async factory that returns an Alpine callback                          |
 
 Both `definePlugin` and `lazyPlugin` accept a `kinds` array and a
 `names` field whose shape depends on `kinds`:
@@ -198,6 +222,45 @@ multiple kinds of one plugin (e.g. `magic: ['theme']` + `store: ['theme']`).
 | `CleanupStack`            | LIFO stack of cleanup callbacks with idempotent `dispose()` |
 | `InstanceRegistry<T>`     | Map of controller instances keyed by string ID              |
 | `ToolkitError`            | Base error with stable `code` and optional `cause`          |
+
+### Controller-backed Alpine lifecycle bridge
+
+Use these helpers when a feature package wires a headless controller
+into `$store.*` and a matching `$name` magic. They centralize the
+invariant adapter sequence while leaving store synchronization in the
+feature package.
+
+| Export | Description |
+| ------ | ----------- |
+| `bridgeControllerStore(options)` | Registers the store proxy, magic accessor, subscription cleanup, and `controller.destroy()` |
+| `registerReactiveStore(alpine, key, store)` | Registers a store and returns Alpine's reactive proxy |
+| `registerStoreMagic(alpine, key, accessor)` | Registers a magic that returns a stable reference |
+| `syncRecordFromSnapshot(target, snapshot)` | Mirrors keyed instance registries onto reactive stores |
+| `wireControllerLifecycle(alpine, controller, options)` | Forwards teardown through `Alpine.cleanup` |
+
+**Cleanup order** (documented and tested):
+
+1. Controller event-bus unsubscribes (LIFO)
+2. Adapter-specific cleanups such as DOM listeners (LIFO)
+3. `controller.destroy()`
+
+**When to use the bridge**
+
+- Controller-backed store plugins that mirror controller `change` events
+  onto a reactive store proxy (`theme`, `sidebar`, `media`, `scroll`, …).
+- Prefer `bridgeControllerStore()` when the magic returns the store
+  proxy. Use the lower-level helpers when the magic is a composite API
+  (for example `$toast`).
+
+**When a custom adapter is justified**
+
+- Instance-registry plugins that sync `instances` maps and expose
+  per-id helpers (`dialog`, `menu`, `carousel`, …).
+- Directive plugins (`x-child`, `x-gesture`) or magic-only packages.
+- Adapters that register multiple stores or magics from one controller.
+
+Store field mirroring MUST stay in the package's `subscribe` callback —
+the bridge does not hide domain-specific synchronization.
 
 ### Generic Alpine typings
 

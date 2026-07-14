@@ -15,10 +15,23 @@ const packageAliases = Object.fromEntries(
     ])
 );
 
+const subpathAliases: Array<{ find: string | RegExp; replacement: string }> = [
+  {
+    find: "@ailuracode/alpine-query-kit/devtools",
+    replacement: path.resolve(packagesDir, "query-kit/src/devtools-entry.ts"),
+  },
+];
+
 export default defineConfig({
   root,
   resolve: {
-    alias: packageAliases,
+    alias: [
+      ...subpathAliases,
+      ...Object.entries(packageAliases).map(([find, replacement]) => ({
+        find,
+        replacement,
+      })),
+    ],
   },
   test: {
     environment: "happy-dom",
@@ -28,15 +41,24 @@ export default defineConfig({
       path.join(root, "apps/demo/test/**/*.test.ts"),
       path.join(root, "test/**/*.test.ts"),
     ],
+    exclude: [
+      "**/node_modules/**",
+      "**/dist/**",
+      "**/e2e/**",
+      "**/playwright-report/**",
+      "**/test-results/**",
+    ],
     coverage: {
       provider: "v8",
-      reporter: ["text", "html"],
+      reporter: ["text", "html", "json", "json-summary"],
+      reportsDirectory: "./coverage",
       include: ["packages/*/src/**/*.ts"],
+      exclude: ["**/*.d.ts", "**/types.ts", "**/events.ts", "**/index.ts"],
       thresholds: {
-        lines: 80,
-        functions: 70,
+        lines: 85,
+        functions: 80,
         branches: 75,
-        statements: 80,
+        statements: 85,
       },
     },
   },

@@ -17,9 +17,9 @@ const plugin = getPluginNavItem("media")!;
 				<li>Breakpoint: <strong x-text="$store.media.breakpoint"></strong></li>
 			</ul>
 			<div class="flex flex-wrap gap-2 mt-2">
-				<Badge x-bind:class="{ 'bg-primary text-primary-foreground': $store.media.breakpoint === 'mobile' }">Mobile</Badge>
-				<Badge x-bind:class="{ 'bg-primary text-primary-foreground': $store.media.breakpoint === 'tablet' }">Tablet</Badge>
-				<Badge x-bind:class="{ 'bg-primary text-primary-foreground': $store.media.breakpoint === 'desktop' }">Desktop</Badge>
+				<Badge x-bind:class="{ 'bg-[var(--ios-blue)] text-white': $store.media.breakpoint === 'mobile' }">Mobile</Badge>
+				<Badge x-bind:class="{ 'bg-[var(--ios-blue)] text-white': $store.media.breakpoint === 'tablet' }">Tablet</Badge>
+				<Badge x-bind:class="{ 'bg-[var(--ios-blue)] text-white': $store.media.breakpoint === 'desktop' }">Desktop</Badge>
 			</div>
 		</div>
 		<div>
@@ -42,10 +42,10 @@ const plugin = getPluginNavItem("media")!;
 		</div>
 	</div>
 	<DemoButton class="mt-3" @click="$store.media.refresh()">refresh()</DemoButton>
-	<p class="text-xs text-muted-foreground mt-3">
+	<p class="text-xs text-[var(--ios-label-secondary)] mt-3">
 		Resize the window or change OS media preferences to see live updates.
 	</p>
-	<p class="text-xs text-muted-foreground mt-1">
+	<p class="text-xs text-[var(--ios-label-secondary)] mt-1">
 		Package: <code>{plugin.package}</code>
 	</p>
 </DemoSection>

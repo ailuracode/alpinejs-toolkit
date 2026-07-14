@@ -35,6 +35,9 @@
   "dependencies": {
     "date-fns": "^4.1.0"
   },
+  "devDependencies": {
+    "@ailuracode/alpine-core": "workspace:*"
+  },
   "peerDependencies": {
     "@ailuracode/alpine-core": "^0.2.0",
     "alpinejs": "^3.0.0",

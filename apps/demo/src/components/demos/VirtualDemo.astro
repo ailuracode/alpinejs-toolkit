@@ -1,0 +1,102 @@
+---
+import { getPluginNavItem } from "../../plugin-nav";
+import DemoSection from "../DemoSection.astro";
+
+const plugin = getPluginNavItem("virtual")!;
+const scrollViewport = "h-64 overflow-auto rounded-lg border";
+const rowClass = "absolute left-0 top-0 flex w-full items-center border-b px-3 text-sm";
+---
+
+<DemoSection id={plugin.id} title={plugin.title} api={plugin.api} description={plugin.description}>
+	<div
+		class="grid min-w-0 gap-10"
+		x-data="{
+			fixedRows: Array.from({ length: 10000 }, (_, i) => ({ id: i, label: `Row ${i + 1}` })),
+			variableRows: Array.from({ length: 200 }, (_, i) => ({
+				id: `v-${i}`,
+				label: `Variable row ${i + 1}`,
+				height: 28 + ((i * 17) % 48),
+			})),
+			bindVirtual(root, id, options) {
+				$store.virtual.create(id, options);
+				const mount = () => {
+					const el = root.querySelector(`[data-virtual-scroll='${id}']`);
+					if (el) {
+						$store.virtual.bindScrollElement(id, el);
+					}
+				};
+				$nextTick(() => $nextTick(mount));
+			},
+			stateLine(id) {
+				const s = $store.virtual.instances[id];
+				if (!s) return '—';
+				return `${s.virtualItems.length} visible · range ${s.startIndex}–${s.endIndex} · total ${s.totalSize}px`;
+			},
+			itemStyle(id, index) {
+				const item = ($store.virtual.instances[id]?.virtualItems ?? []).find((entry) => entry.index === index);
+				if (!item) return '';
+				return `transform: translateY(${item.start}px); height: ${item.size}px`;
+			},
+			contentStyle(id) {
+				const total = $store.virtual.instances[id]?.totalSize ?? 0;
+				return `position: relative; height: ${total}px; width: 100%`;
+			},
+		}"
+	>
+		<!-- Fixed-size list -->
+		<div class="min-w-0" x-init="bindVirtual($el, 'fixed', { count: fixedRows.length, estimateSize: 36, overscan: 6 })">
+			<h3 class="text-sm font-medium mb-2">Fixed-size (10,000 rows)</h3>
+			<p class="text-xs text-[var(--ios-label-secondary)] mb-3" x-text="stateLine('fixed')"></p>
+			<div
+				data-virtual-scroll="fixed"
+				class={scrollViewport}
+				x-bind="$store.virtual.listProps('fixed', { label: 'Fixed virtual list' })"
+			>
+				<div :style="contentStyle('fixed')" x-bind="$store.virtual.contentProps('fixed')">
+					<template x-for="item in $store.virtual.instances.fixed?.virtualItems ?? []" :key="item.key">
+						<div
+							x-bind="$store.virtual.itemProps('fixed', item.index)"
+							class={rowClass}
+							:style="itemStyle('fixed', item.index)"
+							x-text="fixedRows[item.index].label"
+						></div>
+					</template>
+				</div>
+			</div>
+			<div class="mt-3 flex flex-wrap gap-2">
+				<button type="button" class="inline-flex items-center rounded-md border px-3 py-1.5 text-xs" @click="$store.virtual.scrollToIndex('fixed', 0)">Top</button>
+				<button type="button" class="inline-flex items-center rounded-md border px-3 py-1.5 text-xs" @click="$store.virtual.scrollToIndex('fixed', 4999, { align: 'center' })">Middle</button>
+				<button type="button" class="inline-flex items-center rounded-md border px-3 py-1.5 text-xs" @click="$store.virtual.scrollToIndex('fixed', fixedRows.length - 1, { align: 'end' })">Bottom</button>
+			</div>
+		</div>
+
+		<!-- Variable-size list -->
+		<div
+			class="min-w-0"
+			x-init="
+				bindVirtual($el, 'variable', {
+					count: variableRows.length,
+					estimateSize: 40,
+					overscan: 4,
+					getItemKey: (index) => variableRows[index].id,
+				});
+				variableRows.forEach((row, index) => $store.virtual.measureItem('variable', index, row.height));
+			"
+		>
+			<h3 class="text-sm font-medium mb-2">Variable-size rows</h3>
+			<p class="text-xs text-[var(--ios-label-secondary)] mb-3" x-text="stateLine('variable')"></p>
+			<div data-virtual-scroll="variable" class={scrollViewport} x-bind="$store.virtual.listProps('variable', { label: 'Variable virtual list' })">
+				<div :style="contentStyle('variable')" x-bind="$store.virtual.contentProps('variable')">
+					<template x-for="item in $store.virtual.instances.variable?.virtualItems ?? []" :key="item.key">
+						<div
+							x-bind="$store.virtual.itemProps('variable', item.index)"
+							class={rowClass}
+							:style="itemStyle('variable', item.index)"
+							x-text="variableRows[item.index].label"
+						></div>
+					</template>
+				</div>
+			</div>
+		</div>
+	</div>
+</DemoSection>

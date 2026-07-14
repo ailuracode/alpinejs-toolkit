@@ -5,6 +5,11 @@
  *
  * Emits a typed `change` event on every open/close transition so
  * consumers can react programmatically.
+ *
+ * Selection state is a plain per-group object — no controller class,
+ * no event emission. The full `@ailuracode/alpine-selection`
+ * dependency was dropped in favour of this lightweight state to keep
+ * the bundle slim.
  */
 
 import { BaseController, generateId } from "@ailuracode/alpine-core";
@@ -18,6 +23,56 @@ import type {
   AccordionStore,
 } from "./types";
 
+interface AccordionSelectionState {
+  mode: AccordionMode;
+  value: string | null;
+  selectedKeys: readonly string[];
+  keys: readonly string[];
+  disabledKeys: ReadonlySet<string>;
+}
+
+function makeSelection(
+  mode: AccordionMode,
+  value: string | string[] | null
+): AccordionSelectionState {
+  if (mode === "single") {
+    return {
+      mode,
+      value: typeof value === "string" ? value : null,
+      selectedKeys: [],
+      keys: [],
+      disabledKeys: new Set<string>(),
+    };
+  }
+  return {
+    mode,
+    value: null,
+    selectedKeys: Array.isArray(value) ? [...value] : [],
+    keys: [],
+    disabledKeys: new Set<string>(),
+  };
+}
+
+function syncSelectionKeys(
+  state: AccordionSelectionState,
+  keys: readonly string[],
+  disabled: readonly string[]
+): void {
+  state.keys = keys;
+  state.disabledKeys = new Set(disabled);
+  if (
+    state.value !== null &&
+    (!state.keys.includes(state.value) || state.disabledKeys.has(state.value))
+  ) {
+    state.value = null;
+  }
+  if (state.selectedKeys.some((k) => !state.keys.includes(k) || state.disabledKeys.has(k))) {
+    state.selectedKeys = state.selectedKeys.filter(
+      (k) => state.keys.includes(k) && !state.disabledKeys.has(k)
+    );
+  }
+}
+
 function enabledItems(group: AccordionGroup): AccordionItem[] {
   return group.items.filter((item) => !item.disabled);
 }
@@ -30,7 +85,6 @@ function normalizeDefaultOpen(mode: AccordionMode, value?: string | string[]): s
   if (!value) {
     return [];
   }
-
   const ids = Array.isArray(value) ? value : [value];
   return mode === "single" && ids.length > 0 ? [ids[0]] : ids;
 }
@@ -56,12 +110,26 @@ function snapshotGroup(group: AccordionGroup): AccordionGroup {
   };
 }
 
+function selectionKeys(state: AccordionSelectionState): readonly string[] {
+  return state.mode === "single" ? (state.value === null ? [] : [state.value]) : state.selectedKeys;
+}
+
+function setOpenRecord(group: AccordionGroup, state: AccordionSelectionState): void {
+  const selected = new Set(selectionKeys(state));
+  const nextOpen: Record<string, boolean> = {};
+  for (const item of group.items) {
+    nextOpen[item.id] = selected.has(item.id);
+  }
+  group.open = nextOpen;
+}
+
 /**
  * Headless accordion controller. Manages multiple accordion groups
  * with open/close state, keyboard navigation, and ARIA props.
  */
 export class AccordionController extends BaseController<AccordionEvents> {
   #groups: Record<string, AccordionGroup> = {};
+  #selection: Record<string, AccordionSelectionState> = {};
 
   constructor(id?: string) {
     super(id ?? generateId("accordion"));
@@ -88,7 +156,13 @@ export class AccordionController extends BaseController<AccordionEvents> {
     if (this.isDestroyed) {
       return;
     }
-    this.#groups[accordionId] = createGroup(options);
+    const group = createGroup(options);
+    this.#groups[accordionId] = group;
+    const def = group.mode === "single" ? (group.defaultOpen[0] ?? null) : group.defaultOpen;
+    const selection = makeSelection(group.mode, def);
+    this.#selection[accordionId] = selection;
+    this.#syncKeys(accordionId);
+    setOpenRecord(group, selection);
     this.#emitChange(accordionId, "initialization");
   }
 
@@ -96,8 +170,9 @@ export class AccordionController extends BaseController<AccordionEvents> {
     if (this.isDestroyed) {
       return;
     }
-    delete this.#groups[accordionId];
     this.#emitChange(accordionId, "initialization");
+    delete this.#selection[accordionId];
+    delete this.#groups[accordionId];
   }
 
   registerItem(accordionId: string, itemId: string, disabled = false): void {
@@ -112,6 +187,7 @@ export class AccordionController extends BaseController<AccordionEvents> {
       return;
     }
     group.items.push({ id: itemId, disabled });
+    this.#syncKeys(accordionId);
 
     if (group.defaultOpen.includes(itemId) && !disabled) {
       this.open(accordionId, itemId);
@@ -127,12 +203,13 @@ export class AccordionController extends BaseController<AccordionEvents> {
       return;
     }
     const group = this.#groups[accordionId];
-    if (!group) {
+    const selection = this.#selection[accordionId];
+    if (!(group && selection)) {
       return;
     }
-
     group.items = group.items.filter((item) => item.id !== itemId);
-    delete group.open[itemId];
+    this.#syncKeys(accordionId);
+    setOpenRecord(group, selection);
     this.#emitChange(accordionId, "user");
   }
 
@@ -141,22 +218,23 @@ export class AccordionController extends BaseController<AccordionEvents> {
       return;
     }
     const group = this.#groups[accordionId];
+    const selection = this.#selection[accordionId];
     const item = group?.items.find((entry) => entry.id === itemId);
-    if (!(group && item) || item.disabled) {
+    if (!(group && selection && item) || item.disabled) {
       return;
     }
 
     if (group.mode === "single") {
-      for (const id of Object.keys(group.open)) {
-        if (group.open[id]) {
-          group.open[id] = false;
-        }
-      }
-      group.open[itemId] = true;
-    } else {
-      group.open[itemId] = true;
+      selection.mode = "single";
+      selection.value = itemId;
+      selection.selectedKeys = [];
+    } else if (!selectionKeys(selection).includes(itemId)) {
+      selection.mode = "multiple";
+      selection.value = null;
+      selection.selectedKeys = [...selectionKeys(selection), itemId];
     }
 
+    setOpenRecord(group, selection);
     this.#emitChange(accordionId, "user");
     group.onChange?.(this.openIds(accordionId));
   }
@@ -166,16 +244,27 @@ export class AccordionController extends BaseController<AccordionEvents> {
       return;
     }
     const group = this.#groups[accordionId];
-    if (!group?.open[itemId]) {
+    const selection = this.#selection[accordionId];
+    if (!(group && selection && group.open[itemId])) {
       return;
     }
 
-    group.open[itemId] = false;
+    if (group.mode === "single") {
+      selection.value = null;
+      selection.selectedKeys = [];
+    } else {
+      selection.selectedKeys = selectionKeys(selection).filter((key) => key !== itemId);
+    }
+
+    setOpenRecord(group, selection);
     this.#emitChange(accordionId, "user");
     group.onChange?.(this.openIds(accordionId));
   }
 
   toggle(accordionId: string, itemId: string): void {
+    if (!this.#groups[accordionId]) {
+      return;
+    }
     if (this.isOpen(accordionId, itemId)) {
       this.close(accordionId, itemId);
     } else {
@@ -184,14 +273,18 @@ export class AccordionController extends BaseController<AccordionEvents> {
   }
 
   isOpen(accordionId: string, itemId: string): boolean {
-    return this.#groups[accordionId]?.open[itemId] ?? false;
+    const selection = this.#selection[accordionId];
+    if (!selection) {
+      return false;
+    }
+    return selection.mode === "single"
+      ? selection.value === itemId
+      : selection.selectedKeys.includes(itemId);
   }
 
   openIds(accordionId: string): string[] {
-    const open = this.#groups[accordionId]?.open ?? {};
-    return Object.entries(open)
-      .filter(([, isOpen]) => isOpen)
-      .map(([id]) => id);
+    const selection = this.#selection[accordionId];
+    return selection ? [...selectionKeys(selection)] : [];
   }
 
   activeItem(accordionId: string): string | null {
@@ -206,13 +299,11 @@ export class AccordionController extends BaseController<AccordionEvents> {
     if (!group) {
       return;
     }
-
     if (itemId === null) {
       group.activeItemId = null;
       this.#emitChange(accordionId, "user");
       return;
     }
-
     const item = group.items.find((entry) => entry.id === itemId);
     if (item && !item.disabled) {
       group.activeItemId = itemId;
@@ -225,18 +316,14 @@ export class AccordionController extends BaseController<AccordionEvents> {
     if (!group) {
       return;
     }
-
     const items = enabledItems(group);
     if (items.length === 0) {
       return;
     }
-
     if (!group.activeItemId) {
       group.activeItemId = items[0]?.id ?? null;
     }
-
     const currentIndex = group.activeItemId ? itemIndex(group, group.activeItemId) : 0;
-
     switch (event.key) {
       case "ArrowDown":
         event.preventDefault();
@@ -257,7 +344,6 @@ export class AccordionController extends BaseController<AccordionEvents> {
       default:
         break;
     }
-
     this.#emitChange(accordionId, "user");
   }
 
@@ -323,6 +409,17 @@ export class AccordionController extends BaseController<AccordionEvents> {
       openIds: this.openIds(accordionId),
       source,
     });
+  }
+
+  #syncKeys(accordionId: string): void {
+    const group = this.#groups[accordionId];
+    const selection = this.#selection[accordionId];
+    if (!(group && selection)) {
+      return;
+    }
+    const keys = group.items.map((item) => item.id);
+    const disabled = group.items.filter((item) => item.disabled).map((item) => item.id);
+    syncSelectionKeys(selection, keys, disabled);
   }
 }
 

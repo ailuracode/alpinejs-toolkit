@@ -13,11 +13,17 @@
 /** @type {ArchitectureCheckPolicy} */
 export const ARCHITECTURE_CHECK_POLICY = {
   /**
-   * Packages whose `src/index.ts` may still re-export from `src/internal/`.
-   * ALP-30 migrated core, lang, media, and theme; env, scroll, and sidebar
-   * remain tracked for a follow-up move.
+   * Packages whose `src/index.ts` may still re-export from `src/internal/`,
+   * `src/alpine/`, `src/adapter/`, or `src/bindings/`.
+   *
+   * ALP-30 migrated core, lang, media, and theme. Follow-up migrations:
+   * - env, scroll, sidebar — still re-export from `src/internal/`
+   * - command, overlay — still re-export from `src/alpine/store.js`; the
+   *   store factory is consumed only by the package's own plugin/controller
+   *   and should be folded into `plugin.ts` (gesture completed this in
+   *   ALP-45, follow-up tickets needed for command/overlay).
    */
-  internalBarrelExceptions: ["env", "scroll", "sidebar"],
+  internalBarrelExceptions: ["env", "scroll", "sidebar", "command", "overlay"],
 
   /**
    * Publishable packages that do not expose a `*Controller` class on the root

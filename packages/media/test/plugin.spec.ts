@@ -180,6 +180,24 @@ describe("mediaPlugin — cleanup", () => {
     }
     assert.equal(store.isDestroyed, true);
   });
+
+  it("supports HMR-like re-registration without listener leaks", () => {
+    const Alpine = createMockAlpine();
+
+    mediaPlugin()(Alpine as never);
+    assert.equal(Alpine.cleanups.length, 1);
+
+    Alpine.cleanups[0]();
+    const destroyed = Alpine.stores[MEDIA_STORE_KEY] as MediaStore;
+    assert.equal(destroyed.isDestroyed, true);
+
+    mediaPlugin()(Alpine as never);
+    assert.equal(Alpine.cleanups.length, 2);
+
+    const refreshed = Alpine.stores[MEDIA_STORE_KEY] as MediaStore;
+    assert.equal(refreshed.isDestroyed, false);
+    assert.notEqual(refreshed, destroyed);
+  });
 });
 
 describe("createMediaStore — direct construction", () => {

@@ -21,6 +21,7 @@
  *    `typeof === 'function'` check for older Alpine versions).
  */
 
+import { bridgeControllerStore } from "@ailuracode/alpine-core";
 import type { Alpine } from "alpinejs";
 import { createSidebar, type SidebarController } from "./controller";
 import type {
@@ -64,28 +65,18 @@ export function sidebarPlugin(options: CreateSidebarOptions = {}): SidebarPlugin
     // `options.persistKey` (explicit `storage` wins).
     const manager = createSidebar(options);
     const store = createSidebarStore(manager);
-    Alpine.store(SIDEBAR_STORE_KEY, store);
-    // Alpine wraps the value in a reactive proxy on registration.
-    // Re-target the subscription so mutations land on the proxy, not
-    // on the unwrapped original — otherwise `x-text` bindings on the
-    // `$sidebar` magic / `$store.sidebar` never re-render. We cache
-    // the proxy so the `$sidebar` magic returns the SAME reference
-    // instead of forcing Alpine to re-resolve the store on every
-    // access.
-    const reactiveStore = Alpine.store(SIDEBAR_STORE_KEY);
-    manager.on("change", (detail) => {
-      reactiveStore.visible = detail.visible;
-      reactiveStore.matchesBreakpoint = detail.matchesBreakpoint;
-    });
-    Alpine.magic(SIDEBAR_STORE_KEY, () => reactiveStore);
 
-    // Forward destroy() through Alpine's cleanup mechanism when
-    // available. Older Alpine versions don't expose `cleanup`;
-    // the integration guards every call with a
-    // `typeof === "function"` check.
-    if (typeof Alpine.cleanup === "function") {
-      Alpine.cleanup(() => manager.destroy());
-    }
+    bridgeControllerStore({
+      alpine: Alpine,
+      storeKey: SIDEBAR_STORE_KEY,
+      store,
+      controller: manager,
+      subscribe: (reactiveStore) =>
+        manager.on("change", (detail) => {
+          reactiveStore.visible = detail.visible;
+          reactiveStore.matchesBreakpoint = detail.matchesBreakpoint;
+        }),
+    });
   };
 }
 

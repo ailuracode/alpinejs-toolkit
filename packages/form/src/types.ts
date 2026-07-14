@@ -222,7 +222,10 @@ export interface FormApi<TValues extends Record<string, unknown> = Record<string
   readonly state: FormApiState<TValues>;
   handleSubmit(): Promise<void>;
   reset(options?: FormResetOptions): void;
-  field<TValue = unknown>(name: FieldPath): FieldApi<TValue>;
+  field<TValue = unknown>(
+    name: FieldPath,
+    validators?: FieldValidators<TValues, TValue>
+  ): FieldApi<TValue>;
   parseValueWithSchema<TValue>(
     schema: StandardSchemaV1<unknown, TValue>,
     value: unknown

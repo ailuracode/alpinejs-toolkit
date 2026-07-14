@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ailuracode/alpine-accordion E2E fixture</title>
+  </head>
+  <body>
+    <main
+      id="app"
+      data-e2e-ready="true"
+      x-data
+      x-init="
+        $store.accordion.register('faq');
+        $store.accordion.registerItem('faq', 'item-1');
+      "
+    >
+      <h1>Accordion E2E fixture</h1>
+      <button id="accordion-trigger" type="button" @click="$store.accordion.toggle('faq', 'item-1')">Section 1</button>
+      <output id="accordion-open" x-text="$store.accordion.isOpen('faq', 'item-1')"></output>
+      <div id="accordion-panel" x-show="$store.accordion.isOpen('faq', 'item-1')">Panel content</div>
+    </main>
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>

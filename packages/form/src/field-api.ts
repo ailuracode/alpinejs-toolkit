@@ -18,7 +18,9 @@ export function createFieldApi<TValue = unknown>(
     }
     const snapshot = controller.snapshotInstances()[formId];
     if (!snapshot?.fields[name]) {
-      controller.registerField(formId, name, { validators });
+      controller.registerField(formId, name, {
+        validators: validators as FieldValidators<Record<string, unknown>, unknown>,
+      });
     }
   };
 
