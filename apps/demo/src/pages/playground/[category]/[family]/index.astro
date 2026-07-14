@@ -5,6 +5,7 @@ import {
   playgroundCategoryPath,
 } from "../../../../catalog/playground-navigation.js";
 import PermissionsFamilyPanel from "../../../../components/families/PermissionsFamilyPanel.astro";
+import QueryStackFamilyPanel from "../../../../components/families/QueryStackFamilyPanel.astro";
 import PlaygroundModuleCard from "../../../../components/PlaygroundModuleCard.astro";
 import PlaygroundLayout from "../../../../layouts/PlaygroundLayout.astro";
 
@@ -45,7 +46,11 @@ if (!group || !familyGroup || !family) {
     <p class="mt-2 max-w-2xl text-sm text-[var(--ios-label-secondary)]">{family.summary}</p>
   </header>
 
-  {familyId === "permissions" ? <PermissionsFamilyPanel /> : (
+  {familyId === "permissions" ? (
+    <PermissionsFamilyPanel />
+  ) : familyId === "query-stack" ? (
+    <QueryStackFamilyPanel />
+  ) : (
     <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
       {
         familyGroup.entries.map((entry) => (
