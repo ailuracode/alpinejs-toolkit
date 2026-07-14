@@ -12,7 +12,7 @@ alwaysApply: false
 - Include pattern: `packages/*/test/**/*.{test,spec}.ts`
 - Playwright E2E (root `e2e/playwright.base.ts`, per-package `playwright.config.ts`)
 - E2E include pattern: `packages/*/e2e/**/*.spec.ts`
-- Inventory: `benchmarks/test-environment-inventory.json` — regenerate with `pnpm run test:classify` (enforced by `repo:check`)
+- Inventory: `test/inventory/test-environment-inventory.json` — regenerate with `pnpm run test:classify` (enforced by `repo:check`)
 - Runtime pool settings in `scripts/vitest-runtime-settings.mjs` (ALP-134)
 
 ## Environments
@@ -41,7 +41,7 @@ Override per file with `// @vitest-environment node` when classification is wron
 
 ## Layer split
 
-Tests MUST be split by layer. Each file has a documented **target environment** in `benchmarks/test-environment-inventory.json`.
+Tests MUST be split by layer. Each file has a documented **target environment** in `test/inventory/test-environment-inventory.json`.
 
 | Layer | Filename | Target environment |
 |-------|----------|-------------------|
@@ -84,7 +84,7 @@ Every behavior change MUST include tests. Global thresholds MUST NOT be lowered.
 | Import test helpers without `.js` | `import { startAlpine } from "../../../test/helpers.js"` |
 | Assert Alpine reactivity without real Alpine | Magic harness uses plain objects — no reactivity there |
 | Put E2E specs in Vitest `test/` | Use `packages/<name>/e2e/*.spec.ts` with Playwright |
-| Add/rename tests without updating inventory | Run `pnpm run test:classify` and commit `benchmarks/test-environment-inventory.json` |
+| Add/rename tests without updating inventory | Run `pnpm run test:classify` and commit `test/inventory/test-environment-inventory.json` |
 | Use `page.waitForTimeout()` in E2E | Prefer Playwright auto-waiting and `expect(locator)` |
 
 Run `pnpm test` and `pnpm run lint` before finishing.

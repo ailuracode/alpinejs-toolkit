@@ -629,7 +629,7 @@ export function renderInventoryMarkdown(inventory) {
     "pnpm run test:classify",
     "```",
     "",
-    "Machine-readable output: `benchmarks/test-environment-inventory.json`.",
+    "Machine-readable output: `test/inventory/test-environment-inventory.json`.",
     "",
     "## Per-package overlap (Vitest vs Playwright)",
     "",
@@ -787,7 +787,7 @@ export function writeInventoryArtifacts(root, outputDir) {
 }
 
 function parseArgs(argv) {
-  const args = { write: false, output: path.join(defaultRoot, "benchmarks") };
+  const args = { write: false, output: path.join(defaultRoot, "test", "inventory") };
   for (let index = 0; index < argv.length; index += 1) {
     const arg = argv[index];
     if (arg === "--write") {

@@ -7,7 +7,7 @@ import {
 } from "../src/internal/measurements.js";
 import { normalizeVirtualOptions } from "../src/options.js";
 
-describe("@ailuracode/alpine-virtual benchmark", () => {
+describe("@ailuracode/alpine-virtual performance", () => {
   it("calculates ranges for 100k items under 50ms", () => {
     const options = normalizeVirtualOptions({ count: 100_000, estimateSize: 32, overscan: 5 });
     const keys = Array.from({ length: options.count }, (_, index) => index);

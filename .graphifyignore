@@ -74,6 +74,3 @@ packages/*/src/test/
 *.gif
 *.jpg
 *.jpeg
-
-# Development tools
-benchmarks/

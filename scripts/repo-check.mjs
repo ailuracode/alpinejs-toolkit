@@ -766,7 +766,7 @@ export function runRepoCheck(options = {}) {
       ...validatePackageVitestScripts(packages, packagesDir),
       ...validateTestEnvironmentInventory(
         root,
-        path.join(root, "benchmarks", "test-environment-inventory.json")
+        path.join(root, "test", "inventory", "test-environment-inventory.json")
       ),
       ...validateTooling(root, publishable),
       ...validateDepBoundaries(root),

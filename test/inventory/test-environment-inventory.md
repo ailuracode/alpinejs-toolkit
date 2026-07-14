@@ -4,15 +4,15 @@ Classification for [ALP-130](https://linear.app/ailuracode/issue/ALP-130/classif
 
 ## Summary
 
-- Generated: 2026-07-14T23:26:28.433Z
-- Vitest files: 227
+- Generated: 2026-07-14T23:34:25.494Z
+- Vitest files: 226
 - Playwright E2E files: 29
 
 ### Target environment (Vitest + E2E)
 
 | Environment | Files | Role |
 | --- | ---: | --- |
-| `node` | 135 | Controller, cache, parsing, SSR import, repository checks |
+| `node` | 134 | Controller, cache, parsing, SSR import, repository checks |
 | `happy-dom` | 92 | Alpine stores, directives, simulated DOM integration tests, and package overlay projects |
 | `playwright` | 29 | Real browser focus, layout, keyboard, permissions |
 
@@ -24,7 +24,7 @@ Classification for [ALP-130](https://linear.app/ailuracode/issue/ALP-130/classif
 | `contract` | 20 |
 | `integration` | 32 |
 | `accessibility` | 6 |
-| `utility` | 148 |
+| `utility` | 147 |
 | `repository` | 3 |
 | `e2e` | 29 |
 
@@ -46,7 +46,7 @@ Classification for [ALP-130](https://linear.app/ailuracode/issue/ALP-130/classif
 pnpm run test:classify
 ```
 
-Machine-readable output: `benchmarks/test-environment-inventory.json`.
+Machine-readable output: `test/inventory/test-environment-inventory.json`.
 
 ## Per-package overlap (Vitest vs Playwright)
 
@@ -331,11 +331,11 @@ Machine-readable output: `benchmarks/test-environment-inventory.json`.
 | `packages/ui/test/storage.spec.ts` | `ui` | `utility` | `happy-dom` | content |
 | `packages/virtual/e2e/virtual.e2e.spec.ts` | `virtual` | `e2e` | `playwright` | path |
 | `packages/virtual/test/accessibility.test.ts` | `virtual` | `accessibility` | `node` | content |
-| `packages/virtual/test/benchmark.test.ts` | `virtual` | `utility` | `node` | content |
 | `packages/virtual/test/controller.test.ts` | `virtual` | `controller` | `node` | filename |
 | `packages/virtual/test/encapsulation.test.ts` | `virtual` | `contract` | `node` | content |
 | `packages/virtual/test/lifecycle.test.ts` | `virtual` | `utility` | `node` | content |
 | `packages/virtual/test/observers.test.ts` | `virtual` | `utility` | `happy-dom` | content |
+| `packages/virtual/test/performance.test.ts` | `virtual` | `utility` | `node` | content |
 | `packages/virtual/test/plugin.test.ts` | `virtual` | `integration` | `happy-dom` | content |
 | `packages/virtual/test/ssr.test.ts` | `virtual` | `contract` | `node` | filename |
 | `test/architecture-check.test.ts` | `repository` | `repository` | `happy-dom` | content |
@@ -350,5 +350,4 @@ Machine-readable output: `benchmarks/test-environment-inventory.json`.
 | `test/tree-shaking-smoke.test.ts` | `repository` | `utility` | `node` | content |
 | `test/vitest-package-scripts.test.ts` | `repository` | `repository` | `node` | content |
 | `test/vitest-projects.test.ts` | `repository` | `utility` | `node` | content |
-| `test/vitest-runtime-settings.test.ts` | `repository` | `utility` | `node` | content |
 

@@ -1,10 +1,10 @@
 {
-  "generatedAt": "2026-07-14T23:26:28.433Z",
+  "generatedAt": "2026-07-14T23:34:25.494Z",
   "issue": "ALP-130",
-  "vitestFileCount": 227,
+  "vitestFileCount": 226,
   "e2eFileCount": 29,
   "environmentCounts": {
-    "node": 135,
+    "node": 134,
     "happy-dom": 92,
     "playwright": 29
   },
@@ -13,7 +13,7 @@
     "contract": 20,
     "integration": 32,
     "accessibility": 6,
-    "utility": 148,
+    "utility": 147,
     "repository": 3,
     "e2e": 29
   },
@@ -2143,15 +2143,6 @@
       "hasPlaywrightSibling": true
     },
     {
-      "path": "packages/virtual/test/benchmark.test.ts",
-      "package": "virtual",
-      "layer": "utility",
-      "targetEnvironment": "node",
-      "source": "content",
-      "signals": ["controller-only-import", "no-alpine-import"],
-      "hasPlaywrightSibling": true
-    },
-    {
       "path": "packages/virtual/test/controller.test.ts",
       "package": "virtual",
       "layer": "controller",
@@ -2185,6 +2176,15 @@
       "targetEnvironment": "happy-dom",
       "source": "content",
       "signals": ["document", "ResizeObserver"],
+      "hasPlaywrightSibling": true
+    },
+    {
+      "path": "packages/virtual/test/performance.test.ts",
+      "package": "virtual",
+      "layer": "utility",
+      "targetEnvironment": "node",
+      "source": "content",
+      "signals": ["controller-only-import", "no-alpine-import"],
       "hasPlaywrightSibling": true
     },
     {
@@ -2306,15 +2306,6 @@
     },
     {
       "path": "test/vitest-projects.test.ts",
-      "package": "repository",
-      "layer": "utility",
-      "targetEnvironment": "node",
-      "source": "content",
-      "signals": ["no-alpine-import"],
-      "hasPlaywrightSibling": false
-    },
-    {
-      "path": "test/vitest-runtime-settings.test.ts",
       "package": "repository",
       "layer": "utility",
       "targetEnvironment": "node",

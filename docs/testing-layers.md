@@ -7,7 +7,7 @@ description: "How Vitest and Playwright responsibilities are split across Node, 
 
 Every test file in this repository has a **responsibility layer** (what contract it validates) and a **target environment** (the cheapest runtime that can validate it correctly). This taxonomy supports [ALP-130](https://linear.app/ailuracode/issue/ALP-130/classify-tests-by-node-simulated-dom-and-real-browser-responsibility) under epic [ALP-127](https://linear.app/ailuracode/issue/ALP-127/epic-optimize-vitest-performance-and-test-environment-layering).
 
-The full file inventory lives in [`benchmarks/test-environment-inventory.json`](https://github.com/ailuracode/alpinejs-toolkit/blob/master/benchmarks/test-environment-inventory.json) and is regenerated with:
+The full file inventory lives in [`test/inventory/test-environment-inventory.json`](https://github.com/ailuracode/alpinejs-toolkit/blob/master/test/inventory/test-environment-inventory.json) and is regenerated with:
 
 ```bash
 pnpm run test:classify
