@@ -4,8 +4,13 @@ import { fileURLToPath } from "node:url";
 import { docsLoader } from "@astrojs/starlight/loaders";
 import type { Loader, LoaderContext } from "astro/loaders";
 import {
+  getAdjacentDocumentedEntries,
+  getRelatedDocumentedEntries,
+} from "../catalog/docs-navigation.js";
+import {
   getDocumentedCatalogEntries,
   type PackageCatalogEntry,
+  packageDocsPath,
   packageDocsRouteId,
 } from "../catalog/index.js";
 
@@ -42,6 +47,42 @@ function transformReadmeLinks(content: string): string {
     .replace(/\]\(\.\.\/([^/#)]+)\/README\.md(#[^)]+)?\)/g, "](/plugins/$1/$2)");
 }
 
+function appendRelatedPackages(body: string, entry: PackageCatalogEntry): string {
+  const related = getRelatedDocumentedEntries(entry.id);
+  if (related.length === 0) {
+    return body;
+  }
+
+  const lines = related.map((relatedEntry) => {
+    const href = packageDocsPath(relatedEntry);
+    return `- [${relatedEntry.title}](${href}) — ${relatedEntry.summary}`;
+  });
+
+  return `${body}\n\n## Related packages\n\n${lines.join("\n")}\n`;
+}
+
+function paginationForEntry(entry: PackageCatalogEntry) {
+  const { prev, next } = getAdjacentDocumentedEntries(entry.id);
+  return {
+    ...(prev
+      ? {
+          prev: {
+            label: prev.title,
+            link: packageDocsPath(prev),
+          },
+        }
+      : {}),
+    ...(next
+      ? {
+          next: {
+            label: next.title,
+            link: packageDocsPath(next),
+          },
+        }
+      : {}),
+  };
+}
+
 async function loadPackageReadmeDocs(context: LoaderContext): Promise<void> {
   for (const entry of getDocumentedCatalogEntries()) {
     const docId = docsEntryId(entry);
@@ -52,7 +93,7 @@ async function loadPackageReadmeDocs(context: LoaderContext): Promise<void> {
     }
 
     const raw = readFileSync(readmePath, "utf8");
-    const body = transformReadmeLinks(stripReadmeTitle(raw));
+    const body = appendRelatedPackages(transformReadmeLinks(stripReadmeTitle(raw)), entry);
     const digest = context.generateDigest(body);
     const existing = context.store.get(docId);
     const relativeReadmePath = path.posix.join("..", "..", "packages", entry.folder, "README.md");
@@ -63,6 +104,7 @@ async function loadPackageReadmeDocs(context: LoaderContext): Promise<void> {
         title: entry.title,
         description: `Package: ${entry.npmPackage}`,
         editUrl: `${PACKAGE_EDIT_BASE}/${entry.folder}/README.md`,
+        ...paginationForEntry(entry),
       },
       filePath: relativeReadmePath,
     });
