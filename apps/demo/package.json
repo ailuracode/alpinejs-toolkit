@@ -20,6 +20,7 @@
     "@ailuracode/alpine-accordion": "workspace:*",
     "@ailuracode/alpine-attention": "workspace:*",
     "@ailuracode/alpine-calendar": "workspace:*",
+    "@ailuracode/alpine-collection": "workspace:*",
     "@ailuracode/alpine-carousel": "workspace:*",
     "@ailuracode/alpine-virtual": "workspace:*",
     "@ailuracode/alpine-selection": "workspace:*",

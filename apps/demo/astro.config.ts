@@ -81,6 +81,7 @@ export default defineConfig({
         "@ailuracode/alpine-query-kit": pkg("query-kit"),
         "@ailuracode/alpine-attention": pkg("attention"),
         "@ailuracode/alpine-calendar": pkg("calendar"),
+        "@ailuracode/alpine-collection": pkg("collection"),
         "@ailuracode/alpine-child": pkg("child"),
         "@ailuracode/alpine-dialog": pkg("dialog"),
         "@ailuracode/alpine-menu": pkg("menu"),

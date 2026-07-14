@@ -489,6 +489,23 @@ export const PACKAGE_CATALOG: readonly PackageCatalogEntry[] = [
     docs: { available: true },
   }),
   entry({
+    id: "collection",
+    title: "Collection",
+    npmPackage: "@ailuracode/alpine-collection",
+    folder: "collection",
+    category: "headless-ui",
+    role: "feature",
+    surface: "core",
+    api: "createCollectionController<T, K>()",
+    summary:
+      "Headless collection primitives — filter, sort, group, paginate, and active-key navigation over a stable key registry.",
+    readmePath: "packages/collection/README.md",
+    tier: "headless",
+    order: 11,
+    related: ["selection", "virtual", "command"],
+    docs: { available: false },
+  }),
+  entry({
     id: "query",
     title: "Query",
     npmPackage: "@ailuracode/alpine-query",
