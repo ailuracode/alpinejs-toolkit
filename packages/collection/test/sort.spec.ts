@@ -78,7 +78,7 @@ describe("sort stage", () => {
       items,
       sort: { compare: (a, b) => a.name.localeCompare(b.name) },
     });
-    ctrl.view;
+    expect(ctrl.view).toHaveLength(items.length);
     expect(items.map((item) => item.name).join(",")).toBe(original);
   });
 });
