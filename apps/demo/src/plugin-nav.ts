@@ -1,6 +1,17 @@
-export type PluginKind = "store" | "magic" | "directive" | "core";
+import {
+  packageDocsPath as catalogDocsPath,
+  getCatalogEntriesByCategory,
+  getCatalogEntriesByTier,
+  getCatalogEntry,
+  getDocumentedCatalogEntries,
+  getPlaygroundCatalogEntries,
+  PACKAGE_CATEGORIES,
+  type PackageCatalogEntry,
+} from "./catalog/index.js";
 
-export type PluginTier = "essential" | "extended" | "advanced" | "headless";
+export type PluginKind = PackageCatalogEntry["surface"];
+
+export type PluginTier = PackageCatalogEntry["tier"];
 
 export type PluginNavItem = {
   id: string;
@@ -18,352 +29,36 @@ export type PluginNavGroup = {
   items: PluginNavItem[];
 };
 
-/** Single source of truth for sidebar navigation and demo section anchors. */
-export const PLUGIN_NAV_GROUPS: PluginNavGroup[] = [
-  {
-    id: "foundations",
-    label: "Foundations",
-    items: [
-      {
-        id: "overlay",
-        title: "Overlay",
-        package: "@ailuracode/alpine-overlay",
-        api: "$store.overlay / $overlay",
-        kind: "store",
-        tier: "essential",
-        description:
-          "Centralized portal root + z-index slot allocator + open-stack registry. Used internally by dialog, menu, tooltip, and command to teleport into `#overlay-root` and stack without z-fight. Headless — no DOM outside the portal container.",
-      },
-      {
-        id: "permissions",
-        title: "Permissions",
-        package: "@ailuracode/alpine-permissions",
-        api: "$store.permissions / $permissions",
-        kind: "store",
-        tier: "essential",
-        description:
-          "Unified browser permission registry with adapter contract. Queries current permission on init (no prompts); use request() from a user action to prompt.",
-      },
-      {
-        id: "keyboard",
-        title: "Keyboard",
-        package: "@ailuracode/alpine-keyboard",
-        api: "$store.keyboard / $keyboard",
-        kind: "store",
-        tier: "essential",
-        description:
-          "Headless scoped keyboard shortcut registry — chords, sequences, conflict resolution, editable-target filtering, and overlay pause scopes.",
-      },
-    ],
-  },
-  {
-    id: "essentials",
-    label: "Essentials",
-    items: [
-      {
-        id: "theme",
-        title: "Theme",
-        package: "@ailuracode/alpine-theme",
-        api: "$store.theme",
-        kind: "store",
-        tier: "essential",
-        description:
-          "Light, dark, and system color modes with persistence. Use onChange callbacks to apply classes or data attributes — no CSS framework is baked in.",
-      },
-      {
-        id: "media",
-        title: "Media",
-        package: "@ailuracode/alpine-media",
-        api: "$store.media",
-        kind: "store",
-        tier: "essential",
-        description:
-          "Reactive viewport breakpoints, dimensions, and browser media features (reduced motion, contrast, color scheme, hover, pointer, orientation). Drives responsive sidebar behavior in this demo.",
-      },
-      {
-        id: "scroll",
-        title: "Scroll",
-        package: "@ailuracode/alpine-scroll",
-        api: "$store.scroll / $scroll",
-        kind: "store",
-        tier: "essential",
-        description:
-          "Headless scroll controller — position tracking, section observer, handle-based body lock, and reduced-motion-aware navigation. v1.0.0 ships `ScrollController` + `scrollPlugin(options)` factory; the `$scroll` magic returns the same reactive store proxy as `$store.scroll`.",
-      },
-      {
-        id: "sidebar",
-        title: "Sidebar",
-        package: "@ailuracode/alpine-sidebar",
-        api: "$store.sidebar",
-        kind: "store",
-        tier: "essential",
-        description:
-          "Open, close, and toggle visibility for app shells. Visual width (rail, mini, expanded) is owned by the consumer via local Alpine state. Compose with scroll lock on overlay open. This demo app uses the sidebar you are navigating right now.",
-      },
-    ],
-  },
-  {
-    id: "environment",
-    label: "Environment",
-    items: [
-      {
-        id: "env",
-        title: "Env",
-        package: "@ailuracode/alpine-env",
-        api: "$network · $visibility · $battery · $platform",
-        kind: "magic",
-        tier: "extended",
-        description:
-          "Browser environment magics plus an optional headless controller subpath for lifecycle-managed environment state.",
-      },
-      {
-        id: "transfer",
-        title: "Transfer",
-        package: "@ailuracode/alpine-transfer",
-        api: "$clipboard · $share · $export",
-        kind: "magic",
-        tier: "extended",
-        description:
-          "Outbound data transfer: clipboard copy, Web Share API, and programmatic downloads.",
-      },
-      {
-        id: "attention",
-        title: "Attention",
-        package: "@ailuracode/alpine-attention",
-        api: "$wakelock · $idle",
-        kind: "magic",
-        tier: "advanced",
-        description: "Wake Lock and Idle Detection for presentations, media, and session-aware UI.",
-      },
-      {
-        id: "notify",
-        title: "Notify",
-        package: "@ailuracode/alpine-notify",
-        api: "$notify",
-        kind: "magic",
-        tier: "advanced",
-        description:
-          "Browser notifications and push permission helpers, including service worker registration.",
-      },
-    ],
-  },
-  {
-    id: "interaction",
-    label: "Interactions",
-    items: [
-      {
-        id: "toggle",
-        title: "Toggle",
-        package: "@ailuracode/alpine-toggle",
-        api: "$toggle",
-        kind: "magic",
-        tier: "extended",
-        description:
-          "Binary and ternary toggle state factories for segmented controls and filters.",
-      },
-      {
-        id: "child",
-        title: "Child",
-        package: "@ailuracode/alpine-child",
-        api: "x-child",
-        kind: "directive",
-        tier: "extended",
-        description:
-          "asChild-style directive — merges wrapper attributes onto the first child via Alpine.morph(). Requires @alpinejs/morph.",
-      },
-      {
-        id: "gesture",
-        title: "Gesture",
-        package: "@ailuracode/alpine-gesture",
-        api: "$store.gesture / x-gesture",
-        kind: "store",
-        tier: "extended",
-        description:
-          "Headless gesture recognition — tap, double-tap, long-press, swipe, pan, and pinch via pointer events. Configurable thresholds, axis locking, and deterministic competing-gesture cancellation.",
-      },
-    ],
-  },
-  {
-    id: "headless-ui",
-    label: "Headless UI",
-    items: [
-      {
-        id: "dialog",
-        title: "Dialog",
-        package: "@ailuracode/alpine-dialog",
-        api: "$store.dialog",
-        kind: "store",
-        tier: "headless",
-        description:
-          "Accessible modal state — focus trap, scroll-lock hooks, Escape/outside dismiss, and ARIA helpers.",
-      },
-      {
-        id: "menu",
-        title: "Menu",
-        package: "@ailuracode/alpine-menu",
-        api: "$store.menu",
-        kind: "store",
-        tier: "headless",
-        description:
-          "Dropdown and context menu state with exclusive open behavior, keyboard navigation, roving tabindex, and ARIA helpers.",
-      },
-      {
-        id: "tooltip",
-        title: "Tooltip",
-        package: "@ailuracode/alpine-tooltip",
-        api: "$store.tooltip",
-        kind: "store",
-        tier: "headless",
-        description:
-          "Tooltip open/close state with hover/focus delays. Pair with @alpinejs/anchor for placement.",
-      },
-      {
-        id: "toast",
-        title: "Toast",
-        package: "@ailuracode/alpine-toast",
-        api: "$toast",
-        kind: "magic",
-        tier: "headless",
-        description:
-          "Headless toast queue with timed and persistent stacks. Use fromPayload for plain event or server payloads. This demo renders Sonner-style UI in SonnerToasts.astro.",
-      },
-      {
-        id: "tabs",
-        title: "Tabs",
-        package: "@ailuracode/alpine-tabs",
-        api: "$store.tabs",
-        kind: "store",
-        tier: "headless",
-        description:
-          "Accessible tabs with keyboard navigation, ARIA props, and optional URL query sync.",
-      },
-      {
-        id: "accordion",
-        title: "Accordion",
-        package: "@ailuracode/alpine-accordion",
-        api: "$store.accordion",
-        kind: "store",
-        tier: "headless",
-        description:
-          "Single or multi-open accordion state with keyboard focus and ARIA helpers. Pair with @alpinejs/collapse for panel animation.",
-      },
-      {
-        id: "command",
-        title: "Command",
-        package: "@ailuracode/alpine-command",
-        api: "$store.command",
-        kind: "store",
-        tier: "headless",
-        description:
-          "Spotlight-style command palette — searchable actions, groups, shortcuts, and keyboard selection.",
-      },
-      {
-        id: "carousel",
-        title: "Carousel",
-        package: "@ailuracode/alpine-carousel",
-        api: "$store.carousel",
-        kind: "store",
-        tier: "headless",
-        description:
-          "Accessible carousel store powered by Embla — navigation, autoplay, loop, keyboard, and ARIA helpers.",
-      },
-      {
-        id: "virtual",
-        title: "Virtual",
-        package: "@ailuracode/alpine-virtual",
-        api: "$store.virtual / $virtual",
-        kind: "store",
-        tier: "headless",
-        description:
-          "Headless virtual list controller — fixed and variable item sizes, overscan, scroll-to-index, and stable keys.",
-      },
-      {
-        id: "selection",
-        title: "Selection",
-        package: "@ailuracode/alpine-selection",
-        api: "$store.selection / $selection",
-        kind: "store",
-        tier: "headless",
-        description:
-          "Framework-agnostic selection primitives — single, multiple, and range modes with anchor tracking and disabled items.",
-      },
-    ],
-  },
-  {
-    id: "data",
-    label: "Data & APIs",
-    items: [
-      {
-        id: "geo",
-        title: "Geo",
-        package: "@ailuracode/alpine-geo",
-        api: "$store.geo",
-        kind: "store",
-        tier: "advanced",
-        description:
-          "Geolocation coordinates, accuracy, and permission state with watch/start/stop actions.",
-      },
-      {
-        id: "lang",
-        title: "Lang",
-        package: "@ailuracode/alpine-lang",
-        api: "$store.lang",
-        kind: "store",
-        tier: "essential",
-        description:
-          "Detect the browser language, query and change the current application language. Pairs with any i18n library — does not translate content.",
-      },
-      {
-        id: "calendar",
-        title: "Calendar",
-        package: "@ailuracode/alpine-calendar",
-        api: "$calendar",
-        kind: "magic",
-        tier: "advanced",
-        description:
-          "Locale-aware month grids, navigation, and date selection without a UI framework.",
-      },
-      {
-        id: "query",
-        title: "Query",
-        package: "@ailuracode/alpine-query",
-        api: "$store.query",
-        kind: "core",
-        tier: "advanced",
-        description:
-          "Store-agnostic query cache with Nanostores, Alpine.reactive, and Zustand adapters. Open Query devtools (bottom-right) to inspect all three caches.",
-      },
-      {
-        id: "query-kit",
-        title: "Query kit",
-        package: "@ailuracode/alpine-query-kit",
-        api: "$store.query · devtools",
-        kind: "core",
-        tier: "advanced",
-        description: "Recommended query stack: cache, Nanostores adapter, and devtools panel.",
-      },
-      {
-        id: "json-api",
-        title: "JSON:API",
-        package: "@ailuracode/alpine-json-api",
-        api: "$jsonapi",
-        kind: "magic",
-        tier: "advanced",
-        description:
-          "Typed JSON:API client with resource schemas, relationships, and compound document parsing.",
-      },
-    ],
-  },
-];
+function toNavItem(entry: PackageCatalogEntry): PluginNavItem {
+  return {
+    id: entry.id,
+    title: entry.title,
+    package: entry.npmPackage,
+    api: entry.api,
+    kind: entry.surface,
+    tier: entry.tier,
+    description: entry.summary,
+  };
+}
 
-export const PLUGIN_NAV_ITEMS: PluginNavItem[] = PLUGIN_NAV_GROUPS.flatMap((group) => group.items);
+/** Category-grouped navigation derived from the unified package catalog. */
+export const PLUGIN_NAV_GROUPS: PluginNavGroup[] = PACKAGE_CATEGORIES.map((category) => ({
+  id: category.id,
+  label: category.title,
+  items: getCatalogEntriesByCategory(category.id)
+    .filter((entry) => entry.demo?.available === true)
+    .map(toNavItem),
+})).filter((group) => group.items.length > 0);
+
+export const PLUGIN_NAV_ITEMS: PluginNavItem[] = getPlaygroundCatalogEntries().map(toNavItem);
 
 export function getPluginsByTier(tier: PluginTier): PluginNavItem[] {
-  return PLUGIN_NAV_ITEMS.filter((item) => item.tier === tier);
+  return getCatalogEntriesByTier(tier).map(toNavItem);
 }
 
 export function getPluginNavItem(id: string): PluginNavItem | undefined {
-  return PLUGIN_NAV_ITEMS.find((item) => item.id === id);
+  const entry = getCatalogEntry(id);
+  return entry ? toNavItem(entry) : undefined;
 }
 
 export function getAdjacentPlugins(id: string): {
@@ -386,51 +81,45 @@ export function playgroundPath(id: string): string {
 }
 
 export function pluginDocsPath(id: string): string {
-  return `/plugins/${id}/`;
+  const entry = getCatalogEntry(id);
+  if (!entry) {
+    return `/plugins/${id}/`;
+  }
+  return catalogDocsPath(entry);
 }
 
-/** Plugin ids that have a Starlight doc page under `docs/plugins/<id>.md`.
- *  Keep this set in sync with the existing doc files. Items in the playground
- *  nav without a doc page (e.g. `@ailuracode/alpine-overlay` — playground-only
- *  until docs land) still render their demo but skip the Starlight sidebar. */
-const PLUGIN_DOCS: ReadonlySet<string> = new Set([
-  "theme",
-  "media",
-  "scroll",
-  "sidebar",
-  "permissions",
-  "keyboard",
-  "env",
-  "transfer",
-  "attention",
-  "notify",
-  "toggle",
-  "child",
-  "dialog",
-  "menu",
-  "tooltip",
-  "toast",
-  "tabs",
-  "accordion",
-  "command",
-  "carousel",
-  "virtual",
-  "selection",
-  "geo",
-  "lang",
-  "calendar",
-  "query",
-  "query-kit",
-  "json-api",
-]);
+/** Package ids with README-backed documentation routes, derived from the catalog. */
+export const PLUGIN_DOCS: ReadonlySet<string> = new Set(
+  getDocumentedCatalogEntries().map((entry) => entry.id)
+);
 
-/** Starlight sidebar entries for plugin doc pages, grouped by tier.
- *  Items without a corresponding `docs/plugins/<id>.md` page are filtered out. */
+/** Starlight sidebar entries for plugin doc pages, grouped by tier (legacy until ALP-113). */
 export function pluginDocsSidebarItems(tier: PluginTier): { label: string; link: string }[] {
-  return getPluginsByTier(tier)
-    .filter((item) => PLUGIN_DOCS.has(item.id))
-    .map((item) => ({
-      label: item.title,
-      link: `/plugins/${item.id}/`,
+  return getCatalogEntriesByTier(tier)
+    .filter((entry) => entry.docs?.available !== false)
+    .map((entry) => ({
+      label: entry.title,
+      link: catalogDocsPath(entry),
     }));
 }
+
+export type {
+  PackageBadge,
+  PackageCatalogEntry,
+  PackageCategory,
+  PackageCategoryId,
+  PackageFamily,
+  PackageFamilyId,
+  PackageRole,
+} from "./catalog/index.js";
+export {
+  getCatalogEntriesByCategory,
+  getCatalogEntriesByFamily,
+  getCatalogEntry,
+  getFamiliesByCategory,
+  getStandaloneEntriesByCategory,
+  PACKAGE_CATALOG,
+  PACKAGE_CATEGORIES,
+  PACKAGE_FAMILIES,
+  validateCatalogRelations,
+} from "./catalog/index.js";
