@@ -509,18 +509,15 @@ describe("SidebarController — SSR", () => {
     // every browser-API access, so the construction path stays
     // inert.
     vi.stubGlobal("window", undefined);
-    expect(() =>
-      createSidebar({
+    let controller: SidebarController | undefined;
+    expect(() => {
+      controller = createSidebar({
         breakpoint: { query: MIN_WIDTH_1024, onMismatch: "hide" },
         closeOnEscape: true,
-      })
-    ).not.toThrow();
-    // Re-read after the fact: the stubbed window is gone but the
-    // controller was built before the test scope exited. Reach for
-    // the live singleton via a fresh construction under SSR.
-    const fresh = createSidebar();
-    expect(fresh.matchesBreakpoint).toBe(false);
-    fresh.destroy();
+      });
+    }).not.toThrow();
+    expect(controller?.matchesBreakpoint).toBe(false);
+    controller?.destroy();
   });
 });
 

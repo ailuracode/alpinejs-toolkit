@@ -599,4 +599,21 @@ export const PACKAGE_CATALOG: readonly PackageCatalogEntry[] = [
     demo: { available: true, componentId: "json-api" },
     docs: { available: true },
   }),
+  entry({
+    id: "realtime",
+    title: "Realtime",
+    npmPackage: "@ailuracode/alpine-realtime",
+    folder: "realtime",
+    category: "data-networking",
+    role: "feature",
+    surface: "store",
+    api: "$store.realtime / $realtime",
+    summary:
+      "Headless realtime transport with SSE and WebSocket adapters, automatic reconnect with exponential backoff, heartbeat, and visibility-aware pausing.",
+    readmePath: "packages/realtime/README.md",
+    tier: "advanced",
+    order: 7,
+    related: ["query"],
+    docs: { available: false },
+  }),
 ] as const;

@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ailuracode/alpine-realtime E2E fixture</title>
+  </head>
+  <body>
+    <main
+      id="app"
+      data-e2e-ready="true"
+      x-data="{
+        // Reactive probe of the `$realtime` magic — written from
+        // `probeMagic()` and read by the magic-accessor test.
+        magicStatus: '',
+        magicReady: '',
+        subscribeLabel: 'default',
+        subscribeCount: 0,
+        subscribeHandler: null,
+        connect() { return $realtime.connect(); },
+        disconnect() { return $realtime.disconnect(); },
+        pause() { return $realtime.pause(); },
+        resume() { return $realtime.resume(); },
+        probeMagic() {
+          this.magicStatus = $realtime.state.status;
+          this.magicReady = String($realtime.isReady);
+        },
+        subscribeChannel() {
+          this.subscribeCount += 1;
+          this.subscribeHandler = () => {
+            this.subscribeCount += 1;
+          };
+          $realtime.subscribe(this.subscribeLabel, this.subscribeHandler);
+        },
+        unsubscribeChannel() {
+          $realtime.unsubscribe(this.subscribeLabel, this.subscribeHandler);
+          this.subscribeHandler = null;
+        },
+      }"
+    >
+      <h1>Realtime E2E fixture</h1>
+
+      <section>
+        <h2>State</h2>
+        <dl>
+          <dt>status</dt>
+          <dd>
+            <output id="status" data-testid="status" x-text="$store.realtime.state.status"></output>
+          </dd>
+          <dt>connection-state</dt>
+          <dd>
+            <!--
+              The controller's state object exposes the lifecycle phase
+              under `status` (not `connectionState`). We mirror it onto
+              a `connection-state` testid so specs can assert the
+              lifecycle through either selector.
+            -->
+            <output
+              id="connection-state"
+              data-testid="connection-state"
+              x-text="$store.realtime.state.status"
+            ></output>
+          </dd>
+          <dt>isReady</dt>
+          <dd>
+            <!--
+              `$store.realtime.isReady` is a getter that reads the
+              non-reactive controller state, so Alpine doesn't track
+              it for re-render. We mirror the same boolean off the
+              reactive `state.status` so the binding updates on
+              every statuschange.
+            -->
+            <output
+              id="is-ready"
+              data-testid="is-ready"
+              x-text="String($store.realtime.state.status === 'connected')"
+            ></output>
+          </dd>
+          <dt>retryCount</dt>
+          <dd>
+            <output id="retry-count" data-testid="retry-count" x-text="$store.realtime.state.retryCount"></output>
+          </dd>
+          <dt>transport</dt>
+          <dd>
+            <output id="transport" data-testid="transport" x-text="$store.realtime.state.transport"></output>
+          </dd>
+        </dl>
+      </section>
+
+      <section>
+        <h2>Actions</h2>
+        <button type="button" id="btn-connect" @click="connect()">Connect</button>
+        <button type="button" id="btn-disconnect" @click="disconnect()">Disconnect</button>
+        <button type="button" id="btn-pause" @click="pause()">Pause</button>
+        <button type="button" id="btn-resume" @click="resume()">Resume</button>
+      </section>
+
+      <section>
+        <h2>Channels</h2>
+        <label for="channel-name">Channel</label>
+        <input id="channel-name" type="text" x-model="subscribeLabel" />
+        <button type="button" id="btn-subscribe" @click="subscribeChannel()">Subscribe</button>
+        <button type="button" id="btn-unsubscribe" @click="unsubscribeChannel()">Unsubscribe</button>
+        <output id="messages" data-testid="messages" x-text="subscribeCount"></output>
+      </section>
+
+      <section>
+        <h2>Magic accessor</h2>
+        <button type="button" id="btn-probe-magic" @click="probeMagic()">Probe magic</button>
+        <output id="magic-status" data-testid="magic-status" x-text="magicStatus"></output>
+        <output id="magic-ready" data-testid="magic-ready" x-text="magicReady"></output>
+      </section>
+    </main>
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>
