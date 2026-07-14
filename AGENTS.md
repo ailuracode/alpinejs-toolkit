@@ -4,8 +4,7 @@ Guidance for AI agents and contributors working on **@ailuracode/alpinejs-toolki
 
 ## Project
 
-Alpine.js plugin monorepo by **ailuracode**. 36 independent npm packages under `packages/`, plus shared tests and docs. The root package `@ailuracode/alpinejs-toolkit` is **private** and never published.
-
+Alpine.js plugin monorepo by **ailuracode**. 37 independent npm packages under `packages/`, plus shared tests and docs. The root package `@ailuracode/alpinejs-toolkit` is **private** and never published.
 
 | Package | Type | Store / Magic |
 |---------|------|---------------|
@@ -17,6 +16,7 @@ Alpine.js plugin monorepo by **ailuracode**. 36 independent npm packages under `
 | `@ailuracode/alpine-scroll` | Store | `$store.scroll` |
 | `@ailuracode/alpine-sidebar` | Store | `$store.sidebar` |
 | `@ailuracode/alpine-lang` | Store | `$store.lang` — headless `LangController` (singleton) + typed `change` event; `langPlugin` named export |
+| `@ailuracode/alpine-form` | Store | `$store.form` — headless `FormController` with field registration, validation adapters, submission lifecycle, and JSON:API error mapping |
 | `@ailuracode/alpine-overlay` | Store | `$store.overlay` — portal root, z-index stack, overlay registry |
 | `@ailuracode/alpine-dialog` | Store | `$store.dialog` |
 | `@ailuracode/alpine-menu` | Store | `$store.menu` |

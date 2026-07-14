@@ -2,8 +2,7 @@
 
 Modular **Alpine.js toolkit** — lazy plugin init, headless stores and magics, TypeScript-first DX. Framework-agnostic: works with Vite, Astro, static HTML, or any ESM bundler.
 
-Built by **ailuracode**. 36 independent npm packages; install only what you need.
-
+Built by **ailuracode**. 37 independent npm packages; install only what you need.
 
 ## Why this exists
 
@@ -84,6 +83,7 @@ Start here for most Alpine apps.
 | [`@ailuracode/alpine-env`](./packages/env/README.md) | `$network`, `$visibility`, `$battery`, `$platform` | Browser environment magics; headless API at `@ailuracode/alpine-env/controller` |
 | [`@ailuracode/alpine-transfer`](./packages/transfer/README.md) | `$clipboard`, `$share`, `$export` | Outbound data transfer |
 | [`@ailuracode/alpine-toggle`](./packages/toggle/README.md) | `$toggle` | Binary and ternary toggle state |
+| [`@ailuracode/alpine-form`](./packages/form/README.md) | `$store.form` | Headless form state, validation, and submission lifecycle |
 | [`@ailuracode/alpine-child`](./packages/child/README.md) | `x-child` | asChild-style attribute transfer to first child |
 | [`@ailuracode/alpine-gesture`](./packages/gesture/README.md) | `$store.gesture`, `x-gesture` | Headless gesture recognition — tap, swipe, pan, pinch, long press |
 

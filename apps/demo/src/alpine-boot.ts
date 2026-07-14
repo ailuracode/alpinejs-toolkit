@@ -6,6 +6,7 @@ import child from "@ailuracode/alpine-child";
 import command from "@ailuracode/alpine-command";
 import dialog from "@ailuracode/alpine-dialog";
 import env from "@ailuracode/alpine-env";
+import form from "@ailuracode/alpine-form";
 import geo, { createGeoPermissionAdapter } from "@ailuracode/alpine-geo";
 import gesture from "@ailuracode/alpine-gesture";
 import history from "@ailuracode/alpine-history";
@@ -115,6 +116,7 @@ export async function startAlpineDemo(): Promise<void> {
     }),
     overlay(),
     child(),
+    form(),
     lang(),
   ]);
 

@@ -93,6 +93,9 @@ importers:
       '@ailuracode/alpine-env':
         specifier: workspace:*
         version: link:../../packages/env
+      '@ailuracode/alpine-form':
+        specifier: workspace:*
+        version: link:../../packages/form
       '@ailuracode/alpine-geo':
         specifier: workspace:*
         version: link:../../packages/geo
@@ -398,6 +401,19 @@ importers:
         version: link:../scroll
 
   packages/env:
+    dependencies:
+      alpinejs:
+        specifier: ^3.0.0
+        version: 3.15.12
+    devDependencies:
+      '@ailuracode/alpine-core':
+        specifier: workspace:*
+        version: link:../core
+      '@types/alpinejs':
+        specifier: ^3.13.11
+        version: 3.13.11
+
+  packages/form:
     dependencies:
       alpinejs:
         specifier: ^3.0.0

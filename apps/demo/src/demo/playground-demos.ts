@@ -7,6 +7,7 @@ import ChildDemo from "../components/demos/ChildDemo.astro";
 import CommandDemo from "../components/demos/CommandDemo.astro";
 import DialogDemo from "../components/demos/DialogDemo.astro";
 import EnvDemo from "../components/demos/EnvDemo.astro";
+import FormDemo from "../components/demos/FormDemo.astro";
 import GeoDemo from "../components/demos/GeoDemo.astro";
 import GestureDemo from "../components/demos/GestureDemo.astro";
 import HistoryDemo from "../components/demos/HistoryDemo.astro";
@@ -37,6 +38,7 @@ export const PLAYGROUND_DEMOS: Record<string, AstroComponentFactory> = {
   media: MediaDemo,
   scroll: ScrollDemo,
   geo: GeoDemo,
+  form: FormDemo,
   gesture: GestureDemo,
   history: HistoryDemo,
   lang: LangDemo,
