@@ -101,6 +101,10 @@ export function buildDocsSidebar(): SidebarGroup[] {
           translations: { es: "Detección de dispositivo", pt: "Detecção de dispositivo" },
           link: "/device-detection/",
         },
+        {
+          label: "Permissions composition",
+          link: "/guides/permissions/",
+        },
       ],
     },
     {

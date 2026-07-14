@@ -1,0 +1,75 @@
+---
+import { getCatalogEntriesByFamily } from "../../catalog/index.js";
+import { pluginDocsPath } from "../../plugin-nav";
+import PermissionsDemo from "../demos/PermissionsDemo.astro";
+import PlaygroundModuleCard from "../PlaygroundModuleCard.astro";
+
+const entries = getCatalogEntriesByFamily("permissions");
+const foundation = entries.find((entry) => entry.role === "foundation");
+const capabilities = entries.filter((entry) => entry.role === "capability");
+---
+
+<section class="mb-10 rounded-[var(--ios-radius-xl)] border border-[var(--ios-separator)] bg-[var(--ios-bg-secondary)] p-5">
+  <h2 class="text-lg font-semibold">Combined registry demo</h2>
+  <p class="mt-2 text-sm text-[var(--ios-label-secondary)]">
+    The foundation registry below is wired with notification, geolocation, and idle-detection adapters.
+    Native prompts only run after you click <code>request()</code>.
+  </p>
+  <div class="mt-4">
+    <PermissionsDemo />
+  </div>
+</section>
+
+<section class="mb-8">
+  <h2 class="text-lg font-semibold">Foundation vs capabilities</h2>
+  <dl class="mt-4 grid gap-4 sm:grid-cols-2">
+    {
+      foundation ? (
+        <div class="rounded-lg border border-[var(--ios-separator)] p-4">
+          <dt class="text-xs font-semibold uppercase tracking-wide text-[var(--ios-label-tertiary)]">Foundation</dt>
+          <dd class="mt-2 font-semibold">{foundation.title}</dd>
+          <dd class="mt-1 text-sm text-[var(--ios-label-secondary)]">{foundation.summary}</dd>
+          <a href={pluginDocsPath(foundation.id)} class="mt-3 inline-block text-sm font-medium text-[var(--ios-blue)]">
+            Read docs
+          </a>
+        </div>
+      ) : null
+    }
+    {
+      capabilities.map((entry) => (
+        <div class="rounded-lg border border-[var(--ios-separator)] p-4">
+          <dt class="text-xs font-semibold uppercase tracking-wide text-[var(--ios-label-tertiary)]">Capability</dt>
+          <dd class="mt-2 font-semibold">{entry.title}</dd>
+          <dd class="mt-1 text-sm text-[var(--ios-label-secondary)]">{entry.summary}</dd>
+          <a href={pluginDocsPath(entry.id)} class="mt-3 inline-block text-sm font-medium text-[var(--ios-blue)]">
+            Read docs
+          </a>
+        </div>
+      ))
+    }
+  </dl>
+</section>
+
+<section>
+  <h2 class="mb-4 text-lg font-semibold">Focused package demos</h2>
+  <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+    {
+      entries.map((entry) => (
+        <PlaygroundModuleCard item={{
+          id: entry.id,
+          title: entry.title,
+          package: entry.npmPackage,
+          api: entry.api,
+          kind: entry.surface,
+          tier: entry.tier,
+          description: entry.summary,
+        }} />
+      ))
+    }
+  </div>
+</section>
+
+<p class="mt-8 text-sm text-[var(--ios-label-secondary)]">
+  <a href="/guides/permissions/" class="font-medium text-[var(--ios-blue)]">Read the composition guide</a>
+  for when to use the registry versus feature APIs directly.
+</p>

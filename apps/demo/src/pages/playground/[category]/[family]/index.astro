@@ -4,6 +4,7 @@ import {
   buildPlaygroundSidebar,
   playgroundCategoryPath,
 } from "../../../../catalog/playground-navigation.js";
+import PermissionsFamilyPanel from "../../../../components/families/PermissionsFamilyPanel.astro";
 import PlaygroundModuleCard from "../../../../components/PlaygroundModuleCard.astro";
 import PlaygroundLayout from "../../../../layouts/PlaygroundLayout.astro";
 
@@ -44,19 +45,21 @@ if (!group || !familyGroup || !family) {
     <p class="mt-2 max-w-2xl text-sm text-[var(--ios-label-secondary)]">{family.summary}</p>
   </header>
 
-  <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-    {
-      familyGroup.entries.map((entry) => (
-        <PlaygroundModuleCard item={{
-          id: entry.id,
-          title: entry.title,
-          package: entry.npmPackage,
-          api: entry.api,
-          kind: entry.surface,
-          tier: entry.tier,
-          description: entry.summary,
-        }} />
-      ))
-    }
-  </div>
+  {familyId === "permissions" ? <PermissionsFamilyPanel /> : (
+    <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+      {
+        familyGroup.entries.map((entry) => (
+          <PlaygroundModuleCard item={{
+            id: entry.id,
+            title: entry.title,
+            package: entry.npmPackage,
+            api: entry.api,
+            kind: entry.surface,
+            tier: entry.tier,
+            description: entry.summary,
+          }} />
+        ))
+      }
+    </div>
+  )}
 </PlaygroundLayout>
