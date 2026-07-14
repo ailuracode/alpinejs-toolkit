@@ -4,24 +4,11 @@ name: CI
 # checks required for the detected change category. A final gate job always runs
 # on pull requests so documentation-only changes remain mergeable.
 
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 on:
-  push:
-    branches: [master]
-    paths:
-      - "packages/**"
-      - "apps/demo/**"
-      - "test/**"
-      - "scripts/**"
-      - "patches/**"
-      - ".github/actions/**"
-      - ".github/workflows/ci.yml"
-      - "package.json"
-      - "pnpm-lock.yaml"
-      - "pnpm-workspace.yaml"
-      - "tsconfig.json"
-      - "vitest.config.ts"
-      - "e2e/**"
-      - "biome.json"
   pull_request:
     branches: [master]
     paths:
@@ -67,18 +54,13 @@ jobs:
       e2e_packages: ${{ steps.changes.outputs.e2e_packages }}
       summary: ${{ steps.changes.outputs.summary }}
     steps:
-      - name: Checkout
-        run: |
-          set -euo pipefail
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-          git init
-          git remote add origin "https://github.com/${GITHUB_REPOSITORY}.git"
-          git fetch --no-tags origin "${GITHUB_SHA}"
-          git checkout FETCH_HEAD
-
-          if [ "${GITHUB_EVENT_NAME}" = "pull_request" ]; then
-            git fetch --no-tags origin "${GITHUB_BASE_REF}"
-          fi
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
 
       - name: Detect changes
         id: changes
@@ -96,41 +78,35 @@ jobs:
 
   validate:
     needs: detect
-    if: needs.detect.outputs.run_validate == 'true'
+    if: needs.detect.outputs.run_validate == 'true' || needs.detect.outputs.run_audit == 'true'
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        run: |
-          set -euo pipefail
-          git init
-          git remote add origin "https://github.com/${GITHUB_REPOSITORY}.git"
-          git fetch --depth=1 --no-tags origin "${GITHUB_SHA}"
-          git checkout FETCH_HEAD
+      - uses: actions/checkout@v4
 
       - uses: ./.github/actions/setup
 
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
       - name: Lint
+        if: needs.detect.outputs.run_validate == 'true'
         run: pnpm run lint
 
       - name: Typecheck
+        if: needs.detect.outputs.run_validate == 'true'
         run: pnpm run typecheck
 
       - name: Architecture invariants
+        if: needs.detect.outputs.run_validate == 'true'
         run: pnpm run architecture:check
 
       - name: Repository consistency
-        if: needs.detect.outputs.run_repo_check == 'true' || needs.detect.outputs.run_full == 'true'
+        if: needs.detect.outputs.run_validate == 'true' && (needs.detect.outputs.run_repo_check == 'true' || needs.detect.outputs.run_full == 'true')
         run: pnpm run repo:check
 
       - name: Build all packages
-        if: needs.detect.outputs.run_full == 'true'
+        if: needs.detect.outputs.run_validate == 'true' && needs.detect.outputs.run_full == 'true'
         run: pnpm run build
 
       - name: Build affected packages
-        if: needs.detect.outputs.run_full != 'true' && needs.detect.outputs.build_filters != ''
+        if: needs.detect.outputs.run_validate == 'true' && needs.detect.outputs.run_full != 'true' && needs.detect.outputs.build_filters != ''
         run: |
           set -euo pipefail
           cmd=(pnpm -r)
@@ -144,15 +120,15 @@ jobs:
           "${cmd[@]}"
 
       - name: Run tests with coverage
-        if: needs.detect.outputs.run_coverage == 'true'
+        if: needs.detect.outputs.run_validate == 'true' && needs.detect.outputs.run_coverage == 'true'
         run: pnpm run test:coverage
 
       - name: Run affected tests
-        if: needs.detect.outputs.run_coverage != 'true' && needs.detect.outputs.test_paths != ''
+        if: needs.detect.outputs.run_validate == 'true' && needs.detect.outputs.run_coverage != 'true' && needs.detect.outputs.test_paths != ''
         run: pnpm exec vitest run ${{ needs.detect.outputs.test_paths }}
 
       - name: Validate package tarballs
-        if: needs.detect.outputs.run_pack == 'true'
+        if: needs.detect.outputs.run_validate == 'true' && needs.detect.outputs.run_pack == 'true'
         run: |
           set -euo pipefail
           if [ "${{ needs.detect.outputs.run_full }}" = "true" ]; then
@@ -162,7 +138,7 @@ jobs:
           fi
 
       - name: Validate built export surfaces
-        if: needs.detect.outputs.run_pack == 'true'
+        if: needs.detect.outputs.run_validate == 'true' && needs.detect.outputs.run_pack == 'true'
         run: |
           set -euo pipefail
           if [ "${{ needs.detect.outputs.run_full }}" = "true" ]; then
@@ -172,7 +148,7 @@ jobs:
           fi
 
       - name: Enforce bundle-size budgets
-        if: needs.detect.outputs.run_size == 'true'
+        if: needs.detect.outputs.run_validate == 'true' && needs.detect.outputs.run_size == 'true'
         run: |
           set -euo pipefail
           if [ "${{ needs.detect.outputs.run_full }}" = "true" ]; then
@@ -190,26 +166,21 @@ jobs:
           fi
 
       - name: Build demo app
-        if: needs.detect.outputs.run_demo == 'true'
+        if: needs.detect.outputs.run_validate == 'true' && needs.detect.outputs.run_demo == 'true'
         run: pnpm run build:demo
+
+      - name: Audit critical vulnerabilities
+        if: needs.detect.outputs.run_audit == 'true'
+        run: pnpm audit --audit-level critical
 
   e2e:
     needs: detect
     if: needs.detect.outputs.run_e2e == 'true'
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        run: |
-          set -euo pipefail
-          git init
-          git remote add origin "https://github.com/${GITHUB_REPOSITORY}.git"
-          git fetch --depth=1 --no-tags origin "${GITHUB_SHA}"
-          git checkout FETCH_HEAD
+      - uses: actions/checkout@v4
 
       - uses: ./.github/actions/setup
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
 
       - name: Install Playwright browsers
         run: |
@@ -238,29 +209,8 @@ jobs:
             echo "No affected E2E packages"
           fi
 
-  audit:
-    needs: detect
-    if: needs.detect.outputs.run_audit == 'true'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        run: |
-          set -euo pipefail
-          git init
-          git remote add origin "https://github.com/${GITHUB_REPOSITORY}.git"
-          git fetch --depth=1 --no-tags origin "${GITHUB_SHA}"
-          git checkout FETCH_HEAD
-
-      - uses: ./.github/actions/setup
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Audit critical vulnerabilities
-        run: pnpm audit --audit-level critical
-
   gate:
-    needs: [detect, validate, e2e, audit]
+    needs: [detect, validate, e2e]
     if: always()
     runs-on: ubuntu-latest
     steps:
@@ -273,7 +223,6 @@ jobs:
           DETECT_RESULT: ${{ needs.detect.result }}
           VALIDATE_RESULT: ${{ needs.validate.result }}
           E2E_RESULT: ${{ needs.e2e.result }}
-          AUDIT_RESULT: ${{ needs.audit.result }}
         run: |
           set -euo pipefail
 
@@ -287,18 +236,13 @@ jobs:
             exit 0
           fi
 
-          if [ "$RUN_VALIDATE" = "true" ] && [ "$VALIDATE_RESULT" != "success" ]; then
+          if { [ "$RUN_VALIDATE" = "true" ] || [ "$RUN_AUDIT" = "true" ]; } && [ "$VALIDATE_RESULT" != "success" ]; then
             echo "validate job did not succeed"
             exit 1
           fi
 
           if [ "$RUN_E2E" = "true" ] && [ "$E2E_RESULT" != "success" ]; then
             echo "e2e job did not succeed"
-            exit 1
-          fi
-
-          if [ "$RUN_AUDIT" = "true" ] && [ "$AUDIT_RESULT" != "success" ]; then
-            echo "audit job did not succeed"
             exit 1
           fi
 
