@@ -307,6 +307,22 @@ export const PACKAGE_CATALOG: readonly PackageCatalogEntry[] = [
     docs: { available: true },
   }),
   entry({
+    id: "history",
+    title: "History",
+    npmPackage: "@ailuracode/alpine-history",
+    folder: "history",
+    category: "interaction-primitives",
+    role: "feature",
+    surface: "store",
+    api: "$store.history / $history",
+    summary:
+      "Headless undo/redo history controller with transactions, persistence, and configurable limits.",
+    readmePath: "packages/history/README.md",
+    tier: "extended",
+    order: 3,
+    demo: { available: true, componentId: "history" },
+  }),
+  entry({
     id: "dialog",
     title: "Dialog",
     npmPackage: "@ailuracode/alpine-dialog",

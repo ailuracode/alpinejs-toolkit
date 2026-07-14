@@ -8,6 +8,7 @@ import dialog from "@ailuracode/alpine-dialog";
 import env from "@ailuracode/alpine-env";
 import geo, { createGeoPermissionAdapter } from "@ailuracode/alpine-geo";
 import gesture from "@ailuracode/alpine-gesture";
+import history from "@ailuracode/alpine-history";
 import jsonApi from "@ailuracode/alpine-json-api";
 import keyboard from "@ailuracode/alpine-keyboard";
 import lang from "@ailuracode/alpine-lang";
@@ -87,6 +88,7 @@ export async function startAlpineDemo(): Promise<void> {
     }),
     env(),
     gesture(),
+    history(),
     transfer(),
     tooltip(),
     tabs(),
