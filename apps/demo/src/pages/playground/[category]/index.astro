@@ -1,0 +1,87 @@
+---
+import { PACKAGE_CATEGORIES } from "../../../catalog/index.js";
+import {
+  buildPlaygroundSidebar,
+  playgroundFamilyPath,
+} from "../../../catalog/playground-navigation.js";
+import PlaygroundModuleCard from "../../../components/PlaygroundModuleCard.astro";
+import PlaygroundLayout from "../../../layouts/PlaygroundLayout.astro";
+
+export function getStaticPaths() {
+  return buildPlaygroundSidebar().map((group) => ({
+    params: { category: group.id },
+    props: { categoryId: group.id },
+  }));
+}
+
+const { categoryId } = Astro.props;
+const group = buildPlaygroundSidebar().find((entry) => entry.id === categoryId);
+const category = PACKAGE_CATEGORIES.find((entry) => entry.id === categoryId);
+
+if (!group || !category) {
+  throw new Error(`Unknown playground category: ${categoryId}`);
+}
+---
+
+<PlaygroundLayout title={`${category.title} · Playground`} description={category.summary} activePlugin={categoryId}>
+  <nav class="mb-4 text-sm text-[var(--ios-label-secondary)]" aria-label="Breadcrumb">
+    <ol class="flex flex-wrap items-center gap-1.5">
+      <li><a href="/playground/" class="hover:text-[var(--ios-label)]">Playground</a></li>
+      <li aria-hidden="true">/</li>
+      <li aria-current="page" class="font-medium text-[var(--ios-label)]">{category.title}</li>
+    </ol>
+  </nav>
+
+  <header class="mb-8">
+    <h1 class="text-3xl font-bold tracking-tight">{category.title}</h1>
+    <p class="mt-2 max-w-2xl text-sm text-[var(--ios-label-secondary)]">{category.summary}</p>
+  </header>
+
+  {
+    group.families.map((family) => (
+      <section class="mb-8">
+        <div class="mb-3 flex items-center justify-between gap-3">
+          <h2 class="text-xl font-semibold">
+            <a href={playgroundFamilyPath(group.id, family.id)} class="hover:text-[var(--ios-blue)]">
+              {family.title}
+            </a>
+          </h2>
+        </div>
+        <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+          {family.entries.map((entry) => (
+            <PlaygroundModuleCard item={{
+              id: entry.id,
+              title: entry.title,
+              package: entry.npmPackage,
+              api: entry.api,
+              kind: entry.surface,
+              tier: entry.tier,
+              description: entry.summary,
+            }} />
+          ))}
+        </div>
+      </section>
+    ))
+  }
+
+  {
+    group.standalone.length > 0 ? (
+      <section>
+        <h2 class="mb-3 text-xl font-semibold">Packages</h2>
+        <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+          {group.standalone.map((entry) => (
+            <PlaygroundModuleCard item={{
+              id: entry.id,
+              title: entry.title,
+              package: entry.npmPackage,
+              api: entry.api,
+              kind: entry.surface,
+              tier: entry.tier,
+              description: entry.summary,
+            }} />
+          ))}
+        </div>
+      </section>
+    ) : null
+  }
+</PlaygroundLayout>
