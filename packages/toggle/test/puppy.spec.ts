@@ -4,8 +4,7 @@
 
 import assert from "node:assert/strict";
 import { describe, expect, it } from "vitest";
-import { createPuppyToggle, puppyTogglePlugin } from "../src/puppy.js";
-import type { PuppyToggleInstance } from "../src/variants/puppy/types.js";
+import { createToggle, type ToggleInstance, togglePlugin } from "../src/puppy.js";
 
 interface MockAlpine {
   magics: Record<string, () => unknown>;
@@ -28,29 +27,29 @@ function createMockAlpine(): MockAlpine {
   };
 }
 
-describe("createPuppyToggle()", () => {
+describe("createToggle() — Puppy", () => {
   it("defaults to false", () => {
-    expect(createPuppyToggle().value).toBe(false);
+    expect(createToggle().value).toBe(false);
   });
 
   it("accepts an explicit initial value", () => {
-    expect(createPuppyToggle(true).value).toBe(true);
+    expect(createToggle(true).value).toBe(true);
   });
 
   it("toggle() flips the boolean", () => {
-    const toggle = createPuppyToggle(false);
+    const toggle = createToggle(false);
     expect(toggle.toggle()).toBe(true);
     expect(toggle.toggle()).toBe(false);
   });
 
   it("set() is a no-op when the value is unchanged", () => {
-    const toggle = createPuppyToggle(true);
+    const toggle = createToggle(true);
     toggle.set(true);
     expect(toggle.value).toBe(true);
   });
 
   it("does not expose event, lifecycle, or state configuration APIs", () => {
-    const toggle = createPuppyToggle(false);
+    const toggle = createToggle(false);
     const record = toggle as unknown as Record<string, unknown>;
     expect("on" in record).toBe(false);
     expect("destroy" in record).toBe(false);
@@ -59,19 +58,19 @@ describe("createPuppyToggle()", () => {
   });
 });
 
-describe("puppyTogglePlugin — $toggle factory", () => {
+describe("togglePlugin — Puppy $toggle factory", () => {
   it("wraps the controller in Alpine.reactive", () => {
     const Alpine = createMockAlpine();
-    puppyTogglePlugin()(Alpine as never);
-    const factory = Alpine.magics.toggle() as (initial?: boolean) => PuppyToggleInstance;
+    togglePlugin()(Alpine as never);
+    const factory = Alpine.magics.toggle() as (initial?: boolean) => ToggleInstance;
     factory(true);
     assert.equal(Alpine.reactiveCalls.length, 1);
   });
 
   it("returns independent instances per call", () => {
     const Alpine = createMockAlpine();
-    puppyTogglePlugin()(Alpine as never);
-    const factory = Alpine.magics.toggle() as (initial?: boolean) => PuppyToggleInstance;
+    togglePlugin()(Alpine as never);
+    const factory = Alpine.magics.toggle() as (initial?: boolean) => ToggleInstance;
 
     const a = factory(false);
     const b = factory(false);

@@ -17,10 +17,12 @@ O pacote expõe três entrypoints. Todas as variantes registram o mesmo magic `$
 | **Doggo** | `@ailuracode/alpine-toggle/doggo` | Estados personalizados e `onChange()` |
 | **Big Dog** | `@ailuracode/alpine-toggle` | Ciclo de vida completo, hidratação e eventos tipados |
 
+Cada entrypoint exporta os mesmos nomes públicos (`createToggle`, `togglePlugin`, `ToggleController`, …). Escolha o caminho de import conforme o nível; use alias se carregar mais de uma variante no mesmo arquivo.
+
 ```ts
-import puppyTogglePlugin from "@ailuracode/alpine-toggle/puppy";
-import doggoTogglePlugin from "@ailuracode/alpine-toggle/doggo";
-import { togglePlugin } from "@ailuracode/alpine-toggle";
+import { createToggle as createPuppyToggle, togglePlugin as puppyTogglePlugin } from "@ailuracode/alpine-toggle/puppy";
+import { createToggle as createDoggoToggle, togglePlugin as doggoTogglePlugin } from "@ailuracode/alpine-toggle/doggo";
+import { createToggle, togglePlugin } from "@ailuracode/alpine-toggle";
 ```
 
 Consulte o [README do pacote](https://github.com/ailuracode/alpinejs-toolkit/tree/main/packages/toggle#capability-tiers) para o guia completo de seleção e tamanhos de bundle.
@@ -125,9 +127,9 @@ answer.on("change", (detail: ToggleChangeDetail<"yes", "no", "unknown">) => {
 ### Subscrições leves (Doggo)
 
 ```ts
-import { createDoggoToggle } from "@ailuracode/alpine-toggle/doggo";
+import { createToggle } from "@ailuracode/alpine-toggle/doggo";
 
-const filter = createDoggoToggle({
+const filter = createToggle({
   states: { on: "enabled", off: "disabled", indeterminate: "mixed" },
 });
 

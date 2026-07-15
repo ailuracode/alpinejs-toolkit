@@ -7,10 +7,16 @@
 
 import assert from "node:assert/strict";
 import { describe, expect, it } from "vitest";
-import { createDoggoToggle, doggoTogglePlugin } from "../src/doggo.js";
+import {
+  createToggle as createDoggoToggle,
+  togglePlugin as doggoTogglePlugin,
+} from "../src/doggo.js";
 import { createToggle, togglePlugin } from "../src/index.js";
 import type { BaseToggle } from "../src/internal/base-types.js";
-import { createPuppyToggle, puppyTogglePlugin } from "../src/puppy.js";
+import {
+  createToggle as createPuppyToggle,
+  togglePlugin as puppyTogglePlugin,
+} from "../src/puppy.js";
 
 interface MockAlpine {
   magics: Record<string, () => unknown>;

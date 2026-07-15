@@ -5,8 +5,12 @@
 
 import assert from "node:assert/strict";
 import { describe, expect, it } from "vitest";
-import { createDoggoToggle, doggoTogglePlugin } from "../src/doggo.js";
-import type { DoggoToggleChangeDetail, DoggoToggleInstance } from "../src/variants/doggo/types.js";
+import {
+  createToggle,
+  type ToggleChangeDetail,
+  type ToggleInstance,
+  togglePlugin,
+} from "../src/doggo.js";
 
 interface MockAlpine {
   magics: Record<string, () => unknown>;
@@ -26,30 +30,30 @@ function createMockAlpine(): MockAlpine {
   };
 }
 
-describe("createDoggoToggle() — binary", () => {
+describe("createToggle() — Doggo binary", () => {
   it("defaults to the on state", () => {
-    const toggle = createDoggoToggle({ states: { on: "on", off: "off" } });
+    const toggle = createToggle({ states: { on: "on", off: "off" } });
     expect(toggle.value).toBe("on");
     expect(toggle.states).toEqual({ on: "on", off: "off", indeterminate: undefined });
   });
 
   it("toggle() flips between on and off", () => {
-    const toggle = createDoggoToggle({ states: { on: 1, off: 0 }, initial: 1 });
+    const toggle = createToggle({ states: { on: 1, off: 0 }, initial: 1 });
     expect(toggle.toggle()).toBe(0);
     expect(toggle.toggle()).toBe(1);
   });
 });
 
-describe("createDoggoToggle() — ternary", () => {
+describe("createToggle() — Doggo ternary", () => {
   it("defaults to indeterminate when configured", () => {
-    const toggle = createDoggoToggle({
+    const toggle = createToggle({
       states: { on: "enabled", off: "disabled", indeterminate: "mixed" },
     });
     expect(toggle.value).toBe("mixed");
   });
 
   it("toggle() skips indeterminate and next() walks every state", () => {
-    const toggle = createDoggoToggle({
+    const toggle = createToggle({
       states: { on: "a", off: "b", indeterminate: "c" },
       initial: "c",
     });
@@ -62,12 +66,12 @@ describe("createDoggoToggle() — ternary", () => {
   });
 });
 
-describe("createDoggoToggle() — subscriptions", () => {
+describe("createToggle() — Doggo subscriptions", () => {
   it("onChange() delivers current and previous values", () => {
-    const toggle = createDoggoToggle({ states: { on: "on", off: "off" }, initial: "on" });
-    const changes: Array<DoggoToggleChangeDetail<"on" | "off">> = [];
+    const toggle = createToggle({ states: { on: "on", off: "off" }, initial: "on" });
+    const changes: Array<ToggleChangeDetail<"on" | "off">> = [];
     toggle.onChange((detail) => {
-      changes.push(detail as DoggoToggleChangeDetail<"on" | "off">);
+      changes.push(detail as ToggleChangeDetail<"on" | "off">);
     });
 
     toggle.set("off");
@@ -75,7 +79,7 @@ describe("createDoggoToggle() — subscriptions", () => {
   });
 
   it("unsubscribe stops delivery", () => {
-    const toggle = createDoggoToggle({ states: { on: 1, off: 0 }, initial: 1 });
+    const toggle = createToggle({ states: { on: 1, off: 0 }, initial: 1 });
     const calls: number[] = [];
     const unsubscribe = toggle.onChange((detail) => calls.push(detail.current));
 
@@ -86,9 +90,9 @@ describe("createDoggoToggle() — subscriptions", () => {
   });
 });
 
-describe("createDoggoToggle() — reset", () => {
+describe("createToggle() — Doggo reset", () => {
   it("reset() restores the configured initial value", () => {
-    const toggle = createDoggoToggle({
+    const toggle = createToggle({
       states: { on: "enabled", off: "disabled", indeterminate: "mixed" },
       initial: "mixed",
     });
@@ -98,27 +102,26 @@ describe("createDoggoToggle() — reset", () => {
   });
 });
 
-describe("createDoggoToggle() — excluded Big Dog surface", () => {
+describe("createToggle() — Doggo excluded Big Dog surface", () => {
   it("does not expose lifecycle, IDs, or the typed event bus", () => {
-    const toggle = createDoggoToggle({ states: { on: 1, off: 0 } });
+    const toggle = createToggle({ states: { on: 1, off: 0 } });
     expect("mount" in (toggle as unknown as Record<string, unknown>)).toBe(false);
     expect("destroy" in (toggle as unknown as Record<string, unknown>)).toBe(false);
     expect("setSilently" in (toggle as unknown as Record<string, unknown>)).toBe(false);
     expect("id" in (toggle as unknown as Record<string, unknown>)).toBe(false);
     expect(
-      typeof (toggle as DoggoToggleInstance<number, number, undefined, number> & { on?: unknown })
-        .on
+      typeof (toggle as ToggleInstance<number, number, undefined, number> & { on?: unknown }).on
     ).toBe("undefined");
   });
 });
 
-describe("doggoTogglePlugin — $toggle factory", () => {
+describe("togglePlugin — Doggo $toggle factory", () => {
   it("returns independent reactive instances", () => {
     const Alpine = createMockAlpine();
-    doggoTogglePlugin()(Alpine as never);
+    togglePlugin()(Alpine as never);
     const factory = Alpine.magics.toggle() as (opts: {
       states: { on: string; off: string };
-    }) => DoggoToggleInstance<string, string, undefined, string>;
+    }) => ToggleInstance<string, string, undefined, string>;
 
     const a = factory({ states: { on: "on", off: "off" } });
     const b = factory({ states: { on: "on", off: "off" } });

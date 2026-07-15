@@ -1,6 +1,6 @@
 import { createToggle, type ToggleInstance } from "@ailuracode/alpine-toggle";
-import { createDoggoToggle } from "@ailuracode/alpine-toggle/doggo";
-import { createPuppyToggle } from "@ailuracode/alpine-toggle/puppy";
+import { createToggle as createDoggoToggle } from "@ailuracode/alpine-toggle/doggo";
+import { createToggle as createPuppyToggle } from "@ailuracode/alpine-toggle/puppy";
 import type { AlpineInstance } from "../types/alpine.js";
 
 type YesNo = "yes" | "no";

@@ -22,18 +22,20 @@ The package ships three entrypoints. Pick the smallest tier that fits your use c
 
 Code written against the shared contract (`value`, `set()`, `toggle()`) keeps working when you upgrade tiers.
 
+Every entrypoint exports the same public names (`createToggle`, `togglePlugin`, `ToggleController`, `ToggleInstance`, …). Pick the import path for the tier you need; alias at import time when you load more than one variant in the same file.
+
 ```ts
-import puppyTogglePlugin from "@ailuracode/alpine-toggle/puppy";
-import doggoTogglePlugin from "@ailuracode/alpine-toggle/doggo";
-import { togglePlugin } from "@ailuracode/alpine-toggle"; // Big Dog
+import { createToggle as createPuppyToggle, togglePlugin as puppyTogglePlugin } from "@ailuracode/alpine-toggle/puppy";
+import { createToggle as createDoggoToggle, togglePlugin as doggoTogglePlugin } from "@ailuracode/alpine-toggle/doggo";
+import { createToggle, togglePlugin } from "@ailuracode/alpine-toggle"; // Big Dog
 ```
 
 ### Puppy — boolean only
 
 ```ts
-import { createPuppyToggle } from "@ailuracode/alpine-toggle/puppy";
+import { createToggle } from "@ailuracode/alpine-toggle/puppy";
 
-const lamp = createPuppyToggle(false);
+const lamp = createToggle(false);
 lamp.toggle();
 lamp.set(true);
 ```
@@ -48,9 +50,9 @@ lamp.set(true);
 ### Doggo — custom states and subscriptions
 
 ```ts
-import { createDoggoToggle } from "@ailuracode/alpine-toggle/doggo";
+import { createToggle } from "@ailuracode/alpine-toggle/doggo";
 
-const filter = createDoggoToggle({
+const filter = createToggle({
   states: { on: "enabled", off: "disabled", indeterminate: "mixed" },
   initial: "mixed",
 });
@@ -197,24 +199,24 @@ Add `/// <reference path="node_modules/@ailuracode/alpine-toggle/dist/global.d.t
 ### Puppy
 
 ```ts
-import { createPuppyToggle, puppyTogglePlugin } from "@ailuracode/alpine-toggle/puppy";
+import { createToggle, togglePlugin } from "@ailuracode/alpine-toggle/puppy";
 
-const lamp = createPuppyToggle(false);
+const lamp = createToggle(false);
 
 lamp.value    // boolean
 lamp.set(true) // void
 lamp.toggle() // boolean — returns the new value
 
-Alpine.plugin(puppyTogglePlugin());
+Alpine.plugin(togglePlugin());
 // $toggle(initial?: boolean)
 ```
 
 ### Doggo
 
 ```ts
-import { createDoggoToggle, doggoTogglePlugin } from "@ailuracode/alpine-toggle/doggo";
+import { createToggle, togglePlugin } from "@ailuracode/alpine-toggle/doggo";
 
-const filter = createDoggoToggle({
+const filter = createToggle({
   states: { on: T, off: T, indeterminate?: T },
   initial?: T,
 });
@@ -228,7 +230,7 @@ filter.next()
 filter.reset()
 filter.onChange(listener) // ({ current, previous }) => void
 
-Alpine.plugin(doggoTogglePlugin());
+Alpine.plugin(togglePlugin());
 // $toggle(options)
 ```
 

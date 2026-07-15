@@ -1,7 +1,13 @@
-export { createPuppyToggle, PuppyToggle } from "./controller.js";
-export { puppyTogglePlugin, puppyTogglePlugin as default } from "./plugin.js";
+export {
+  createPuppyToggle as createToggle,
+  PuppyToggle as ToggleController,
+} from "./controller.js";
+export {
+  puppyTogglePlugin as default,
+  puppyTogglePlugin as togglePlugin,
+} from "./plugin.js";
 export type {
-  PuppyToggleInstance,
-  PuppyTogglePluginCallback,
-  PuppyTogglePluginOptions,
+  PuppyToggleInstance as ToggleInstance,
+  PuppyTogglePluginCallback as TogglePluginCallback,
+  PuppyTogglePluginOptions as CreateToggleOptions,
 } from "./types.js";

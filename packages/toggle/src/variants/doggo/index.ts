@@ -1,9 +1,15 @@
-export { createDoggoToggle, DoggoToggle } from "./controller.js";
-export { doggoTogglePlugin, doggoTogglePlugin as default } from "./plugin.js";
+export {
+  createDoggoToggle as createToggle,
+  DoggoToggle as ToggleController,
+} from "./controller.js";
+export {
+  doggoTogglePlugin as default,
+  doggoTogglePlugin as togglePlugin,
+} from "./plugin.js";
 export type {
-  DoggoToggleChangeDetail,
-  DoggoToggleInstance,
-  DoggoToggleOptions,
-  DoggoTogglePluginCallback,
-  DoggoTogglePluginOptions,
+  DoggoToggleChangeDetail as ToggleChangeDetail,
+  DoggoToggleInstance as ToggleInstance,
+  DoggoToggleOptions as ToggleOptions,
+  DoggoTogglePluginCallback as TogglePluginCallback,
+  DoggoTogglePluginOptions as CreateToggleOptions,
 } from "./types.js";
