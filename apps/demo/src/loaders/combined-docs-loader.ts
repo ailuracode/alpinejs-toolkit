@@ -142,6 +142,7 @@ export function combinedDocsLoader(): Loader {
   return {
     name: "combined-starlight-docs-loader",
     async load(context) {
+      removeEnglishDocsReplacedByReadme(context);
       await starlightDocsLoader.load(context);
       removeEnglishDocsReplacedByReadme(context);
       await loadPackageReadmeDocs(context);
