@@ -9,6 +9,34 @@ const plugin = getPluginNavItem("toggle")!;
 
 <DemoSection id={plugin.id} title={plugin.title} api={plugin.api} description={plugin.description}>
 	<div class="grid gap-6">
+		<div class="grid gap-3" x-data="{ t: $puppyToggle() }">
+			<p class="text-xs text-[var(--ios-label-secondary)] m-0">
+				Puppy — minimal binary state with <code>value</code>, <code>set()</code>, and
+				<code>toggle()</code>.
+			</p>
+			<div class="flex items-center gap-3">
+				<DemoButton @click="t.toggle()">toggle()</DemoButton>
+				<span class="text-sm">Value: <strong x-text="t.value"></strong></span>
+			</div>
+		</div>
+
+		<div
+			class="grid gap-3"
+			x-data="{ t: $doggoToggle({ states: { on: 'on', off: 'off', indeterminate: 'unknown' }, initial: 'unknown' }) }"
+		>
+			<p class="text-xs text-[var(--ios-label-secondary)] m-0">
+				Doggo — ternary state, cycling, reset, and lightweight change subscriptions.
+			</p>
+			<div class="flex items-center gap-3">
+				<span class="text-sm">Value: <strong x-text="t.value"></strong></span>
+			</div>
+			<div class="flex flex-wrap gap-2">
+				<DemoButton @click="t.next()">next()</DemoButton>
+				<DemoButton @click="t.reset()">reset()</DemoButton>
+				<DemoButton @click="t.set('unknown')">set(indeterminate)</DemoButton>
+			</div>
+		</div>
+
 		<div
 			class="grid gap-4"
 			x-data="{ power: $toggle({ states: { on: 'on', off: 'off' }, initial: 'off' }) }"

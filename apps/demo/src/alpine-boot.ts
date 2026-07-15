@@ -27,6 +27,8 @@ import tabs from "@ailuracode/alpine-tabs";
 import theme from "@ailuracode/alpine-theme";
 import toast, { toastPositions, toastVariants } from "@ailuracode/alpine-toast";
 import toggle from "@ailuracode/alpine-toggle";
+import doggoToggle from "@ailuracode/alpine-toggle/doggo";
+import puppyToggle from "@ailuracode/alpine-toggle/puppy";
 import tooltip from "@ailuracode/alpine-tooltip";
 import transfer from "@ailuracode/alpine-transfer";
 import virtual from "@ailuracode/alpine-virtual";
@@ -57,6 +59,20 @@ const mediaIntervals = [
   { name: "tablet", maxWidth: 900 },
   { name: "desktop", maxWidth: Number.POSITIVE_INFINITY },
 ] as const;
+
+type DemoAlpine = typeof alpine & { cleanup?(callback: () => void): void };
+
+function aliasToggleMagic(plugin: (runtime: never) => void, alias: string) {
+  return function registerAliasedToggleMagic(Alpine: typeof alpine): void {
+    const runtime = Alpine as DemoAlpine;
+    plugin({
+      reactive: Alpine.reactive,
+      magic: (_name: string, factory: Parameters<typeof Alpine.magic>[1]) =>
+        Alpine.magic(alias, factory),
+      cleanup: runtime.cleanup,
+    } as never);
+  };
+}
 
 export async function startAlpineDemo(): Promise<void> {
   if (window.Alpine) {
@@ -105,6 +121,8 @@ export async function startAlpineDemo(): Promise<void> {
     query({ adapter: createAlpineNanostoresAdapter }),
     queryKit(),
     jsonApi(jsonApiDemoOptions),
+    aliasToggleMagic(puppyToggle(), "puppyToggle"),
+    aliasToggleMagic(doggoToggle(), "doggoToggle"),
     toggle(),
     theme(),
     media({ intervals: mediaIntervals }),
