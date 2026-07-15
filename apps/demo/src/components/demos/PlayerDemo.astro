@@ -3,6 +3,9 @@ import { getPluginNavItem } from "../../plugin-nav";
 import DemoSection from "../DemoSection.astro";
 
 const plugin = getPluginNavItem("player")!;
+
+const demoAudioSrc = "/demo-media/piano.ogg";
+const demoVideoSrc = "/demo-media/big-buck-bunny-10s.mp4";
 ---
 
 <DemoSection id={plugin.id} title={plugin.title} api={plugin.api} description={plugin.description}>
@@ -12,13 +15,13 @@ const plugin = getPluginNavItem("player")!;
 	>
 		<div class="grid gap-3">
 			<h3 class="text-sm font-medium">Audio controller</h3>
-			<audio x-audio="audioPlayer" preload="none"></audio>
+			<audio x-audio="audioPlayer" src={demoAudioSrc} preload="metadata"></audio>
 			<div class="flex flex-wrap gap-2">
 				<button type="button" class="demo-btn" @click="audioPlayer.toggle()">
 					<span x-text="audioPlayer.playing ? 'Pause' : 'Play'"></span>
 				</button>
-				<button type="button" class="demo-btn" @click="audioPlayer.seekBy(-10)">-10s</button>
-				<button type="button" class="demo-btn" @click="audioPlayer.seekBy(10)">+10s</button>
+				<button type="button" class="demo-btn" @click="audioPlayer.seekBy(-2)">-2s</button>
+				<button type="button" class="demo-btn" @click="audioPlayer.seekBy(2)">+2s</button>
 				<button type="button" class="demo-btn" @click="audioPlayer.toggleMute()">
 					<span x-text="audioPlayer.muted ? 'Unmute' : 'Mute'"></span>
 				</button>
@@ -26,13 +29,30 @@ const plugin = getPluginNavItem("player")!;
 			<p class="text-sm text-[var(--ios-label-secondary)]">
 				Progress:
 				<span x-text="Math.round(audioPlayer.progress * 100) + '%'"></span>
+				· Duration:
+				<span x-text="audioPlayer.duration.toFixed(1) + 's'"></span>
+			</p>
+			<p class="text-xs text-[var(--ios-label-secondary)]">
+				Audio: <a class="underline" href="https://commons.wikimedia.org/wiki/File:Piano.ogg">Piano.ogg</a>
+				(CC BY-SA 3.0)
 			</p>
 		</div>
 
 		<div class="grid gap-3">
 			<h3 class="text-sm font-medium">Video controller</h3>
-			<video x-video="videoPlayer" preload="none" playsinline></video>
+			<video
+				x-video="videoPlayer"
+				class="w-full max-w-md rounded-md bg-black"
+				src={demoVideoSrc}
+				preload="metadata"
+				playsinline
+			></video>
 			<div class="flex flex-wrap gap-2">
+				<button type="button" class="demo-btn" @click="videoPlayer.toggle()">
+					<span x-text="videoPlayer.playing ? 'Pause' : 'Play'"></span>
+				</button>
+				<button type="button" class="demo-btn" @click="videoPlayer.seekBy(-2)">-2s</button>
+				<button type="button" class="demo-btn" @click="videoPlayer.seekBy(2)">+2s</button>
 				<button type="button" class="demo-btn" @click="videoPlayer.toggleMute()">
 					<span x-text="videoPlayer.muted ? 'Unmute' : 'Mute'"></span>
 				</button>
@@ -48,6 +68,13 @@ const plugin = getPluginNavItem("player")!;
 				<span x-text="videoPlayer.fullscreen ? 'yes' : 'no'"></span>
 				· PiP:
 				<span x-text="videoPlayer.pictureInPicture ? 'yes' : 'no'"></span>
+				· Progress:
+				<span x-text="Math.round(videoPlayer.progress * 100) + '%'"></span>
+			</p>
+			<p class="text-xs text-[var(--ios-label-secondary)]">
+				Video: excerpt from
+				<a class="underline" href="https://peach.blender.org/">Big Buck Bunny</a>
+				(CC BY 3.0, Blender Foundation)
 			</p>
 		</div>
 	</div>

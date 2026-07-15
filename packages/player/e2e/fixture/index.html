@@ -11,14 +11,25 @@
 
       <section>
         <h2>Audio</h2>
-        <audio id="audio-el" x-audio="audioPlayer"></audio>
+        <audio
+          id="audio-el"
+          x-audio="audioPlayer"
+          src="/media/piano.ogg"
+          preload="metadata"
+        ></audio>
         <button id="audio-toggle" type="button" @click="audioPlayer.toggle()">Toggle audio</button>
         <output id="audio-state" data-testid="audio-state" x-text="audioPlayer.paused ? 'paused' : 'playing'"></output>
       </section>
 
       <section>
         <h2>Video</h2>
-        <video id="video-el" x-video="videoPlayer"></video>
+        <video
+          id="video-el"
+          x-video="videoPlayer"
+          src="/media/big-buck-bunny-10s.mp4"
+          preload="metadata"
+          playsinline
+        ></video>
         <button id="video-mute" type="button" @click="videoPlayer.toggleMute()">Toggle mute</button>
         <output id="video-muted" data-testid="video-muted" x-text="videoPlayer.muted ? 'muted' : 'unmuted'"></output>
       </section>
