@@ -8,30 +8,74 @@ const plugin = getPluginNavItem("toggle")!;
 ---
 
 <DemoSection id={plugin.id} title={plugin.title} api={plugin.api} description={plugin.description}>
-	<div class="grid gap-4">
-		<div x-data="toggleBinaryDemo">
-			<p>Binary: <strong x-text="power.value"></strong></p>
-			<div class="flex flex-wrap gap-2 mt-2">
+	<div class="grid gap-6">
+		<div
+			class="grid gap-4"
+			x-data="{ power: $toggle({ states: { on: 'on', off: 'off' }, initial: 'off' }) }"
+		>
+			<p class="text-xs text-[var(--ios-label-secondary)] m-0">
+				Binary — bindings read <code>power.value</code> directly so Vue's reactive proxy
+				tracks the dependency and re-evaluates on every transition.
+			</p>
+			<div class="flex items-center gap-3">
+				<span class="text-sm">Power:</span>
+				<strong class="text-lg" x-text="power.value"></strong>
+				<Badge
+					x-bind:class="{ 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300': power.value === power.states.on, 'bg-rose-500/15 text-rose-700 dark:text-rose-300': power.value === power.states.off }"
+					x-text="power.value"
+				></Badge>
+				<Badge variant="outline">id: <code x-text="power.id"></code></Badge>
+			</div>
+			<div class="flex flex-wrap gap-2">
 				<DemoButton @click="power.toggle()">toggle()</DemoButton>
 				<DemoButton @click="power.next()">next()</DemoButton>
 				<DemoButton @click="power.reset()">reset()</DemoButton>
-				<Badge
-					x-bind:class="{ 'bg-[var(--ios-blue)] text-white': power.is(power.states.on), 'text-[var(--ios-label-secondary)]': power.is(power.states.off) }"
-					x-text="power.value"
-				></Badge>
 			</div>
 		</div>
-		<div x-data="toggleTernaryDemo">
-			<p>
-				Ternary: <strong x-text="answer.value"></strong>
-				<Badge variant="outline" class="ml-2 border-amber-500/50 bg-amber-500/10 text-amber-700 dark:text-amber-400" x-show="answer.is(answer.states.indeterminate)">neutral</Badge>
+
+		<div
+			class="grid gap-4"
+			x-data="{ answer: $toggle({ states: { on: 'yes', off: 'no', indeterminate: 'unknown' }, initial: 'unknown' }) }"
+		>
+			<p class="text-xs text-[var(--ios-label-secondary)] m-0">
+				Ternary — same rule: bind to <code>answer.value</code> directly so the binding tracks
+				<code>value</code> as a dependency.
 			</p>
-			<div class="flex flex-wrap gap-2 mt-2">
+			<div class="flex items-center gap-3">
+				<span class="text-sm">Answer:</span>
+				<strong class="text-lg" x-text="answer.value"></strong>
+				<Badge
+					variant="outline"
+					x-show="answer.value === answer.states.indeterminate"
+					x-text="answer.states.indeterminate"
+				></Badge>
+			</div>
+			<div class="flex flex-wrap gap-2">
 				<DemoButton @click="answer.toggle()">toggle()</DemoButton>
 				<DemoButton @click="answer.next()">next()</DemoButton>
 				<DemoButton @click="answer.reset()">reset()</DemoButton>
 				<DemoButton @click="answer.set(answer.states.indeterminate)">set(unknown)</DemoButton>
 			</div>
+		</div>
+
+		<div
+			class="grid gap-3 rounded-lg bg-[var(--ios-fill-quaternary)] p-4"
+			x-data="{
+				stored: (() => { try { return localStorage.getItem('toggle-demo-mode') ?? 'on'; } catch { return 'on'; } })(),
+				mode: $toggle({ states: { on: 'on', off: 'off' }, initial: 'on' }),
+				init() { this.mode.setSilently(this.stored); },
+				persist() { try { localStorage.setItem('toggle-demo-mode', this.mode.value); } catch {} },
+			}"
+		>
+			<p class="text-xs text-[var(--ios-label-secondary)] m-0">
+				Hydration via <code>setSilently()</code> — first <code>change</code> event is the user toggle, not the seed.
+			</p>
+			<div class="flex items-center gap-3">
+				<span class="text-sm">Hydrated mode:</span>
+				<strong class="text-lg" x-text="mode.value"></strong>
+				<Badge variant="outline">from localStorage</Badge>
+			</div>
+			<DemoButton @click="mode.toggle(); persist()">toggle() + persist</DemoButton>
 		</div>
 	</div>
 	<p class="text-xs text-[var(--ios-label-secondary)] mt-3">

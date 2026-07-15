@@ -1,95 +1,89 @@
 /**
  * Alpine.js integration for `@ailuracode/alpine-toggle`.
  *
- * Thin adapter that exposes `$toggle(options)` as a factory — every
- * call returns an independent reactive instance backed by a
- * {@link ToggleController}. No `$store.*` registration (see `AGENTS.md`
- * for the integration contract).
+ * Registers the `$toggle(options)` magic — every call returns an
+ * independent reactive facade backed by a `ToggleController`. The
+ * controller's `V` generic is bound to `ToggleReactiveViewValue` so
+ * `controller.value` already returns the narrowed union the facade
+ * exposes; a `change` subscription bridges every controller
+ * transition back through Alpine's reactive proxy.
  */
 
-import { InstanceRegistry } from "@ailuracode/alpine-core";
+import type { Unsubscribe } from "@ailuracode/alpine-core";
 import type { Alpine as AlpineBase } from "alpinejs";
 import { ToggleController } from "./controller";
+import { buildReactiveToggleView, syncReactiveToggleView } from "./internal/reactive-adapter";
 import type {
   CreateToggleOptions,
   ToggleAlpine,
-  ToggleInstance,
   ToggleOptions,
   TogglePluginCallback,
+  ToggleReactiveView,
+  ToggleReactiveViewValue,
+  Writable,
 } from "./types";
 
-/** Key under which the magic is registered on the Alpine runtime. */
 const TOGGLE_MAGIC_KEY = "toggle";
 
-/**
- * Plugin factory — returns the `Alpine.plugin()` callback. Pass
- * {@link CreateToggleOptions} to configure {@link ToggleController},
- * or `{}` for the package defaults. See `AGENTS.md` for the
- * integration contract.
- */
+interface RegistryEntry {
+  readonly controller: Destroyable;
+  readonly cleanups: readonly Unsubscribe[];
+}
+
+interface Destroyable {
+  destroy(): void;
+}
+
 export function togglePlugin(options: CreateToggleOptions = {}): TogglePluginCallback {
   return function registerToggle(alpine: AlpineBase): void {
-    // Narrow the base Alpine runtime to the toolkit's typed view.
-    // The cast is the only `as unknown as` in this file — every
-    // subsequent call is fully typed against `ToggleAlpine`.
     const Alpine = alpine as unknown as ToggleAlpine;
-    const registry = new InstanceRegistry<ToggleController<unknown, unknown, unknown>>();
+    const registry = new Map<string, RegistryEntry>();
 
-    /**
-     * The magic factory — `$toggle(options)` returns an
-     * independent reactive instance every call.
-     *
-     * Typed as a generic arrow so each call site preserves the
-     * consumer's narrowing (`on` / `off` / `indeterminate` types).
-     * The factory constructs a fresh controller, mounts it,
-     * tracks it for cleanup, and hands Alpine the reactive
-     * wrapper to bind against directives.
-     */
     const factory = <TA, TB, TN>(
       opts: ToggleOptions<TA, TB, TN>
-    ): ToggleInstance<TA, TB, TN, TA | TB | TN> => {
-      const controller = new ToggleController<TA, TB, TN, TA | TB | TN>(opts);
+    ): ToggleReactiveView<TA, TB, TN> => {
+      const controller = new ToggleController<TA, TB, TN, ToggleReactiveViewValue<TA, TB, TN>>(
+        opts
+      );
       controller.mount();
-      registry.register(controller.id, controller as ToggleController<unknown, unknown, unknown>);
-      const reactive = Alpine.reactive(
-        controller as unknown as ToggleController<unknown, unknown, unknown>
-      ) as ToggleController<unknown, unknown, unknown>;
-      return reactive as unknown as ToggleInstance<TA, TB, TN, TA | TB | TN>;
+
+      const raw = buildReactiveToggleView<TA, TB, TN>(controller);
+      const reactive = Alpine.reactive(raw) as ToggleReactiveView<TA, TB, TN>;
+
+      const unsubscribe = controller.on("change", (detail) => {
+        syncReactiveToggleView<TA, TB, TN>(
+          reactive as Writable<ToggleReactiveView<TA, TB, TN>>,
+          detail
+        );
+      });
+
+      registry.set(controller.id, {
+        controller,
+        cleanups: [unsubscribe],
+      });
+
+      return reactive;
     };
 
     Alpine.magic(TOGGLE_MAGIC_KEY, () => factory);
 
-    // Forward destroy() through Alpine's cleanup mechanism when
-    // available. Older Alpine versions don't expose `cleanup` —
-    // the guard matches the one used by `@ailuracode/alpine-theme`.
     if (typeof Alpine.cleanup === "function") {
       Alpine.cleanup(() => {
-        for (const entry of registry.entries()) {
-          entry.instance.destroy();
+        for (const entry of registry.values()) {
+          for (let index = entry.cleanups.length - 1; index >= 0; index -= 1) {
+            entry.cleanups[index]?.();
+          }
+          entry.controller.destroy();
         }
         registry.clear();
       });
     }
 
-    // `options.id` is currently unused at the plugin level — the
-    // controller auto-generates its own id. The field is reserved
-    // for future cross-cutting configuration (logging hooks,
-    // global event sinks, etc.). Reference the parameter to keep
-    // the lint rule happy and signal intent.
     void options;
   };
 }
 
-/**
- * Standalone factory — builds a {@link ToggleController} without an
- * Alpine runtime. Used by non-Alpine consumers (tests, vanilla TS
- * widgets, server-side rendering) and as the inner factory the
- * plugin's `$toggle` magic invokes.
- *
- * Returns the unwrapped controller — Alpine consumers wrap it with
- * `Alpine.reactive(...)` inside the plugin, but standalone callers
- * can mutate the returned instance directly.
- */
+/** Standalone factory — returns the unwrapped controller for non-Alpine consumers. */
 export function createToggle<TA, TB>(
   options: ToggleOptions<TA, TB, undefined>
 ): ToggleController<TA, TB, undefined, TA | TB>;
