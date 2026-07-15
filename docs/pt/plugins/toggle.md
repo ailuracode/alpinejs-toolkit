@@ -25,7 +25,7 @@ Alpine.start();
 
 ## API do magic
 
-`$toggle(options)` retorna um `ToggleController` reativo por chamada. Cada comando é encaminhado ao controller — veja o [README do pacote](https://github.com/ailuracode/alpinejs-toolkit/tree/main/packages/toggle#readme) para a arquitetura completa.
+`$toggle(options)` retorna uma **fachada reativa** apoiada por um `ToggleController` novo a cada chamada. Cada comando é encaminhado ao controller; o plugin inscreve um bridge no evento tipado `change` para que cada transição dispare a armadilha `set` do Alpine e os templates re-renderizem.
 
 ### Opções
 
@@ -36,20 +36,25 @@ Alpine.start();
 | `states.indeterminate`   | `N`      | Terceiro estado independente opcional                                  |
 | `initial`                | valor    | Valor inicial (padrão `on` em binário, `indeterminate` em ternário)    |
 
-### Instância
+### Fachada retornada por `$toggle(...)`
+
+A fachada estende `ToggleInstance` com flags de lifecycle e a API de hidratação:
 
 | Membro                   | Descrição                                                                  |
 |--------------------------|----------------------------------------------------------------------------|
-| `value`                  | Estado atual                                                               |
+| `value`                  | Estado atual (união estreita — binário omite `undefined`)                  |
 | `states`                 | Visão `{ on, off, indeterminate }`                                         |
 | `is(value)`              | Se `value` é o estado atual                                                |
 | `set(value)`             | Define o estado — no-op se o valor não muda ou é inválido                  |
-| `setSilently(value)`     | Define o estado sem emitir `change` (para hidratação)                     |
+| `setSilently(value)`     | Define o estado sem emitir `change` (hidratação); a fachada é atualizada   |
 | `toggle()`               | Alterna entre `on` e `off`; de `indeterminate` salta para `on`             |
 | `next()`                 | Avança por todos os estados na ordem de declaração                        |
 | `reset()`                | Restaura `initial`                                                         |
-| `on('change', listener)` | Inscreve-se nas transições; detail = `{ current, previous, source }`      |
-| `destroy()`              | Idempotente — libera todos os listeners                                    |
+| `id`                     | Identificador estável do controller (gerado automaticamente)                |
+| `isMounted`              | `true` após `mount()` ter sido executado                                   |
+| `isDestroyed`            | `true` após o controller ter sido destruído                                |
+
+Veja o [README do pacote](https://github.com/ailuracode/alpinejs-toolkit/tree/main/packages/toggle#readme) para a arquitetura completa e notas sobre o wiring de reatividade.
 
 ## Exemplos
 

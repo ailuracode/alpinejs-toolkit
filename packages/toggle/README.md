@@ -1,26 +1,38 @@
 # @ailuracode/alpine-toggle
 
-Framework-agnostic state machine for Alpine.js. Two required opposite states (`on`, `off`) and an optional independent state (`indeterminate`). Returns a reactive, evented, lifecycle-aware controller per call — no DOM, no storage, no system observers. Built on `@ailuracode/alpine-core`'s `BaseController`.
+Framework-agnostic state machine for Alpine.js. Two required opposite states (`on`, `off`) and an optional independent state (`indeterminate`). Returns a reactive, evented, lifecycle-aware controller per call — no DOM, no storage, no system observers. Built on `@ailuracode/alpine-core`'s `EventEmitter`.
 
 ## Architecture
 
 ```mermaid
 flowchart TD
-    entry["createToggle()<br/>(controller.ts)"]:::entry
+    entry["$toggle()<br/>(plugin.ts)"]:::entry
 
-    options["ToggleOptions<br/>(types.ts)"]:::module
+    controller["ToggleController<br/>(controller.ts)"]:::module
+    facade["buildReactiveToggleView<br/>(internal/reactive-adapter.ts)"]:::module
     validation["validation<br/>(internal/validation.ts)"]:::module
     events["ToggleEvents<br/>(events.ts)"]:::module
 
     classDef entry fill:#fef3c7,stroke:#b45309,color:#1f2937
     classDef module fill:#dbeafe,stroke:#1d4ed8,color:#1f2937
 
-    entry --> options
-    entry --> validation
-    entry --> events
+    entry --> facade
+    facade --> controller
+    controller --> validation
+    controller --> events
 ```
 
-The core is engine-free: no Alpine import, no DOM mutation, no `window`/`document`/`localStorage` access at any time. The Alpine integration is a thin adapter that wires the controller into `$toggle` magic.
+The core is engine-free: no Alpine import, no DOM mutation, no `window`/`document`/`localStorage` access at any time. The Alpine integration is a thin adapter that wires the controller into the `$toggle` magic.
+
+### Reactivity wiring
+
+`ToggleController` stores state in JS private fields (`#value`, `#hasTernary`, `#destroyed`, `#mounted`) — storage locations Alpine's reactive `Proxy` cannot intercept. To make the Alpine-facing instance truly reactive, the plugin builds a small **mutable facade** between the controller and `Alpine.reactive`:
+
+1. `buildReactiveToggleView(controller)` constructs a plain object whose commands (`set`, `toggle`, `next`, `reset`) delegate to the controller. `setSilently` (hydration path) writes the new value directly because it does not emit a `change` event.
+2. `Alpine.reactive(view)` wraps the facade. Every command goes through the controller; the controller emits a typed `change` event synchronously.
+3. The plugin's bridge subscription — closing over the **reactive proxy**, not the raw facade — writes `reactive.value = detail.current` once per transition. The write fires Alpine's `set` trap, so every `x-text` / `x-bind` / `x-show` binding re-renders.
+
+Each transition fires exactly one `set` trap. The facade's lifecycle flags (`isMounted`, `isDestroyed`, `id`) are getters that delegate to the controller so they always reflect current state.
 
 ## State model
 
@@ -58,6 +70,8 @@ power.on("change", (detail) => {
 });
 ```
 
+`createToggle()` returns the unwrapped `ToggleController` — no Alpine runtime required. Use this in non-Alpine contexts (tests, vanilla TS widgets, server-side rendering).
+
 ## Alpine usage
 
 ```ts
@@ -76,7 +90,7 @@ Alpine.start();
 </div>
 ```
 
-Each `$toggle(options)` call returns an independent reactive instance backed by a fresh `ToggleController`. Mutations flow through `Alpine.reactive`, so templates re-render on every change.
+Each `$toggle(options)` call returns an independent reactive facade backed by a fresh `ToggleController`. Mutations flow through `Alpine.reactive`, so templates re-render on every change — `x-text` and `x-bind` track `power.value` automatically.
 
 ### Ternary — when you genuinely need a third state
 
@@ -94,6 +108,25 @@ Each `$toggle(options)` call returns an independent reactive instance backed by 
 
 `toggle()` skips `indeterminate` — from `'unknown'` it jumps to `'yes'`. Use `next()` to walk through all three.
 
+### Hydration via `setSilently`
+
+`setSilently(value)` writes the value without emitting a `change` event. The Alpine facade still re-renders because the facade method updates its `value` property directly. Pair it with `x-init` to seed the controller from `localStorage` or server-provided state without producing a spurious `'user'` event:
+
+```html
+<div
+  x-data="{
+    persisted: JSON.parse(localStorage.getItem('mode') ?? 'null'),
+    mode: $toggle({ states: { on: 'on', off: 'off' }, initial: 'on' }),
+    init() { if (this.persisted) this.mode.setSilently(this.persisted); },
+  }"
+>
+  <span x-text="mode.value"></span>
+  <button type="button" @click="mode.toggle(); localStorage.setItem('mode', JSON.stringify(mode.value))">
+    Toggle
+  </button>
+</div>
+```
+
 ## Cleanup
 
 `controller.destroy()` is idempotent and tears down every event listener. The plugin forwards destroy through `Alpine.cleanup` when available, so every controller created by `$toggle(...)` is destroyed when Alpine tears down the runtime.
@@ -106,10 +139,18 @@ unsubscribe(); // stop one listener
 toggle.destroy(); // stop every listener — idempotent
 ```
 
+The Alpine facade exposes `isDestroyed` so consumers can guard templates:
+
+```html
+<template x-if="!power.isDestroyed">
+  <span x-text="power.value"></span>
+</template>
+```
+
 ## TypeScript
 
 ```ts
-import { createToggle, type ToggleInstance } from "@ailuracode/alpine-toggle";
+import { createToggle, type ToggleInstance, type ToggleReactiveView } from "@ailuracode/alpine-toggle";
 
 const binary = createToggle({ states: { on: "on", off: "off" } });
 binary.states.indeterminate; // undefined
@@ -120,13 +161,21 @@ const ternary = createToggle({
 });
 
 const instance: ToggleInstance<"yes", "no", "unknown", "yes" | "no" | "unknown"> = ternary;
+
+// The Alpine facade is a `ToggleReactiveView` — assignable to
+// `ToggleInstance` for backward compatibility, plus lifecycle flags.
+const view: ToggleReactiveView<"on", "off"> = $toggle({ states: { on: "on", off: "off" } });
+view.id;          // string
+view.isMounted;   // boolean
+view.isDestroyed; // boolean
 ```
 
-Add `/// <reference path="node_modules/@ailuracode/alpine-toggle/dist/global.d.ts" />` for `$toggle` in templates.
+Add `/// <reference path="node_modules/@ailuracode/alpine-toggle/dist/global.d.ts" />` for ambient type access in templates.
 
 ## API reference
 
 ```ts
+// Standalone factory — returns the raw ToggleController.
 const toggle = createToggle({
   states: { on: T, off: T, indeterminate?: T },
   initial?: T,
@@ -143,6 +192,21 @@ toggle.next()         // advances through [on, off, indeterminate]
 toggle.reset()        // restores initial
 toggle.on('change', listener) // listener({ current, previous, source })
 toggle.destroy()      // idempotent, releases listeners
+
+// Alpine magic — returns the reactive facade backed by a fresh controller.
+const view = $toggle({ states: { on, off, indeterminate?: N }, initial?: ... });
+
+view.value          // current state — narrow union (binary drops undefined)
+view.states         // { on, off, indeterminate }
+view.is(value)      // boolean
+view.set(value)     // void
+view.setSilently(value) // void — facade writes through to Alpine so templates re-render
+view.toggle()       // flips on ↔ off
+view.next()         // advances through states
+view.reset()        // restores initial
+view.id             // controller id (auto-generated)
+view.isMounted      // true once mount() has been called
+view.isDestroyed    // true once the controller has been destroyed
 ```
 
 ```ts
@@ -180,6 +244,8 @@ The package is fully importable in a Node runtime. The controller never touches 
 Prefer the named `togglePlugin` factory — `import { togglePlugin } from "@ailuracode/alpine-toggle"`. The default re-export is retained for compatibility and matches the rest of the toolkit (`themePlugin`, `scrollPlugin`, etc.).
 
 `0.3.0` adds `setSilently()` and tweaks the init microtask to preserve hydrated values — additive only, no breaking changes.
+
+`1.1.0` fixes the Alpine reactivity wiring and adds `ToggleReactiveView` (lifecycle flags + `setSilently` on the facade). `$toggle(options)` now produces a truly reactive instance — every transition fires Alpine's reactive `set` trap.
 
 ## License
 
