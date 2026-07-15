@@ -13,14 +13,14 @@ function stubNavigator(value: unknown): void {
 
 async function callSubscribe(
   adapter: ReturnType<typeof createIdlePermissionAdapter>,
-  listener: () => void
+  listener: Parameters<NonNullable<typeof adapter.subscribe>>[0]
 ): Promise<() => void> {
   const subscribe = adapter.subscribe;
-  expect(subscribe).toBeTypeOf("function");
   if (typeof subscribe !== "function") {
     throw new Error("expected subscribe");
   }
-  return await subscribe(listener);
+  expect(subscribe).toBeTypeOf("function");
+  return await subscribe.call(adapter, listener);
 }
 
 describe("@ailuracode/alpine-attention/permission-adapter", () => {
