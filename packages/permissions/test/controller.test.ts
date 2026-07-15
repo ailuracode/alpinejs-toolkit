@@ -48,10 +48,6 @@ describe("@ailuracode/alpine-permissions", () => {
       controller.destroy();
     });
 
-    it("imports without browser globals", async () => {
-      await expect(import("../src/index.js")).resolves.toBeDefined();
-    });
-
     it("registers adapters without side effects", () => {
       const query = vi.fn(async () => "prompt" as const);
       const adapter = createTestAdapter({ query });

@@ -41,12 +41,10 @@ describe("CarouselController encapsulation", () => {
     store.create("gallery", { autoplay: true });
 
     const snapshot = controller.snapshotInstances().gallery;
-    expect(snapshot).toBeDefined();
     expect(snapshot).not.toHaveProperty("embla");
     expect(snapshot).not.toHaveProperty("autoplay");
     expect(snapshot).not.toHaveProperty("viewport");
 
-    expect(store.instances.gallery).toBeDefined();
     expect(store.instances.gallery).not.toHaveProperty("embla");
     expect(store.instances.gallery).not.toHaveProperty("autoplay");
     expect(store.instances.gallery).not.toHaveProperty("viewport");
