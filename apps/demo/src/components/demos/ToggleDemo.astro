@@ -59,7 +59,7 @@ const plugin = getPluginNavItem("toggle")!;
 		</div>
 
 		<div
-			class="grid gap-3 rounded-lg border border-[var(--ios-border)] p-4"
+			class="grid gap-3 rounded-lg bg-[var(--ios-fill-quaternary)] p-4"
 			x-data="{
 				stored: (() => { try { return localStorage.getItem('toggle-demo-mode') ?? 'on'; } catch { return 'on'; } })(),
 				mode: $toggle({ states: { on: 'on', off: 'off' }, initial: 'on' }),
