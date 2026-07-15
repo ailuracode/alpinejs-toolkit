@@ -18,6 +18,7 @@ import menu from "@ailuracode/alpine-menu";
 import notify, { createNotificationPermissionAdapter } from "@ailuracode/alpine-notify";
 import overlay from "@ailuracode/alpine-overlay";
 import permissions from "@ailuracode/alpine-permissions";
+import player from "@ailuracode/alpine-player";
 import query from "@ailuracode/alpine-query-adapter-alpine";
 import queryKit, { createAlpineNanostoresAdapter, NanoStores } from "@ailuracode/alpine-query-kit";
 import scroll from "@ailuracode/alpine-scroll";
@@ -89,6 +90,7 @@ export async function startAlpineDemo(): Promise<void> {
     }),
     env(),
     gesture(),
+    player(),
     history(),
     transfer(),
     tooltip(),

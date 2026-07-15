@@ -76,6 +76,7 @@ export default defineConfig({
         "@": `${root}src`,
         "@ailuracode/alpine-env": pkg("env"),
         "@ailuracode/alpine-gesture": pkg("gesture"),
+        "@ailuracode/alpine-player": pkg("player"),
         "@ailuracode/alpine-transfer": pkg("transfer"),
         "@ailuracode/alpine-query-kit/devtools": `${root}../../packages/query-kit/src/devtools-entry.ts`,
         "@ailuracode/alpine-query-kit": pkg("query-kit"),

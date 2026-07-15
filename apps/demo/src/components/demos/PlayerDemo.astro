@@ -1,0 +1,63 @@
+---
+import { getPluginNavItem } from "../../plugin-nav";
+import DemoSection from "../DemoSection.astro";
+
+const plugin = getPluginNavItem("player")!;
+---
+
+<DemoSection id={plugin.id} title={plugin.title} api={plugin.api} description={plugin.description}>
+	<div
+		x-data
+		class="grid gap-6 rounded-lg border bg-[var(--ios-bg-secondary)] p-6"
+	>
+		<div class="grid gap-3">
+			<h3 class="text-sm font-medium">Audio controller</h3>
+			<audio x-audio="audioPlayer" preload="none"></audio>
+			<div class="flex flex-wrap gap-2">
+				<button type="button" class="demo-btn" @click="audioPlayer.toggle()">
+					<span x-text="audioPlayer.playing ? 'Pause' : 'Play'"></span>
+				</button>
+				<button type="button" class="demo-btn" @click="audioPlayer.seekBy(-10)">-10s</button>
+				<button type="button" class="demo-btn" @click="audioPlayer.seekBy(10)">+10s</button>
+				<button type="button" class="demo-btn" @click="audioPlayer.toggleMute()">
+					<span x-text="audioPlayer.muted ? 'Unmute' : 'Mute'"></span>
+				</button>
+			</div>
+			<p class="text-sm text-[var(--ios-label-secondary)]">
+				Progress:
+				<span x-text="Math.round(audioPlayer.progress * 100) + '%'"></span>
+			</p>
+		</div>
+
+		<div class="grid gap-3">
+			<h3 class="text-sm font-medium">Video controller</h3>
+			<video x-video="videoPlayer" preload="none" playsinline></video>
+			<div class="flex flex-wrap gap-2">
+				<button type="button" class="demo-btn" @click="videoPlayer.toggleMute()">
+					<span x-text="videoPlayer.muted ? 'Unmute' : 'Mute'"></span>
+				</button>
+				<button type="button" class="demo-btn" @click="videoPlayer.toggleFullscreen()">
+					Fullscreen
+				</button>
+				<button type="button" class="demo-btn" @click="videoPlayer.togglePictureInPicture()">
+					Picture in Picture
+				</button>
+			</div>
+			<p class="text-sm text-[var(--ios-label-secondary)]">
+				Fullscreen:
+				<span x-text="videoPlayer.fullscreen ? 'yes' : 'no'"></span>
+				· PiP:
+				<span x-text="videoPlayer.pictureInPicture ? 'yes' : 'no'"></span>
+			</p>
+		</div>
+	</div>
+</DemoSection>
+
+<style>
+	.demo-btn {
+		border: 1px solid var(--ios-separator);
+		border-radius: var(--ios-radius-md);
+		padding: 0.375rem 0.75rem;
+		font-size: 0.875rem;
+	}
+</style>
