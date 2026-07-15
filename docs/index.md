@@ -54,6 +54,7 @@ State and behavior only — you provide markup and CSS.
 | [Command](./plugins/command.md) | `$store.command` | Command palette / Spotlight |
 | [Carousel](./plugins/carousel.md) | `$store.carousel` | Slideshows and carousels |
 | [Gesture](./plugins/gesture.md) | `$store.gesture` / `x-gesture` | Tap, swipe, pan, pinch via pointer events |
+| [Player](./plugins/player.md) | `x-audio` / `x-video` | Native audio and video playback controllers |
 
 ## Extended & advanced
 

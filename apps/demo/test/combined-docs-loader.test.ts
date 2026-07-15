@@ -13,6 +13,7 @@ describe("combined docs loader helpers", () => {
     expect(ids).toContain("query");
     expect(ids).toContain("plugins/theme");
     expect(ids).toContain("plugins/gesture");
+    expect(ids).toContain("plugins/player");
     expect(ids).not.toContain("plugins/overlay");
   });
 

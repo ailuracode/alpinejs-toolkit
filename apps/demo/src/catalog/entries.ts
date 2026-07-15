@@ -143,7 +143,7 @@ export const PACKAGE_CATALOG: readonly PackageCatalogEntry[] = [
     order: 4,
     related: ["media"],
     demo: { available: true, componentId: "player" },
-    docs: { available: false },
+    docs: { available: true },
   }),
   entry({
     id: "scroll",

@@ -53,6 +53,7 @@ Solo estado y comportamiento — tú aportas markup y CSS.
 | [Accordion](./plugins/accordion.md) | `$store.accordion` | Secciones expandibles |
 | [Command](./plugins/command.md) | `$store.command` | Paleta de comandos |
 | [Carousel](./plugins/carousel.md) | `$store.carousel` | Carruseles |
+| [Player](./plugins/player.md) | `x-audio` / `x-video` | Reproducción nativa de audio y video |
 
 ## Extendidos y avanzados
 
