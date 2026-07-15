@@ -8,208 +8,144 @@ type YesNo = "yes" | "no";
 type YesNoUnknown = YesNo | "unknown";
 type EnabledDisabledMixed = "enabled" | "disabled" | "mixed";
 
-type PuppyLamp = {
+type ToggleStatesView<TA, TB, TN> = ToggleInstance<TA, TB, TN, TA | TB | TN>["states"];
+
+type TogglePuppyDemoData = {
   value: boolean;
-  set(value: boolean): void;
+  init(): void;
   toggle(): boolean;
+  setTrue(): void;
+  setFalse(): void;
 };
 
-type DoggoFilter = {
+type ToggleDoggoDemoData = {
   value: EnabledDisabledMixed;
-  states: ToggleInstance<
-    EnabledDisabledMixed,
-    EnabledDisabledMixed,
-    EnabledDisabledMixed
-  >["states"];
+  states: ToggleStatesView<EnabledDisabledMixed, EnabledDisabledMixed, EnabledDisabledMixed>;
+  lastChange: string;
+  init(): void;
   is(candidate: EnabledDisabledMixed): boolean;
-  set(value: EnabledDisabledMixed): void;
   toggle(): EnabledDisabledMixed;
   next(): EnabledDisabledMixed;
   reset(): EnabledDisabledMixed;
 };
 
-type BinaryPower = {
+type ToggleBinaryDemoData = {
   value: YesNo;
-  states: ToggleInstance<"yes", "no", undefined, YesNo>["states"];
+  states: ToggleStatesView<"yes", "no", undefined>;
+  init(): void;
   is(candidate: YesNo): boolean;
-  set(value: YesNo): void;
   toggle(): YesNo;
   next(): YesNo;
   reset(): YesNo;
 };
 
-type TernaryAnswer = {
+type ToggleTernaryDemoData = {
   value: YesNoUnknown;
-  states: ToggleInstance<"yes", "no", "unknown", YesNoUnknown>["states"];
+  states: ToggleStatesView<"yes", "no", "unknown">;
+  init(): void;
   is(candidate: YesNoUnknown): boolean;
-  set(value: YesNoUnknown): void;
   toggle(): YesNoUnknown;
   next(): YesNoUnknown;
   reset(): YesNoUnknown;
+  setUnknown(): void;
 };
-
-type TogglePuppyDemoData = {
-  lamp: PuppyLamp;
-};
-
-type ToggleDoggoDemoData = {
-  filter: DoggoFilter | null;
-  lastChange: string;
-  init(): void;
-};
-
-type ToggleBinaryDemoData = {
-  power: BinaryPower;
-};
-
-type ToggleTernaryDemoData = {
-  answer: TernaryAnswer;
-};
-
-function wrapPuppy(controller: ReturnType<typeof createPuppyToggle>): PuppyLamp {
-  const view: PuppyLamp = {
-    value: controller.value,
-    set(value) {
-      controller.set(value);
-      view.value = controller.value;
-    },
-    toggle() {
-      const next = controller.toggle();
-      view.value = next;
-      return next;
-    },
-  };
-  return view;
-}
-
-function wrapDoggo(
-  controller: ReturnType<
-    typeof createDoggoToggle<EnabledDisabledMixed, EnabledDisabledMixed, EnabledDisabledMixed>
-  >,
-  onChange: (detail: {
-    current: EnabledDisabledMixed;
-    previous: EnabledDisabledMixed | null;
-  }) => void
-): DoggoFilter {
-  const states = controller.states;
-  const view: DoggoFilter = {
-    value: controller.value,
-    states,
-    is(candidate) {
-      return view.value === candidate;
-    },
-    set(value) {
-      controller.set(value);
-      view.value = controller.value;
-    },
-    toggle() {
-      const next = controller.toggle();
-      view.value = next;
-      return next;
-    },
-    next() {
-      const next = controller.next();
-      view.value = next;
-      return next;
-    },
-    reset() {
-      const next = controller.reset();
-      view.value = next;
-      return next;
-    },
-  };
-
-  controller.onChange(onChange);
-  return view;
-}
-
-function wrapBinaryToggle(toggle: ToggleInstance<"yes", "no", undefined, YesNo>): BinaryPower {
-  const states = toggle.states;
-  const view: BinaryPower = {
-    value: toggle.value,
-    states,
-    is(candidate) {
-      return view.value === candidate;
-    },
-    set(value) {
-      toggle.set(value);
-      view.value = toggle.value;
-    },
-    toggle() {
-      const next = toggle.toggle();
-      view.value = next;
-      return next;
-    },
-    next() {
-      const next = toggle.next();
-      view.value = next;
-      return next;
-    },
-    reset() {
-      const next = toggle.reset();
-      view.value = next;
-      return next;
-    },
-  };
-  return view;
-}
-
-function wrapTernaryToggle(
-  toggle: ToggleInstance<"yes", "no", "unknown", YesNoUnknown>
-): TernaryAnswer {
-  const states = toggle.states;
-  const view: TernaryAnswer = {
-    value: toggle.value,
-    states,
-    is(candidate) {
-      return view.value === candidate;
-    },
-    set(value) {
-      toggle.set(value);
-      view.value = toggle.value;
-    },
-    toggle() {
-      const next = toggle.toggle();
-      view.value = next;
-      return next;
-    },
-    next() {
-      const next = toggle.next();
-      view.value = next;
-      return next;
-    },
-    reset() {
-      const next = toggle.reset();
-      view.value = next;
-      return next;
-    },
-  };
-  return view;
-}
 
 export function registerToggleDemos(Alpine: AlpineInstance): void {
   Alpine.data(
     "togglePuppyDemo",
     (): TogglePuppyDemoData => ({
-      lamp: wrapPuppy(createPuppyToggle(false)),
+      value: false,
+      init(this: TogglePuppyDemoData & { controller: ReturnType<typeof createPuppyToggle> }) {
+        this.controller = createPuppyToggle(false);
+        this.value = this.controller.value;
+      },
+      toggle(this: TogglePuppyDemoData & { controller: ReturnType<typeof createPuppyToggle> }) {
+        this.value = this.controller.toggle();
+        return this.value;
+      },
+      setTrue(this: TogglePuppyDemoData & { controller: ReturnType<typeof createPuppyToggle> }) {
+        this.controller.set(true);
+        this.value = this.controller.value;
+      },
+      setFalse(this: TogglePuppyDemoData & { controller: ReturnType<typeof createPuppyToggle> }) {
+        this.controller.set(false);
+        this.value = this.controller.value;
+      },
     })
   );
 
   Alpine.data(
     "toggleDoggoDemo",
     (): ToggleDoggoDemoData => ({
-      filter: null,
+      value: "mixed",
+      states: { on: "enabled", off: "disabled", indeterminate: "mixed" },
       lastChange: "",
-      init(this: ToggleDoggoDemoData) {
-        this.filter = wrapDoggo(
-          createDoggoToggle({
-            states: { on: "enabled", off: "disabled", indeterminate: "mixed" },
-            initial: "mixed",
-          }),
-          ({ current, previous }) => {
-            this.lastChange = `${String(previous)} → ${String(current)}`;
-          }
-        );
+      init(
+        this: ToggleDoggoDemoData & {
+          controller: ReturnType<
+            typeof createDoggoToggle<
+              EnabledDisabledMixed,
+              EnabledDisabledMixed,
+              EnabledDisabledMixed
+            >
+          >;
+        }
+      ) {
+        this.controller = createDoggoToggle({
+          states: { on: "enabled", off: "disabled", indeterminate: "mixed" },
+          initial: "mixed",
+        });
+        this.states = this.controller.states;
+        this.value = this.controller.value;
+        this.controller.onChange(({ current, previous }) => {
+          this.value = current;
+          this.lastChange = `${String(previous)} → ${String(current)}`;
+        });
+      },
+      is(this: ToggleDoggoDemoData, candidate: EnabledDisabledMixed) {
+        return this.value === candidate;
+      },
+      toggle(
+        this: ToggleDoggoDemoData & {
+          controller: ReturnType<
+            typeof createDoggoToggle<
+              EnabledDisabledMixed,
+              EnabledDisabledMixed,
+              EnabledDisabledMixed
+            >
+          >;
+        }
+      ) {
+        this.value = this.controller.toggle();
+        return this.value;
+      },
+      next(
+        this: ToggleDoggoDemoData & {
+          controller: ReturnType<
+            typeof createDoggoToggle<
+              EnabledDisabledMixed,
+              EnabledDisabledMixed,
+              EnabledDisabledMixed
+            >
+          >;
+        }
+      ) {
+        this.value = this.controller.next();
+        return this.value;
+      },
+      reset(
+        this: ToggleDoggoDemoData & {
+          controller: ReturnType<
+            typeof createDoggoToggle<
+              EnabledDisabledMixed,
+              EnabledDisabledMixed,
+              EnabledDisabledMixed
+            >
+          >;
+        }
+      ) {
+        this.value = this.controller.reset();
+        return this.value;
       },
     })
   );
@@ -217,24 +153,94 @@ export function registerToggleDemos(Alpine: AlpineInstance): void {
   Alpine.data(
     "toggleBinaryDemo",
     (): ToggleBinaryDemoData => ({
-      power: wrapBinaryToggle(
-        createToggle({
+      value: "no",
+      states: { on: "yes", off: "no", indeterminate: undefined },
+      init(
+        this: ToggleBinaryDemoData & { controller: ToggleInstance<"yes", "no", undefined, YesNo> }
+      ) {
+        this.controller = createToggle({
           states: { on: "yes", off: "no" },
           initial: "no",
-        })
-      ),
+        });
+        this.states = this.controller.states;
+        this.value = this.controller.value;
+      },
+      is(this: ToggleBinaryDemoData, candidate: YesNo) {
+        return this.value === candidate;
+      },
+      toggle(
+        this: ToggleBinaryDemoData & { controller: ToggleInstance<"yes", "no", undefined, YesNo> }
+      ) {
+        this.value = this.controller.toggle();
+        return this.value;
+      },
+      next(
+        this: ToggleBinaryDemoData & { controller: ToggleInstance<"yes", "no", undefined, YesNo> }
+      ) {
+        this.value = this.controller.next();
+        return this.value;
+      },
+      reset(
+        this: ToggleBinaryDemoData & { controller: ToggleInstance<"yes", "no", undefined, YesNo> }
+      ) {
+        this.value = this.controller.reset();
+        return this.value;
+      },
     })
   );
 
   Alpine.data(
     "toggleTernaryDemo",
     (): ToggleTernaryDemoData => ({
-      answer: wrapTernaryToggle(
-        createToggle({
+      value: "unknown",
+      states: { on: "yes", off: "no", indeterminate: "unknown" },
+      init(
+        this: ToggleTernaryDemoData & {
+          controller: ToggleInstance<"yes", "no", "unknown", YesNoUnknown>;
+        }
+      ) {
+        this.controller = createToggle({
           states: { on: "yes", off: "no", indeterminate: "unknown" },
           initial: "unknown",
-        })
-      ),
+        });
+        this.states = this.controller.states;
+        this.value = this.controller.value;
+      },
+      is(this: ToggleTernaryDemoData, candidate: YesNoUnknown) {
+        return this.value === candidate;
+      },
+      toggle(
+        this: ToggleTernaryDemoData & {
+          controller: ToggleInstance<"yes", "no", "unknown", YesNoUnknown>;
+        }
+      ) {
+        this.value = this.controller.toggle();
+        return this.value;
+      },
+      next(
+        this: ToggleTernaryDemoData & {
+          controller: ToggleInstance<"yes", "no", "unknown", YesNoUnknown>;
+        }
+      ) {
+        this.value = this.controller.next();
+        return this.value;
+      },
+      reset(
+        this: ToggleTernaryDemoData & {
+          controller: ToggleInstance<"yes", "no", "unknown", YesNoUnknown>;
+        }
+      ) {
+        this.value = this.controller.reset();
+        return this.value;
+      },
+      setUnknown(
+        this: ToggleTernaryDemoData & {
+          controller: ToggleInstance<"yes", "no", "unknown", YesNoUnknown>;
+        }
+      ) {
+        this.controller.set(this.states.indeterminate);
+        this.value = this.controller.value;
+      },
     })
   );
 }
