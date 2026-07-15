@@ -7,6 +7,24 @@ Package: `@ailuracode/alpine-toggle`
 
 Máquina de estados framework-agnostic para Alpine.js. Magic invocable `$toggle()` para máquinas de estado **binarias** y **ternarias** con eventos `change` tipados.
 
+## Niveles de capacidad
+
+El paquete expone tres entrypoints. Todas las variantes registran el mismo magic `$toggle` — solo cambia el plugin importado.
+
+| Variante | Import | Uso recomendado |
+| -------- | ------ | --------------- |
+| **Puppy** | `@ailuracode/alpine-toggle/puppy` | Booleano `true` / `false` |
+| **Doggo** | `@ailuracode/alpine-toggle/doggo` | Estados personalizados y `onChange()` |
+| **Big Dog** | `@ailuracode/alpine-toggle` | Ciclo de vida completo, hidratación y eventos tipados |
+
+```ts
+import puppyTogglePlugin from "@ailuracode/alpine-toggle/puppy";
+import doggoTogglePlugin from "@ailuracode/alpine-toggle/doggo";
+import { togglePlugin } from "@ailuracode/alpine-toggle";
+```
+
+Consulta el [README del paquete](https://github.com/ailuracode/alpinejs-toolkit/tree/main/packages/toggle#capability-tiers) para la guía completa de selección y tamaños de bundle.
+
 ## Instalación
 
 ```bash
@@ -23,11 +41,13 @@ Alpine.plugin(togglePlugin());
 Alpine.start();
 ```
 
+Para Puppy o Doggo, importa el plugin desde el subpath correspondiente en lugar del entrypoint raíz.
+
 ## API del magic
 
-`$toggle(options)` devuelve un `ToggleController` reactivo por llamada. Cada comando se reenvía al controller — consulta el [README del paquete](https://github.com/ailuracode/alpinejs-toolkit/tree/main/packages/toggle#readme) para la arquitectura completa.
+`$toggle(options)` devuelve un controller reactivo por llamada en **Big Dog** y **Doggo**. En **Puppy**, `$toggle(initial?)` acepta un booleano opcional.
 
-### Opciones
+### Opciones (Doggo y Big Dog)
 
 | Opción                  | Tipo     | Descripción                                                              |
 |-------------------------|----------|--------------------------------------------------------------------------|
@@ -36,7 +56,7 @@ Alpine.start();
 | `states.indeterminate`  | `N`      | Tercer estado independiente opcional                                     |
 | `initial`               | valor    | Valor inicial (por defecto `on` en binario, `indeterminate` en ternario) |
 
-### Instancia
+### Instancia Big Dog
 
 | Miembro                  | Descripción                                                                  |
 |--------------------------|------------------------------------------------------------------------------|
@@ -51,9 +71,20 @@ Alpine.start();
 | `on('change', listener)` | Se suscribe a las transiciones; detail = `{ current, previous, source }`     |
 | `destroy()`              | Idempotente — libera todos los listeners                                     |
 
+Doggo expone `onChange()` en lugar del bus de eventos tipado. Puppy solo incluye `value`, `set()` y `toggle()`.
+
 ## Ejemplos
 
-### Binario
+### Puppy — booleano
+
+```html
+<div x-data="{ lamp: $toggle(false) }">
+  <p x-text="lamp.value"></p>
+  <button type="button" @click="lamp.toggle()">Toggle</button>
+</div>
+```
+
+### Binario (Doggo / Big Dog)
 
 ```html
 <div x-data="{ power: $toggle({ states: { on: 'visible', off: 'hidden' } }) }">
@@ -77,7 +108,7 @@ Alpine.start();
 </div>
 ```
 
-### Eventos `change`
+### Eventos `change` (Big Dog)
 
 ```ts
 import { createToggle, type ToggleChangeDetail } from "@ailuracode/alpine-toggle";
@@ -88,6 +119,20 @@ const answer = createToggle({
 
 answer.on("change", (detail: ToggleChangeDetail<"yes", "no", "unknown">) => {
   console.log(detail.current, detail.previous, detail.source);
+});
+```
+
+### Suscripciones ligeras (Doggo)
+
+```ts
+import { createDoggoToggle } from "@ailuracode/alpine-toggle/doggo";
+
+const filter = createDoggoToggle({
+  states: { on: "enabled", off: "disabled", indeterminate: "mixed" },
+});
+
+filter.onChange(({ current, previous }) => {
+  console.log(previous, current);
 });
 ```
 

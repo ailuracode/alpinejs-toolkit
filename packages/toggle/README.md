@@ -2,15 +2,25 @@
 
 Framework-agnostic state machine for Alpine.js. Two required opposite states (`on`, `off`) and an optional independent state (`indeterminate`). Returns a reactive, evented, lifecycle-aware controller per call — no DOM, no storage, no system observers. Built on `@ailuracode/alpine-core`'s `BaseController`.
 
-## Capability tiers (PoC)
+## Capability tiers
 
 The package ships three entrypoints. Pick the smallest tier that fits your use case. All variants register the same `$toggle` magic — only the imported plugin changes.
 
-| Variant | Import | Best for | API surface |
-| ------- | ------ | -------- | ----------- |
-| **Puppy** | `@ailuracode/alpine-toggle/puppy` | Boolean on/off only | `value`, `set()`, `toggle()` |
-| **Doggo** | `@ailuracode/alpine-toggle/doggo` | Reusable app state with custom values | Puppy + `states`, `is()`, `next()`, `reset()`, `onChange()` |
-| **Big Dog** | `@ailuracode/alpine-toggle` | Full lifecycle, hydration, typed events | Doggo + `on()`, `once()`, `mount()`, `destroy()`, `setSilently()`, IDs |
+| Variant | Import | Gzip | Best for |
+| ------- | ------ | ---- | -------- |
+| **Puppy** | `@ailuracode/alpine-toggle/puppy` | 263 B | Boolean on/off only |
+| **Doggo** | `@ailuracode/alpine-toggle/doggo` | 607 B | Custom states without lifecycle or typed events |
+| **Big Dog** | `@ailuracode/alpine-toggle` | 926 B | Full lifecycle, hydration, and typed `change` events |
+
+### Choosing a tier
+
+| You need… | Use |
+| --------- | --- |
+| A simple `true` / `false` flag | **Puppy** |
+| Named states, cycling, reset, or `onChange()` | **Doggo** |
+| `on()` / `once()`, `mount()` / `destroy()`, `setSilently()`, or IDs | **Big Dog** |
+
+Code written against the shared contract (`value`, `set()`, `toggle()`) keeps working when you upgrade tiers.
 
 ```ts
 import puppyTogglePlugin from "@ailuracode/alpine-toggle/puppy";
@@ -18,31 +28,47 @@ import doggoTogglePlugin from "@ailuracode/alpine-toggle/doggo";
 import { togglePlugin } from "@ailuracode/alpine-toggle"; // Big Dog
 ```
 
-```html
-<!-- Puppy -->
-<div x-data="{ power: $toggle(false) }">
-  <button type="button" @click="power.toggle()">Toggle</button>
-</div>
+### Puppy — boolean only
 
-<!-- Doggo / Big Dog -->
-<div x-data="{ power: $toggle({ states: { on: 'on', off: 'off' } }) }">
-  <button type="button" @click="power.toggle()">Toggle</button>
+```ts
+import { createPuppyToggle } from "@ailuracode/alpine-toggle/puppy";
+
+const lamp = createPuppyToggle(false);
+lamp.toggle();
+lamp.set(true);
+```
+
+```html
+<div x-data="{ lamp: $toggle(false) }">
+  <p>Lamp: <strong x-text="lamp.value"></strong></p>
+  <button type="button" @click="lamp.toggle()">Toggle</button>
 </div>
 ```
 
-Code written against the shared contract (`value`, `set()`, `toggle()`) keeps working when you upgrade tiers.
+### Doggo — custom states and subscriptions
 
-### PoC bundle comparison
+```ts
+import { createDoggoToggle } from "@ailuracode/alpine-toggle/doggo";
 
-Independent `size-limit` budgets validate that smaller entrypoints exclude larger implementations. Run `pnpm --filter @ailuracode/alpine-toggle run size` after `pnpm run build` for current numbers.
+const filter = createDoggoToggle({
+  states: { on: "enabled", off: "disabled", indeterminate: "mixed" },
+  initial: "mixed",
+});
 
-| Variant | API surface | Gzip | Brotli | Internal duplication | Recommendation |
-| ------- | ----------- | ---- | ------ | -------------------- | -------------- |
-| Puppy | Minimal boolean | 263 B | 202 B | Shared `internal/transitions` + `validation` only | **Adopt** for boolean-only consumers |
-| Doggo | Balanced custom states | 607 B | 447 B | Reuses pure helpers; separate controller from Big Dog | **Adopt** when events/lifecycle are unnecessary |
-| Big Dog | Full | 926 B | 750 B | Baseline | **Keep** as root — existing API unchanged |
+filter.onChange(({ current, previous }) => {
+  console.log(previous, current);
+});
+```
 
-**PoC conclusion:** The tiered model produces meaningful bundle savings without inheritance or runtime feature flags. Puppy and Doggo are separate implementations that share only small pure helpers, so tree-shaking keeps each entrypoint isolated. Recommend shipping `/puppy` and `/doggo` subpaths alongside the unchanged root export.
+```html
+<div x-data="{ filter: $toggle({ states: { on: 'on', off: 'off' } }) }">
+  <button type="button" @click="filter.next()">Cycle</button>
+</div>
+```
+
+### Big Dog — full controller
+
+The root entrypoint is unchanged. See [Standalone usage](#standalone-usage-no-alpine) and [Alpine usage](#alpine-usage) below.
 
 ## Architecture
 
@@ -167,6 +193,46 @@ const instance: ToggleInstance<"yes", "no", "unknown", "yes" | "no" | "unknown">
 Add `/// <reference path="node_modules/@ailuracode/alpine-toggle/dist/global.d.ts" />` for `$toggle` in templates.
 
 ## API reference
+
+### Puppy
+
+```ts
+import { createPuppyToggle, puppyTogglePlugin } from "@ailuracode/alpine-toggle/puppy";
+
+const lamp = createPuppyToggle(false);
+
+lamp.value    // boolean
+lamp.set(true) // void
+lamp.toggle() // boolean — returns the new value
+
+Alpine.plugin(puppyTogglePlugin());
+// $toggle(initial?: boolean)
+```
+
+### Doggo
+
+```ts
+import { createDoggoToggle, doggoTogglePlugin } from "@ailuracode/alpine-toggle/doggo";
+
+const filter = createDoggoToggle({
+  states: { on: T, off: T, indeterminate?: T },
+  initial?: T,
+});
+
+filter.value
+filter.states         // { on, off, indeterminate }
+filter.is(value)
+filter.set(value)
+filter.toggle()
+filter.next()
+filter.reset()
+filter.onChange(listener) // ({ current, previous }) => void
+
+Alpine.plugin(doggoTogglePlugin());
+// $toggle(options)
+```
+
+### Big Dog
 
 ```ts
 const toggle = createToggle({

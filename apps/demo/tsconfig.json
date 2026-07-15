@@ -44,6 +44,8 @@
       "@ailuracode/alpine-scroll": ["../../packages/scroll/src/index.ts"],
       "@ailuracode/alpine-sidebar": ["../../packages/sidebar/src/index.ts"],
       "@ailuracode/alpine-theme": ["../../packages/theme/src/index.ts"],
+      "@ailuracode/alpine-toggle/puppy": ["../../packages/toggle/src/puppy.ts"],
+      "@ailuracode/alpine-toggle/doggo": ["../../packages/toggle/src/doggo.ts"],
       "@ailuracode/alpine-toggle": ["../../packages/toggle/src/index.ts"],
       "@ailuracode/alpine-gesture": ["../../packages/gesture/src/index.ts"],
       "@ailuracode/alpine-history": ["../../packages/history/src/index.ts"],

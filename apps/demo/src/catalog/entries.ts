@@ -85,7 +85,7 @@ export const PACKAGE_CATALOG: readonly PackageCatalogEntry[] = [
     role: "feature",
     surface: "magic",
     api: "$toggle",
-    summary: "Binary and ternary toggle state factories for segmented controls and filters.",
+    summary: "Binary and ternary toggle factories with Puppy, Doggo, and Big Dog capability tiers.",
     readmePath: "packages/toggle/README.md",
     tier: "extended",
     order: 1,

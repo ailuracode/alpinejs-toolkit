@@ -1,11 +1,29 @@
 ---
 title: "Toggle"
-description: "Alternar estados binários e ternários com o magic $toggle."
+description: "Alternar estados binarios y ternarios con el magic $toggle."
 ---
 
 Package: `@ailuracode/alpine-toggle`
 
 Máquina de estados framework-agnostic para Alpine.js. Magic chamável `$toggle()` para máquinas de estado **binárias** e **ternárias** com eventos `change` tipados.
+
+## Níveis de capacidade
+
+O pacote expõe três entrypoints. Todas as variantes registram o mesmo magic `$toggle` — apenas o plugin importado muda.
+
+| Variante | Import | Uso recomendado |
+| -------- | ------ | --------------- |
+| **Puppy** | `@ailuracode/alpine-toggle/puppy` | Booleano `true` / `false` |
+| **Doggo** | `@ailuracode/alpine-toggle/doggo` | Estados personalizados e `onChange()` |
+| **Big Dog** | `@ailuracode/alpine-toggle` | Ciclo de vida completo, hidratação e eventos tipados |
+
+```ts
+import puppyTogglePlugin from "@ailuracode/alpine-toggle/puppy";
+import doggoTogglePlugin from "@ailuracode/alpine-toggle/doggo";
+import { togglePlugin } from "@ailuracode/alpine-toggle";
+```
+
+Consulte o [README do pacote](https://github.com/ailuracode/alpinejs-toolkit/tree/main/packages/toggle#capability-tiers) para o guia completo de seleção e tamanhos de bundle.
 
 ## Instalação
 
@@ -23,11 +41,13 @@ Alpine.plugin(togglePlugin());
 Alpine.start();
 ```
 
+Para Puppy ou Doggo, importe o plugin do subpath correspondente em vez do entrypoint raiz.
+
 ## API do magic
 
-`$toggle(options)` retorna um `ToggleController` reativo por chamada. Cada comando é encaminhado ao controller — veja o [README do pacote](https://github.com/ailuracode/alpinejs-toolkit/tree/main/packages/toggle#readme) para a arquitetura completa.
+`$toggle(options)` retorna um controller reativo por chamada em **Big Dog** e **Doggo**. Em **Puppy**, `$toggle(initial?)` aceita um booleano opcional.
 
-### Opções
+### Opções (Doggo e Big Dog)
 
 | Opção                    | Tipo     | Descrição                                                              |
 |--------------------------|----------|------------------------------------------------------------------------|
@@ -36,7 +56,7 @@ Alpine.start();
 | `states.indeterminate`   | `N`      | Terceiro estado independente opcional                                  |
 | `initial`                | valor    | Valor inicial (padrão `on` em binário, `indeterminate` em ternário)    |
 
-### Instância
+### Instância Big Dog
 
 | Membro                   | Descrição                                                                  |
 |--------------------------|----------------------------------------------------------------------------|
@@ -51,9 +71,20 @@ Alpine.start();
 | `on('change', listener)` | Inscreve-se nas transições; detail = `{ current, previous, source }`      |
 | `destroy()`              | Idempotente — libera todos os listeners                                    |
 
+Doggo expõe `onChange()` em vez do barramento de eventos tipado. Puppy inclui apenas `value`, `set()` e `toggle()`.
+
 ## Exemplos
 
-### Binário
+### Puppy — booleano
+
+```html
+<div x-data="{ lamp: $toggle(false) }">
+  <p x-text="lamp.value"></p>
+  <button type="button" @click="lamp.toggle()">Toggle</button>
+</div>
+```
+
+### Binário (Doggo / Big Dog)
 
 ```html
 <div x-data="{ power: $toggle({ states: { on: 'visible', off: 'hidden' } }) }">
@@ -77,7 +108,7 @@ Alpine.start();
 </div>
 ```
 
-### Eventos `change`
+### Eventos `change` (Big Dog)
 
 ```ts
 import { createToggle, type ToggleChangeDetail } from "@ailuracode/alpine-toggle";
@@ -88,6 +119,20 @@ const answer = createToggle({
 
 answer.on("change", (detail: ToggleChangeDetail<"yes", "no", "unknown">) => {
   console.log(detail.current, detail.previous, detail.source);
+});
+```
+
+### Subscrições leves (Doggo)
+
+```ts
+import { createDoggoToggle } from "@ailuracode/alpine-toggle/doggo";
+
+const filter = createDoggoToggle({
+  states: { on: "enabled", off: "disabled", indeterminate: "mixed" },
+});
+
+filter.onChange(({ current, previous }) => {
+  console.log(previous, current);
 });
 ```
 
