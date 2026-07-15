@@ -14,14 +14,14 @@ const plugin = getPluginNavItem("toggle")!;
 			x-data="{ power: $toggle({ states: { on: 'on', off: 'off' }, initial: 'off' }) }"
 		>
 			<p class="text-xs text-[var(--ios-label-secondary)] m-0">
-				Binary — <code>x-text</code>, <code>x-bind:class</code>, and <code>x-text</code> for the auto-generated
-				<code>id</code> all re-render on every transition.
+				Binary — bindings read <code>power.value</code> directly so Vue's reactive proxy
+				tracks the dependency and re-evaluates on every transition.
 			</p>
 			<div class="flex items-center gap-3">
 				<span class="text-sm">Power:</span>
 				<strong class="text-lg" x-text="power.value"></strong>
 				<Badge
-					x-bind:class="{ 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300': power.is(power.states.on), 'bg-rose-500/15 text-rose-700 dark:text-rose-300': power.is(power.states.off) }"
+					x-bind:class="{ 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300': power.value === power.states.on, 'bg-rose-500/15 text-rose-700 dark:text-rose-300': power.value === power.states.off }"
 					x-text="power.value"
 				></Badge>
 				<Badge variant="outline">id: <code x-text="power.id"></code></Badge>
@@ -38,12 +38,17 @@ const plugin = getPluginNavItem("toggle")!;
 			x-data="{ answer: $toggle({ states: { on: 'yes', off: 'no', indeterminate: 'unknown' }, initial: 'unknown' }) }"
 		>
 			<p class="text-xs text-[var(--ios-label-secondary)] m-0">
-				Ternary — third state walked by <code>next()</code>, skipped by <code>toggle()</code>.
+				Ternary — same rule: bind to <code>answer.value</code> directly so the binding tracks
+				<code>value</code> as a dependency.
 			</p>
 			<div class="flex items-center gap-3">
 				<span class="text-sm">Answer:</span>
 				<strong class="text-lg" x-text="answer.value"></strong>
-				<Badge variant="outline" x-show="answer.is(answer.states.indeterminate)">neutral</Badge>
+				<Badge
+					variant="outline"
+					x-show="answer.value === answer.states.indeterminate"
+					x-text="answer.states.indeterminate"
+				></Badge>
 			</div>
 			<div class="flex flex-wrap gap-2">
 				<DemoButton @click="answer.toggle()">toggle()</DemoButton>
