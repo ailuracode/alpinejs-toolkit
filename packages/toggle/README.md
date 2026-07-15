@@ -2,6 +2,18 @@
 
 Framework-agnostic state machine for Alpine.js. Two required opposite states (`on`, `off`) and an optional independent state (`indeterminate`). Returns a reactive, evented, lifecycle-aware controller per call — no DOM, no storage, no system observers. Built on `@ailuracode/alpine-core`'s `EventEmitter`.
 
+## Tiers
+
+Choose the smallest entrypoint that provides the capabilities you need. All tiers share the `{ value, set, toggle }` contract.
+
+| Tier | Import | API | Gzip | Brotli | Recommended for |
+| --- | --- | --- | ---: | ---: | --- |
+| Puppy | `@ailuracode/alpine-toggle/puppy` | Binary `value`, `set`, `toggle` | 345 B | 311 B | Trivial binary toggles |
+| Doggo | `@ailuracode/alpine-toggle/doggo` | Puppy + custom/ternary states, `is`, `next`, `reset`, `onChange` | 700 B | 643 B | Ternary state and lightweight subscriptions |
+| Big Dog | `@ailuracode/alpine-toggle` | Doggo + ids, lifecycle, typed events, `setSilently` | 1,082 B | 959 B | Full controller and hydration needs |
+
+Each entrypoint is built independently. Importing Puppy or Doggo does not include Big Dog's event emitter, controller lifecycle, or id generation.
+
 ## Architecture
 
 ```mermaid
