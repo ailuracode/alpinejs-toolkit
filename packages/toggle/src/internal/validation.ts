@@ -8,6 +8,8 @@
  * in `controller.ts`.
  */
 
+export { buildStateCycle } from "./transitions";
+
 /**
  * Whether `states` declares a third (independent) state. The
  * `indeterminate` key may be present with the value `undefined` —
@@ -66,22 +68,4 @@ export function isConfiguredState<TOn, TOff, TIndet>(
     return candidate === (states as { readonly indeterminate: TIndet }).indeterminate;
   }
   return false;
-}
-
-/**
- * Builds the ordered list of states used by `next()`.
- *
- * Binary → `[on, off]`. Ternary → `[on, off, indeterminate]`.
- * Order matches declaration order in the consumer's `states` object,
- * so the cycle is predictable from the call site.
- */
-export function buildStateCycle<TOn, TOff, TIndet>(states: {
-  readonly on: TOn;
-  readonly off: TOff;
-  readonly indeterminate?: TIndet;
-}): readonly (TOn | TOff | TIndet)[] {
-  if (hasIndeterminateState(states)) {
-    return [states.on, states.off, (states as { readonly indeterminate: TIndet }).indeterminate];
-  }
-  return [states.on, states.off];
 }

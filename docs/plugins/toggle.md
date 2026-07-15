@@ -7,6 +7,18 @@ Package: `@ailuracode/alpine-toggle`
 
 Framework-agnostic state machine for Alpine.js. Callable `$toggle()` magic for **binary** and **ternary** state machines with typed `change` events. Headless — no DOM, no CSS, no storage.
 
+## Tiers
+
+Choose the smallest entrypoint that provides the capabilities you need. All tiers share the `{ value, set, toggle }` contract.
+
+| Tier | Import | API | Gzip | Brotli | Recommended for |
+| --- | --- | --- | ---: | ---: | --- |
+| Puppy | `@ailuracode/alpine-toggle/puppy` | Binary `value`, `set`, `toggle` | 345 B | 311 B | Trivial binary toggles |
+| Doggo | `@ailuracode/alpine-toggle/doggo` | Puppy + custom/ternary states, `is`, `next`, `reset`, `onChange` | 700 B | 643 B | Ternary state and lightweight subscriptions |
+| Big Dog | `@ailuracode/alpine-toggle` | Doggo + ids, lifecycle, typed events, `setSilently` | 1,082 B | 959 B | Full controller and hydration needs |
+
+Each entrypoint is built independently, so smaller tiers do not include Big Dog's event emitter, lifecycle, or id generation.
+
 ## Install
 
 ```bash

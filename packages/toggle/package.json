@@ -35,6 +35,14 @@
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
     },
+    "./puppy": {
+      "types": "./dist/puppy.d.ts",
+      "default": "./dist/puppy.js"
+    },
+    "./doggo": {
+      "types": "./dist/doggo.d.ts",
+      "default": "./dist/doggo.js"
+    },
     "./global": {
       "types": "./dist/global.d.ts"
     }
@@ -82,6 +90,30 @@
       "gzip": true,
       "brotli": true,
       "limit": "1.1 kB"
+    },
+    {
+      "name": "puppy surface",
+      "path": "dist/puppy.js",
+      "import": "*",
+      "ignore": [
+        "alpinejs",
+        "@ailuracode/alpine-core"
+      ],
+      "gzip": true,
+      "brotli": true,
+      "limit": "350 B"
+    },
+    {
+      "name": "doggo surface",
+      "path": "dist/doggo.js",
+      "import": "*",
+      "ignore": [
+        "alpinejs",
+        "@ailuracode/alpine-core"
+      ],
+      "gzip": true,
+      "brotli": true,
+      "limit": "700 B"
     }
   ]
 }

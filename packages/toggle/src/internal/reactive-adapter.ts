@@ -17,6 +17,14 @@ import type {
   Writable,
 } from "../types";
 
+/** Shared reactive facade factory used by every toggle capability tier. */
+export function createReactiveView<Facade>(
+  Alpine: { reactive<T>(value: T): T },
+  facade: Facade
+): Facade {
+  return Alpine.reactive(facade);
+}
+
 export function buildReactiveToggleView<TA, TB, TN>(
   controller: ToggleController<TA, TB, TN, ToggleReactiveView<TA, TB, TN>["value"]>
 ): ToggleReactiveView<TA, TB, TN> {

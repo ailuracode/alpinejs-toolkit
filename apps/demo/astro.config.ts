@@ -109,6 +109,8 @@ export default defineConfig({
         "@ailuracode/alpine-sidebar": pkg("sidebar"),
         "@ailuracode/alpine-scroll": pkg("scroll"),
         "@ailuracode/alpine-theme": pkg("theme"),
+        "@ailuracode/alpine-toggle/doggo": `${root}../../packages/toggle/src/doggo.ts`,
+        "@ailuracode/alpine-toggle/puppy": `${root}../../packages/toggle/src/puppy.ts`,
         "@ailuracode/alpine-toggle": pkg("toggle"),
         "@ailuracode/alpine-history": pkg("history"),
         "@ailuracode/alpine-realtime": pkg("realtime"),
