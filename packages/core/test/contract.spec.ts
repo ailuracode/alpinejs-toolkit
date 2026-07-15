@@ -26,8 +26,8 @@ afterEach(() => {
 });
 
 describe("SSR-safe imports", () => {
-  it("safeWindow() and safeDocument() return real handles under jsdom", () => {
-    // The package tests run under jsdom so DOM globals exist. The contract
+  it("safeWindow() and safeDocument() return real handles under happy-dom", () => {
+    // The package tests run under happy-dom so DOM globals exist. The contract
     // we care about is that the safe* helpers never throw — even when the
     // API is absent.
     assert.equal(isBrowser(), true);

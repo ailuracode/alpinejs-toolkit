@@ -2,7 +2,7 @@
  * Vitest setup for `@ailuracode/alpine-sidebar`.
  *
  * Installs a controllable `matchMedia` polyfill on `window` so the
- * breakpoint observer can be exercised deterministically. jsdom does NOT
+ * breakpoint observer can be exercised deterministically. happy-dom does NOT
  * ship `matchMedia`; the package must work under both the real API and
  * the test stub.
  *
@@ -130,7 +130,7 @@ afterEach(() => {
 
 afterAll(() => {
   // Restore the original `window.matchMedia` so we don't leak the stub
-  // into other test files that share the same jsdom worker.
+  // into other test files that share the same happy-dom worker.
   if (originalMatchMedia) {
     Object.defineProperty(window, "matchMedia", originalMatchMedia);
   } else {

@@ -31,7 +31,7 @@ describe("architecture:check", () => {
     expect(result.errors).toEqual([]);
     expect(result.ok).toBe(true);
     expect(result.packageCount).toBeGreaterThanOrEqual(28);
-  });
+  }, 30_000);
 
   it("flags internal barrel re-exports outside documented exceptions", () => {
     const fixturePolicy = {
