@@ -11,11 +11,11 @@ const plugin = getPluginNavItem("toggle")!;
 	<div class="grid gap-6">
 		<div x-data="togglePuppyDemo">
 			<p class="text-xs font-medium uppercase tracking-wide text-[var(--ios-label-secondary)]">Puppy — boolean (standalone)</p>
-			<p class="mt-1">Value: <strong x-text="value"></strong></p>
+			<p class="mt-1">Value: <strong x-text="toggle.value"></strong></p>
 			<div class="flex flex-wrap gap-2 mt-2">
-				<DemoButton @click="flip()">toggle()</DemoButton>
-				<DemoButton @click="set(true)">set(true)</DemoButton>
-				<DemoButton @click="set(false)">set(false)</DemoButton>
+				<DemoButton @click="toggle.flip()">toggle()</DemoButton>
+				<DemoButton @click="toggle.set(true)">set(true)</DemoButton>
+				<DemoButton @click="toggle.set(false)">set(false)</DemoButton>
 			</div>
 			<p class="text-xs text-[var(--ios-label-secondary)] mt-2">
 				<code>createToggle</code> headless — sync manual en <code>Alpine.data</code>. Con el plugin: <code>$toggle(false)</code>.
@@ -25,17 +25,17 @@ const plugin = getPluginNavItem("toggle")!;
 		<div x-data="toggleDoggoDemo">
 			<p class="text-xs font-medium uppercase tracking-wide text-[var(--ios-label-secondary)]">Doggo — custom states (standalone)</p>
 			<p class="mt-1">
-				Value: <strong x-text="value"></strong>
+				Value: <strong x-text="toggle.value"></strong>
 				<Badge
 					variant="outline"
 					class="ml-2 border-amber-500/50 bg-amber-500/10 text-amber-700 dark:text-amber-400"
-					x-show="value === 'mixed'"
+					x-show="toggle.is(toggle.states.indeterminate)"
 				>mixed</Badge>
 			</p>
 			<div class="flex flex-wrap gap-2 mt-2">
-				<DemoButton @click="flip()">toggle()</DemoButton>
-				<DemoButton @click="next()">next()</DemoButton>
-				<DemoButton @click="reset()">reset()</DemoButton>
+				<DemoButton @click="toggle.flip()">toggle()</DemoButton>
+				<DemoButton @click="toggle.next()">next()</DemoButton>
+				<DemoButton @click="toggle.reset()">reset()</DemoButton>
 			</div>
 			<p class="text-xs text-[var(--ios-label-secondary)] mt-2" x-show="lastChange">
 				Last <code>onChange</code>: <span x-text="lastChange"></span>

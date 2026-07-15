@@ -4,38 +4,55 @@ import type { AlpineInstance } from "../types/alpine.js";
 
 type FilterState = "enabled" | "disabled" | "mixed";
 
-type TogglePuppyDemoData = {
+type PuppyToggleView = {
   value: boolean;
-  init(): void;
   flip(): boolean;
   set(on: boolean): void;
 };
 
-type ToggleDoggoDemoData = {
+type DoggoToggleView = {
   value: FilterState;
-  lastChange: string;
-  init(): void;
+  states: { on: FilterState; off: FilterState; indeterminate: FilterState };
+  is(candidate: FilterState): boolean;
   flip(): FilterState;
   next(): FilterState;
   reset(): FilterState;
+};
+
+type TogglePuppyDemoData = {
+  toggle: PuppyToggleView | null;
+  init(): void;
+};
+
+type ToggleDoggoDemoData = {
+  toggle: DoggoToggleView | null;
+  lastChange: string;
+  init(): void;
 };
 
 export function registerToggleDemos(Alpine: AlpineInstance): void {
   Alpine.data(
     "togglePuppyDemo",
     (): TogglePuppyDemoData => ({
-      value: false,
+      toggle: null,
       init(this: TogglePuppyDemoData) {
-        this._controller = Puppy.createToggle(false);
-        this.value = this._controller.value;
-      },
-      flip(this: TogglePuppyDemoData & { _controller: ReturnType<typeof Puppy.createToggle> }) {
-        this.value = this._controller.toggle();
-        return this.value;
-      },
-      set(this: TogglePuppyDemoData & { _controller: ReturnType<typeof Puppy.createToggle> }, on) {
-        this._controller.set(on);
-        this.value = this._controller.value;
+        const controller = Puppy.createToggle(false);
+        this.toggle = {
+          value: controller.value,
+          flip: () => {
+            const next = controller.toggle();
+            if (this.toggle) {
+              this.toggle.value = next;
+            }
+            return next;
+          },
+          set: (on) => {
+            controller.set(on);
+            if (this.toggle) {
+              this.toggle.value = controller.value;
+            }
+          },
+        };
       },
     })
   );
@@ -43,30 +60,48 @@ export function registerToggleDemos(Alpine: AlpineInstance): void {
   Alpine.data(
     "toggleDoggoDemo",
     (): ToggleDoggoDemoData => ({
-      value: "mixed",
+      toggle: null,
       lastChange: "",
       init(this: ToggleDoggoDemoData) {
-        this._controller = Doggo.createToggle({
+        const controller = Doggo.createToggle({
           states: { on: "enabled", off: "disabled", indeterminate: "mixed" },
           initial: "mixed",
         });
-        this.value = this._controller.value;
-        this._controller.onChange(({ current, previous }) => {
-          this.value = current;
+        const states = controller.states;
+        controller.onChange(({ current, previous }) => {
+          if (this.toggle) {
+            this.toggle.value = current;
+          }
           this.lastChange = `${String(previous)} → ${String(current)}`;
         });
-      },
-      flip(this: ToggleDoggoDemoData & { _controller: ReturnType<typeof Doggo.createToggle> }) {
-        this.value = this._controller.toggle();
-        return this.value;
-      },
-      next(this: ToggleDoggoDemoData & { _controller: ReturnType<typeof Doggo.createToggle> }) {
-        this.value = this._controller.next();
-        return this.value;
-      },
-      reset(this: ToggleDoggoDemoData & { _controller: ReturnType<typeof Doggo.createToggle> }) {
-        this.value = this._controller.reset();
-        return this.value;
+        this.toggle = {
+          value: controller.value,
+          states,
+          is(candidate) {
+            return this.value === candidate;
+          },
+          flip: () => {
+            const next = controller.toggle();
+            if (this.toggle) {
+              this.toggle.value = next;
+            }
+            return next;
+          },
+          next: () => {
+            const next = controller.next();
+            if (this.toggle) {
+              this.toggle.value = next;
+            }
+            return next;
+          },
+          reset: () => {
+            const next = controller.reset();
+            if (this.toggle) {
+              this.toggle.value = next;
+            }
+            return next;
+          },
+        };
       },
     })
   );
