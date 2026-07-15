@@ -44,15 +44,16 @@
     "build": "tsup src/index.ts --format esm --dts --clean --out-dir dist --external @ailuracode/alpine-core",
     "clean": "rm -rf dist",
     "size": "size-limit",
-    "test": "vitest run --config ../../vitest.config.ts packages/collection",
-    "test:coverage": "vitest run --coverage --config ../../vitest.config.ts packages/collection",
-    "test:watch": "vitest --config ../../vitest.config.ts packages/collection",
+    "test": "vitest run --config ../../vitest.config.ts test",
+    "test:coverage": "vitest run --config ../../vitest.config.ts --coverage test",
+    "test:watch": "vitest --config ../../vitest.config.ts",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
     "@ailuracode/alpine-core": "workspace:*",
     "@types/node": "^26.1.0",
     "@vitest/coverage-v8": "^4.1.9",
+    "jsdom": "^29.1.1",
     "tsup": "^8.5.0"
   },
   "toolkit": {

@@ -1,13 +1,9 @@
 import type { QueryStore } from "@ailuracode/alpine-query";
 import { createQueryClient } from "@ailuracode/alpine-query";
 import query, { createAlpineStoreAdapter } from "@ailuracode/alpine-query-adapter-alpine";
-import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { startAlpine } from "../../../test/helpers.js";
-import {
-  installGlobalMatchMedia,
-  resetMatchMedia,
-  setMatchMedia,
-} from "../../../test/setup/match-media.js";
+import { resetMatchMedia, setMatchMedia } from "../../../test/setup.js";
 import { adapterBadgeHue, adapterBadgeStyle } from "../src/devtools/adapter-badge.js";
 import queryDevtoolsPlugin from "../src/devtools/index.js";
 import { getQueryStore, mountQueryDevtools } from "../src/devtools/panel.js";
@@ -19,10 +15,6 @@ import { createAlpineNanostoresAdapter } from "../src/nanostores/index.js";
 const nanostoresQuery = () => query({ adapter: createAlpineNanostoresAdapter });
 
 describe("@ailuracode/alpine-query-devtools", () => {
-  beforeAll(() => {
-    installGlobalMatchMedia();
-  });
-
   beforeEach(() => {
     document.body.innerHTML = "";
     localStorage.clear();

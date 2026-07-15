@@ -18,8 +18,6 @@ End-to-end tests use **Playwright directly** (not Vitest browser mode). Each pac
 
 Vitest remains the default for fast feedback. Playwright is reserved for behavior that requires a real browser runtime.
 
-Full layer and environment taxonomy: [Testing layers](./testing-layers.md). File inventory: `test/inventory/test-environment-inventory.json` (`pnpm run test:classify`).
-
 ## Layout
 
 ```text

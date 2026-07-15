@@ -1,5 +1,15 @@
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
-import { matchesAnyPattern } from "../scripts/architecture-check.mjs";
+import {
+  matchesAnyPattern,
+  runArchitectureCheck,
+  validateControllerAlpineImports,
+  validateControllerSurface,
+  validateDependencyDirection,
+  validateInternalBarrelExports,
+  validateUnitTestImports,
+} from "../scripts/architecture-check.mjs";
 import {
   exportsControllerClass,
   extractConstructorBodies,
@@ -11,8 +21,31 @@ import {
   importsPackageEntrypoint,
 } from "../scripts/architecture-check-ast.mjs";
 import { ARCHITECTURE_CHECK_POLICY } from "../scripts/architecture-check-policy.mjs";
+import { findHeadlessCssViolations } from "../scripts/headless-css-policy.mjs";
+
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
 describe("architecture:check", () => {
+  it("passes on the current repository", () => {
+    const result = runArchitectureCheck({ root });
+    expect(result.errors).toEqual([]);
+    expect(result.ok).toBe(true);
+    expect(result.packageCount).toBeGreaterThanOrEqual(28);
+  });
+
+  it("flags internal barrel re-exports outside documented exceptions", () => {
+    const fixturePolicy = {
+      ...ARCHITECTURE_CHECK_POLICY,
+      internalBarrelExceptions: [],
+    };
+
+    const errors = validateInternalBarrelExports(root, fixturePolicy);
+    expect(errors.some((error) => error.includes("packages/env/src/index.ts"))).toBe(true);
+    expect(errors.some((error) => error.includes("packages/scroll/src/index.ts"))).toBe(true);
+    expect(errors.some((error) => error.includes("packages/sidebar/src/index.ts"))).toBe(true);
+    expect(errors.some((error) => error.includes("packages/core/src/index.ts"))).toBe(false);
+  });
+
   it("flags alpine/, adapter/, and bindings/ adapter imports in public barrels", () => {
     const syntheticSource = [
       'export { x } from "./alpine/store.js";',
@@ -30,6 +63,13 @@ describe("architecture:check", () => {
     ]);
   });
 
+  it("allows documented internal barrel exceptions", () => {
+    const errors = validateInternalBarrelExports(root, ARCHITECTURE_CHECK_POLICY);
+    expect(errors.some((error) => error.includes("packages/env/src/index.ts"))).toBe(false);
+    expect(errors.some((error) => error.includes("packages/scroll/src/index.ts"))).toBe(false);
+    expect(errors.some((error) => error.includes("packages/sidebar/src/index.ts"))).toBe(false);
+  });
+
   it("flags cross-package internal imports", () => {
     const violations = findCrossPackageInternalImportViolations(
       'import { x } from "@ailuracode/alpine-theme/internal/foo.js";'
@@ -42,6 +82,11 @@ describe("architecture:check", () => {
   });
 
   it("flags runtime alpinejs imports in controller modules", () => {
+    const errors = validateControllerAlpineImports(root);
+    expect(errors.some((error) => error.includes("packages/attention/src/controller.ts"))).toBe(
+      false
+    );
+
     expect(
       hasRuntimeAlpineImport('import Alpine from "alpinejs";\nexport class DemoController {}')
     ).toBe(true);
@@ -53,6 +98,7 @@ describe("architecture:check", () => {
         'import { type AlpineType } from "alpinejs";\nexport class DemoController {}'
       )
     ).toBe(false);
+    expect(errors.every((error) => !error.includes("import type"))).toBe(true);
   });
 
   it("detects constructor browser globals and timers", () => {
@@ -78,12 +124,28 @@ describe("architecture:check", () => {
   });
 
   it("requires a controller surface unless explicitly exempted", () => {
+    const errors = validateControllerSurface(root, ARCHITECTURE_CHECK_POLICY);
+    expect(errors).toEqual([]);
+
+    const strictPolicy = {
+      ...ARCHITECTURE_CHECK_POLICY,
+      controllerExceptions: [],
+    };
+    const strictErrors = validateControllerSurface(root, strictPolicy);
+    expect(strictErrors.some((error) => error.includes("@ailuracode/alpine-query"))).toBe(true);
+    expect(strictErrors.some((error) => error.includes("@ailuracode/alpine-attention"))).toBe(
+      false
+    );
+
     expect(exportsControllerClass("export class ThemeController {}")).toBe(true);
     expect(exportsControllerClass('export { ThemeController } from "./controller.js";')).toBe(true);
     expect(exportsControllerClass("export const helper = 1;")).toBe(false);
   });
 
   it("requires controller tests to import implementation modules directly", () => {
+    const errors = validateUnitTestImports(root, ARCHITECTURE_CHECK_POLICY);
+    expect(errors).toEqual([]);
+
     expect(
       importsPackageEntrypoint(
         'import { DemoController } from "../src/index.js";',
@@ -96,6 +158,11 @@ describe("architecture:check", () => {
         "packages/demo/test/controller.spec.ts"
       )
     ).toBe(false);
+  });
+
+  it("keeps package dependency direction acyclic and core independent", () => {
+    const errors = validateDependencyDirection(root);
+    expect(errors).toEqual([]);
   });
 
   it("recognizes contract and integration test entrypoint import patterns", () => {
@@ -114,6 +181,11 @@ describe("architecture:check", () => {
     expect(
       matchesAnyPattern("tooltip.test.ts", ARCHITECTURE_CHECK_POLICY.controllerTestPatterns)
     ).toBe(false);
+  });
+
+  it("flags prohibited headless styling markers", () => {
+    const violations = findHeadlessCssViolations(":root.dark { color: red; }");
+    expect(violations.map((rule) => rule.id)).toContain("host-dark-selector");
   });
 });
 

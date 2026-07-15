@@ -1,29 +1,105 @@
 /**
  * Vitest setup for `@ailuracode/alpine-scroll`.
  *
- * Installs polyfills for browser APIs that happy-dom doesn't ship:
+ * Installs polyfills for browser APIs that jsdom v29 doesn't ship:
  *
  * - `Element.prototype.scrollIntoView`
  * - `window.scrollTo` / `window.scrollBy`
- * - `IntersectionObserver` (stub that records `observe` calls)
- * - `window.matchMedia` (shared helper from `test/setup/match-media.ts`)
+ * - `IntersectionObserver` (stub that just records `observe` calls)
+ * - `window.matchMedia`
  *
  * Each stub is intentionally observable so tests can assert against
- * recorded state.
+ * recorded state. The matchMedia stub dispatches change events when
+ * `setMatchMedia(query, matches)` is called.
  */
 
-import { afterAll, beforeEach } from "vitest";
-import {
-  getMatchMedia,
-  installWindowMatchMedia,
-  resetMatchMedia,
-  setMatchMedia,
-} from "../../../test/setup/match-media.js";
-import "../../../test/setup/singleton-cleanup.js";
+import { clearAllSingletons } from "@ailuracode/alpine-core";
+import { afterEach, beforeEach, vi } from "vitest";
 
-export { getMatchMedia, setMatchMedia };
+interface MockMediaQueryList {
+  matches: boolean;
+  media: string;
+  addEventListener(_event: "change", listener: () => void): void;
+  removeEventListener(_event: "change", listener: () => void): void;
+  addListener(listener: () => void): void;
+  removeListener(listener: () => void): void;
+  dispatchEvent(_event: Event): boolean;
+  onchange: null;
+}
 
-const { restore: restoreMatchMedia } = installWindowMatchMedia();
+interface MockMediaQueryListInternal extends MockMediaQueryList {
+  __listeners: Set<() => void>;
+  __fire(): void;
+}
+
+const queries = new Map<string, MockMediaQueryListInternal>();
+
+function createList(query: string, initial = false): MockMediaQueryListInternal {
+  const listeners = new Set<() => void>();
+  const list: MockMediaQueryListInternal = {
+    matches: initial,
+    media: query,
+    onchange: null,
+    addEventListener(_event, listener) {
+      listeners.add(listener);
+    },
+    removeEventListener(_event, listener) {
+      listeners.delete(listener);
+    },
+    addListener(listener) {
+      listeners.add(listener);
+    },
+    removeListener(listener) {
+      listeners.delete(listener);
+    },
+    dispatchEvent: () => true,
+    __listeners: listeners,
+    __fire() {
+      for (const listener of listeners) {
+        listener();
+      }
+    },
+  };
+  return list;
+}
+
+const matchMediaMock = vi.fn((query: string): MockMediaQueryList => {
+  let entry = queries.get(query);
+  if (!entry) {
+    entry = createList(query);
+    queries.set(query, entry);
+  }
+  return entry;
+});
+
+const originalMatchMedia = Object.getOwnPropertyDescriptor(window, "matchMedia");
+Object.defineProperty(window, "matchMedia", {
+  configurable: true,
+  writable: true,
+  value: matchMediaMock,
+});
+
+/** Updates a query's `matches` value and fires its listeners. */
+export function setMatchMedia(query: string, matches: boolean): void {
+  let entry = queries.get(query);
+  if (!entry) {
+    entry = createList(query, matches);
+    queries.set(query, entry);
+    return;
+  }
+  entry.matches = matches;
+  entry.__fire();
+}
+
+/** Returns the current `matches` value of a query (creating it as `false`). */
+export function getMatchMedia(query: string): boolean {
+  let entry = queries.get(query);
+  if (!entry) {
+    entry = createList(query, false);
+    queries.set(query, entry);
+  }
+  return entry.matches;
+}
 
 /* -------------------------------------------------------------------------- */
 /*                              Element.scrollIntoView                        */
@@ -214,27 +290,32 @@ export function resetIntersectionObservers(): void {
 /* -------------------------------------------------------------------------- */
 
 beforeEach(() => {
-  resetMatchMedia();
+  queries.clear();
   scrollIntoViewCalls.length = 0;
   scrollToCalls.length = 0;
   scrollByCalls.length = 0;
   intersectionObservers.length = 0;
-  document.body.replaceChildren();
+  document.documentElement.innerHTML = "<head></head><body></body>";
+  document.body.innerHTML = "";
   document.body.removeAttribute("style");
   document.body.className = "";
   document.documentElement.className = "";
   document.documentElement.style.cssText = "";
 });
 
-afterAll(() => {
-  restoreMatchMedia();
-  window.scrollTo = originalScrollTo;
-  window.scrollBy = originalScrollBy;
+afterEach(() => {
+  // Reset the singleton registry so each test gets a fresh
+  // `createScroll()` instance. Tests that don't call `destroy()`
+  // (or that pass different options on re-registration) would
+  // otherwise leak the previous controller into the next case.
+  clearAllSingletons();
 });
 
 /** Cleanup — runs once after the suite. */
 export function teardownScrollStubs(): void {
-  restoreMatchMedia();
+  if (originalMatchMedia) {
+    Object.defineProperty(window, "matchMedia", originalMatchMedia);
+  }
   window.scrollTo = originalScrollTo;
   window.scrollBy = originalScrollBy;
 }

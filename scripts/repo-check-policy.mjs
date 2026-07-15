@@ -13,12 +13,6 @@ export const REPO_CHECK_POLICY = {
   testExcluded: [],
 
   /**
-   * Package Vitest script contract enforced by scripts/vitest-package-scripts.mjs.
-   * Packages with vitest.config.ts use local `vitest run`; others scope root config
-   * to `packages/<folder>`. Bare `test` positional filters are forbidden.
-   */
-
-  /**
    * Dependency direction boundaries for infrastructure packages.
    * Packages listed here are validated to NOT import higher-level toolkit
    * packages. The value lists the packages they ARE allowed to import from

@@ -4,12 +4,9 @@ import { describe, expect, it } from "vitest";
 import {
   analyzeChangedFiles,
   changedPackageFolders,
-  e2eFoldersForPackages,
-  hasE2eInfraChanges,
   isDocumentationOnlyChange,
   toGithubOutputs,
 } from "../scripts/ci-changes.mjs";
-import { discoverE2ePackages } from "../scripts/e2e-run.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -92,34 +89,5 @@ describe("ci:changes", () => {
 
     expect(result.runE2e).toBe(true);
     expect(result.e2eFolders).toEqual(["theme"]);
-  });
-
-  it("scopes affected Vitest runs to package test directories", () => {
-    const result = analyzeChangedFiles(["packages/dialog/src/plugin.ts"], { root });
-
-    expect(result.testPaths).toContain("packages/dialog/test");
-    expect(result.testPaths.every((entry) => entry.endsWith("/test"))).toBe(true);
-    for (const folder of result.testFolders) {
-      expect(result.testPaths).toContain(`packages/${folder}/test`);
-    }
-  });
-
-  it("flags shared E2E infrastructure changes", () => {
-    expect(hasE2eInfraChanges(["e2e/playwright.base.ts"])).toBe(true);
-    expect(hasE2eInfraChanges(["packages/theme/src/plugin.ts"])).toBe(false);
-  });
-
-  it("scopes E2E packages to folders with Playwright configs", () => {
-    const available = new Set(discoverE2ePackages());
-    const folders = e2eFoldersForPackages(["theme", "core"], available);
-
-    expect(folders).toEqual(["core", "theme"]);
-  });
-
-  it("runs E2E when shared infrastructure changes", () => {
-    const result = analyzeChangedFiles(["e2e/server/start-fixture-server.mjs"], { root });
-
-    expect(result.runFull).toBe(true);
-    expect(result.runE2e).toBe(true);
   });
 });

@@ -36,8 +36,8 @@
     "build": "tsup --config tsup.config.ts && cp src/global.d.ts dist/global.d.ts",
     "clean": "rm -rf dist",
     "size": "size-limit",
-    "test": "vitest run --config ../../vitest.config.ts packages/media",
-    "test:watch": "vitest --config ../../vitest.config.ts packages/media",
+    "test": "vitest run --config ../../vitest.config.ts test",
+    "test:watch": "vitest --config ../../vitest.config.ts",
     "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.test.json",
     "test:e2e": "playwright test --config playwright.config.ts",
     "test:e2e:report": "playwright show-report e2e/playwright-report"

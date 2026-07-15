@@ -112,7 +112,7 @@ vitest --list-tags=json        # JSON output
 --standalone              # Start without running (v4: runs matched files if a filter is passed)
 
 # Environment
---environment <env>       # happy-dom, node
+--environment <env>       # jsdom, happy-dom, node
 --globals                 # Enable global APIs
 
 # Debugging

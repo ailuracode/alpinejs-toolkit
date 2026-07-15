@@ -88,6 +88,17 @@ describe("@ailuracode/alpine-permissions contract", () => {
     expect(store.registry.camera).toBeUndefined();
   });
 
+  it("can be called with Alpine directly (no options)", () => {
+    const Alpine = startAlpine();
+    const result = permissionsPlugin(Alpine as Parameters<typeof permissionsPlugin>[0]);
+    expect(result).toBeUndefined();
+  });
+
+  it("can be called without arguments", () => {
+    const register = permissionsPlugin();
+    expect(register).toBeInstanceOf(Function);
+  });
+
   it("calls Alpine.cleanup when available", () => {
     const cleanup = vi.fn();
     const Alpine = startAlpine();

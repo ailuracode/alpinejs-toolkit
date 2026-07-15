@@ -20,10 +20,6 @@ Vitest is a next-generation testing framework powered by Vite. It provides a Jes
 
 > The skill is based on Vitest 5.x (beta), generated at 2026-06-22.
 
-## Alpine Toolkit convention
-
-This monorepo uses **happy-dom** for simulated DOM tests. Do **not** add `jsdom` as a dependency or Vitest environment. Package overlays and root routing are defined in `scripts/vitest-projects.mjs`; legacy `@vitest-environment jsdom` directives are normalized to `happy-dom` in `scripts/test-environment-classify.mjs`.
-
 ## Core
 
 | Topic | Description | Reference |
@@ -54,6 +50,6 @@ This monorepo uses **happy-dom** for simulated DOM tests. Do **not** add `jsdom`
 | Topic | Description | Reference |
 |-------|-------------|-----------|
 | Vi Utilities | vi helper: mock, spyOn, fake timers, hoisted, waitFor | [advanced-vi](references/advanced-vi.md) |
-| Environments | Test environments: node, happy-dom (project default), custom | [advanced-environments](references/advanced-environments.md) |
+| Environments | Test environments: node, jsdom, happy-dom, custom | [advanced-environments](references/advanced-environments.md) |
 | Type Testing | Type-level testing with expectTypeOf and assertType | [advanced-type-testing](references/advanced-type-testing.md) |
 | Projects | Multi-project workspaces, different configs per project | [advanced-projects](references/advanced-projects.md) |

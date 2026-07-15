@@ -42,7 +42,7 @@
     "build": "tsup src/index.ts --format esm --dts --clean --out-dir dist --tsconfig tsconfig.build.json",
     "prepublishOnly": "pnpm run build",
     "size": "size-limit",
-    "test": "vitest run --config ../../vitest.config.ts packages/query-adapter-alpine"
+    "test": "vitest run --config ../../vitest.config.ts test"
   },
   "keywords": [
     "alpinejs",

@@ -1,7 +1,21 @@
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
-import { validatePackedWorkspace } from "../scripts/pack-check.mjs";
+import {
+  discoverPublishablePackages,
+  runPackCheck,
+  validatePackedWorkspace,
+} from "../scripts/pack-check.mjs";
+
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
 describe("pack:check", () => {
+  it("discovers every non-private package dynamically", () => {
+    const packages = discoverPublishablePackages(root);
+    expect(packages.length).toBe(38);
+    expect(packages.every((pkg) => pkg.isPrivate === false)).toBe(true);
+  });
+
   it("rejects forbidden tarball files and workspace ranges", () => {
     const errors = validatePackedWorkspace(
       { name: "@ailuracode/alpine-fixture" },
@@ -53,4 +67,12 @@ describe("pack:check", () => {
       '@ailuracode/alpine-fixture: packed manifest has invalid "sideEffects" metadata'
     );
   });
+
+  it("passes on current repository", () => {
+    const result = runPackCheck(root);
+
+    expect(result.ok).toBe(true);
+    expect(result.errors).toEqual([]);
+    expect(result.packageCount).toBe(38);
+  }, 120_000);
 });

@@ -166,6 +166,10 @@ describe("QueryCache — comprehensive coverage", () => {
 
       expect(cache.get(["cancel"])?.fetchStatus).toBe("idle");
     });
+
+    it("no-ops for missing entry", () => {
+      cache.cancel(["nonexistent"]);
+    });
   });
 
   describe("invalidate", () => {
@@ -197,6 +201,10 @@ describe("QueryCache — comprehensive coverage", () => {
 
       expect(fn.mock.calls.length).toBeGreaterThanOrEqual(callCount + 2);
     });
+
+    it("invalidateEntry on missing entry does nothing", () => {
+      cache.invalidateEntry("nonexistent");
+    });
   });
 
   describe("remove", () => {
@@ -209,6 +217,10 @@ describe("QueryCache — comprehensive coverage", () => {
       cache.remove();
 
       expect(cache.getEntries()).toHaveLength(0);
+    });
+
+    it("removeEntry on missing entry does nothing", () => {
+      cache.removeEntry("nonexistent");
     });
 
     it("remove with multiple keys", async () => {
@@ -250,6 +262,12 @@ describe("QueryCache — comprehensive coverage", () => {
       expect(cache.get<Todo[]>(["sd2"])?.data).toHaveLength(2);
     });
 
+    it("no-ops on missing entry", () => {
+      cache.setData(["missing"], "value");
+    });
+  });
+
+  describe("reset", () => {
     it("clears all entries and mutations", async () => {
       const fn = vi.fn().mockResolvedValue("data");
       cache.observe(["a"], fn, { staleTime: 60_000 });

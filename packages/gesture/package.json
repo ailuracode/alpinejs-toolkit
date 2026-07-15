@@ -35,7 +35,7 @@
   "scripts": {
     "build": "tsup src/index.ts --format esm --dts --clean --out-dir dist && cp src/global.d.ts dist/global.d.ts",
     "size": "size-limit",
-    "test": "vitest run --config ../../vitest.config.ts packages/gesture",
+    "test": "vitest run",
     "test:e2e": "playwright test --config playwright.config.ts",
     "test:e2e:report": "playwright show-report e2e/playwright-report"
   },

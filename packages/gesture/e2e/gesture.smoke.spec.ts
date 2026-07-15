@@ -1,6 +1,16 @@
 import { expect, test, waitForAlpineFixture } from "../../../e2e/fixtures.js";
 
 test.describe("@ailuracode/alpine-gesture smoke", () => {
+  test("exposes the gesture store and wires accessible fixtures", async ({ page }) => {
+    await page.goto("/");
+    await waitForAlpineFixture(page);
+
+    await expect(page.getByRole("heading", { name: "Gesture E2E fixture" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Tap me" })).toBeEnabled();
+    await expect(page.getByRole("button", { name: "Long press me" })).toBeEnabled();
+    await expect(page.getByRole("region", { name: "Swipe target" })).toBeVisible();
+  });
+
   test("recognizes a tap and updates the component state", async ({ page }) => {
     await page.goto("/");
     await waitForAlpineFixture(page);

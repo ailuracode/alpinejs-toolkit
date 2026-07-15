@@ -1,16 +1,15 @@
 ---
 name: test-environments
-description: Configure environments like happy-dom for browser APIs
+description: Configure environments like jsdom, happy-dom for browser APIs
 ---
 
 # Test Environments
 
-> **Alpine Toolkit:** use `happy-dom` only. This repo does not install or configure `jsdom`.
-
 ## Available Environments
 
 - `node` (default) - Node.js environment
-- `happy-dom` - Simulated DOM (project default for Alpine integration tests)
+- `jsdom` - Browser-like with DOM APIs
+- `happy-dom` - Faster alternative to jsdom
 - `edge-runtime` - Vercel Edge Runtime
 
 ## Configuration
@@ -19,11 +18,11 @@ description: Configure environments like happy-dom for browser APIs
 // vitest.config.ts
 defineConfig({
   test: {
-    environment: 'happy-dom',
+    environment: 'jsdom',
     
     // Environment-specific options
     environmentOptions: {
-      'happy-dom': {
+      jsdom: {
         url: 'http://localhost',
       },
     },
@@ -34,8 +33,11 @@ defineConfig({
 ## Installing Environment Packages
 
 ```bash
-# happy-dom (project default)
-pnpm add -D happy-dom
+# jsdom
+npm i -D jsdom
+
+# happy-dom (faster, fewer APIs)
+npm i -D happy-dom
 ```
 
 ## Per-File Environment
@@ -43,7 +45,7 @@ pnpm add -D happy-dom
 Use magic comment at top of file:
 
 ```ts
-// @vitest-environment happy-dom
+// @vitest-environment jsdom
 
 import { expect, test } from 'vitest'
 
@@ -53,12 +55,12 @@ test('DOM test', () => {
 })
 ```
 
-## happy-dom Environment
+## jsdom Environment
 
-Faster simulated DOM used across this monorepo:
+Full browser environment simulation:
 
 ```ts
-// @vitest-environment happy-dom
+// @vitest-environment jsdom
 
 test('DOM manipulation', () => {
   document.body.innerHTML = '<div id="app"></div>'
@@ -75,17 +77,34 @@ test('window APIs', () => {
 })
 ```
 
-### happy-dom Options
+### jsdom Options
 
 ```ts
 defineConfig({
   test: {
     environmentOptions: {
-      'happy-dom': {
+      jsdom: {
         url: 'http://localhost:3000',
+        html: '<!DOCTYPE html><html><body></body></html>',
+        userAgent: 'custom-agent',
+        resources: 'usable',
       },
     },
   },
+})
+```
+
+## happy-dom Environment
+
+Faster but fewer APIs:
+
+```ts
+// @vitest-environment happy-dom
+
+test('basic DOM', () => {
+  const el = document.createElement('div')
+  el.className = 'test'
+  expect(el.className).toBe('test')
 })
 ```
 
@@ -108,7 +127,7 @@ defineConfig({
         test: {
           name: 'dom',
           include: ['tests/dom/**/*.test.ts'],
-          environment: 'happy-dom',
+          environment: 'jsdom',
         },
       },
     ],
@@ -200,11 +219,11 @@ defineConfig({
 import { page } from 'vitest/browser' // v4: was '@vitest/browser/context'
 ```
 
-> v5: DOM-environment global assignments (e.g. `window.innerWidth`) now propagate to the underlying happy-dom implementation. Locators are also exact/strict by default.
+> v5: DOM-environment global assignments (e.g. `window.innerWidth`) now propagate to the underlying jsdom/happy-dom implementation. Locators are also exact/strict by default.
 
 ## CSS and Assets
 
-In happy-dom, configure CSS handling:
+In jsdom/happy-dom, configure CSS handling:
 
 ```ts
 defineConfig({
@@ -241,7 +260,8 @@ defineConfig({
 ## Key Points
 
 - Default is `node` - no browser APIs
-- Use `happy-dom` for simulated DOM tests in this monorepo
+- Use `jsdom` for full browser simulation
+- Use `happy-dom` for faster tests with basic DOM
 - Per-file environment via `// @vitest-environment` comment
 - Use projects for multiple environment configurations
 - Browser Mode is for real browser testing, not environment

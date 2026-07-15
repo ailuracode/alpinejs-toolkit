@@ -8,29 +8,17 @@ alwaysApply: false
 
 ## Framework
 
-- Vitest projects: `node` (default), `happy-dom`, and package overlay projects ([ALP-131](https://linear.app/ailuracode/issue/ALP-131/split-vitest-into-node-and-simulated-dom-projects))
+- Vitest + happy-dom (root `vitest.config.ts`)
 - Include pattern: `packages/*/test/**/*.{test,spec}.ts`
 - Playwright E2E (root `e2e/playwright.base.ts`, per-package `playwright.config.ts`)
 - E2E include pattern: `packages/*/e2e/**/*.spec.ts`
-- Inventory: `test/inventory/test-environment-inventory.json` — regenerate with `pnpm run test:classify` (enforced by `repo:check`)
-- Runtime pool settings in `scripts/vitest-runtime-settings.mjs` (ALP-134)
-
-## Environments
-
-| Target | Use for |
-|--------|---------|
-| `node` | Controllers, cache, parsing, utilities, SSR imports, repository checks |
-| `happy-dom` | Alpine stores, magics, directives, and simulated DOM integration tests (including package overlays) |
-| `playwright` | Real browser focus, layout, keyboard, permissions (`packages/<name>/e2e/`) |
-
-Override per file with `// @vitest-environment node` when classification is wrong. Root routing is driven by `scripts/vitest-projects.mjs` and the inventory from `pnpm run test:classify`.
 
 ## Harnesses
 
 - Store plugins: use `startAlpine()` from `test/helpers.ts`.
 - Magic plugins: use `createMagicHarness()` from `test/mock-alpine.ts`.
 - Query cache: use `createQueryClient()` with `vanillaQueryAdapter`.
-- `matchMedia`: use `setMatchMedia()` from `test/setup/match-media.ts` (install via `installGlobalMatchMedia()` or `installWindowMatchMedia()` when needed).
+- `matchMedia`: use `setMatchMedia()` from `test/setup.ts`.
 - Playwright E2E: use `e2e/fixtures.ts` and package `e2e/fixture/` harnesses.
 
 ## Patterns
@@ -41,19 +29,7 @@ Override per file with `// @vitest-environment node` when classification is wron
 
 ## Layer split
 
-Tests MUST be split by layer. Each file has a documented **target environment** in `test/inventory/test-environment-inventory.json`.
-
-| Layer | Filename | Target environment |
-|-------|----------|-------------------|
-| Controller | `controller.*`, `*Controller.test.ts` | `node` (DOM only when exercising events) |
-| Contract | `contract.*`, `encapsulation.*`, `ssr.*` | `node` for SSR; DOM when browser helpers are under test |
-| Integration | `plugin.*`, `alpine.integration.*`, `adapter.*`, `magic.*` | `happy-dom` |
-| Accessibility | `accessibility.*`, `a11y.*` | `node` or DOM depending on assertions |
-| Utility | `parse.*`, `utils.*`, `adapters/**` | `node` |
-| Repository | `test/architecture-check.test.ts`, etc. | `node` |
-| E2E | `packages/<name>/e2e/*.spec.ts` | `playwright` |
-
-Responsibilities by layer:
+Tests MUST be split by layer:
 
 - **Controller tests**: initial state, transitions, invariants, events, options, errors, idempotency, cleanup. Import implementation modules directly (`../src/controller.js`). Alpine MUST NOT be initialized unless strictly required.
 - **Alpine integration tests**: plugin registration, stores, magics, directives, reactivity, `$dispatch`, expression evaluation, cleanup, multiple instances. Use `startAlpine()` for store/directive plugins or `createMagicHarness()` for magic-only plugins.
@@ -80,11 +56,10 @@ Every behavior change MUST include tests. Global thresholds MUST NOT be lowered.
 | Import `src/index.ts` from `controller.spec.ts` | Import `../src/controller.js` and related modules directly |
 | Contract test imports implementation modules only | Contract/integration tests SHOULD import `../src/index.js` |
 | Theme/media tests fail on `matchMedia` | Call `setMatchMedia(query, matches)` from `test/setup.ts` |
-| Tests leak `localStorage` / DOM state | Rely on `test/setup/dom-reset.ts` via project setupFiles — don't skip cleanup |
+| Tests leak `localStorage` / DOM state | Rely on `test/setup.ts` `beforeEach` — don't skip cleanup |
 | Import test helpers without `.js` | `import { startAlpine } from "../../../test/helpers.js"` |
 | Assert Alpine reactivity without real Alpine | Magic harness uses plain objects — no reactivity there |
 | Put E2E specs in Vitest `test/` | Use `packages/<name>/e2e/*.spec.ts` with Playwright |
-| Add/rename tests without updating inventory | Run `pnpm run test:classify` and commit `test/inventory/test-environment-inventory.json` |
 | Use `page.waitForTimeout()` in E2E | Prefer Playwright auto-waiting and `expect(locator)` |
 
 Run `pnpm test` and `pnpm run lint` before finishing.

@@ -7,6 +7,10 @@ describe("@ailuracode/alpine-keyboard contract", () => {
     vi.restoreAllMocks();
   });
 
+  it("imports without browser globals", async () => {
+    await expect(import("../src/index.js")).resolves.toBeDefined();
+  });
+
   it("registers $store.keyboard and $keyboard magic", () => {
     const plugin = keyboardPlugin({
       shortcuts: [

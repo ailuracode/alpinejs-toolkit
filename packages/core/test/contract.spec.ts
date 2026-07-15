@@ -12,7 +12,10 @@ import { afterEach, describe, it } from "vitest";
 import {
   BaseController,
   CleanupStack,
+  definePlugin,
+  getRegisteredPlugins,
   isBrowser,
+  registerPlugin,
   resetPluginRegistry,
   safeDocument,
   safeWindow,
@@ -23,10 +26,49 @@ afterEach(() => {
 });
 
 describe("SSR-safe imports", () => {
-  it("safeWindow() and safeDocument() are safe to call without throwing", () => {
-    assert.doesNotThrow(() => isBrowser());
-    assert.doesNotThrow(() => safeWindow());
-    assert.doesNotThrow(() => safeDocument());
+  it("safeWindow() and safeDocument() return real handles under jsdom", () => {
+    // The package tests run under jsdom so DOM globals exist. The contract
+    // we care about is that the safe* helpers never throw — even when the
+    // API is absent.
+    assert.equal(isBrowser(), true);
+    assert.ok(safeWindow());
+    assert.ok(safeDocument());
+  });
+
+  it("importing the package does not register global listeners or timers", () => {
+    // Sanity: the registry starts empty for every test.
+    assert.deepEqual(getRegisteredPlugins(), []);
+  });
+});
+
+describe("plugin registration contract", () => {
+  it("multiple independent instances share the registry without interfering", () => {
+    registerPlugin(
+      "share-a",
+      definePlugin(["magic"], { names: ["share"], plugin: (_alpine) => undefined })
+    );
+    registerPlugin(
+      "share-b",
+      definePlugin(["magic"], { names: ["share"], plugin: (_alpine) => undefined })
+    );
+
+    const entries = getRegisteredPlugins();
+    assert.equal(entries.length, 2);
+    assert.deepEqual(
+      entries.map((entry) => entry.name),
+      ["share-a", "share-b"]
+    );
+  });
+
+  it("resetPluginRegistry() isolates the next test", () => {
+    registerPlugin(
+      "share",
+      definePlugin(["magic"], { names: ["share"], plugin: (_alpine) => undefined })
+    );
+    assert.equal(getRegisteredPlugins().length, 1);
+
+    resetPluginRegistry();
+    assert.equal(getRegisteredPlugins().length, 0);
   });
 });
 

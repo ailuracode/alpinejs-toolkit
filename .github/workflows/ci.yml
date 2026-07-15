@@ -125,7 +125,7 @@ jobs:
 
       - name: Run affected tests
         if: needs.detect.outputs.run_validate == 'true' && needs.detect.outputs.run_coverage != 'true' && needs.detect.outputs.test_paths != ''
-        run: pnpm exec vitest run --config vitest.config.ts ${{ needs.detect.outputs.test_paths }}
+        run: pnpm exec vitest run ${{ needs.detect.outputs.test_paths }}
 
       - name: Validate package tarballs
         if: needs.detect.outputs.run_validate == 'true' && needs.detect.outputs.run_pack == 'true'

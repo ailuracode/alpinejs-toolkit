@@ -62,6 +62,7 @@ describe("tree-shaking smoke", () => {
     it(`tree-shakes unused exports from @ailuracode/alpine-${fixture.label}`, async () => {
       const output = await bundleNamedImport(fixture.entry, fixture.namedImport);
 
+      expect(output.length).toBeGreaterThan(0);
       expect(output).not.toContain(fixture.marker);
     });
   }

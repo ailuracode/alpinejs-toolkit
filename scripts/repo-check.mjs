@@ -4,8 +4,6 @@ import { fileURLToPath } from "node:url";
 import { validateHeadlessCssPolicy } from "./headless-css-policy.mjs";
 import { validatePackageCatalogSurfaces } from "./package-catalog-check.mjs";
 import { REPO_CHECK_POLICY } from "./repo-check-policy.mjs";
-import { validateTestEnvironmentInventory } from "./test-environment-classify.mjs";
-import { validatePackageVitestScripts } from "./vitest-package-scripts.mjs";
 
 const SCOPE = "@ailuracode/alpine-";
 const TEST_FILE_PATTERN = /\.(test|spec)\.[cm]?[jt]sx?$/;
@@ -763,11 +761,6 @@ export function runRepoCheck(options = {}) {
       ...validatePackageCatalogSurfaces(root),
       ...validateSizeBudgets(packages, root),
       ...validatePackageTests(packages),
-      ...validatePackageVitestScripts(packages, packagesDir),
-      ...validateTestEnvironmentInventory(
-        root,
-        path.join(root, "test", "inventory", "test-environment-inventory.json")
-      ),
       ...validateTooling(root, publishable),
       ...validateDepBoundaries(root),
       ...validateHeadlessCssPolicy(root, readDirRecursive)

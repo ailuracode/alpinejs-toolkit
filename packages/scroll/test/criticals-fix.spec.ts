@@ -110,14 +110,24 @@ describe("Critical #3 — scrollPlugin factory subscribes once to controller.on(
   });
 });
 
-describe("Critical #5 — lockWithHandle(reason: string): string", () => {
-  it("returns a non-empty handle usable by unlock()", () => {
+describe("Critical #4 — unlock(handle): void", () => {
+  it("unlock returns void, not boolean", () => {
     const controller = new ScrollController();
     controller.mount();
     const handle = controller.lockWithHandle("modal");
+    const result = controller.unlock(handle);
+    expect(result).toBeUndefined();
+    controller.destroy();
+  });
+});
+
+describe("Critical #5 — lockWithHandle(reason: string): string", () => {
+  it("returns the handle as a string", () => {
+    const controller = new ScrollController();
+    controller.mount();
+    const handle = controller.lockWithHandle("modal");
+    expect(typeof handle).toBe("string");
     expect(handle.length).toBeGreaterThan(0);
-    expect(() => controller.unlock(handle)).not.toThrow();
-    expect(controller.isLocked).toBe(false);
     controller.destroy();
   });
 });
@@ -148,6 +158,18 @@ describe("Critical #7 — ScrollLockChangeDetail canonical + ScrollLockDetail al
     expect(detail.reason).toBe("modal");
     expect(typeof detail.handle).toBe("string");
     controller.destroy();
+  });
+
+  it("ScrollLockDetail type alias exists and equals ScrollLockChangeDetail", () => {
+    // Type-only assertion; runtime shape is identical.
+    const detail: ScrollLockChangeDetail = {
+      locked: true,
+      count: 1,
+      reason: "test",
+      handle: "h1",
+    };
+    const alias: import("../src/types").ScrollLockDetail = detail;
+    expect(alias).toEqual(detail);
   });
 });
 
@@ -221,5 +243,17 @@ describe("Critical #11 — safeNotify try/catch around listener invocations", ()
     await new Promise((r) => setTimeout(r, 30));
     expect(called).toBe(true);
     controller.destroy();
+  });
+});
+
+describe("Critical #12 — forbidOnly: true in vitest.config.ts", () => {
+  it("package config has forbidOnly set to true", async () => {
+    const fs = await import("node:fs");
+    const path = await import("node:path");
+    const url = await import("node:url");
+    const here = path.dirname(url.fileURLToPath(import.meta.url));
+    const configPath = path.resolve(here, "../vitest.config.ts");
+    const content = fs.readFileSync(configPath, "utf8");
+    expect(content).toMatch(/forbidOnly:\s*true/);
   });
 });

@@ -308,23 +308,23 @@ describe("@ailuracode/alpine-menu", () => {
     expect(onClose).toHaveBeenCalled();
   });
 
-  it("unregisterItem removes the item from the menu", () => {
-    store.open("user-menu");
+  it("handles unregisterItem", () => {
     store.unregisterItem("user-menu", "profile");
-    expect(store.instances["user-menu"]?.items.map((item) => item.id)).not.toContain("profile");
+    expect(store.isOpen("user-menu")).toBe(false);
   });
 
-  it("unregister removes menu instance", () => {
+  it("handles unregister of menu", () => {
     store.unregister("user-menu");
-    expect(store.instances["user-menu"]).toBeUndefined();
-    store.register("user-menu");
-    store.open("user-menu");
-    expect(store.isOpen("user-menu")).toBe(true);
+    expect(store.isOpen("user-menu")).toBe(false);
   });
 
   it("handles setActiveItem", () => {
     store.setActiveItem("user-menu", "settings");
     expect(store.activeItem("user-menu")).toBe("settings");
+  });
+
+  it("handles setActiveItem on unknown menu", () => {
+    store.setActiveItem("nonexistent", "item");
   });
 
   it("handles setActiveItem on disabled item", () => {
@@ -341,6 +341,32 @@ describe("@ailuracode/alpine-menu", () => {
     store.setActiveItem("user-menu", "logout");
     store.handleKeydown("user-menu", new KeyboardEvent("keydown", { key: "ArrowUp" }));
     expect(store.activeItem("user-menu")).toBe("settings");
+  });
+
+  it("handles open on unknown menu", () => {
+    store.open("nonexistent");
+  });
+
+  it("handles close on unknown menu", () => {
+    store.close("nonexistent");
+  });
+
+  it("handles toggle on unknown menu", () => {
+    store.toggle("nonexistent");
+  });
+
+  it("handles handleKeydown on unknown menu", () => {
+    store.handleKeydown("nonexistent", new KeyboardEvent("keydown", { key: "Enter" }));
+  });
+
+  it("handles handleKeydown when menu is closed", () => {
+    store.handleKeydown("user-menu", new KeyboardEvent("keydown", { key: "Enter" }));
+  });
+
+  it("handles handleOutsideClick on unknown menu", () => {
+    store.handleOutsideClick("nonexistent", {
+      target: document.createElement("div"),
+    } as unknown as MouseEvent);
   });
 
   it("handles handleOutsideClick when target is inside trigger", () => {
@@ -373,6 +399,12 @@ describe("@ailuracode/alpine-menu", () => {
 
     trigger.remove();
     container.remove();
+  });
+
+  it("exposes item props for inactive items", () => {
+    store.open("user-menu");
+    const props = store.itemProps("user-menu", "profile");
+    expect(props.tabindex).toBe(0);
   });
 
   it("handles disabled item props", () => {

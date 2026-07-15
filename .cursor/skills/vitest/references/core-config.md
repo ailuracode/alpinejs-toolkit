@@ -32,7 +32,7 @@ import { defineConfig } from 'vite'
 export default defineConfig({
   test: {
     globals: true,
-    environment: 'happy-dom',
+    environment: 'jsdom',
   },
 })
 ```
@@ -48,7 +48,7 @@ import viteConfig from './vite.config'
 
 export default mergeConfig(viteConfig, defineConfig({
   test: {
-    environment: 'happy-dom',
+    environment: 'jsdom',
   },
 }))
 ```
@@ -61,7 +61,7 @@ defineConfig({
     // Enable global APIs (describe, it, expect) without imports
     globals: true,
     
-    // Test environment: 'node', 'happy-dom'
+    // Test environment: 'node', 'jsdom', 'happy-dom'
     environment: 'node',
     
     // Setup files to run before each test file
@@ -158,7 +158,7 @@ defineConfig({
         test: {
           name: 'integration',
           include: ['tests/integration/**/*.test.ts'],
-          environment: 'happy-dom',
+          environment: 'jsdom',
         },
       },
     ],

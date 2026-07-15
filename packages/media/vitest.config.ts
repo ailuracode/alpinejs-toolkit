@@ -1,32 +1,27 @@
 /**
- * Per-package Vitest project for `@ailuracode/alpine-media`.
+ * Per-package Vitest configuration for `@ailuracode/alpine-media`.
  *
- * happy-dom integration specs run here with package-local matchMedia setup.
- * Controller and other node-classified specs run in the root `node` project.
+ * Per `.cursor/rules/tooling-configs.mdc` the package owns
+ * its own `vitest.config.ts`. We override the root defaults:
+ *
+ * - `environment: 'happy-dom'` — `matchMedia`, `window`, and
+ *   `MediaQueryList` listeners all require a DOM polyfill. The root
+ *   config also defaults to `happy-dom`, but we declare it here so
+ *   the package can be exercised in isolation.
+ * - `setupFiles` installs the matchMedia stub the controller and
+ *   store rely on. Per-test isolation is handled inside the setup
+ *   module.
+ *
+ * Coverage defaults live on the root config — the per-package file
+ * only declares what is genuinely different.
  */
-import path from "node:path";
-import { fileURLToPath } from "node:url";
 import { defineProject } from "vitest/config";
-import { packageProjectIncludesRelative } from "../../scripts/vitest-projects.mjs";
-import { buildVitestAliases } from "../../scripts/vitest-resolve.mjs";
-import { domProjectRuntimeSettings } from "../../scripts/vitest-runtime-settings.mjs";
-
-const packageDir = path.dirname(fileURLToPath(import.meta.url));
-const packageName = path.basename(packageDir);
-const root = path.resolve(packageDir, "../..");
 
 export default defineProject({
-  extends: true,
-  resolve: {
-    alias: buildVitestAliases(root),
-  },
   test: {
-    ...domProjectRuntimeSettings(),
-    name: `${packageName}-happy-dom`,
     globals: true,
     environment: "happy-dom",
-    include: packageProjectIncludesRelative(packageName, "happy-dom"),
+    include: ["test/**/*.{test,spec}.ts"],
     setupFiles: ["./test/setup.ts"],
-    exclude: ["**/e2e/**"],
   },
 });
