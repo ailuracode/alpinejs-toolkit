@@ -55,6 +55,11 @@ export type PackageCatalogEntry = {
     available: boolean;
     /** Override route slug when it differs from the package id. */
     routeId?: string;
+    /**
+     * English docs source. `guide` keeps the markdown file in `docs/`; `readme`
+     * (default) loads package README content via the combined docs loader.
+     */
+    source?: "readme" | "guide";
   };
 };
 

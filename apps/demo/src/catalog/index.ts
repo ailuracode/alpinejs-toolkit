@@ -65,6 +65,14 @@ export function getDocumentedCatalogEntries(): PackageCatalogEntry[] {
   return PACKAGE_CATALOG.filter((item) => item.docs?.available !== false);
 }
 
+export function usesGuideDocs(entry: PackageCatalogEntry): boolean {
+  return entry.docs?.source === "guide";
+}
+
+export function getReadmeBackedDocumentedEntries(): PackageCatalogEntry[] {
+  return getDocumentedCatalogEntries().filter((entry) => !usesGuideDocs(entry));
+}
+
 export function getPlaygroundCatalogEntries(): PackageCatalogEntry[] {
   return PACKAGE_CATALOG.filter((item) => item.demo?.available === true);
 }

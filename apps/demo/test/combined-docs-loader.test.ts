@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { getDocumentedCatalogEntries } from "../src/catalog/index.js";
+import {
+  getDocumentedCatalogEntries,
+  getReadmeBackedDocumentedEntries,
+  usesGuideDocs,
+} from "../src/catalog/index.js";
 import { docsEntryId, transformReadmeLinks } from "../src/loaders/combined-docs-loader.js";
 
 describe("combined docs loader helpers", () => {
@@ -10,6 +14,20 @@ describe("combined docs loader helpers", () => {
     expect(ids).toContain("plugins/theme");
     expect(ids).toContain("plugins/gesture");
     expect(ids).not.toContain("plugins/overlay");
+  });
+
+  it("keeps English guide docs for core, query, and form", () => {
+    const guideEntries = getDocumentedCatalogEntries().filter((entry) => usesGuideDocs(entry));
+    expect(guideEntries.map((entry) => entry.id)).toEqual(["core", "form", "query"]);
+    expect(getReadmeBackedDocumentedEntries().map((entry) => docsEntryId(entry))).not.toContain(
+      "core"
+    );
+    expect(getReadmeBackedDocumentedEntries().map((entry) => docsEntryId(entry))).not.toContain(
+      "query"
+    );
+    expect(getReadmeBackedDocumentedEntries().map((entry) => docsEntryId(entry))).not.toContain(
+      "plugins/form"
+    );
   });
 
   it("rewrites relative README links to site routes", () => {

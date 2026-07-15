@@ -8,7 +8,7 @@ import {
   getRelatedDocumentedEntries,
 } from "../catalog/docs-navigation.js";
 import {
-  getDocumentedCatalogEntries,
+  getReadmeBackedDocumentedEntries,
   type PackageCatalogEntry,
   packageDocsPath,
   packageDocsRouteId,
@@ -89,7 +89,7 @@ function paginationForEntry(entry: PackageCatalogEntry) {
 }
 
 async function loadPackageReadmeDocs(context: LoaderContext): Promise<void> {
-  for (const entry of getDocumentedCatalogEntries()) {
+  for (const entry of getReadmeBackedDocumentedEntries()) {
     const docId = docsEntryId(entry);
     const readmePath = path.join(REPO_ROOT, entry.readmePath);
 
@@ -129,11 +129,9 @@ async function loadPackageReadmeDocs(context: LoaderContext): Promise<void> {
   }
 }
 
-function removeEnglishPluginDocCopies(context: LoaderContext): void {
-  for (const id of [...context.store.keys()]) {
-    if (id.startsWith("plugins/")) {
-      context.store.delete(id);
-    }
+function removeEnglishDocsReplacedByReadme(context: LoaderContext): void {
+  for (const entry of getReadmeBackedDocumentedEntries()) {
+    context.store.delete(docsEntryId(entry));
   }
 }
 
@@ -145,7 +143,7 @@ export function combinedDocsLoader(): Loader {
     name: "combined-starlight-docs-loader",
     async load(context) {
       await starlightDocsLoader.load(context);
-      removeEnglishPluginDocCopies(context);
+      removeEnglishDocsReplacedByReadme(context);
       await loadPackageReadmeDocs(context);
     },
   };
