@@ -11,11 +11,11 @@ const plugin = getPluginNavItem("toggle")!;
 	<div class="grid gap-6">
 		<div x-data="togglePuppyDemo">
 			<p class="text-xs font-medium uppercase tracking-wide text-[var(--ios-label-secondary)]">Puppy — boolean</p>
-			<p class="mt-1">Lamp: <strong x-text="lamp.value"></strong></p>
+			<p class="mt-1">Value: <strong x-text="toggle.value"></strong></p>
 			<div class="flex flex-wrap gap-2 mt-2">
-				<DemoButton @click="lamp.toggle()">toggle()</DemoButton>
-				<DemoButton @click="lamp.setTrue()">set(true)</DemoButton>
-				<DemoButton @click="lamp.setFalse()">set(false)</DemoButton>
+				<DemoButton @click="toggle.toggle()">toggle()</DemoButton>
+				<DemoButton @click="toggle.set(true)">set(true)</DemoButton>
+				<DemoButton @click="toggle.set(false)">set(false)</DemoButton>
 			</div>
 			<p class="text-xs text-[var(--ios-label-secondary)] mt-2">
 				Import <code>@ailuracode/alpine-toggle/puppy</code> — <code>$toggle(initial?)</code> with no state config.
@@ -25,17 +25,17 @@ const plugin = getPluginNavItem("toggle")!;
 		<div x-data="toggleDoggoDemo">
 			<p class="text-xs font-medium uppercase tracking-wide text-[var(--ios-label-secondary)]">Doggo — custom states</p>
 			<p class="mt-1">
-				Filter: <strong x-text="filter.value"></strong>
+				Value: <strong x-text="toggle.value"></strong>
 				<Badge
 					variant="outline"
 					class="ml-2 border-amber-500/50 bg-amber-500/10 text-amber-700 dark:text-amber-400"
-					x-show="filter.is(filter.states.indeterminate)"
+					x-show="toggle.is(toggle.states.indeterminate)"
 				>mixed</Badge>
 			</p>
 			<div class="flex flex-wrap gap-2 mt-2">
-				<DemoButton @click="filter.toggle()">toggle()</DemoButton>
-				<DemoButton @click="filter.next()">next()</DemoButton>
-				<DemoButton @click="filter.reset()">reset()</DemoButton>
+				<DemoButton @click="toggle.toggle()">toggle()</DemoButton>
+				<DemoButton @click="toggle.next()">next()</DemoButton>
+				<DemoButton @click="toggle.reset()">reset()</DemoButton>
 			</div>
 			<p class="text-xs text-[var(--ios-label-secondary)] mt-2" x-show="lastChange">
 				Last <code>onChange</code>: <span x-text="lastChange"></span>
@@ -47,14 +47,14 @@ const plugin = getPluginNavItem("toggle")!;
 
 		<div x-data="toggleBinaryDemo">
 			<p class="text-xs font-medium uppercase tracking-wide text-[var(--ios-label-secondary)]">Big Dog — binary</p>
-			<p class="mt-1">Power: <strong x-text="power.value"></strong></p>
+			<p class="mt-1">Value: <strong x-text="toggle.value"></strong></p>
 			<div class="flex flex-wrap gap-2 mt-2">
-				<DemoButton @click="power.toggle()">toggle()</DemoButton>
-				<DemoButton @click="power.next()">next()</DemoButton>
-				<DemoButton @click="power.reset()">reset()</DemoButton>
+				<DemoButton @click="toggle.toggle()">toggle()</DemoButton>
+				<DemoButton @click="toggle.next()">next()</DemoButton>
+				<DemoButton @click="toggle.reset()">reset()</DemoButton>
 				<Badge
-					x-bind:class="{ 'bg-[var(--ios-blue)] text-white': power.is(power.states.on), 'text-[var(--ios-label-secondary)]': power.is(power.states.off) }"
-					x-text="power.value"
+					x-bind:class="{ 'bg-[var(--ios-blue)] text-white': toggle.is(toggle.states.on), 'text-[var(--ios-label-secondary)]': toggle.is(toggle.states.off) }"
+					x-text="toggle.value"
 				></Badge>
 			</div>
 		</div>
@@ -62,18 +62,18 @@ const plugin = getPluginNavItem("toggle")!;
 		<div x-data="toggleTernaryDemo">
 			<p class="text-xs font-medium uppercase tracking-wide text-[var(--ios-label-secondary)]">Big Dog — ternary</p>
 			<p class="mt-1">
-				Answer: <strong x-text="answer.value"></strong>
+				Value: <strong x-text="toggle.value"></strong>
 				<Badge
 					variant="outline"
 					class="ml-2 border-amber-500/50 bg-amber-500/10 text-amber-700 dark:text-amber-400"
-					x-show="answer.is(answer.states.indeterminate)"
+					x-show="toggle.is(toggle.states.indeterminate)"
 				>neutral</Badge>
 			</p>
 			<div class="flex flex-wrap gap-2 mt-2">
-				<DemoButton @click="answer.toggle()">toggle()</DemoButton>
-				<DemoButton @click="answer.next()">next()</DemoButton>
-				<DemoButton @click="answer.reset()">reset()</DemoButton>
-				<DemoButton @click="answer.set(answer.states.indeterminate)">set(unknown)</DemoButton>
+				<DemoButton @click="toggle.toggle()">toggle()</DemoButton>
+				<DemoButton @click="toggle.next()">next()</DemoButton>
+				<DemoButton @click="toggle.reset()">reset()</DemoButton>
+				<DemoButton @click="toggle.set(toggle.states.indeterminate)">set(unknown)</DemoButton>
 			</div>
 			<p class="text-xs text-[var(--ios-label-secondary)] mt-2">
 				Root import <code>@ailuracode/alpine-toggle</code> — typed <code>on('change')</code>, lifecycle, and hydration.
