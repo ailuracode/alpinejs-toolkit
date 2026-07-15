@@ -41,6 +41,9 @@ export type {
   ToggleInstance,
   ToggleOptions,
   TogglePluginCallback,
+  ToggleReactiveView,
+  ToggleReactiveViewValue,
   ToggleStatesView,
   ToggleTernaryStates,
+  Writable,
 } from "./types";

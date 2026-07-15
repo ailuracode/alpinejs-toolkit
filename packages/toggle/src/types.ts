@@ -101,7 +101,30 @@ export interface ToggleInstance<TA, TB, TN, V> {
   /** Restores the configured `initial` (defaulting to `on`, or `indeterminate` when present). */
   reset(): V;
 }
+export type Writable<T> = {
+  -readonly [K in keyof T]: T[K];
+};
 
+/** Value union for the Alpine facade. Binary drops `TN` (undefined); ternary keeps it. */
+export type ToggleReactiveViewValue<TA, TB, TN> = [TN] extends [undefined] ? TA | TB : TA | TB | TN;
+
+/**
+ * Alpine-facing surface of `$toggle(options)`. Extends
+ * {@link ToggleInstance} with lifecycle flags (`id`, `isMounted`,
+ * `isDestroyed`) and the hydration escape hatch `setSilently`.
+ *
+ * `value` is a plain property — Alpine's reactive `Proxy` `set` trap
+ * fires on every write so templates re-render. See
+ * `internal/reactive-adapter.ts` for the wiring.
+ */
+export interface ToggleReactiveView<TA, TB, TN = undefined>
+  extends ToggleInstance<TA, TB, TN, ToggleReactiveViewValue<TA, TB, TN>> {
+  readonly id: string;
+  readonly isMounted: boolean;
+  readonly isDestroyed: boolean;
+  /** Sets the value without emitting a `change` event — hydration escape hatch. */
+  setSilently(value: ToggleReactiveViewValue<TA, TB, TN>): void;
+}
 /**
  * Discriminator for the `change` event payload.
  *
