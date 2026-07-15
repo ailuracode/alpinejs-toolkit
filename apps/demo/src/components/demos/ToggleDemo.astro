@@ -10,43 +10,43 @@ const plugin = getPluginNavItem("toggle")!;
 <DemoSection id={plugin.id} title={plugin.title} api={plugin.api} description={plugin.description}>
 	<div class="grid gap-6">
 		<div x-data="togglePuppyDemo">
-			<p class="text-xs font-medium uppercase tracking-wide text-[var(--ios-label-secondary)]">Puppy — boolean</p>
-			<p class="mt-1">Value: <strong x-text="toggle.value"></strong></p>
+			<p class="text-xs font-medium uppercase tracking-wide text-[var(--ios-label-secondary)]">Puppy — boolean (standalone)</p>
+			<p class="mt-1">Value: <strong x-text="value"></strong></p>
 			<div class="flex flex-wrap gap-2 mt-2">
-				<DemoButton @click="toggle.toggle()">toggle()</DemoButton>
-				<DemoButton @click="toggle.set(true)">set(true)</DemoButton>
-				<DemoButton @click="toggle.set(false)">set(false)</DemoButton>
+				<DemoButton @click="flip()">toggle()</DemoButton>
+				<DemoButton @click="set(true)">set(true)</DemoButton>
+				<DemoButton @click="set(false)">set(false)</DemoButton>
 			</div>
 			<p class="text-xs text-[var(--ios-label-secondary)] mt-2">
-				Import <code>@ailuracode/alpine-toggle/puppy</code> — <code>$toggle(initial?)</code> with no state config.
+				<code>createToggle</code> headless — sync manual en <code>Alpine.data</code>. Con el plugin: <code>$toggle(false)</code>.
 			</p>
 		</div>
 
 		<div x-data="toggleDoggoDemo">
-			<p class="text-xs font-medium uppercase tracking-wide text-[var(--ios-label-secondary)]">Doggo — custom states</p>
+			<p class="text-xs font-medium uppercase tracking-wide text-[var(--ios-label-secondary)]">Doggo — custom states (standalone)</p>
 			<p class="mt-1">
-				Value: <strong x-text="toggle.value"></strong>
+				Value: <strong x-text="value"></strong>
 				<Badge
 					variant="outline"
 					class="ml-2 border-amber-500/50 bg-amber-500/10 text-amber-700 dark:text-amber-400"
-					x-show="toggle.is(toggle.states.indeterminate)"
+					x-show="value === 'mixed'"
 				>mixed</Badge>
 			</p>
 			<div class="flex flex-wrap gap-2 mt-2">
-				<DemoButton @click="toggle.toggle()">toggle()</DemoButton>
-				<DemoButton @click="toggle.next()">next()</DemoButton>
-				<DemoButton @click="toggle.reset()">reset()</DemoButton>
+				<DemoButton @click="flip()">toggle()</DemoButton>
+				<DemoButton @click="next()">next()</DemoButton>
+				<DemoButton @click="reset()">reset()</DemoButton>
 			</div>
 			<p class="text-xs text-[var(--ios-label-secondary)] mt-2" x-show="lastChange">
 				Last <code>onChange</code>: <span x-text="lastChange"></span>
 			</p>
 			<p class="text-xs text-[var(--ios-label-secondary)] mt-1">
-				Import <code>@ailuracode/alpine-toggle/doggo</code> — lightweight subscriptions without lifecycle APIs.
+				Import <code>@ailuracode/alpine-toggle/doggo</code> — con plugin, <code>$toggle(options)</code> devuelve un shell reactivo.
 			</p>
 		</div>
 
-		<div x-data="toggleBinaryDemo">
-			<p class="text-xs font-medium uppercase tracking-wide text-[var(--ios-label-secondary)]">Big Dog — binary</p>
+		<div x-data="{ toggle: $toggle({ states: { on: 'yes', off: 'no' }, initial: 'no' }) }">
+			<p class="text-xs font-medium uppercase tracking-wide text-[var(--ios-label-secondary)]">Big Dog — binary ($toggle)</p>
 			<p class="mt-1">Value: <strong x-text="toggle.value"></strong></p>
 			<div class="flex flex-wrap gap-2 mt-2">
 				<DemoButton @click="toggle.toggle()">toggle()</DemoButton>
@@ -59,8 +59,8 @@ const plugin = getPluginNavItem("toggle")!;
 			</div>
 		</div>
 
-		<div x-data="toggleTernaryDemo">
-			<p class="text-xs font-medium uppercase tracking-wide text-[var(--ios-label-secondary)]">Big Dog — ternary</p>
+		<div x-data="{ toggle: $toggle({ states: { on: 'yes', off: 'no', indeterminate: 'unknown' }, initial: 'unknown' }) }">
+			<p class="text-xs font-medium uppercase tracking-wide text-[var(--ios-label-secondary)]">Big Dog — ternary ($toggle)</p>
 			<p class="mt-1">
 				Value: <strong x-text="toggle.value"></strong>
 				<Badge
@@ -76,7 +76,7 @@ const plugin = getPluginNavItem("toggle")!;
 				<DemoButton @click="toggle.set(toggle.states.indeterminate)">set(unknown)</DemoButton>
 			</div>
 			<p class="text-xs text-[var(--ios-label-secondary)] mt-2">
-				Root import <code>@ailuracode/alpine-toggle</code> — typed <code>on('change')</code>, lifecycle, and hydration.
+				Root import <code>@ailuracode/alpine-toggle</code> — el plugin expone un shell <code>Alpine.reactive</code> que delega al controller.
 			</p>
 		</div>
 	</div>

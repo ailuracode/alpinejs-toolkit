@@ -16,7 +16,7 @@
 import assert from "node:assert/strict";
 import { describe, expectTypeOf, it } from "vitest";
 import type { ToggleInstance } from "../src/index";
-import { type ToggleController, togglePlugin } from "../src/index";
+import { togglePlugin } from "../src/index";
 
 interface MockAlpine {
   magics: Record<string, () => unknown>;
@@ -89,7 +89,7 @@ describe("togglePlugin — registration", () => {
 });
 
 describe("togglePlugin — $toggle factory", () => {
-  it("wraps the controller in Alpine.reactive", () => {
+  it("builds a plain reactive shell instead of wrapping the controller", () => {
     const Alpine = createMockAlpine();
     const reactiveCalls: unknown[] = [];
     Alpine.reactive = <T>(value: T): T => {
@@ -102,6 +102,9 @@ describe("togglePlugin — $toggle factory", () => {
     factory({ states: { on: "on", off: "off" } });
 
     assert.equal(reactiveCalls.length, 1);
+    const shell = reactiveCalls[0] as { value: string; toggle: () => string };
+    assert.equal(typeof shell.toggle, "function");
+    assert.equal(shell.value, "on");
   });
 
   it("returns an independent instance per call", () => {
@@ -145,29 +148,20 @@ describe("togglePlugin — $toggle factory", () => {
 });
 
 describe("togglePlugin — cleanup", () => {
-  it("destroys every controller when Alpine.cleanup fires", () => {
+  it("stops mutations after Alpine.cleanup destroys controllers", () => {
     const Alpine = createMockAlpine();
     togglePlugin()(Alpine as never);
     const factory = resolveToggleMagic(Alpine);
 
-    const a = factory({ states: { on: 1, off: 0 } }) as ToggleController<
-      number,
-      number,
-      undefined,
-      number
-    >;
-    const b = factory({ states: { on: 1, off: 0 } }) as ToggleController<
-      number,
-      number,
-      undefined,
-      number
-    >;
+    const instance = factory({ states: { on: "on", off: "off" } });
+    instance.toggle();
+    assert.equal(instance.value, "off");
 
     for (const fn of Alpine.cleanups) {
       fn();
     }
 
-    assert.equal(a.isDestroyed, true);
-    assert.equal(b.isDestroyed, true);
+    instance.toggle();
+    assert.equal(instance.value, "off");
   });
 });

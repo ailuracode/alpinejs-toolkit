@@ -2,7 +2,7 @@
  * Alpine.js integration for `@ailuracode/alpine-toggle`.
  *
  * Thin adapter that exposes `$toggle(options)` as a factory — every
- * call returns an independent reactive instance backed by a
+ * call returns an independent reactive shell backed by a
  * {@link ToggleController}. No `$store.*` registration (see `AGENTS.md`
  * for the integration contract).
  */
@@ -10,6 +10,7 @@
 import { InstanceRegistry } from "@ailuracode/alpine-core";
 import type { Alpine as AlpineBase } from "alpinejs";
 import { ToggleController } from "./controller";
+import { bridgeToggleControllerToAlpine } from "./internal/alpine-reactive-adapter.js";
 import type {
   CreateToggleOptions,
   ToggleAlpine,
@@ -42,8 +43,8 @@ export function togglePlugin(options: CreateToggleOptions = {}): TogglePluginCal
      * Typed as a generic arrow so each call site preserves the
      * consumer's narrowing (`on` / `off` / `indeterminate` types).
      * The factory constructs a fresh controller, mounts it,
-     * tracks it for cleanup, and hands Alpine the reactive
-     * wrapper to bind against directives.
+     * tracks it for cleanup, and hands Alpine a reactive shell that
+     * delegates to the controller.
      */
     const factory = <TA, TB, TN>(
       opts: ToggleOptions<TA, TB, TN>
@@ -51,10 +52,12 @@ export function togglePlugin(options: CreateToggleOptions = {}): TogglePluginCal
       const controller = new ToggleController<TA, TB, TN, TA | TB | TN>(opts);
       controller.mount();
       registry.register(controller.id, controller as ToggleController<unknown, unknown, unknown>);
-      const reactive = Alpine.reactive(
-        controller as unknown as ToggleController<unknown, unknown, unknown>
-      ) as ToggleController<unknown, unknown, unknown>;
-      return reactive as unknown as ToggleInstance<TA, TB, TN, TA | TB | TN>;
+      return bridgeToggleControllerToAlpine(Alpine, controller) as ToggleInstance<
+        TA,
+        TB,
+        TN,
+        TA | TB | TN
+      >;
     };
 
     Alpine.magic(TOGGLE_MAGIC_KEY, () => factory);
@@ -86,9 +89,8 @@ export function togglePlugin(options: CreateToggleOptions = {}): TogglePluginCal
  * widgets, server-side rendering) and as the inner factory the
  * plugin's `$toggle` magic invokes.
  *
- * Returns the unwrapped controller — Alpine consumers wrap it with
- * `Alpine.reactive(...)` inside the plugin, but standalone callers
- * can mutate the returned instance directly.
+ * Returns the unwrapped controller — Alpine consumers receive a reactive
+ * shell from `$toggle(...)` inside the plugin.
  */
 export function createToggle<TA, TB>(
   options: ToggleOptions<TA, TB, undefined>

@@ -59,7 +59,7 @@ describe("createToggle() — Puppy", () => {
 });
 
 describe("togglePlugin — Puppy $toggle factory", () => {
-  it("wraps the controller in Alpine.reactive", () => {
+  it("builds a plain reactive shell", () => {
     const Alpine = createMockAlpine();
     togglePlugin()(Alpine as never);
     const factory = Alpine.magics.toggle() as (initial?: boolean) => ToggleInstance;

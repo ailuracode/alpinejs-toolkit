@@ -146,7 +146,7 @@ Alpine.start();
 </div>
 ```
 
-Each `$toggle(options)` call returns an independent reactive instance backed by a fresh `ToggleController`. Mutations flow through `Alpine.reactive`, so templates re-render on every change.
+Each `$toggle(options)` call returns an independent reactive shell backed by a fresh `ToggleController`. The plugin builds a plain `Alpine.reactive` object that delegates commands to the controller and mirrors `value` on every change.
 
 ### Ternary — when you genuinely need a third state
 

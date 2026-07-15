@@ -3,6 +3,7 @@
  */
 
 import type { Alpine as AlpineBase } from "alpinejs";
+import { bridgeDoggoToggleToAlpine } from "../../internal/alpine-reactive-adapter.js";
 import { createDoggoToggle } from "./controller.js";
 import type {
   DoggoToggleInstance,
@@ -12,7 +13,7 @@ import type {
 } from "./types.js";
 
 interface DoggoToggleAlpine {
-  reactive<T>(value: T): T;
+  reactive<T extends object>(value: T): T;
   magic(name: string, factory: () => unknown): void;
 }
 
@@ -28,7 +29,12 @@ export function doggoTogglePlugin(
       opts: DoggoToggleOptions<TA, TB, TN>
     ): DoggoToggleInstance<TA, TB, TN, TA | TB | TN> => {
       const controller = createDoggoToggle(opts);
-      return Alpine.reactive(controller) as DoggoToggleInstance<TA, TB, TN, TA | TB | TN>;
+      return bridgeDoggoToggleToAlpine(Alpine, controller) as DoggoToggleInstance<
+        TA,
+        TB,
+        TN,
+        TA | TB | TN
+      >;
     };
 
     Alpine.magic(TOGGLE_MAGIC_KEY, () => factory);
