@@ -18,7 +18,7 @@ const plugin = getPluginNavItem("toggle")!;
 				<DemoButton @click="toggle.set(false)">set(false)</DemoButton>
 			</div>
 			<p class="text-xs text-[var(--ios-label-secondary)] mt-2">
-				<code>@ailuracode/alpine-toggle/puppy</code> — <code>$toggle(initial?)</code> with the same reactive shell as below.
+				<code>@ailuracode/alpine-toggle/puppy</code> — <code>Puppy.createToggle(initial)</code> in <code>Alpine.data</code>.
 			</p>
 		</div>
 
@@ -38,7 +38,7 @@ const plugin = getPluginNavItem("toggle")!;
 				<DemoButton @click="toggle.reset()">reset()</DemoButton>
 			</div>
 			<p class="text-xs text-[var(--ios-label-secondary)] mt-1">
-				<code>@ailuracode/alpine-toggle/doggo</code> — <code>$toggle(options)</code> with lightweight <code>onChange()</code> on <code>createToggle</code>.
+				<code>@ailuracode/alpine-toggle/doggo</code> — <code>Doggo.createToggle(options)</code> with <code>onChange()</code> sync.
 			</p>
 		</div>
 
