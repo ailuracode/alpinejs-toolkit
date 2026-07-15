@@ -184,6 +184,42 @@ export function validateCrossPackageInternalImports(root) {
   return errors;
 }
 
+export function validateToggleTierContainment(root) {
+  const errors = [];
+  const variantsDir = path.join(root, "packages", "toggle", "src", "variants");
+  const importPattern = /(?:from\s+|import\s*\()["']([^"']+)["']/g;
+
+  readDirRecursive(variantsDir, (filePath) => {
+    if (!SOURCE_FILE_PATTERN.test(filePath)) {
+      return;
+    }
+
+    const relativePath = toPosixPath(filePath.slice(root.length + 1));
+    const tier = relativePath.split("/")[4];
+    const source = readFileSync(filePath, "utf8");
+
+    for (const match of source.matchAll(importPattern)) {
+      const specifier = match[1];
+      if (!specifier?.startsWith(".")) {
+        continue;
+      }
+      const target = path.posix.normalize(
+        path.posix.join(path.posix.dirname(relativePath), specifier)
+      );
+      const rootModule =
+        /^packages\/toggle\/src\/(?:controller|events|plugin)(?:\.[cm]?[jt]s)?$/u.test(target);
+      const targetTier = target.match(/^packages\/toggle\/src\/variants\/([^/]+)/u)?.[1];
+      if (rootModule || (targetTier !== undefined && targetTier !== tier)) {
+        errors.push(
+          `${relativePath}: toggle tier must not import Big Dog or sibling-tier module (${specifier})`
+        );
+      }
+    }
+  });
+
+  return errors;
+}
+
 /**
  * @param {string} root
  * @param {ArchitectureCheckPolicy} policy
@@ -428,6 +464,7 @@ export function runArchitectureCheck(options = {}) {
   const errors = [
     ...validateInternalBarrelExports(root, policy),
     ...validateCrossPackageInternalImports(root),
+    ...validateToggleTierContainment(root),
     ...validateControllerAlpineImports(root),
     ...validateConstructorSideEffects(root, policy),
     ...validateControllerSurface(root, policy),
