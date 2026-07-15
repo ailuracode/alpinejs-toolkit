@@ -45,7 +45,7 @@ const plugin = getPluginNavItem("toggle")!;
 			</p>
 		</div>
 
-		<div x-data="{ power: $toggle({ states: { on: 'yes', off: 'no' }, initial: 'no' }) }">
+		<div x-data="toggleBinaryDemo">
 			<p class="text-xs font-medium uppercase tracking-wide text-[var(--ios-label-secondary)]">Big Dog — binary</p>
 			<p class="mt-1">Power: <strong x-text="power.value"></strong></p>
 			<div class="flex flex-wrap gap-2 mt-2">
@@ -59,10 +59,7 @@ const plugin = getPluginNavItem("toggle")!;
 			</div>
 		</div>
 
-		<div x-data="{ answer: $toggle({
-			states: { on: 'yes', off: 'no', indeterminate: 'unknown' },
-			initial: 'unknown',
-		}) }">
+		<div x-data="toggleTernaryDemo">
 			<p class="text-xs font-medium uppercase tracking-wide text-[var(--ios-label-secondary)]">Big Dog — ternary</p>
 			<p class="mt-1">
 				Answer: <strong x-text="answer.value"></strong>
