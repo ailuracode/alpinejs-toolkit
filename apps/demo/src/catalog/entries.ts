@@ -21,7 +21,7 @@ export const PACKAGE_CATALOG: readonly PackageCatalogEntry[] = [
     tier: "essential",
     order: 1,
     badges: ["infrastructure"],
-    docs: { available: true, routeId: "core" },
+    docs: { available: true, routeId: "core", source: "guide" },
   }),
   entry({
     id: "overlay",
@@ -521,7 +521,7 @@ export const PACKAGE_CATALOG: readonly PackageCatalogEntry[] = [
     order: 12,
     related: ["selection"],
     demo: { available: true, componentId: "form" },
-    docs: { available: true },
+    docs: { available: true, source: "guide" },
   }),
   entry({
     id: "query",
@@ -540,7 +540,7 @@ export const PACKAGE_CATALOG: readonly PackageCatalogEntry[] = [
     badges: ["infrastructure"],
     related: ["query-kit", "query-adapter-alpine", "query-adapter-zustand"],
     demo: { available: true, componentId: "query" },
-    docs: { available: true, routeId: "query" },
+    docs: { available: true, routeId: "query", source: "guide" },
   }),
   entry({
     id: "query-adapter-alpine",
