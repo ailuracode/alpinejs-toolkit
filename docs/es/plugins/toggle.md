@@ -1,11 +1,11 @@
 ---
 title: "Toggle"
-description: "Alternar estados binarios y ternarios con el magic $toggle."
+description: "Máquinas de estado binarias y ternarias con el magic $toggle."
 ---
 
 Package: `@ailuracode/alpine-toggle`
 
-Máquina de estados framework-agnostic para Alpine.js. Magic invocable `$toggle()` para máquinas de estado **binarias** y **ternarias** con eventos `change` tipados.
+Máquina de estados framework-agnostic para Alpine.js. Magic invocable `$toggle()` para máquinas de estado **binarias** y **ternarias** con eventos `change` tipados. Headless: sin DOM, sin CSS, sin almacenamiento.
 
 ## Instalación
 
@@ -35,6 +35,7 @@ Alpine.start();
 | `states.off`            | `B`      | Segundo estado opuesto (requerido)                                       |
 | `states.indeterminate`  | `N`      | Tercer estado independiente opcional                                     |
 | `initial`               | valor    | Valor inicial (por defecto `on` en binario, `indeterminate` en ternario) |
+| `id`                    | `string` | Identificador estable (auto-generado como `toggle-<n>`)                  |
 
 ### Fachada devuelta por `$toggle(...)`
 
@@ -43,7 +44,7 @@ La fachada extiende `ToggleInstance` con banderas de lifecycle y la API de hidra
 | Miembro                  | Descripción                                                                  |
 |--------------------------|------------------------------------------------------------------------------|
 | `value`                  | Estado actual (unión estrecha — binario omite `undefined`)                    |
-| `states`                 | Vista `{ on, off, indeterminate }`                                           |
+| `states`                 | Vista `{ on, off, indeterminate }` (binario: `indeterminate` es `undefined`) |
 | `is(value)`              | Si `value` es el estado actual                                               |
 | `set(value)`             | Establece el estado — no-op si el valor no cambia o es inválido             |
 | `setSilently(value)`     | Establece el estado sin emitir `change` (hidratación); la fachada se actualiza |
@@ -82,7 +83,31 @@ Consulta el [README del paquete](https://github.com/ailuracode/alpinejs-toolkit/
 </div>
 ```
 
-### Eventos `change`
+### Persistir con `setSilently`
+
+Usá `setSilently` desde `x-init` para hidratar desde `localStorage` sin disparar un evento `'user'` espurio:
+
+```html
+<div
+  x-data="{
+    mode: $toggle({ states: { on: 'on', off: 'off' } }),
+    init() {
+      const persisted = localStorage.getItem('mode');
+      if (persisted) this.mode.setSilently(persisted);
+    },
+  }"
+>
+  <span x-text="mode.value"></span>
+  <button
+    type="button"
+    @click="mode.toggle(); localStorage.setItem('mode', mode.value)"
+  >
+    Toggle
+  </button>
+</div>
+```
+
+## Eventos `change`
 
 ```ts
 import { createToggle, type ToggleChangeDetail } from "@ailuracode/alpine-toggle";
@@ -94,6 +119,21 @@ const answer = createToggle({
 answer.on("change", (detail: ToggleChangeDetail<"yes", "no", "unknown">) => {
   console.log(detail.current, detail.previous, detail.source);
 });
+```
+
+`detail.source` es uno de `'initialization'` (primer emit, `previous: null`), `'user'` (`set` / `toggle` / `next`), o `'reset'` (`reset()`).
+
+## Controller standalone
+
+El controller también se expone sin Alpine para tests, widgets TS vanilla o SSR:
+
+```ts
+import { createToggle, ToggleController } from "@ailuracode/alpine-toggle";
+
+const power = createToggle({ states: { on: "on", off: "off" }, id: "power" });
+power.id;          // "power"
+power.isMounted;   // true (createToggle invoca mount() internamente)
+power.on("change", (detail) => console.log(detail));
 ```
 
 ## TypeScript
