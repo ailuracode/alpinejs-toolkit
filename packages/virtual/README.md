@@ -5,7 +5,7 @@ Headless virtual list controller for Alpine.js — TanStack Virtual-style range 
 ## Install
 
 ```bash
-pnpm add @ailuracode/alpine-virtual alpinejs @ailuracode/alpine-core
+pnpm add @ailuracode/alpine-virtual @ailuracode/alpine-core alpinejs
 ```
 
 ## Quick start

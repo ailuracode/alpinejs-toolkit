@@ -13,7 +13,7 @@ Query Devtools (styled development panel) ships from a separate subpath:
 ## Install
 
 ```bash
-pnpm add @ailuracode/alpine-query-kit alpinejs nanostores @nanostores/alpine
+pnpm add @ailuracode/alpine-query-kit @nanostores/alpine alpinejs nanostores
 ```
 
 ## Quick start

@@ -5,7 +5,7 @@ Headless form state and validation for Alpine.js. Register fields, track `dirty`
 ## Install
 
 ```bash
-pnpm add @ailuracode/alpine-form alpinejs
+pnpm add @ailuracode/alpine-form @ailuracode/alpine-core alpinejs
 ```
 
 ## Quick start

@@ -1,6 +1,11 @@
+import { readFileSync } from "node:fs";
+import path from "node:path";
 import { describe, expect, it } from "vitest";
 import {
+  extractPrimaryInstallPackages,
+  formatInstallCommand,
   parseReadmeSections,
+  validateInstallPeers,
   validatePackageReadmes,
   validateReadmeContent,
 } from "../scripts/readme-check.mjs";
@@ -102,7 +107,54 @@ MIT
     expect(errors.some((error) => error.includes("forbidden pattern"))).toBe(true);
   });
 
+  it("builds install commands from required peers", () => {
+    expect(
+      formatInstallCommand("@ailuracode/alpine-form", ["@ailuracode/alpine-core", "alpinejs"])
+    ).toBe("pnpm add @ailuracode/alpine-form @ailuracode/alpine-core alpinejs");
+  });
+
+  it("flags missing required peer dependencies in Install", () => {
+    const readme = `# @ailuracode/alpine-form
+
+## Install
+
+\`\`\`bash
+pnpm add @ailuracode/alpine-form alpinejs
+\`\`\`
+
+## Quick start
+
+\`\`\`ts
+// ...
+\`\`\`
+
+## License
+
+MIT
+`;
+
+    expect(
+      validateInstallPeers(readme, {
+        packageFolder: "form",
+        packageJson: {
+          name: "@ailuracode/alpine-form",
+          peerDependencies: {
+            "@ailuracode/alpine-core": "^0.2.0",
+            alpinejs: "^3.0.0",
+          },
+        },
+      })
+    ).toContain(
+      'form: Install command is missing required peer dependency "@ailuracode/alpine-core"'
+    );
+  });
+
   it("validates real package README files", () => {
-    expect(validatePackageReadmes(process.cwd(), ["theme", "toast"])).toEqual([]);
+    expect(validatePackageReadmes(process.cwd(), ["theme", "form", "dialog"])).toEqual([]);
+    expect(
+      extractPrimaryInstallPackages(
+        readFileSync(path.join(process.cwd(), "packages/form/README.md"), "utf8")
+      )
+    ).toContain("@ailuracode/alpine-core");
   });
 });

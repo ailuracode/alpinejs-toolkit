@@ -7,7 +7,7 @@ There is **no official zustand-alpine integration**. This package uses Zustand's
 ## Install
 
 ```bash
-pnpm add @ailuracode/alpine-query @ailuracode/alpine-query-adapter-zustand alpinejs zustand
+pnpm add @ailuracode/alpine-query-adapter-zustand @ailuracode/alpine-query alpinejs zustand
 ```
 
 ## Quick start

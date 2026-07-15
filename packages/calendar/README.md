@@ -5,7 +5,7 @@ Lightweight calendar logic for Alpine.js, powered by [date-fns](https://date-fns
 ## Install
 
 ```bash
-pnpm add @ailuracode/alpine-calendar @ailuracode/alpine-selection alpinejs
+pnpm add @ailuracode/alpine-calendar @ailuracode/alpine-core alpinejs
 ```
 
 Date selection uses `@ailuracode/alpine-selection` internally (ISO date keys, single/multiple/range modes).

@@ -7,7 +7,7 @@ The root entrypoint stays focused on Alpine magics. The headless API lives under
 ## Install
 
 ```bash
-pnpm add @ailuracode/alpine-env alpinejs
+pnpm add @ailuracode/alpine-env @ailuracode/alpine-core alpinejs
 ```
 
 ## Quick start

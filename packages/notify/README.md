@@ -5,7 +5,7 @@ Thin wrapper around the [Web Notifications API](https://developer.mozilla.org/en
 ## Install
 
 ```bash
-pnpm add @ailuracode/alpine-notify alpinejs
+pnpm add @ailuracode/alpine-notify @ailuracode/alpine-core @ailuracode/alpine-permissions alpinejs
 ```
 
 ## Quick start

@@ -5,7 +5,7 @@ Headless accessible tabs store with keyboard navigation, manual/automatic activa
 ## Install
 
 ```bash
-pnpm add @ailuracode/alpine-tabs alpinejs
+pnpm add @ailuracode/alpine-tabs @ailuracode/alpine-core alpinejs
 ```
 
 Active tab tracking uses an inline lightweight state — no extra dependency.

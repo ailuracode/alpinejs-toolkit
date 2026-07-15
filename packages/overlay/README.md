@@ -9,7 +9,7 @@ portal root itself.
 ## Install
 
 ```bash
-pnpm add @ailuracode/alpine-overlay alpinejs @ailuracode/alpine-core
+pnpm add @ailuracode/alpine-overlay @ailuracode/alpine-core alpinejs
 ```
 
 ## Quick start

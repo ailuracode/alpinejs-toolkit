@@ -7,7 +7,7 @@ Headless undo/redo history controller for Alpine.js — transactions, persistenc
 ## Install
 
 ```bash
-pnpm add @ailuracode/alpine-history alpinejs @ailuracode/alpine-core
+pnpm add @ailuracode/alpine-history @ailuracode/alpine-core alpinejs
 ```
 
 ## Quick start

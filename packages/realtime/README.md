@@ -7,7 +7,7 @@ Headless realtime transport controller for Alpine.js — Server-Sent Events, Web
 ## Install
 
 ```bash
-pnpm add @ailuracode/alpine-realtime
+pnpm add @ailuracode/alpine-realtime @ailuracode/alpine-core alpinejs
 ```
 
 ## Quick start

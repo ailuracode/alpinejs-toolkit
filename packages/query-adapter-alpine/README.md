@@ -7,7 +7,7 @@ No external store library. Best when you want the smallest dependency footprint.
 ## Install
 
 ```bash
-pnpm add @ailuracode/alpine-query @ailuracode/alpine-query-adapter-alpine alpinejs
+pnpm add @ailuracode/alpine-query-adapter-alpine @ailuracode/alpine-core alpinejs
 ```
 
 ## Quick start

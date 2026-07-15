@@ -2,6 +2,8 @@ import { existsSync, readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { REPO_CHECK_POLICY } from "./repo-check-policy.mjs";
 
+/** @typedef {{ name?: string; peerDependencies?: Record<string, string>; peerDependenciesMeta?: Record<string, { optional?: boolean }> }} PackageManifest */
+
 /** @typedef {{ level: number; title: string; line: number }} ReadmeSection */
 
 const QUICK_START_TITLES = new Set([
@@ -94,8 +96,81 @@ function isQuickStartSection(section) {
 }
 
 /**
+ * @param {PackageManifest} packageJson
+ * @returns {string[]}
+ */
+export function getRequiredInstallPeers(packageJson) {
+  const peers = packageJson.peerDependencies ?? {};
+  const meta = packageJson.peerDependenciesMeta ?? {};
+
+  return Object.keys(peers)
+    .filter((name) => name !== "@types/alpinejs")
+    .filter((name) => !meta[name]?.optional)
+    .sort((a, b) => a.localeCompare(b));
+}
+
+/**
+ * @param {string} packageName
+ * @param {readonly string[]} requiredPeers
+ * @returns {string}
+ */
+export function formatInstallCommand(packageName, requiredPeers) {
+  const packageNames = packageName ? [packageName, ...requiredPeers] : [...requiredPeers];
+  const unique = [...new Set(packageNames)].sort((a, b) => a.localeCompare(b));
+  const primary = packageName ?? unique[0];
+  const rest = unique.filter((name) => name !== primary).sort((a, b) => a.localeCompare(b));
+
+  return `pnpm add ${[primary, ...rest].join(" ")}`;
+}
+
+/**
  * @param {string} content
- * @param {{ packageFolder: string }} options
+ * @returns {string[]}
+ */
+export function extractPrimaryInstallPackages(content) {
+  const installMatch = /## Install[^\n]*\n+```(?:bash|sh)\n(pnpm add[^\n`]+)/.exec(content);
+  if (!installMatch) {
+    return [];
+  }
+
+  return installMatch[1]
+    .replace(/^pnpm add\s+/, "")
+    .trim()
+    .split(/\s+/);
+}
+
+/**
+ * @param {string} content
+ * @param {{ packageFolder: string; packageJson?: PackageManifest }} options
+ * @returns {string[]}
+ */
+export function validateInstallPeers(content, options) {
+  if (!options.packageJson?.name) {
+    return [];
+  }
+
+  const requiredPeers = getRequiredInstallPeers(options.packageJson);
+  if (requiredPeers.length === 0) {
+    return [];
+  }
+
+  const installed = new Set(extractPrimaryInstallPackages(content));
+  const errors = [];
+
+  for (const peer of requiredPeers) {
+    if (!installed.has(peer)) {
+      errors.push(
+        `${options.packageFolder}: Install command is missing required peer dependency "${peer}"`
+      );
+    }
+  }
+
+  return errors;
+}
+
+/**
+ * @param {string} content
+ * @param {{ packageFolder: string; packageJson?: PackageManifest }} options
  * @returns {string[]}
  */
 export function validateReadmeContent(content, options) {
@@ -168,6 +243,8 @@ export function validateReadmeContent(content, options) {
     );
   }
 
+  errors.push(...validateInstallPeers(content, options));
+
   return errors;
 }
 
@@ -187,7 +264,11 @@ export function validatePackageReadmes(root, packageFolders) {
     }
 
     const content = readFileSync(readmePath, "utf8");
-    errors.push(...validateReadmeContent(content, { packageFolder: folder }));
+    const packageJsonPath = path.join(root, "packages", folder, "package.json");
+    const packageJson = existsSync(packageJsonPath)
+      ? /** @type {PackageManifest} */ (JSON.parse(readFileSync(packageJsonPath, "utf8")))
+      : {};
+    errors.push(...validateReadmeContent(content, { packageFolder: folder, packageJson }));
   }
 
   return errors;

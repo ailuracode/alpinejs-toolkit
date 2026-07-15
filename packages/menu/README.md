@@ -5,7 +5,7 @@ Headless menu store for dropdowns and context menus. Keyboard navigation (`Arrow
 ## Install
 
 ```bash
-pnpm add @ailuracode/alpine-menu alpinejs
+pnpm add @ailuracode/alpine-menu @ailuracode/alpine-core alpinejs
 ```
 
 ## Quick start

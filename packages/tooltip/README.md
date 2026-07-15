@@ -5,7 +5,7 @@ Headless tooltip store. Hover/focus triggers, open/close delays, Escape dismiss.
 ## Install
 
 ```bash
-pnpm add @ailuracode/alpine-tooltip alpinejs
+pnpm add @ailuracode/alpine-tooltip @ailuracode/alpine-core alpinejs
 ```
 
 Positioning (Floating UI via Alpine):

@@ -5,7 +5,7 @@ Reactive geolocation via the `$store.geo` store. Wraps the browser [Geolocation 
 ## Install
 
 ```bash
-pnpm add @ailuracode/alpine-geo alpinejs
+pnpm add @ailuracode/alpine-geo @ailuracode/alpine-core @ailuracode/alpine-permissions alpinejs
 ```
 
 ## Quick start

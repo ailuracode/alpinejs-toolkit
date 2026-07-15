@@ -7,7 +7,7 @@ Headless gesture recognition for Alpine.js — tap, swipe, pan, pinch, and long 
 ## Install
 
 ```bash
-pnpm add @ailuracode/alpine-gesture alpinejs
+pnpm add @ailuracode/alpine-gesture @ailuracode/alpine-core alpinejs
 ```
 
 ## Quick start

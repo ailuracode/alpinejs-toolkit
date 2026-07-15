@@ -5,7 +5,7 @@ Framework-agnostic selection primitives for Alpine.js — single, multiple, and 
 ## Install
 
 ```bash
-pnpm add @ailuracode/alpine-selection alpinejs @ailuracode/alpine-core
+pnpm add @ailuracode/alpine-selection @ailuracode/alpine-core alpinejs
 ```
 
 ## Quick start

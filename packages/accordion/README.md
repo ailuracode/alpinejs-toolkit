@@ -5,7 +5,7 @@ Headless accordion store with **single** or **multiple** open panels, optional *
 ## Install
 
 ```bash
-pnpm add @ailuracode/alpine-accordion alpinejs
+pnpm add @ailuracode/alpine-accordion @ailuracode/alpine-core alpinejs
 ```
 
 Open panel state is backed by an inline lightweight state — no extra dependency.

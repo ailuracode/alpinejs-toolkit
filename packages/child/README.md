@@ -5,7 +5,7 @@ Alpine.js directive for **asChild-style** composition: transfer attributes, clas
 ## Install
 
 ```bash
-pnpm add @ailuracode/alpine-child @alpinejs/morph alpinejs
+pnpm add @ailuracode/alpine-child @ailuracode/alpine-core @alpinejs/morph alpinejs
 ```
 
 ## Quick start

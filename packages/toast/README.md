@@ -5,7 +5,7 @@ Headless in-app toast queue for Alpine.js. Registers the `$toast` magic and an i
 ## Install
 
 ```bash
-pnpm add @ailuracode/alpine-toast alpinejs
+pnpm add @ailuracode/alpine-toast @ailuracode/alpine-core alpinejs
 ```
 
 ## Quick start
