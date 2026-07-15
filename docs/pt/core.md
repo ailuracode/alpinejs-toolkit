@@ -59,7 +59,7 @@ Alpine.start();
 |------|----------|---------|
 | `magic` | `Alpine.magic()` | `$share`, `$calendar` |
 | `store` | `Alpine.store()` | `$store.theme`, `$store.query` |
-| `directive` | `Alpine.directive()` | `x-child` |
+| `directive` | `Alpine.directive()` | `x-child`, `x-audio`, `x-video` |
 
 Use `definePlugin(kinds, options)` para construir definições com tipagem estrita. Um mesmo plugin pode registrar qualquer combinação dos três passando uma lista de kinds; quando você declara mais de um kind, `names` vira um objeto indexado por kind:
 

@@ -19,6 +19,7 @@ import MenuDemo from "../components/demos/MenuDemo.astro";
 import NotifyDemo from "../components/demos/NotifyDemo.astro";
 import OverlayDemo from "../components/demos/OverlayDemo.astro";
 import PermissionsDemo from "../components/demos/PermissionsDemo.astro";
+import PlayerDemo from "../components/demos/PlayerDemo.astro";
 import QueryDemo from "../components/demos/QueryDemo.astro";
 import QueryKitDemo from "../components/demos/QueryKitDemo.astro";
 import ScrollDemo from "../components/demos/ScrollDemo.astro";
@@ -36,6 +37,7 @@ export const PLAYGROUND_DEMOS: Record<string, AstroComponentFactory> = {
   theme: ThemeDemo,
   sidebar: SidebarDemo,
   media: MediaDemo,
+  player: PlayerDemo,
   scroll: ScrollDemo,
   geo: GeoDemo,
   form: FormDemo,

@@ -1,0 +1,91 @@
+{
+  "name": "@ailuracode/alpine-player",
+  "version": "0.0.0",
+  "description": "Alpine.js x-audio and x-video directives — reactive controllers for native audio and video playback",
+  "type": "module",
+  "sideEffects": false,
+  "license": "MIT",
+  "author": "ailuracode",
+  "homepage": "https://github.com/ailuracode/alpinejs-toolkit/tree/master/packages/player#readme",
+  "bugs": {
+    "url": "https://github.com/ailuracode/alpinejs-toolkit/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ailuracode/alpinejs-toolkit.git",
+    "directory": "packages/player"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./global": {
+      "types": "./dist/global.d.ts"
+    }
+  },
+  "types": "./dist/global.d.ts",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsup --config tsup.config.ts && cp src/global.d.ts dist/global.d.ts",
+    "clean": "rm -rf dist",
+    "prepublishOnly": "pnpm run build",
+    "size": "size-limit",
+    "test": "vitest run --config ../../vitest.config.ts test",
+    "test:watch": "vitest --config ../../vitest.config.ts",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.test.json",
+    "test:e2e": "playwright test --config playwright.config.ts",
+    "test:e2e:report": "playwright show-report e2e/playwright-report"
+  },
+  "peerDependencies": {
+    "@ailuracode/alpine-core": "^0.2.0",
+    "alpinejs": "^3.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@types/alpinejs": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@ailuracode/alpine-core": "workspace:*",
+    "@playwright/test": "^1.56.1",
+    "@types/alpinejs": "^3.13.10",
+    "@types/node": "^26.1.0",
+    "tsup": "^8.5.0"
+  },
+  "keywords": [
+    "alpinejs",
+    "alpine",
+    "plugin",
+    "directive",
+    "audio",
+    "video",
+    "player",
+    "headless"
+  ],
+  "toolkit": {
+    "bundleBudget": {
+      "category": "small-feature"
+    }
+  },
+  "size-limit": [
+    {
+      "name": "full surface",
+      "path": "dist/index.js",
+      "import": "*",
+      "ignore": [
+        "alpinejs",
+        "@ailuracode/alpine-core"
+      ],
+      "gzip": true,
+      "brotli": true,
+      "limit": "2.5 kB"
+    }
+  ]
+}

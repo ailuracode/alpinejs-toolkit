@@ -24,6 +24,7 @@ import MessageSquare from "@lucide/astro/icons/message-square";
 import Monitor from "@lucide/astro/icons/monitor";
 import Palette from "@lucide/astro/icons/palette";
 import PanelLeft from "@lucide/astro/icons/panel-left";
+import Play from "@lucide/astro/icons/play";
 import Puzzle from "@lucide/astro/icons/puzzle";
 import Replace from "@lucide/astro/icons/replace";
 import Send from "@lucide/astro/icons/send";
@@ -37,6 +38,7 @@ const PLUGIN_NAV_ICONS: Record<string, PluginNavIcon> = {
   theme: Palette,
   sidebar: PanelLeft,
   media: Monitor,
+  player: Play,
   scroll: ArrowDownUp,
   geo: MapPin,
   lang: Languages,

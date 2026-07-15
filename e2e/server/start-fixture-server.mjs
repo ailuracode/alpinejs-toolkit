@@ -72,6 +72,45 @@ function requestPath(request) {
   return decodeURIComponent(url.pathname);
 }
 
+/** @type {Record<string, string>} */
+const MEDIA_CONTENT_TYPES = {
+  ".mp4": "video/mp4",
+  ".ogg": "audio/ogg",
+  ".oga": "audio/ogg",
+  ".ogv": "video/ogg",
+  ".webm": "video/webm",
+  ".mp3": "audio/mpeg",
+  ".jpg": "image/jpeg",
+  ".jpeg": "image/jpeg",
+  ".png": "image/png",
+};
+
+/**
+ * @param {string} pathname
+ * @returns {Promise<{ body: Buffer; contentType: string } | null>}
+ */
+async function readFixtureMedia(pathname) {
+  if (!pathname.startsWith("/media/")) {
+    return null;
+  }
+
+  const relativePath = pathname.slice("/media/".length);
+  if (!relativePath || relativePath.includes("..")) {
+    return null;
+  }
+
+  const mediaDir = path.join(fixtureDir, "media");
+  const filePath = path.join(mediaDir, relativePath);
+  if (!(filePath.startsWith(mediaDir) && existsSync(filePath))) {
+    return null;
+  }
+
+  const extension = path.extname(filePath).toLowerCase();
+  const contentType = MEDIA_CONTENT_TYPES[extension] ?? "application/octet-stream";
+  const body = await readFile(filePath);
+  return { body, contentType };
+}
+
 async function buildFixtureBundle() {
   await esbuild.build({
     entryPoints: [entryPath],
@@ -119,6 +158,13 @@ async function startServer() {
         const bundle = await readTextFile(bundlePath);
         response.writeHead(200, { "content-type": "text/javascript; charset=utf-8" });
         response.end(bundle);
+        return;
+      }
+
+      const media = await readFixtureMedia(pathname);
+      if (media) {
+        response.writeHead(200, { "content-type": media.contentType });
+        response.end(media.body);
         return;
       }
 
