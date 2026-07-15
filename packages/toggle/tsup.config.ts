@@ -1,7 +1,7 @@
 import { defineConfig } from "tsup";
 
 export default defineConfig({
-  entry: { index: "src/index.ts", puppy: "src/puppy.ts" },
+  entry: { index: "src/index.ts", puppy: "src/puppy.ts", doggo: "src/doggo.ts" },
   format: ["esm"],
   dts: true,
   clean: true,

@@ -33,6 +33,5 @@ export function resolveToggleTarget<TOn, TOff, TIndeterminate>(
 }
 
 export function resolveNextCycle<T>(value: T, cycle: readonly T[]): T {
-  const index = cycle.indexOf(value);
-  return cycle[(index + 1) % cycle.length] as T;
+  return cycle[(cycle.indexOf(value) + 1) % cycle.length] as T;
 }
