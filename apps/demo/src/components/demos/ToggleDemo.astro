@@ -9,7 +9,7 @@ const plugin = getPluginNavItem("toggle")!;
 
 <DemoSection id={plugin.id} title={plugin.title} api={plugin.api} description={plugin.description}>
 	<div class="grid gap-6">
-		<div x-data="{ toggle: $toggle({ states: { on: true, off: false }, initial: false }) }">
+		<div x-data="togglePuppyDemo">
 			<p class="text-xs font-medium uppercase tracking-wide text-[var(--ios-label-secondary)]">Puppy — boolean</p>
 			<p class="mt-1">Value: <strong x-text="toggle.value"></strong></p>
 			<div class="flex flex-wrap gap-2 mt-2">
@@ -18,25 +18,11 @@ const plugin = getPluginNavItem("toggle")!;
 				<DemoButton @click="toggle.set(false)">set(false)</DemoButton>
 			</div>
 			<p class="text-xs text-[var(--ios-label-secondary)] mt-2">
-				Puppy tier: <code>@ailuracode/alpine-toggle/puppy</code> registers <code>$toggle(initial?)</code> — same reactive shell, boolean-only factory.
+				<code>@ailuracode/alpine-toggle/puppy</code> — <code>$toggle(initial?)</code> with the same reactive shell as below.
 			</p>
 		</div>
 
-		<div
-			x-data={`{
-				toggle: $toggle({ states: { on: 'enabled', off: 'disabled', indeterminate: 'mixed' }, initial: 'mixed' }),
-				lastChange: '',
-				previous: null,
-				init() {
-					this.$watch('toggle.value', (value) => {
-						if (this.previous !== null) {
-							this.lastChange = String(this.previous) + ' → ' + String(value);
-						}
-						this.previous = value;
-					});
-				},
-			}`}
-		>
+		<div x-data="toggleDoggoDemo">
 			<p class="text-xs font-medium uppercase tracking-wide text-[var(--ios-label-secondary)]">Doggo — custom states</p>
 			<p class="mt-1">
 				Value: <strong x-text="toggle.value"></strong>
@@ -51,15 +37,12 @@ const plugin = getPluginNavItem("toggle")!;
 				<DemoButton @click="toggle.next()">next()</DemoButton>
 				<DemoButton @click="toggle.reset()">reset()</DemoButton>
 			</div>
-			<p class="text-xs text-[var(--ios-label-secondary)] mt-2" x-show="lastChange">
-				Value trail: <span x-text="lastChange"></span>
-			</p>
 			<p class="text-xs text-[var(--ios-label-secondary)] mt-1">
-				Doggo tier adds <code>onChange()</code> on <code>createToggle</code> — here <code>$watch('toggle.value')</code> mirrors the same idea in Alpine.
+				<code>@ailuracode/alpine-toggle/doggo</code> — <code>$toggle(options)</code> with lightweight <code>onChange()</code> on <code>createToggle</code>.
 			</p>
 		</div>
 
-		<div x-data="{ toggle: $toggle({ states: { on: 'yes', off: 'no' }, initial: 'no' }) }">
+		<div x-data="toggleBinaryDemo">
 			<p class="text-xs font-medium uppercase tracking-wide text-[var(--ios-label-secondary)]">Big Dog — binary</p>
 			<p class="mt-1">Value: <strong x-text="toggle.value"></strong></p>
 			<div class="flex flex-wrap gap-2 mt-2">
@@ -73,7 +56,7 @@ const plugin = getPluginNavItem("toggle")!;
 			</div>
 		</div>
 
-		<div x-data="{ toggle: $toggle({ states: { on: 'yes', off: 'no', indeterminate: 'unknown' }, initial: 'unknown' }) }">
+		<div x-data="toggleTernaryDemo">
 			<p class="text-xs font-medium uppercase tracking-wide text-[var(--ios-label-secondary)]">Big Dog — ternary</p>
 			<p class="mt-1">
 				Value: <strong x-text="toggle.value"></strong>
@@ -90,7 +73,7 @@ const plugin = getPluginNavItem("toggle")!;
 				<DemoButton @click="toggle.set(toggle.states.indeterminate)">set(unknown)</DemoButton>
 			</div>
 			<p class="text-xs text-[var(--ios-label-secondary)] mt-2">
-				Root import <code>@ailuracode/alpine-toggle</code> — typed <code>on('change')</code>, lifecycle, and hydration on <code>createToggle</code>.
+				Root <code>@ailuracode/alpine-toggle</code> — <code>this.toggle = this.$toggle(options)</code> in <code>init()</code>.
 			</p>
 		</div>
 	</div>
