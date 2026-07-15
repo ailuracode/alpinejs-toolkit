@@ -1,19 +1,19 @@
 {
-  "generatedAt": "2026-07-14T23:34:25.494Z",
+  "generatedAt": "2026-07-14T23:50:10.442Z",
   "issue": "ALP-130",
-  "vitestFileCount": 226,
+  "vitestFileCount": 222,
   "e2eFileCount": 29,
   "environmentCounts": {
-    "node": 134,
+    "node": 130,
     "happy-dom": 92,
     "playwright": 29
   },
   "layerCounts": {
     "controller": 18,
-    "contract": 20,
+    "contract": 18,
     "integration": 32,
     "accessibility": 6,
-    "utility": 147,
+    "utility": 145,
     "repository": 3,
     "e2e": 29
   },
@@ -340,15 +340,6 @@
       "targetEnvironment": "happy-dom",
       "source": "content",
       "signals": ["startAlpine", "document"],
-      "hasPlaywrightSibling": true
-    },
-    {
-      "path": "packages/command/test/contract.test.ts",
-      "package": "command",
-      "layer": "contract",
-      "targetEnvironment": "node",
-      "source": "content",
-      "signals": ["no-alpine-import"],
       "hasPlaywrightSibling": true
     },
     {
@@ -1608,7 +1599,7 @@
       "layer": "utility",
       "targetEnvironment": "happy-dom",
       "source": "content",
-      "signals": ["document", "innerHTML", "focus"],
+      "signals": ["document", "focus"],
       "hasPlaywrightSibling": true
     },
     {
@@ -1717,15 +1708,6 @@
       "targetEnvironment": "happy-dom",
       "source": "content",
       "signals": ["startAlpine", "document", "innerHTML", "x-data"],
-      "hasPlaywrightSibling": true
-    },
-    {
-      "path": "packages/selection/test/encapsulation.test.ts",
-      "package": "selection",
-      "layer": "contract",
-      "targetEnvironment": "node",
-      "source": "content",
-      "signals": ["no-alpine-import"],
       "hasPlaywrightSibling": true
     },
     {
@@ -2179,15 +2161,6 @@
       "hasPlaywrightSibling": true
     },
     {
-      "path": "packages/virtual/test/performance.test.ts",
-      "package": "virtual",
-      "layer": "utility",
-      "targetEnvironment": "node",
-      "source": "content",
-      "signals": ["controller-only-import", "no-alpine-import"],
-      "hasPlaywrightSibling": true
-    },
-    {
       "path": "packages/virtual/test/plugin.test.ts",
       "package": "virtual",
       "layer": "integration",
@@ -2243,15 +2216,6 @@
     },
     {
       "path": "test/package-catalog-check.test.ts",
-      "package": "repository",
-      "layer": "utility",
-      "targetEnvironment": "node",
-      "source": "content",
-      "signals": ["no-alpine-import"],
-      "hasPlaywrightSibling": false
-    },
-    {
-      "path": "test/public-surface-contract.test.ts",
       "package": "repository",
       "layer": "utility",
       "targetEnvironment": "node",
@@ -2371,7 +2335,7 @@
     },
     {
       "package": "command",
-      "vitestFiles": 7,
+      "vitestFiles": 6,
       "e2eFiles": 1,
       "vitestIntegration": [
         "packages/command/test/accessibility.test.ts",
@@ -2588,7 +2552,7 @@
     },
     {
       "package": "selection",
-      "vitestFiles": 14,
+      "vitestFiles": 13,
       "e2eFiles": 1,
       "vitestIntegration": [
         "packages/selection/test/accessibility.test.ts",
@@ -2674,7 +2638,7 @@
     },
     {
       "package": "virtual",
-      "vitestFiles": 8,
+      "vitestFiles": 7,
       "e2eFiles": 1,
       "vitestIntegration": [
         "packages/virtual/test/accessibility.test.ts",

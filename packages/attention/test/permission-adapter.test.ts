@@ -11,6 +11,18 @@ function stubNavigator(value: unknown): void {
   vi.stubGlobal("navigator", value);
 }
 
+async function callSubscribe(
+  adapter: ReturnType<typeof createIdlePermissionAdapter>,
+  listener: () => void
+): Promise<() => void> {
+  const subscribe = adapter.subscribe;
+  expect(subscribe).toBeTypeOf("function");
+  if (typeof subscribe !== "function") {
+    throw new Error("expected subscribe");
+  }
+  return await subscribe(listener);
+}
+
 describe("@ailuracode/alpine-attention/permission-adapter", () => {
   afterEach(() => {
     vi.unstubAllGlobals();
@@ -185,21 +197,19 @@ describe("@ailuracode/alpine-attention/permission-adapter", () => {
       vi.stubGlobal("isSecureContext", true);
       stubNavigator(undefined);
       const adapter = createIdlePermissionAdapter(createMockCtor());
-      if (adapter.subscribe) {
-        const dispose = await adapter.subscribe(vi.fn());
-        expect(dispose).toBeInstanceOf(Function);
-        dispose();
-      }
+      expect(adapter.subscribe).toBeTypeOf("function");
+      const dispose = await callSubscribe(adapter, vi.fn());
+      expect(dispose).toBeInstanceOf(Function);
+      dispose();
     });
 
     it("subscribe returns no-op when permissions.query missing", async () => {
       vi.stubGlobal("isSecureContext", true);
       stubNavigator({});
       const adapter = createIdlePermissionAdapter(createMockCtor());
-      if (adapter.subscribe) {
-        const dispose = await adapter.subscribe(vi.fn());
-        expect(dispose).toBeInstanceOf(Function);
-      }
+      expect(adapter.subscribe).toBeTypeOf("function");
+      const dispose = await callSubscribe(adapter, vi.fn());
+      expect(dispose).toBeInstanceOf(Function);
     });
 
     it("subscribe notifies listener and cleans up", async () => {
@@ -223,22 +233,21 @@ describe("@ailuracode/alpine-attention/permission-adapter", () => {
         },
       });
       const adapter = createIdlePermissionAdapter(createMockCtor());
+      expect(adapter.subscribe).toBeTypeOf("function");
       const listener = vi.fn();
-      if (adapter.subscribe) {
-        const dispose = await adapter.subscribe(listener);
+      const dispose = await callSubscribe(adapter, listener);
 
-        await vi.waitFor(() => {
-          expect(listener).toHaveBeenCalled();
-        });
+      await vi.waitFor(() => {
+        expect(listener).toHaveBeenCalled();
+      });
 
-        listeners[0]?.();
-        await vi.waitFor(() => {
-          expect(listener.mock.calls.length).toBeGreaterThan(1);
-        });
+      listeners[0]?.();
+      await vi.waitFor(() => {
+        expect(listener.mock.calls.length).toBeGreaterThan(1);
+      });
 
-        dispose();
-        expect(status.removeEventListener).toHaveBeenCalled();
-      }
+      dispose();
+      expect(status.removeEventListener).toHaveBeenCalled();
     });
 
     it("subscribe returns no-op when query throws", async () => {
@@ -249,10 +258,9 @@ describe("@ailuracode/alpine-attention/permission-adapter", () => {
         },
       });
       const adapter = createIdlePermissionAdapter(createMockCtor());
-      if (adapter.subscribe) {
-        const dispose = await adapter.subscribe(vi.fn());
-        expect(dispose).toBeInstanceOf(Function);
-      }
+      expect(adapter.subscribe).toBeTypeOf("function");
+      const dispose = await callSubscribe(adapter, vi.fn());
+      expect(dispose).toBeInstanceOf(Function);
     });
   });
 });

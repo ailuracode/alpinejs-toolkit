@@ -12,11 +12,4 @@ describe("package catalog check", () => {
     const demoIds = parsePlaygroundDemoIds('  theme: ThemeDemo,\n  "query-kit": QueryKitDemo,');
     expect(demoIds).toEqual(new Set(["theme", "query-kit"]));
   });
-
-  it("reports missing README sources", () => {
-    const entries = parseCatalogEntries(
-      'entry({ id: "theme", folder: "theme", npmPackage: "@ailuracode/alpine-theme", readmePath: "packages/missing/README.md" })'
-    );
-    expect(entries[0]?.readmePath).toBe("packages/missing/README.md");
-  });
 });

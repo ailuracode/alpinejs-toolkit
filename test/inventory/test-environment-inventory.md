@@ -4,15 +4,15 @@ Classification for [ALP-130](https://linear.app/ailuracode/issue/ALP-130/classif
 
 ## Summary
 
-- Generated: 2026-07-14T23:34:25.494Z
-- Vitest files: 226
+- Generated: 2026-07-14T23:50:10.442Z
+- Vitest files: 222
 - Playwright E2E files: 29
 
 ### Target environment (Vitest + E2E)
 
 | Environment | Files | Role |
 | --- | ---: | --- |
-| `node` | 134 | Controller, cache, parsing, SSR import, repository checks |
+| `node` | 130 | Controller, cache, parsing, SSR import, repository checks |
 | `happy-dom` | 92 | Alpine stores, directives, simulated DOM integration tests, and package overlay projects |
 | `playwright` | 29 | Real browser focus, layout, keyboard, permissions |
 
@@ -21,10 +21,10 @@ Classification for [ALP-130](https://linear.app/ailuracode/issue/ALP-130/classif
 | Layer | Files |
 | --- | ---: |
 | `controller` | 18 |
-| `contract` | 20 |
+| `contract` | 18 |
 | `integration` | 32 |
 | `accessibility` | 6 |
-| `utility` | 147 |
+| `utility` | 145 |
 | `repository` | 3 |
 | `e2e` | 29 |
 
@@ -58,7 +58,7 @@ Machine-readable output: `test/inventory/test-environment-inventory.json`.
 | `carousel` | 3 | 1 | complementary | DOM integration tests validate Alpine registration and reactivity; Playwright validates real focus, layout, and browser APIs. Keep both unless the same public contract is asserted twice. |
 | `child` | 2 | 1 | complementary | Browser behavior validated in Playwright; Vitest covers controller/contract layers. |
 | `collection` | 9 | 0 | none | Vitest only — no Playwright project. |
-| `command` | 7 | 1 | complementary | DOM integration tests validate Alpine registration and reactivity; Playwright validates real focus, layout, and browser APIs. Keep both unless the same public contract is asserted twice. |
+| `command` | 6 | 1 | complementary | DOM integration tests validate Alpine registration and reactivity; Playwright validates real focus, layout, and browser APIs. Keep both unless the same public contract is asserted twice. |
 | `core` | 13 | 1 | complementary | Browser behavior validated in Playwright; Vitest covers controller/contract layers. |
 | `dialog` | 4 | 1 | complementary | DOM integration tests validate Alpine registration and reactivity; Playwright validates real focus, layout, and browser APIs. Keep both unless the same public contract is asserted twice. |
 | `env` | 4 | 1 | complementary | Browser behavior validated in Playwright; Vitest covers controller/contract layers. |
@@ -80,7 +80,7 @@ Machine-readable output: `test/inventory/test-environment-inventory.json`.
 | `query-kit` | 16 | 1 | complementary | DOM integration tests validate Alpine registration and reactivity; Playwright validates real focus, layout, and browser APIs. Keep both unless the same public contract is asserted twice. |
 | `realtime` | 9 | 1 | complementary | DOM integration tests validate Alpine registration and reactivity; Playwright validates real focus, layout, and browser APIs. Keep both unless the same public contract is asserted twice. |
 | `scroll` | 11 | 1 | complementary | DOM integration tests validate Alpine registration and reactivity; Playwright validates real focus, layout, and browser APIs. Keep both unless the same public contract is asserted twice. |
-| `selection` | 14 | 1 | complementary | DOM integration tests validate Alpine registration and reactivity; Playwright validates real focus, layout, and browser APIs. Keep both unless the same public contract is asserted twice. |
+| `selection` | 13 | 1 | complementary | DOM integration tests validate Alpine registration and reactivity; Playwright validates real focus, layout, and browser APIs. Keep both unless the same public contract is asserted twice. |
 | `sidebar` | 5 | 1 | complementary | DOM integration tests validate Alpine registration and reactivity; Playwright validates real focus, layout, and browser APIs. Keep both unless the same public contract is asserted twice. |
 | `tabs` | 1 | 1 | complementary | Browser behavior validated in Playwright; Vitest covers controller/contract layers. |
 | `theme` | 7 | 1 | complementary | DOM integration tests validate Alpine registration and reactivity; Playwright validates real focus, layout, and browser APIs. Keep both unless the same public contract is asserted twice. |
@@ -89,7 +89,7 @@ Machine-readable output: `test/inventory/test-environment-inventory.json`.
 | `tooltip` | 4 | 1 | complementary | DOM integration tests validate Alpine registration and reactivity; Playwright validates real focus, layout, and browser APIs. Keep both unless the same public contract is asserted twice. |
 | `transfer` | 5 | 1 | complementary | Browser behavior validated in Playwright; Vitest covers controller/contract layers. |
 | `ui` | 3 | 0 | none | Vitest only — no Playwright project. |
-| `virtual` | 8 | 1 | complementary | DOM integration tests validate Alpine registration and reactivity; Playwright validates real focus, layout, and browser APIs. Keep both unless the same public contract is asserted twice. |
+| `virtual` | 7 | 1 | complementary | DOM integration tests validate Alpine registration and reactivity; Playwright validates real focus, layout, and browser APIs. Keep both unless the same public contract is asserted twice. |
 
 ## Full file inventory
 
@@ -131,7 +131,6 @@ Machine-readable output: `test/inventory/test-environment-inventory.json`.
 | `packages/command/test/accessibility.test.ts` | `command` | `accessibility` | `node` | content |
 | `packages/command/test/alpine-reactivity.test.ts` | `command` | `integration` | `happy-dom` | content |
 | `packages/command/test/command.test.ts` | `command` | `utility` | `happy-dom` | content |
-| `packages/command/test/contract.test.ts` | `command` | `contract` | `node` | content |
 | `packages/command/test/controller.test.ts` | `command` | `controller` | `node` | filename |
 | `packages/command/test/demo-markup.test.ts` | `command` | `integration` | `happy-dom` | content |
 | `packages/command/test/search.test.ts` | `command` | `utility` | `node` | content |
@@ -284,7 +283,6 @@ Machine-readable output: `test/inventory/test-environment-inventory.json`.
 | `packages/selection/test/controller.test.ts` | `selection` | `controller` | `node` | filename |
 | `packages/selection/test/demo-interaction.test.ts` | `selection` | `utility` | `happy-dom` | content |
 | `packages/selection/test/demo-scope.test.ts` | `selection` | `utility` | `happy-dom` | content |
-| `packages/selection/test/encapsulation.test.ts` | `selection` | `contract` | `node` | content |
 | `packages/selection/test/lifecycle.test.ts` | `selection` | `utility` | `node` | content |
 | `packages/selection/test/navigation.test.ts` | `selection` | `utility` | `node` | content |
 | `packages/selection/test/plugin.test.ts` | `selection` | `integration` | `happy-dom` | content |
@@ -335,7 +333,6 @@ Machine-readable output: `test/inventory/test-environment-inventory.json`.
 | `packages/virtual/test/encapsulation.test.ts` | `virtual` | `contract` | `node` | content |
 | `packages/virtual/test/lifecycle.test.ts` | `virtual` | `utility` | `node` | content |
 | `packages/virtual/test/observers.test.ts` | `virtual` | `utility` | `happy-dom` | content |
-| `packages/virtual/test/performance.test.ts` | `virtual` | `utility` | `node` | content |
 | `packages/virtual/test/plugin.test.ts` | `virtual` | `integration` | `happy-dom` | content |
 | `packages/virtual/test/ssr.test.ts` | `virtual` | `contract` | `node` | filename |
 | `test/architecture-check.test.ts` | `repository` | `repository` | `happy-dom` | content |
@@ -343,7 +340,6 @@ Machine-readable output: `test/inventory/test-environment-inventory.json`.
 | `test/headless-css-policy.test.ts` | `repository` | `utility` | `node` | content |
 | `test/pack-check.test.ts` | `repository` | `repository` | `node` | content |
 | `test/package-catalog-check.test.ts` | `repository` | `utility` | `node` | content |
-| `test/public-surface-contract.test.ts` | `repository` | `utility` | `node` | content |
 | `test/repo-check.test.ts` | `repository` | `utility` | `node` | content |
 | `test/setup-modules.test.ts` | `repository` | `utility` | `node` | content |
 | `test/test-environment-inventory.test.ts` | `repository` | `utility` | `node` | content |

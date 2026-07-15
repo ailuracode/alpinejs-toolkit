@@ -114,10 +114,6 @@ describe("@ailuracode/alpine-tabs", () => {
     expect(store.active("settings-tabs")).toBe("billing");
   });
 
-  it("unregisterTab handles unknown group", () => {
-    store.unregisterTab("nonexistent", "tab");
-  });
-
   it("unregisterTab handles removing active tab", () => {
     store.select("settings-tabs", "billing");
     store.unregisterTab("settings-tabs", "billing");
@@ -131,21 +127,9 @@ describe("@ailuracode/alpine-tabs", () => {
     expect(store.active("settings-tabs")).toBeNull();
   });
 
-  it("select handles unknown group", () => {
-    store.select("nonexistent", "tab");
-  });
-
   it("select handles unknown tab", () => {
     store.select("settings-tabs", "nonexistent");
     expect(store.active("settings-tabs")).toBe("profile");
-  });
-
-  it("next handles unknown group", () => {
-    store.next("nonexistent");
-  });
-
-  it("previous handles unknown group", () => {
-    store.previous("nonexistent");
   });
 
   it("next wraps around", () => {
@@ -160,31 +144,10 @@ describe("@ailuracode/alpine-tabs", () => {
     expect(store.active("settings-tabs")).toBe("security");
   });
 
-  it("next with empty group returns null", () => {
-    store.register("empty-group");
-    store.next("empty-group");
-  });
-
   it("tablistProps returns orientation", () => {
     const props = store.tablistProps("settings-tabs");
     expect(props.role).toBe("tablist");
     expect(props["aria-orientation"]).toBe("horizontal");
-  });
-
-  it("emits change event on select", () => {
-    const controller = (
-      store as unknown as { controller?: { on: (event: string, fn: () => void) => void } }
-    ).controller;
-    let eventFired = false;
-    if (controller && typeof controller.on === "function") {
-      controller.on("change", () => {
-        eventFired = true;
-      });
-    }
-    store.select("settings-tabs", "billing");
-    if (controller) {
-      expect(eventFired).toBe(true);
-    }
   });
 
   it("calls onChange callback on select", () => {

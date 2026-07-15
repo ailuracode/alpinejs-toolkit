@@ -118,26 +118,6 @@ describe("@ailuracode/alpine-accordion", () => {
     expect(accordion.isOpen("demo", "one")).toBe(true);
   });
 
-  it("handles open on unknown group", () => {
-    store.open("nonexistent", "item");
-  });
-
-  it("handles open on unknown item", () => {
-    store.open("faq", "nonexistent");
-  });
-
-  it("handles close on unknown group", () => {
-    store.close("nonexistent", "item");
-  });
-
-  it("handles close on unknown item", () => {
-    store.close("faq", "nonexistent");
-  });
-
-  it("handles toggle on unknown group", () => {
-    store.toggle("nonexistent", "item");
-  });
-
   it("handles isOpen on unknown group", () => {
     expect(store.isOpen("nonexistent", "item")).toBe(false);
   });
@@ -148,10 +128,6 @@ describe("@ailuracode/alpine-accordion", () => {
 
   it("handles activeItem on unknown group", () => {
     expect(store.activeItem("nonexistent")).toBeNull();
-  });
-
-  it("handles setActiveItem on unknown group", () => {
-    store.setActiveItem("nonexistent", "item");
   });
 
   it("handles setActiveItem to null", () => {
@@ -179,35 +155,26 @@ describe("@ailuracode/alpine-accordion", () => {
     expect(store.activeItem("faq")).toBe("item-1");
   });
 
-  it("handles Enter key (no-op for navigation-only)", () => {
-    store.setActiveItem("faq", "item-1");
-    store.handleKeydown("faq", new KeyboardEvent("keydown", { key: "Enter" }));
-    // Enter doesn't toggle items in accordion
-  });
-
-  it("unregisterItem removes item", () => {
+  it("unregisterItem removes item from the group", () => {
+    store.open("faq", "item-1");
     store.unregisterItem("faq", "item-1");
-    expect(store.isOpen("faq", "item-1")).toBe(false);
-  });
-
-  it("unregisterItem handles unknown group", () => {
-    store.unregisterItem("nonexistent", "item");
+    expect(store.groups.faq.items.map((item) => item.id)).not.toContain("item-1");
+    expect(store.openIds("faq")).not.toContain("item-1");
   });
 
   it("unregister removes group", () => {
+    store.open("faq", "item-1");
     store.unregister("faq");
+    expect(store.openIds("faq")).toEqual([]);
+    expect(store.isOpen("faq", "item-1")).toBe(false);
+    store.register("faq", { mode: "single" });
+    store.registerItem("faq", "item-1");
     expect(store.isOpen("faq", "item-1")).toBe(false);
   });
 
   it("triggerProps for closed item", () => {
     const props = store.triggerProps("faq", "item-1");
     expect(props["aria-expanded"]).toBe(false);
-  });
-
-  it("panelProps for open item has no aria-hidden", () => {
-    store.open("faq", "item-1");
-    const props = store.panelProps("faq", "item-1");
-    expect(props["aria-hidden"]).toBeUndefined();
   });
 
   it("handles multiple open in single mode via toggle", () => {

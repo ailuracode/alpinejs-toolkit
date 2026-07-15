@@ -46,11 +46,15 @@ describe("toggle-corner", () => {
   });
 
   it("handles localStorage throwing on set", () => {
-    const original = localStorage.setItem;
-    localStorage.setItem = vi.fn(() => {
+    localStorage.clear();
+    const setItem = vi.spyOn(localStorage, "setItem").mockImplementation(() => {
       throw new Error("quota");
-    }) as typeof original;
-    saveToggleCorner(DEFAULT_TOGGLE_CORNER_STORAGE_KEY, "top-right");
-    localStorage.setItem = original;
+    });
+    expect(() => {
+      saveToggleCorner(DEFAULT_TOGGLE_CORNER_STORAGE_KEY, "top-right");
+    }).not.toThrow();
+    expect(setItem).toHaveBeenCalledWith(DEFAULT_TOGGLE_CORNER_STORAGE_KEY, "top-right");
+    expect(loadToggleCorner(DEFAULT_TOGGLE_CORNER_STORAGE_KEY, "bottom-left")).toBe("bottom-left");
+    setItem.mockRestore();
   });
 });

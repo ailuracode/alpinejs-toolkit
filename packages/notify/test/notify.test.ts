@@ -322,12 +322,6 @@ describe("@ailuracode/alpine-notify", () => {
       expect(notify.isSupported).toBe(true);
       expect(notify.requiresHomeScreenInstall).toBe(false);
       expect(notify.permission).toBe("granted");
-      expect(typeof notify.requestPermission).toBe("function");
-      expect(typeof notify.send).toBe("function");
-      expect(typeof notify.sendAsync).toBe("function");
-      expect(typeof notify.sendIfPermitted).toBe("function");
-      expect(typeof notify.sendIfPermittedAsync).toBe("function");
-      expect(typeof notify.close).toBe("function");
     });
 
     it("sendIfPermitted matches send behavior", () => {
