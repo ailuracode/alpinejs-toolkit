@@ -14,7 +14,8 @@ const plugin = getPluginNavItem("toggle")!;
 			x-data="{ power: $toggle({ states: { on: 'on', off: 'off' }, initial: 'off' }) }"
 		>
 			<p class="text-xs text-[var(--ios-label-secondary)] m-0">
-				<code>$toggle(...)</code> — facade backed by <code>Alpine.reactive</code>.
+				Binary — <code>x-text</code>, <code>x-bind:class</code>, and <code>x-text</code> for the auto-generated
+				<code>id</code> all re-render on every transition.
 			</p>
 			<div class="flex items-center gap-3">
 				<span class="text-sm">Power:</span>
@@ -70,46 +71,6 @@ const plugin = getPluginNavItem("toggle")!;
 				<Badge variant="outline">from localStorage</Badge>
 			</div>
 			<DemoButton @click="mode.toggle(); persist()">toggle() + persist</DemoButton>
-		</div>
-
-		<div
-			class="grid gap-3 rounded-lg border border-[var(--ios-border)] p-4"
-			x-data="toggleStandaloneDemo"
-		>
-			<p class="text-xs text-[var(--ios-label-secondary)] m-0">
-				Standalone <code>createToggle()</code> — controller is held directly, mutated via
-				<code>controller.toggle()</code>, mirrored onto Alpine through the typed <code>change</code> event.
-			</p>
-			<div class="flex items-center gap-3">
-				<span class="text-sm">Standalone power:</span>
-				<strong class="text-lg" x-text="power"></strong>
-				<Badge
-					x-bind:class="{ 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300': isOn, 'bg-rose-500/15 text-rose-700 dark:text-rose-300': !isOn }"
-					x-text="isOn ? 'on' : 'off'"
-				></Badge>
-			</div>
-			<div class="flex flex-wrap gap-2">
-				<DemoButton @click="cycle()">cycle()</DemoButton>
-				<DemoButton @click="reset()">reset()</DemoButton>
-			</div>
-		</div>
-
-		<div
-			class="grid gap-3 rounded-lg border border-[var(--ios-border)] p-4"
-			x-data="toggleStandaloneTernaryDemo"
-		>
-			<p class="text-xs text-[var(--ios-label-secondary)] m-0">
-				Standalone ternary — same controller, ternary case.
-			</p>
-			<div class="flex items-center gap-3">
-				<span class="text-sm">Standalone answer:</span>
-				<strong class="text-lg" x-text="answer"></strong>
-				<Badge variant="outline" x-show="isUnknown">neutral</Badge>
-			</div>
-			<div class="flex flex-wrap gap-2">
-				<DemoButton @click="cycle()">cycle()</DemoButton>
-				<DemoButton @click="reset()">reset()</DemoButton>
-			</div>
 		</div>
 	</div>
 	<p class="text-xs text-[var(--ios-label-secondary)] mt-3">

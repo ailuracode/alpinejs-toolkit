@@ -7,14 +7,12 @@ import { registerJsonApiDemo } from "./json-api-demo.js";
 import { registerQueryAdvancedDemo, registerQueryDemos } from "./query-demos.js";
 import { registerSelectionDemo } from "./selection-demo.js";
 import { registerToastSonner } from "./sonner-demo.js";
-import { registerToggleDemos } from "./toggle-demos.js";
 
 /** Registers Alpine.data demo modules, demo handlers, and demo devtools wiring. */
 export function registerDemoDataModules(Alpine: AlpineInstance): void {
   const queryDemoStores = registerQueryDemos(Alpine);
   registerQueryAdvancedDemo(Alpine);
   registerJsonApiDemo(Alpine);
-  registerToggleDemos(Alpine);
   registerCalendarDemo(Alpine);
   registerCommandDemo(Alpine);
   registerSelectionDemo(Alpine);
