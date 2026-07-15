@@ -2,6 +2,48 @@
 
 Framework-agnostic state machine for Alpine.js. Two required opposite states (`on`, `off`) and an optional independent state (`indeterminate`). Returns a reactive, evented, lifecycle-aware controller per call — no DOM, no storage, no system observers. Built on `@ailuracode/alpine-core`'s `BaseController`.
 
+## Capability tiers (PoC)
+
+The package ships three entrypoints. Pick the smallest tier that fits your use case. All variants register the same `$toggle` magic — only the imported plugin changes.
+
+| Variant | Import | Best for | API surface |
+| ------- | ------ | -------- | ----------- |
+| **Puppy** | `@ailuracode/alpine-toggle/puppy` | Boolean on/off only | `value`, `set()`, `toggle()` |
+| **Doggo** | `@ailuracode/alpine-toggle/doggo` | Reusable app state with custom values | Puppy + `states`, `is()`, `next()`, `reset()`, `onChange()` |
+| **Big Dog** | `@ailuracode/alpine-toggle` | Full lifecycle, hydration, typed events | Doggo + `on()`, `once()`, `mount()`, `destroy()`, `setSilently()`, IDs |
+
+```ts
+import puppyTogglePlugin from "@ailuracode/alpine-toggle/puppy";
+import doggoTogglePlugin from "@ailuracode/alpine-toggle/doggo";
+import { togglePlugin } from "@ailuracode/alpine-toggle"; // Big Dog
+```
+
+```html
+<!-- Puppy -->
+<div x-data="{ power: $toggle(false) }">
+  <button type="button" @click="power.toggle()">Toggle</button>
+</div>
+
+<!-- Doggo / Big Dog -->
+<div x-data="{ power: $toggle({ states: { on: 'on', off: 'off' } }) }">
+  <button type="button" @click="power.toggle()">Toggle</button>
+</div>
+```
+
+Code written against the shared contract (`value`, `set()`, `toggle()`) keeps working when you upgrade tiers.
+
+### PoC bundle comparison
+
+Independent `size-limit` budgets validate that smaller entrypoints exclude larger implementations. Run `pnpm --filter @ailuracode/alpine-toggle run size` after `pnpm run build` for current numbers.
+
+| Variant | API surface | Gzip | Brotli | Internal duplication | Recommendation |
+| ------- | ----------- | ---- | ------ | -------------------- | -------------- |
+| Puppy | Minimal boolean | 263 B | 202 B | Shared `internal/transitions` + `validation` only | **Adopt** for boolean-only consumers |
+| Doggo | Balanced custom states | 607 B | 447 B | Reuses pure helpers; separate controller from Big Dog | **Adopt** when events/lifecycle are unnecessary |
+| Big Dog | Full | 926 B | 750 B | Baseline | **Keep** as root — existing API unchanged |
+
+**PoC conclusion:** The tiered model produces meaningful bundle savings without inheritance or runtime feature flags. Puppy and Doggo are separate implementations that share only small pure helpers, so tree-shaking keeps each entrypoint isolated. Recommend shipping `/puppy` and `/doggo` subpaths alongside the unchanged root export.
+
 ## Architecture
 
 ```mermaid

@@ -38,12 +38,13 @@
 import type { Unsubscribe } from "@ailuracode/alpine-core";
 import { EventEmitter, generateId } from "@ailuracode/alpine-core";
 import type { ToggleEvents } from "./events";
+import { resolveBinaryToggleTarget, resolveNextInCycle } from "./internal/transitions.js";
 import {
   buildStateCycle,
   hasIndeterminateState,
   isConfiguredState,
   resolveInitial,
-} from "./internal/validation";
+} from "./internal/validation.js";
 import type { ToggleChangeSource, ToggleInstance, ToggleOptions, ToggleStatesView } from "./types";
 
 /**
@@ -59,8 +60,6 @@ export class ToggleController<TA, TB, TN, V extends TA | TB | TN = TA | TB | TN>
   readonly #states: ToggleStatesView<TA, TB, TN>;
   readonly #cycle: readonly (TA | TB | TN)[];
   readonly #initial: TA | TB | TN;
-  readonly #hasTernary: boolean;
-
   #value: TA | TB | TN;
   #destroyed = false;
   #mounted = false;
@@ -69,8 +68,6 @@ export class ToggleController<TA, TB, TN, V extends TA | TB | TN = TA | TB | TN>
     this.#id = options.id ?? generateId("toggle");
 
     const hasTernary = hasIndeterminateState(options.states);
-    this.#hasTernary = hasTernary;
-
     const indeterminate = (
       hasTernary ? (options.states as { readonly indeterminate: TN }).indeterminate : undefined
     ) as TN;
@@ -211,8 +208,7 @@ export class ToggleController<TA, TB, TN, V extends TA | TB | TN = TA | TB | TN>
     if (this.#destroyed) {
       return this.#value as V;
     }
-    const idx = this.#cycle.indexOf(this.#value);
-    const nextValue = this.#cycle[(idx + 1) % this.#cycle.length] as TA | TB | TN;
+    const nextValue = resolveNextInCycle(this.#cycle, this.#value);
     if (nextValue !== this.#value) {
       this.#applySet(nextValue, "user");
     }
@@ -283,10 +279,7 @@ export class ToggleController<TA, TB, TN, V extends TA | TB | TN = TA | TB | TN>
    * `indeterminate` it moves to `on`, not to `off`.
    */
   #resolveToggleTarget(): TA | TB | TN {
-    if (this.#hasTernary && this.#value === this.#states.indeterminate) {
-      return this.#states.on;
-    }
-    return this.#value === this.#states.on ? this.#states.off : this.#states.on;
+    return resolveBinaryToggleTarget(this.#value, this.#states);
   }
 
   /**
