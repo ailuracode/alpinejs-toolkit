@@ -598,8 +598,8 @@ importers:
   packages/query-adapter-alpine:
     dependencies:
       '@ailuracode/alpine-query':
-        specifier: workspace:*
-        version: link:../query
+        specifier: ^0.6.1
+        version: 0.6.1(@types/alpinejs@3.13.11)(alpinejs@3.15.12)
       '@types/alpinejs':
         specifier: ^3.13.11
         version: 3.13.11
@@ -857,6 +857,15 @@ importers:
         version: link:../core
 
 packages:
+
+  '@ailuracode/alpine-query@0.6.1':
+    resolution: {integrity: sha512-K7KB25fFyOZrsFQuQF7NegX1xI894SWScGEEhs1pO4bXkezfdK+DUu7ylKjc7ZMIvvQ7lMBM0WXdt5/BrDidKg==}
+    peerDependencies:
+      '@types/alpinejs': ^3.13.11
+      alpinejs: ^3.0.0
+    peerDependenciesMeta:
+      '@types/alpinejs':
+        optional: true
 
   '@alpinejs/anchor@3.15.12':
     resolution: {integrity: sha512-8G9QGvWo9N+J16dEgbaXYIlxe8lWo25uNHhoAONZSDj1av+1VfIgU9FB4q+h6me0D/+7NqY+dw9OlIAAHQv4wg==}
@@ -5288,6 +5297,12 @@ packages:
     resolution: {integrity: sha512-bXE4cR/kVZhKZX/RjPEflHaKVhUVl85noU3v6b8apfQEc1x4A+zBxjZ4lN8LqGd6WZ3dl98pY4o717VFmoPp+A==}
 
 snapshots:
+
+  '@ailuracode/alpine-query@0.6.1(@types/alpinejs@3.13.11)(alpinejs@3.15.12)':
+    dependencies:
+      alpinejs: 3.15.12
+    optionalDependencies:
+      '@types/alpinejs': 3.13.11
 
   '@alpinejs/anchor@3.15.12':
     dependencies:
