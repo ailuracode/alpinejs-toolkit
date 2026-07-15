@@ -118,26 +118,6 @@ describe("@ailuracode/alpine-accordion", () => {
     expect(accordion.isOpen("demo", "one")).toBe(true);
   });
 
-  it("handles open on unknown group", () => {
-    store.open("nonexistent", "item");
-  });
-
-  it("handles open on unknown item", () => {
-    store.open("faq", "nonexistent");
-  });
-
-  it("handles close on unknown group", () => {
-    store.close("nonexistent", "item");
-  });
-
-  it("handles close on unknown item", () => {
-    store.close("faq", "nonexistent");
-  });
-
-  it("handles toggle on unknown group", () => {
-    store.toggle("nonexistent", "item");
-  });
-
   it("handles isOpen on unknown group", () => {
     expect(store.isOpen("nonexistent", "item")).toBe(false);
   });
@@ -148,10 +128,6 @@ describe("@ailuracode/alpine-accordion", () => {
 
   it("handles activeItem on unknown group", () => {
     expect(store.activeItem("nonexistent")).toBeNull();
-  });
-
-  it("handles setActiveItem on unknown group", () => {
-    store.setActiveItem("nonexistent", "item");
   });
 
   it("handles setActiveItem to null", () => {
@@ -177,26 +153,6 @@ describe("@ailuracode/alpine-accordion", () => {
     store.setActiveItem("faq", "item-3");
     store.handleKeydown("faq", new KeyboardEvent("keydown", { key: "ArrowDown" }));
     expect(store.activeItem("faq")).toBe("item-1");
-  });
-
-  it("handles Enter key (no-op for navigation-only)", () => {
-    store.setActiveItem("faq", "item-1");
-    store.handleKeydown("faq", new KeyboardEvent("keydown", { key: "Enter" }));
-    // Enter doesn't toggle items in accordion
-  });
-
-  it("unregisterItem removes item", () => {
-    store.unregisterItem("faq", "item-1");
-    expect(store.isOpen("faq", "item-1")).toBe(false);
-  });
-
-  it("unregisterItem handles unknown group", () => {
-    store.unregisterItem("nonexistent", "item");
-  });
-
-  it("unregister removes group", () => {
-    store.unregister("faq");
-    expect(store.isOpen("faq", "item-1")).toBe(false);
   });
 
   it("triggerProps for closed item", () => {

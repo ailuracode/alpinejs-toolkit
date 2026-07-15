@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { readVisibilityState, VISIBILITY_STATES } from "../src/internal/visibility.js";
 
 describe("env/internal/visibility", () => {
@@ -25,18 +25,22 @@ describe("env/internal/visibility", () => {
   });
 
   it("returns visible default when document is undefined", () => {
-    const originalDocument = (globalThis as Record<string, unknown>).document;
-    (globalThis as Record<string, unknown>).document = undefined;
+    vi.stubGlobal("document", undefined);
     const snap = readVisibilityState();
     expect(snap.isVisible).toBe(true);
     expect(snap.isHidden).toBe(false);
     expect(snap.state).toBe("visible");
-    (globalThis as Record<string, unknown>).document = originalDocument;
+    vi.unstubAllGlobals();
   });
 
   it("reads from global document when no doc injected", () => {
+    vi.stubGlobal("document", {
+      hidden: false,
+      visibilityState: "visible",
+    });
     const snap = readVisibilityState();
-    expect(snap.state).toBeDefined();
-    expect(typeof snap.isVisible).toBe("boolean");
+    expect(snap.state).toBe("visible");
+    expect(snap.isVisible).toBe(true);
+    vi.unstubAllGlobals();
   });
 });

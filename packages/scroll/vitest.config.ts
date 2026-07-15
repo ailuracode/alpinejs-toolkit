@@ -4,7 +4,7 @@
  * Per `.cursor/rules/tooling-configs.mdc` the package owns its
  * own `vitest.config.ts`. We override the root defaults:
  *
- * - `environment: 'jsdom'` — `Element.scrollIntoView`, `window.scrollTo`,
+ * - `environment: 'happy-dom'` — `Element.scrollIntoView`, `window.scrollTo`,
  *   `window.scrollBy`, `IntersectionObserver`, and `matchMedia` all
  *   require a DOM polyfill under happy-dom v29.
  * - `setupFiles` installs the controller's stubs (`setup.ts`).
@@ -22,7 +22,7 @@ import { defineProject } from "vitest/config";
 export default defineProject({
   test: {
     globals: true,
-    environment: "jsdom",
+    environment: "happy-dom",
     include: ["test/**/*.{test,spec}.ts"],
     setupFiles: ["./test/setup.ts"],
     forbidOnly: true,

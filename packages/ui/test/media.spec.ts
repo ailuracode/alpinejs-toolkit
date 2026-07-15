@@ -48,15 +48,18 @@ const mediaQueries = new Map<string, MockMediaQueryList>();
 
 beforeEach(() => {
   mediaQueries.clear();
-  vi.stubGlobal(
-    "matchMedia",
-    vi.fn((query: string) => {
+  vi.stubGlobal("window", {
+    addEventListener: () => undefined,
+    removeEventListener: () => undefined,
+    dispatchEvent: () => true,
+    matchMedia: vi.fn((query: string) => {
       if (!mediaQueries.has(query)) {
         mediaQueries.set(query, createMockMediaQueryList(query));
       }
       return mediaQueries.get(query);
-    })
-  );
+    }),
+  });
+  vi.stubGlobal("document", {});
 });
 
 afterEach(() => {
@@ -130,20 +133,14 @@ describe("createMediaQueryListener", () => {
   });
 
   it("returns a no-op unsubscribe when matchMedia is unavailable", () => {
-    vi.unstubAllGlobals();
-    const originalMatchMedia = globalThis.matchMedia;
-    (globalThis as { matchMedia?: unknown }).matchMedia = undefined;
-    try {
-      const listener = vi.fn();
-      const unsubscribe = createMediaQueryListener("(min-width: 1024px)", listener);
-      expect(typeof unsubscribe).toBe("function");
-      expect(() => unsubscribe()).not.toThrow();
-      expect(listener).not.toHaveBeenCalled();
-    } finally {
-      if (originalMatchMedia) {
-        globalThis.matchMedia = originalMatchMedia;
-      }
-    }
+    vi.stubGlobal("window", {
+      matchMedia: undefined,
+    });
+    const listener = vi.fn();
+    const unsubscribe = createMediaQueryListener("(min-width: 1024px)", listener);
+    expect(typeof unsubscribe).toBe("function");
+    expect(() => unsubscribe()).not.toThrow();
+    expect(listener).not.toHaveBeenCalled();
   });
 
   it("multiple listeners on the same query each receive the event", () => {

@@ -146,7 +146,8 @@ export function createIdlePermissionAdapter(
       try {
         const status = await navigator.permissions.query({ name: IDLE_DETECTION_PERMISSION });
         const notify = (): void => {
-          void this.query().then((permission) => {
+          void readIdlePermissionStatus().then((current) => {
+            const permission = toNormalizedPermission(current);
             listener({
               permission,
               availability: getAvailability(ctor),

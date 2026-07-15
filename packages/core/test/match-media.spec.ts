@@ -25,7 +25,7 @@ describe("safeMatchMedia", () => {
   it("returns null when window is undefined", () => {
     // Simulate a non-browser runtime by shadowing `window` and `document`
     // with `undefined` for the duration of the call, then restoring the
-    // original globals. We shadow instead of `delete` because the jsdom
+    // original globals. We shadow instead of `delete` because the happy-dom
     // environment does not expose those as configurable.
     const originalWindow = Object.getOwnPropertyDescriptor(globalThis, "window");
     const originalDocument = Object.getOwnPropertyDescriptor(globalThis, "document");
@@ -46,13 +46,13 @@ describe("safeMatchMedia", () => {
       if (originalWindow) {
         Object.defineProperty(globalThis, "window", originalWindow);
       } else {
-        // jsdom cleanup needs the slot freed
+        // happy-dom cleanup needs the slot freed
         (globalThis as { window?: unknown }).window = undefined;
       }
       if (originalDocument) {
         Object.defineProperty(globalThis, "document", originalDocument);
       } else {
-        // jsdom cleanup needs the slot freed
+        // happy-dom cleanup needs the slot freed
         (globalThis as { document?: unknown }).document = undefined;
       }
     }
@@ -60,7 +60,7 @@ describe("safeMatchMedia", () => {
 
   it("forwards to window.matchMedia when the API is present", () => {
     // Install a minimal `matchMedia` polyfill, call the helper, then
-    // restore the original (which under jsdom is `undefined`).
+    // restore the original (which under happy-dom is `undefined`).
     const original = globalThis.window.matchMedia;
     const stub: MediaQueryList = {
       media: "(pointer: fine)",

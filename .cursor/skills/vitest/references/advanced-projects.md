@@ -29,7 +29,7 @@ defineConfig({
         test: {
           name: 'integration',
           include: ['tests/integration/**/*.test.ts'],
-          environment: 'jsdom',
+          environment: 'happy-dom',
         },
       },
     ],

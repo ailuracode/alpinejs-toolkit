@@ -300,7 +300,7 @@ describe("ScrollController — sections", () => {
     hero.id = "hero";
     document.body.appendChild(hero);
     controller.registerSection("hero");
-    // We can't easily trigger IntersectionObserver entries in jsdom
+    // We can't easily trigger IntersectionObserver entries in happy-dom
     // without firing its callback manually. Instead, verify the
     // wiring registers the observer.
     expect(sectionEvents.length).toBeGreaterThanOrEqual(0);

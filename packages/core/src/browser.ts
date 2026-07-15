@@ -4,21 +4,19 @@
  * SSR contract is uniform across every package in this monorepo.
  */
 
-import { typeIs, valueIf } from "./core/utils";
-
 /** Returns `true` when the current runtime exposes `window` and `document`. */
 export const isBrowser = () => {
-  return !(typeIs(window, "undefined") || typeIs(document, "undefined"));
+  return typeof globalThis.window !== "undefined" && typeof globalThis.document !== "undefined";
 };
 
 /** Returns `window` if available, otherwise `null`. */
 export const safeWindow = () => {
-  return valueIf(!typeIs(window, "undefined"), window);
+  return typeof globalThis.window !== "undefined" ? globalThis.window : null;
 };
 
 /** Returns `document` if available, otherwise `null`. */
 export const safeDocument = () => {
-  return valueIf(!typeIs(document, "undefined"), document);
+  return typeof globalThis.document !== "undefined" ? globalThis.document : null;
 };
 
 /** Returns `window.matchMedia(query)` or `null` when `window` (or the `matchMedia` API) is unavailable. */
@@ -29,7 +27,7 @@ export function safeMatchMedia(query: string): MediaQueryList | null {
     return null;
   }
 
-  // Some runtimes (older jsdom, embedded webviews, server-side polyfills)
+  // Some runtimes (older DOM implementations, embedded webviews, server-side polyfills)
   // expose `window` without `matchMedia`. Treat that as "browser, but the
   // API isn't there" and return `null` so consumers can degrade gracefully.
   if (!win.matchMedia) {

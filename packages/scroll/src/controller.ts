@@ -395,7 +395,7 @@ export class ScrollController extends BaseController<ScrollEvents> implements Sc
   ): void {
     this.#assertAlive();
     const from = this.#state.y;
-    if (target instanceof Element) {
+    if (typeof Element !== "undefined" && target instanceof Element) {
       scrollIntoViewElement(target, options, this.#options.respectReducedMotion);
       this.#emitNavigation({
         from,
@@ -403,13 +403,14 @@ export class ScrollController extends BaseController<ScrollEvents> implements Sc
         behavior: options?.behavior ?? this.#options.defaultBehavior,
       });
     } else {
+      const coordinates = target as { x: number; y: number };
       scrollToCoordinates(
-        { x: target.x, y: target.y, ...(options ?? {}) },
+        { x: coordinates.x, y: coordinates.y, ...(options ?? {}) },
         this.#options.respectReducedMotion
       );
       this.#emitNavigation({
         from,
-        to: target.y,
+        to: coordinates.y,
         behavior: options?.behavior ?? this.#options.defaultBehavior,
       });
     }

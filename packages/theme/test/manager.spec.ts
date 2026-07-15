@@ -234,7 +234,7 @@ describe("createTheme — DOM strategies", () => {
   });
 
   it("works without a target under SSR", () => {
-    // jsdom provides a document, but we simulate SSR by setting the
+    // happy-dom provides a document, but we simulate SSR by setting the
     // option to null. The strategy should still accept the call.
     const theme = createTheme({ defaultTheme: "dark", target: null, strategy: "class" });
     // No throw on init; no DOM mutation observed.

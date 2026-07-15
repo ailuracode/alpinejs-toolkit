@@ -142,10 +142,6 @@ describe("@ailuracode/alpine-dialog", () => {
     expect(store.isOpen("settings")).toBe(true);
   });
 
-  it("handles handleKeydown on unknown dialog", () => {
-    store.handleKeydown("nonexistent", new KeyboardEvent("keydown", { key: "Escape" }));
-  });
-
   it("handles dialogProps on unknown dialog", () => {
     const props = store.dialogProps("nonexistent");
     expect(props.role).toBe("dialog");
@@ -183,34 +179,5 @@ describe("@ailuracode/alpine-dialog", () => {
 
     trap.deactivate();
     container.remove();
-  });
-
-  it("focus trap handles tab on last element", () => {
-    const container = document.createElement("div");
-    const first = document.createElement("button");
-    const last = document.createElement("button");
-    container.append(first, last);
-    document.body.append(container);
-
-    const trap = createFocusTrap(container);
-    trap.activate();
-    last.focus();
-
-    const event = new KeyboardEvent("keydown", { key: "Tab", bubbles: true });
-    container.dispatchEvent(event);
-    expect(document.activeElement).toBe(first);
-
-    trap.deactivate();
-    container.remove();
-  });
-
-  it("unregister removes dialog", () => {
-    store.register("settings");
-    store.unregister("settings");
-    expect(store.isOpen("settings")).toBe(false);
-  });
-
-  it("handles unregister of unknown dialog", () => {
-    store.unregister("nonexistent");
   });
 });

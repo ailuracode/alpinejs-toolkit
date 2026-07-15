@@ -153,12 +153,12 @@ describe("themePlugin — store surface", () => {
  * from external mutations (most notably Astro View Transitions
  * re-syncing `<html>` attributes across navigations).
  *
- * jsdom is the host environment here, so `document` is always
+ * happy-dom is the host environment here, so `document` is always
  * available — these tests exercise the listener path directly
  * rather than gating it behind a feature-detection probe.
  */
 describe("themePlugin — DOM re-apply on navigation events", () => {
-  // jsdom exposes `document` but not `addEventListener` on it as a
+  // happy-dom exposes `document` but not `addEventListener` on it as a
   // guardable feature, so we monkey-patch a tiny stub that records
   // every (type, listener) pair the plugin registers, then fires
   // them on demand. This avoids touching real DOM state and lets

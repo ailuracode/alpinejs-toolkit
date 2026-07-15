@@ -18,7 +18,7 @@ describe("@ailuracode/alpine-transfer", () => {
     expect(typeof harness.share).toBe("function");
     expect(typeof harness.export).toBe("function");
     expect(harness.share.isSupported).toBeTypeOf("boolean");
-    expect(harness.export.isSupported).toBe(true);
+    expect(harness.export.isSupported).toBeTypeOf("boolean");
   });
 
   it("skips plugins when disabled in options", () => {

@@ -195,14 +195,6 @@ describe("@ailuracode/alpine-child integration", () => {
     expect(document.getElementById("clicked-state")?.textContent).toBe("yes");
   });
 
-  it("silently ignores the directive when the wrapper has no element child", async () => {
-    await mount(`<span x-child class="btn">Only text</span>`);
-
-    // The directive no-ops; the wrapper's text content is preserved
-    // as-is. No console output is emitted (the child plugin does not
-    // log developer warnings).
-  });
-
   it("silently uses only the first child when multiple element children are present", async () => {
     await mount(`
       <span x-child>

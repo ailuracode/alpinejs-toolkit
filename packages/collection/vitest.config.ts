@@ -3,7 +3,7 @@ import { defineProject } from "vitest/config";
 export default defineProject({
   test: {
     globals: true,
-    environment: "jsdom",
+    environment: "happy-dom",
     include: ["test/**/*.{test,spec}.ts"],
   },
 });

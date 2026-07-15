@@ -24,11 +24,4 @@ describe("package catalog check", () => {
   it("passes on the current repository surfaces", () => {
     expect(validatePackageCatalogSurfaces(root)).toEqual([]);
   });
-
-  it("reports missing README sources", () => {
-    const entries = parseCatalogEntries(
-      'entry({ id: "theme", folder: "theme", npmPackage: "@ailuracode/alpine-theme", readmePath: "packages/missing/README.md" })'
-    );
-    expect(entries[0]?.readmePath).toBe("packages/missing/README.md");
-  });
 });

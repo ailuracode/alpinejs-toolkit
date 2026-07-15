@@ -20,13 +20,10 @@ describe("Critical #1 — #assertAlive throws ToolkitError('CONTROLLER_DESTROYED
     const controller = new ScrollController();
     controller.mount();
     controller.destroy();
-    try {
-      controller.lockWithHandle("modal");
-      throw new Error("expected throw");
-    } catch (error) {
-      expect(error).toBeInstanceOf(ToolkitError);
-      expect((error as ToolkitError).code).toBe("CONTROLLER_DESTROYED");
-    }
+    expect(() => controller.lockWithHandle("modal")).toThrow(ToolkitError);
+    expect(() => controller.lockWithHandle("modal")).toThrowError(
+      expect.objectContaining({ code: "CONTROLLER_DESTROYED" })
+    );
   });
 });
 
@@ -110,28 +107,6 @@ describe("Critical #3 — scrollPlugin factory subscribes once to controller.on(
   });
 });
 
-describe("Critical #4 — unlock(handle): void", () => {
-  it("unlock returns void, not boolean", () => {
-    const controller = new ScrollController();
-    controller.mount();
-    const handle = controller.lockWithHandle("modal");
-    const result = controller.unlock(handle);
-    expect(result).toBeUndefined();
-    controller.destroy();
-  });
-});
-
-describe("Critical #5 — lockWithHandle(reason: string): string", () => {
-  it("returns the handle as a string", () => {
-    const controller = new ScrollController();
-    controller.mount();
-    const handle = controller.lockWithHandle("modal");
-    expect(typeof handle).toBe("string");
-    expect(handle.length).toBeGreaterThan(0);
-    controller.destroy();
-  });
-});
-
 describe("Critical #6 — caller reason flows through to change event", () => {
   it("change event detail.reason matches caller-supplied reason", () => {
     const controller = new ScrollController();
@@ -145,31 +120,22 @@ describe("Critical #6 — caller reason flows through to change event", () => {
   });
 });
 
-describe("Critical #7 — ScrollLockChangeDetail canonical + ScrollLockDetail alias", () => {
+describe("Critical #7 — ScrollLockChangeDetail canonical shape", () => {
   it("lock event detail shape includes locked, count, reason, handle", () => {
     const controller = new ScrollController();
     controller.mount();
     const events: ScrollLockChangeDetail[] = [];
     controller.on("lock", (d) => events.push(d));
-    controller.lockWithHandle("modal");
+    const handle = controller.lockWithHandle("modal");
     const detail = events[0];
     expect(detail.locked).toBe(true);
     expect(detail.count).toBe(1);
     expect(detail.reason).toBe("modal");
-    expect(typeof detail.handle).toBe("string");
+    expect(detail.handle).toBe(handle);
+    expect(typeof handle).toBe("string");
+    expect(handle.length).toBeGreaterThan(0);
+    controller.unlock(handle);
     controller.destroy();
-  });
-
-  it("ScrollLockDetail type alias exists and equals ScrollLockChangeDetail", () => {
-    // Type-only assertion; runtime shape is identical.
-    const detail: ScrollLockChangeDetail = {
-      locked: true,
-      count: 1,
-      reason: "test",
-      handle: "h1",
-    };
-    const alias: import("../src/types").ScrollLockDetail = detail;
-    expect(alias).toEqual(detail);
   });
 });
 

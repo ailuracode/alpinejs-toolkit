@@ -2,7 +2,10 @@
  * Contract spec — verifies that `ScrollController` satisfies the
  * BaseController contract (listenerCount, on/once/off semantics,
  * id propagation, destroy semantics).
+ *
+ * Mount and lock paths touch `document.body` styles — run under happy-dom.
  */
+// @vitest-environment happy-dom
 
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { ScrollController } from "../src/controller";

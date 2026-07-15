@@ -166,10 +166,6 @@ describe("QueryCache — comprehensive coverage", () => {
 
       expect(cache.get(["cancel"])?.fetchStatus).toBe("idle");
     });
-
-    it("no-ops for missing entry", () => {
-      cache.cancel(["nonexistent"]);
-    });
   });
 
   describe("invalidate", () => {
@@ -201,10 +197,6 @@ describe("QueryCache — comprehensive coverage", () => {
 
       expect(fn.mock.calls.length).toBeGreaterThanOrEqual(callCount + 2);
     });
-
-    it("invalidateEntry on missing entry does nothing", () => {
-      cache.invalidateEntry("nonexistent");
-    });
   });
 
   describe("remove", () => {
@@ -217,10 +209,6 @@ describe("QueryCache — comprehensive coverage", () => {
       cache.remove();
 
       expect(cache.getEntries()).toHaveLength(0);
-    });
-
-    it("removeEntry on missing entry does nothing", () => {
-      cache.removeEntry("nonexistent");
     });
 
     it("remove with multiple keys", async () => {
@@ -260,10 +248,6 @@ describe("QueryCache — comprehensive coverage", () => {
 
       cache.setData<Todo[]>(["sd2"], (current) => [...(current ?? []), { id: 2, title: "New" }]);
       expect(cache.get<Todo[]>(["sd2"])?.data).toHaveLength(2);
-    });
-
-    it("no-ops on missing entry", () => {
-      cache.setData(["missing"], "value");
     });
   });
 

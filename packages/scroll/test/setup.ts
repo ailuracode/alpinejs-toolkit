@@ -1,7 +1,7 @@
 /**
  * Vitest setup for `@ailuracode/alpine-scroll`.
  *
- * Installs polyfills for browser APIs that jsdom v29 doesn't ship:
+ * Installs polyfills for browser APIs that happy-dom doesn't ship:
  *
  * - `Element.prototype.scrollIntoView`
  * - `window.scrollTo` / `window.scrollBy`
