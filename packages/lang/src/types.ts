@@ -189,7 +189,18 @@ export interface LangPluginOptions {
   readonly fallback?: string;
   /** Lower-case and normalize separators. Default: `true`. */
   readonly normalize?: boolean;
+  /**
+   * `$store.lang` store key the Alpine plugin registers under.
+   * Defaults to {@link DEFAULT_LANG_STORE_KEY}. Set when the host
+   * already owns a `lang` store or another toolkit plugin would
+   * collide on that name — the rename avoids the collision without
+   * touching the controller.
+   */
+  readonly storeKey?: string;
 }
+
+/** Default `$store.lang` key registered by {@link langPlugin}. */
+export const DEFAULT_LANG_STORE_KEY = "lang";
 
 /**
  * `Alpine.plugin()` callback signature.

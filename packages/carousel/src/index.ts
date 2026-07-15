@@ -36,3 +36,5 @@ export type {
   CarouselStore,
   CreateCarouselOptions,
 } from "./types";
+// --- Public constants ----------------------------------------------------
+export { DEFAULT_CAROUSEL_STORE_KEY } from "./types";

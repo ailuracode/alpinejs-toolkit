@@ -188,6 +188,17 @@ export interface RealtimeControllerConfig {
    * not set this.
    */
   readonly random?: () => number;
+
+  // ── Alpine integration ─────────────────────────────────────
+
+  /**
+   * `$realtime` magic key the Alpine plugin registers under.
+   * Defaults to `"realtime"`. Set when the host already owns a
+   * `realtime` magic or another toolkit plugin would collide on
+   * that name — the rename avoids the collision without touching
+   * the controller or transport adapter.
+   */
+  readonly magicKey?: string;
 }
 
 /**

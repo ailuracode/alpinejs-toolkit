@@ -31,8 +31,24 @@ Open panel state is backed by an inline lightweight state — no extra dependenc
 | `mode` | `'single'` | `'single'` closes other panels when one opens; `'multiple'` allows several open |
 | `defaultOpen` | — | Item id or array of ids open after `registerItem` |
 | `onChange` | — | `(openIds: string[]) => void` when open state changes |
+| `storeKey` | `'accordion'` | `$store` key the Alpine plugin registers under |
+| `magicKey` | `'accordion'` (or `storeKey` when renamed) | `$accordion` magic key the Alpine plugin registers under |
 
 In **single** mode, only the **first** id in `defaultOpen` is used when an array is passed.
+
+### Avoiding name collisions
+
+If your application already owns a `$store.accordion` or another toolkit plugin registers on that name, rename the integration surface without touching the controller:
+
+```ts
+Alpine.plugin(accordionPlugin({
+  storeKey: "faq",            // → $store.faq
+  // magicKey follows storeKey by default → $faq
+  magicKey: "disclosure",     // explicit override → $disclosure
+}));
+```
+
+`storeKey` is the only argument most hosts need. `magicKey` moves independently only when both names must be freed. The exposed constants `DEFAULT_ACCORDION_STORE_KEY` and `DEFAULT_ACCORDION_MAGIC_KEY` keep the rename discoverable from TypeScript.
 
 ## Single mode
 

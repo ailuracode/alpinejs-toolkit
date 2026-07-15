@@ -233,6 +233,7 @@ feature package.
 | Export | Description |
 | ------ | ----------- |
 | `bridgeControllerStore(options)` | Registers the store proxy, magic accessor, subscription cleanup, and `controller.destroy()` |
+| `bridgeControllerDirective(options)` | Registers an Alpine directive with guarded collision detection and cleanup |
 | `registerReactiveStore(alpine, key, store)` | Registers a store and returns Alpine's reactive proxy |
 | `registerStoreMagic(alpine, key, accessor)` | Registers a magic that returns a stable reference |
 | `syncRecordFromSnapshot(target, snapshot)` | Mirrors keyed instance registries onto reactive stores |
@@ -251,16 +252,48 @@ feature package.
 - Prefer `bridgeControllerStore()` when the magic returns the store
   proxy. Use the lower-level helpers when the magic is a composite API
   (for example `$toast`).
+- Directive plugins — `bridgeControllerDirective()` is the symmetric
+  helper for `x-child`, `x-gesture`, and any plugin that registers an
+  `Alpine.directive(...)` instead of a store + magic pair.
 
 **When a custom adapter is justified**
 
 - Instance-registry plugins that sync `instances` maps and expose
   per-id helpers (`dialog`, `menu`, `carousel`, …).
-- Directive plugins (`x-child`, `x-gesture`) or magic-only packages.
 - Adapters that register multiple stores or magics from one controller.
+- Plugins that register more than one directive per call.
 
 Store field mirroring MUST stay in the package's `subscribe` callback —
 the bridge does not hide domain-specific synchronization.
+
+### `bridgeControllerDirective`
+
+Counterpart to `bridgeControllerStore` for plugins that register a single
+Alpine directive. The collision policy mirrors the store/magic helper —
+default `registrationOverride: true` keeps HMR and tests working, opt in
+to `registrationOverride: false` when the host application or a sibling
+plugin is expected to register the same directive name.
+
+```ts
+import { bridgeControllerDirective } from "@ailuracode/alpine-core";
+
+bridgeControllerDirective({
+  alpine,
+  directiveKey: "child",
+  directive: (el) => { /* ... */ },
+  packageName: "child",
+  controller: childController, // optional
+});
+```
+
+Cleanup order (when `controller` is supplied):
+
+1. `controller.destroy()` — release any held resources
+2. `untrackDirective(directiveKey)` — clear the guard's tracking entry
+
+When `controller` is omitted the directive is registered without any
+destroy hook; only `untrackDirective` runs so HMR / repeated integration
+tests do not collide with themselves.
 
 ### Generic Alpine typings
 
@@ -271,13 +304,89 @@ the bridge does not hide domain-specific synchronization.
 
 ### Errors
 
-| Export              | Description                             |
-| ------------------- | --------------------------------------- |
-| `PluginLoaderError` | Thrown when a loader cannot be resolved |
-| `ToolkitError`      | Base class for every toolkit error      |
+| Export              | Description                                                                |
+| ------------------- | -------------------------------------------------------------------------- |
+| `PluginLoaderError` | Thrown when a loader cannot be resolved                                    |
+| `RegistrationError` | Thrown when a guard refuses a store/magic/directive because the name is taken |
+| `ToolkitError`      | Base class for every toolkit error                                         |
 
 `PluginLoaderError` extends `ToolkitError` with `code: 'PLUGIN_LOADER_INVALID'`.
-Consumers should match against `ToolkitError` and branch on `error.code`.
+`RegistrationError` extends `ToolkitError` with `code: 'REGISTRATION_COLLISION'` and
+exposes `kind`, `registrationName`, and `packageName` so callers can route the error
+to the right plugin. Consumers match against `ToolkitError` and branch on `error.code`.
+
+## Registration guards
+
+By default Alpine 3 silently overwrites whatever a previous plugin registered under
+the same key. That is convenient until two plugins race for `$store.theme` — the
+loser disappears with no warning. Core ships a thin guard layer so every feature
+plugin refuses a collision the same way.
+
+```ts
+import {
+  guardDirective,
+  guardMagic,
+  guardStore,
+  RegistrationError,
+} from "@ailuracode/alpine-core";
+
+guardStore(Alpine, "theme", themeStore, "alpine-theme");
+// → registers $store.theme, or throws RegistrationError("REGISTRATION_COLLISION")
+//   if the host (or another plugin) already owns the key.
+
+guardMagic(Alpine, "theme", () => themeStore, "alpine-theme");
+guardDirective(Alpine, "x-child", directive, "alpine-child");
+```
+
+When the guard throws the error message points the host at the right factory:
+
+```
+store "theme" is already registered. If you registered this store yourself,
+rename it or pass { override: true } to themePlugin() to replace it. If
+another plugin registered it, configure themePlugin() with storeKey/magicKey.
+```
+
+| Export                              | Description                                                            |
+| ----------------------------------- | ---------------------------------------------------------------------- |
+| `guardStore(Alpine, name, value, packageName, options?)` | Register `Alpine.store(name, …)` and throw if the key is already taken |
+| `guardMagic(Alpine, name, accessor, packageName, options?)` | Register `Alpine.magic(name, …)` with internal collision tracking |
+| `guardDirective(Alpine, name, directive, packageName, options?)` | Register `Alpine.directive(name, …)` with internal collision tracking |
+| `RegistrationError`                 | `ToolkitError` subclass with `kind`, `registrationName`, `packageName` |
+| `resetRegistrationTracking()`       | Clear the magic/directive tracking sets (used by the global test setup between specs) |
+
+`storeKey` / `magicKey` / `directiveName` are the escape hatch every feature
+plugin is expected to expose — pass a renamed key to bypass the collision without
+touching the controller.
+
+`guardStore` returns the same reactive proxy Alpine hands back, so plugins can
+mirror `Alpine.store("theme", …)` and read the reactive proxy through one call:
+
+```ts
+const { reactiveStore } = guardStore(Alpine, "theme", themeStore, "alpine-theme");
+reactiveStore.current = nextPreference;
+```
+
+### Options
+
+| Option     | Type      | Default | Effect                                                                                  |
+| ---------- | --------- | ------- | --------------------------------------------------------------------------------------- |
+| `override` | `boolean` | `false` | When `true`, the guard replaces the existing registration instead of throwing            |
+| `silent`   | `boolean` | `false` | When `true`, `console.warn` is not emitted on an `override: true` replacement            |
+
+### Why a `packageName`?
+
+Every error message names the factory that owns the guard (`themePlugin()`,
+`scrollPlugin()`, …). The package name is the only signal a host gets to know
+which `storeKey` to rename or which factory to configure with `override: true`.
+Pass it explicitly — there is no inference from the call site.
+
+> The `architecture:check` script enforces that no package outside
+> `packages/core/src/registration.ts` calls `Alpine.store` / `Alpine.magic` /
+> `Alpine.directive` directly. Feature packages must route their registrations
+> through the guards (this is what `bridgeControllerStore` does internally).
+> Packages that have not yet migrated are tracked in
+> `architecture-check-policy.mjs#registrationGuardPending` and removed from
+> that list as they adopt `guardStore` / `guardMagic` / `guardDirective`.
 
 ## Plugin kinds
 

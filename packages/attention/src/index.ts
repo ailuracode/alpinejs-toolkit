@@ -16,8 +16,9 @@ export {
   createIdlePermissionAdapter,
   IDLE_PERMISSION_NAME,
 } from "./permission-adapter.js";
-export { default as attentionPlugin, default } from "./plugin.js";
+export { attentionPlugin, default } from "./plugin.js";
 export type {
+  CreateAttentionPluginOptions,
   IdleDetectorConstructor,
   IdleDetectorLike,
   IdleMagic,
@@ -26,4 +27,8 @@ export type {
   WakeLockLike,
   WakeLockMagic,
   WakeLockSentinelLike,
+} from "./types.js";
+export {
+  DEFAULT_ATTENTION_IDLE_KEY,
+  DEFAULT_ATTENTION_WAKELOCK_KEY,
 } from "./types.js";

@@ -55,9 +55,11 @@ export type {
   PrefersColorScheme,
   PrefersContrast,
 } from "./types";
+// --- Public constants --------------------------------------------------
 // --- Public constants ------------------------------------------------
 export {
   DEFAULT_MEDIA_DEBOUNCE_MS,
   DEFAULT_MEDIA_INTERVALS,
+  DEFAULT_MEDIA_STORE_KEY,
   SSR_MEDIA_DEFAULTS,
 } from "./types";

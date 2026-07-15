@@ -20,6 +20,21 @@ Alpine.plugin(attention);
 Alpine.start();
 ```
 
+### Avoiding name collisions
+
+If your application already owns a `$wakelock` or `$idle` magic — or another toolkit plugin registers on those names — rename the integration surface without touching the controllers:
+
+```ts
+Alpine.plugin(
+  attentionPlugin({
+    wakelockKey: "screen", // → $screen
+    idleKey: "presence", // → $presence
+  }),
+);
+```
+
+The exposed constants `DEFAULT_ATTENTION_WAKELOCK_KEY` and `DEFAULT_ATTENTION_IDLE_KEY` keep the renames discoverable from TypeScript.
+
 ## `$wakelock` magic
 
 | Property / method | Type | Description |

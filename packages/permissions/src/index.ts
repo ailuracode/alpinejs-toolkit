@@ -18,3 +18,7 @@ export type {
   PermissionsPluginOptions,
   PermissionsStore,
 } from "./types.js";
+export {
+  DEFAULT_PERMISSIONS_MAGIC_KEY,
+  DEFAULT_PERMISSIONS_STORE_KEY,
+} from "./types.js";

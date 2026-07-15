@@ -93,7 +93,18 @@ export type VirtualStore = {
 /** Options accepted by the virtual plugin factory. */
 export interface CreateVirtualOptions {
   readonly id?: string;
+  /**
+   * `$store.virtual` store key the Alpine plugin registers under.
+   * Defaults to {@link DEFAULT_VIRTUAL_STORE_KEY}. Set when the host
+   * already owns a `virtual` store or another toolkit plugin would
+   * collide on that name — the rename avoids the collision without
+   * touching the controller.
+   */
+  readonly storeKey?: string;
 }
+
+/** Default `$store.virtual` key registered by {@link virtualPlugin}. */
+export const DEFAULT_VIRTUAL_STORE_KEY = "virtual";
 
 /** Typed view of `Alpine` the virtual plugin uses internally. */
 export type VirtualAlpine = Alpine<{ virtual: VirtualStore }> & {

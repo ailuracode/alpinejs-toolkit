@@ -134,3 +134,32 @@ The `./global` subpath re-exports the named-export surface of `@types/alpinejs` 
 | `ToolkitError` | Base error with stable `code` and optional `cause` |
 | `Alpine<Stores>` | Typed view of `Alpine` whose `store()` overloads narrow to `Stores` |
 | `PluginCallback<T>` | Generic `Alpine.plugin()` callback typed against an `Alpine` view |
+
+## Avoiding name collisions
+
+Alpine 3 silently overwrites whatever a previous plugin registered under the same key — convenient in development, dangerous the day two plugins race for `$store.theme`. `@ailuracode/alpine-core` ships a thin guard layer so every feature plugin refuses a collision the same way:
+
+```ts
+import { guardStore } from "@ailuracode/alpine-core";
+
+guardStore(Alpine, "theme", themeStore, "alpine-theme");
+// → registers $store.theme, or throws
+//   RegistrationError("REGISTRATION_COLLISION") if the key is already taken.
+```
+
+The error message names the factory that owns the guard and points at the configuration knob that fixes the collision — usually `storeKey` / `magicKey` exposed by the feature plugin:
+
+```ts
+Alpine.plugin(themePlugin({ storeKey: "appearance" })); // → $store.appearance
+```
+
+| Export | Purpose |
+|--------|---------|
+| `guardStore(Alpine, name, value, packageName, options?)` | Register `Alpine.store` and throw on collision |
+| `guardMagic(Alpine, name, accessor, packageName, options?)` | Register `Alpine.magic` with internal tracking |
+| `guardDirective(Alpine, name, directive, packageName, options?)` | Register `Alpine.directive` with internal tracking |
+| `RegistrationError` | `ToolkitError` subclass (`code: "REGISTRATION_COLLISION"`) |
+| `resetRegistrationTracking()` | Clear internal tracking sets (used by the global test setup) |
+
+Guarded plugins carry the `packageName` they registered in the error, so a host sees `themePlugin()` instead of just the raw key. The `architecture:check` script enforces that no feature package outside `packages/core/src/registration.ts` calls `Alpine.store` / `Alpine.magic` / `Alpine.directive` directly; pending migrations are tracked in `architecture-check-policy.mjs#registrationGuardPending`.
+

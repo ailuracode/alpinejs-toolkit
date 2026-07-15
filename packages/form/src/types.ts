@@ -303,7 +303,28 @@ export type FormStoreConfig = {
 export interface CreateFormOptions {
   readonly id?: string;
   readonly defaultValidateOn?: FormValidateOn;
+  /**
+   * `$store` key the Alpine plugin registers under. Defaults to
+   * {@link DEFAULT_FORM_STORE_KEY}. Set when the host already owns
+   * a `form` store or another toolkit plugin would collide on that
+   * name — the rename avoids the collision without touching the
+   * controller. Ignored by the standalone `formOptions` factory.
+   */
+  readonly storeKey?: string;
+  /**
+   * `$form` magic key the Alpine plugin registers under. Defaults to
+   * {@link DEFAULT_FORM_MAGIC_KEY}, or to `storeKey` when that is
+   * renamed (the magic follows the store so consumers only rename
+   * one). Ignored by the standalone factory.
+   */
+  readonly magicKey?: string;
 }
+
+/** Default `$store` key registered by {@link formPlugin}. */
+export const DEFAULT_FORM_STORE_KEY = "form";
+
+/** Default `$form` magic key registered by {@link formPlugin}. */
+export const DEFAULT_FORM_MAGIC_KEY = "form";
 
 /** Typed view of `Alpine` the form plugin uses internally. */
 export type FormAlpine = Alpine<{ form: FormStore }> & {

@@ -37,6 +37,16 @@ pnpm add @alpinejs/anchor
 
 `TooltipController` owns all mutable tooltip state. The Alpine plugin copies snapshots into `$store.tooltip.instances` on each `change` event. Mutating store snapshots directly does not change controller state.
 
+### Avoiding name collisions
+
+If your application already owns a `$store.tooltip` — or another toolkit plugin registers on that name — rename the integration surface without touching the controller:
+
+```ts
+Alpine.plugin(tooltipPlugin({ storeKey: "hints" })); // → $store.hints
+```
+
+The exposed constant `DEFAULT_TOOLTIP_STORE_KEY` keeps the rename discoverable from TypeScript.
+
 ## Standalone usage (no Alpine)
 
 ```ts

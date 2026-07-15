@@ -10,9 +10,7 @@ import type { Alpine } from "alpinejs";
 import { MenuController } from "./controller.js";
 import { createMenuStoreFromController } from "./store.js";
 import type { CreateMenuOptions, MenuAlpine, MenuPluginCallback } from "./types.js";
-
-/** Key under which the menu store is registered on `$store`. */
-const MENU_STORE_KEY = "menu";
+import { DEFAULT_MENU_STORE_KEY } from "./types.js";
 
 /**
  * Plugin factory — returns the `Alpine.plugin()` callback. Pass
@@ -20,6 +18,8 @@ const MENU_STORE_KEY = "menu";
  * or `{}` for the package defaults.
  */
 export function menuPlugin(options: CreateMenuOptions = {}): MenuPluginCallback {
+  const storeKey = options.storeKey ?? DEFAULT_MENU_STORE_KEY;
+
   return function registerMenu(alpine: Alpine): void {
     const Alpine = alpine as unknown as MenuAlpine;
 
@@ -30,9 +30,10 @@ export function menuPlugin(options: CreateMenuOptions = {}): MenuPluginCallback 
 
     bridgeControllerStore({
       alpine: Alpine,
-      storeKey: MENU_STORE_KEY,
+      storeKey,
       store: createMenuStoreFromController(controller),
       controller,
+      packageName: "menu",
       subscribe: (reactiveStore) => {
         reactiveStore.isOpen = (id: string) => reactiveStore.instances?.[id]?.open ?? false;
         return controller.on("change", () => {

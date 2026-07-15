@@ -10,9 +10,7 @@ import type { Alpine } from "alpinejs";
 import { CarouselController } from "./controller.js";
 import { createCarouselStoreFromController } from "./store.js";
 import type { CarouselAlpine, CarouselPluginCallback, CreateCarouselOptions } from "./types.js";
-
-/** Key under which the carousel store is registered on `$store`. */
-const CAROUSEL_STORE_KEY = "carousel";
+import { DEFAULT_CAROUSEL_STORE_KEY } from "./types.js";
 
 /**
  * Plugin factory — returns the `Alpine.plugin()` callback. Pass
@@ -20,15 +18,18 @@ const CAROUSEL_STORE_KEY = "carousel";
  * or `{}` for the package defaults.
  */
 export function carouselPlugin(options: CreateCarouselOptions = {}): CarouselPluginCallback {
+  const storeKey = options.storeKey ?? DEFAULT_CAROUSEL_STORE_KEY;
+
   return function registerCarousel(alpine: Alpine): void {
     const Alpine = alpine as unknown as CarouselAlpine;
     const controller = new CarouselController(options.id);
 
     bridgeControllerStore({
       alpine: Alpine,
-      storeKey: CAROUSEL_STORE_KEY,
+      storeKey,
       store: createCarouselStoreFromController(controller),
       controller,
+      packageName: "carousel",
       subscribe: (reactiveStore) => {
         reactiveStore.current = (id) => reactiveStore.instances[id]?.currentIndex ?? 0;
         reactiveStore.count = (id) => reactiveStore.instances[id]?.totalSlides ?? 0;

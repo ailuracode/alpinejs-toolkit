@@ -35,6 +35,23 @@ Alpine.start();
 Alpine.plugin(env({ battery: false, visibility: false }));
 ```
 
+### Avoiding name collisions
+
+If your application already owns one of the env magics (`$network`, `$visibility`, `$battery`, `$platform`) — or another toolkit plugin registers on one of those names — rename the integration surface without forking the helpers:
+
+```ts
+Alpine.plugin(
+  env({
+    networkKey: "net", // → $net
+    visibilityKey: "page", // → $page
+    batteryKey: "power", // → $power
+    platformKey: "os", // → $os
+  }),
+);
+```
+
+The exposed constants `DEFAULT_ENV_NETWORK_KEY`, `DEFAULT_ENV_VISIBILITY_KEY`, `DEFAULT_ENV_BATTERY_KEY`, and `DEFAULT_ENV_PLATFORM_KEY` keep the renames discoverable from TypeScript.
+
 ## `$network`
 
 Reactive connectivity from `navigator.onLine`.

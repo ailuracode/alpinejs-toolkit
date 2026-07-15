@@ -47,3 +47,28 @@ export type GeoAlpine = Alpine<{ geo: GeoStore }> & {
 
 /** `Alpine.plugin()` callback signature. */
 export type GeoPluginCallback = PluginCallback<AlpineBase>;
+
+/** Options accepted by the geo plugin factory. */
+export interface CreateGeoOptions {
+  /**
+   * `$store` key the Alpine plugin registers under. Defaults to
+   * {@link DEFAULT_GEO_STORE_KEY}. Set when the host already owns
+   * a `geo` store or another toolkit plugin would collide on that
+   * name — the rename avoids the collision without touching the
+   * controller. Ignored by the standalone `createGeoController`.
+   */
+  readonly storeKey?: string;
+  /**
+   * `$geo` magic key the Alpine plugin registers under. Defaults to
+   * {@link DEFAULT_GEO_MAGIC_KEY}, or to `storeKey` when that is
+   * renamed (the magic follows the store so consumers only rename
+   * one). Ignored by the standalone factory.
+   */
+  readonly magicKey?: string;
+}
+
+/** Default `$store` key registered by {@link geoPlugin}. */
+export const DEFAULT_GEO_STORE_KEY = "geo";
+
+/** Default `$geo` magic key registered by {@link geoPlugin}. */
+export const DEFAULT_GEO_MAGIC_KEY = "geo";

@@ -505,3 +505,70 @@ function hasExportModifier(node) {
     !!node.modifiers?.some((modifier) => modifier.kind === ts.SyntaxKind.ExportKeyword)
   );
 }
+
+const REGISTRATION_METHODS = new Set(["store", "magic", "directive"]);
+
+/**
+ * @param {ts.Node} node
+ * @returns {string | null}
+ */
+function getDirectRegistrationMethod(node) {
+  if (!ts.isCallExpression(node)) {
+    return null;
+  }
+  const expression = node.expression;
+  if (!(expression && ts.isPropertyAccessExpression(expression))) {
+    return null;
+  }
+  if (!(ts.isIdentifier(expression.expression) && expression.expression.text === "Alpine")) {
+    return null;
+  }
+  const method = expression.name.text;
+  if (!REGISTRATION_METHODS.has(method)) {
+    return null;
+  }
+  // `Alpine.store(name)` with a single argument is a getter lookup,
+  // not a registration. Only flag the registration call shape:
+  // - `Alpine.store(name, value)` — two args = register
+  // - `Alpine.magic(name, factory)` — magic has no getter form
+  // - `Alpine.directive(name, handler)` — directive has no getter form
+  if (method === "store" && node.arguments.length < 2) {
+    return null;
+  }
+  return method;
+}
+
+/**
+ * Detects direct calls to `Alpine.store`, `Alpine.magic`, or
+ * `Alpine.directive` in the parsed source.
+ *
+ * Feature packages MUST route these through the `guardStore`,
+ * `guardMagic`, and `guardDirective` helpers exported from
+ * `@ailuracode/alpine-core` so collisions surface as
+ * `RegistrationError("REGISTRATION_COLLISION")` instead of silently
+ * overwriting host registrations.
+ *
+ * @param {string} source
+ * @param {string} [fileName]
+ * @returns {{ method: string, line: number }[]}
+ */
+export function findDirectAlpineRegistrationCalls(source, fileName = "fixture.ts") {
+  const sourceFile = createSourceFile(fileName, source);
+  /** @type {{ method: string, line: number }[]} */
+  const violations = [];
+
+  /**
+   * @param {ts.Node} node
+   */
+  function visit(node) {
+    const method = getDirectRegistrationMethod(node);
+    if (method) {
+      const { line } = sourceFile.getLineAndCharacterOfPosition(node.getStart(sourceFile));
+      violations.push({ method, line: line + 1 });
+    }
+    ts.forEachChild(node, visit);
+  }
+
+  visit(sourceFile);
+  return violations;
+}

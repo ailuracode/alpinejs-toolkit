@@ -116,7 +116,28 @@ export type NormalizedCommandOptions = {
 /** Options accepted by the command plugin factory. */
 export interface CommandPluginOptions extends CommandStoreConfig {
   readonly id?: string;
+  /**
+   * `$store` key the Alpine plugin registers under. Defaults to
+   * {@link DEFAULT_COMMAND_STORE_KEY}. Set when the host already owns
+   * a `command` store or another toolkit plugin would collide on that
+   * name — the rename avoids the collision without touching the
+   * controller. Ignored by the standalone `createCommandStore` factory.
+   */
+  readonly storeKey?: string;
+  /**
+   * `$command` magic key the Alpine plugin registers under. Defaults
+   * to {@link DEFAULT_COMMAND_MAGIC_KEY}, or to `storeKey` when that
+   * is renamed (the magic follows the store so consumers only rename
+   * one). Ignored by the standalone factory.
+   */
+  readonly magicKey?: string;
 }
+
+/** Default `$store` key registered by {@link commandPlugin}. */
+export const DEFAULT_COMMAND_STORE_KEY = "command";
+
+/** Default `$command` magic key registered by {@link commandPlugin}. */
+export const DEFAULT_COMMAND_MAGIC_KEY = "command";
 
 /** Alpine-facing store surface. */
 export interface CommandStore {

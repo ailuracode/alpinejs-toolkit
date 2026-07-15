@@ -7,6 +7,7 @@ import {
   findConstructorSideEffectsInSource,
   findConstructorSideEffectViolations,
   findCrossPackageInternalImportViolations,
+  findDirectAlpineRegistrationCalls,
   findForbiddenBarrelReExports,
   hasRuntimeAlpineImport,
   importsPackageEntrypoint,
@@ -409,6 +410,76 @@ export function validateHeadlessCss(root) {
 }
 
 /**
+ * Path fragments that are allowed to call `Alpine.store` / `Alpine.magic`
+ * / `Alpine.directive` directly. Everything else MUST go through the
+ * `guardStore` / `guardMagic` / `guardDirective` helpers from
+ * `@ailuracode/alpine-core` so collisions surface as
+ * `RegistrationError("REGISTRATION_COLLISION")` instead of silently
+ * overwriting host registrations.
+ *
+ * - `packages/core/src/registration.ts` owns the guards.
+ * - `packages/core/src/lifecycle-bridge.ts` is the pre-existing
+ *   controller-backed bridge — its legacy `registerReactiveStore`
+ *   and `registerStoreMagic` keep using the raw Alpine calls until
+ *   each feature package opts into the guard.
+ */
+const REGISTRATION_GUARD_FILE_EXCEPTIONS = [
+  "packages/core/src/registration.ts",
+  "packages/core/src/lifecycle-bridge.ts",
+];
+
+/**
+ * @param {string} relativePath
+ * @returns {string | null}
+ */
+function packageNameFromPath(relativePath) {
+  const match = relativePath.match(/^packages\/([^/]+)\//);
+  return match ? match[1] : null;
+}
+
+/**
+ * @param {string} root
+ * @param {ArchitectureCheckPolicy} policy
+ * @returns {string[]}
+ */
+export function validateAlpineRegistrationGuards(root, policy) {
+  const errors = [];
+  const packagesDir = path.join(root, "packages");
+  const fileExceptions = new Set(REGISTRATION_GUARD_FILE_EXCEPTIONS);
+  const packageExceptions = new Set(policy.registrationGuardPending ?? []);
+
+  readDirRecursive(packagesDir, (filePath) => {
+    if (
+      !SOURCE_FILE_PATTERN.test(filePath) ||
+      filePath.includes("/test/") ||
+      filePath.includes("/dist/")
+    ) {
+      return;
+    }
+
+    const relativePath = toPosixPath(filePath.slice(root.length + 1));
+    if (fileExceptions.has(relativePath)) {
+      return;
+    }
+
+    const pkg = packageNameFromPath(relativePath);
+    if (pkg && packageExceptions.has(pkg)) {
+      return;
+    }
+
+    const source = readFileSync(filePath, "utf8");
+    const violations = findDirectAlpineRegistrationCalls(source, relativePath);
+    for (const violation of violations) {
+      errors.push(
+        `${relativePath}:${violation.line}: direct Alpine.${violation.method}(...) call detected — route through guardStore / guardMagic / guardDirective from @ailuracode/alpine-core to surface collisions as RegistrationError`
+      );
+    }
+  });
+
+  return errors;
+}
+
+/**
  * @param {string} value
  * @returns {string}
  */
@@ -434,6 +505,7 @@ export function runArchitectureCheck(options = {}) {
     ...validateUnitTestImports(root, policy),
     ...validateDependencyDirection(root),
     ...validateHeadlessCss(root),
+    ...validateAlpineRegistrationGuards(root, policy),
   ];
 
   return {

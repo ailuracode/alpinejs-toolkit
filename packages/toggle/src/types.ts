@@ -163,7 +163,18 @@ export interface CreateToggleOptions {
    * multiple toggle plugins co-exist in one runtime.
    */
   readonly id?: string;
+  /**
+   * `$toggle` magic key the Alpine plugin registers under. Defaults
+   * to {@link DEFAULT_TOGGLE_MAGIC_KEY}. Set when the host already
+   * owns a `toggle` magic or another toolkit plugin would collide
+   * on that name — the rename avoids the collision without touching
+   * the underlying controller.
+   */
+  readonly magicKey?: string;
 }
+
+/** Default `$toggle` magic key registered by {@link togglePlugin}. */
+export const DEFAULT_TOGGLE_MAGIC_KEY = "toggle";
 
 /**
  * Typed view of `Alpine` the toggle plugin uses internally.

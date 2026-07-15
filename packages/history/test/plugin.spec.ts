@@ -1,0 +1,77 @@
+/**
+ * Plugin spec — Alpine integration without a full Alpine runtime.
+ */
+
+import type { Alpine as AlpineBase } from "alpinejs";
+import { describe, expect, it } from "vitest";
+import { historyPlugin } from "../src/index";
+
+interface MockAlpine {
+  stores: Record<string, unknown>;
+  magics: Record<string, () => unknown>;
+  plugin(cb: (alpine: MockAlpine) => void): void;
+  store(name: string, value?: unknown): unknown;
+  magic(name: string, factory: () => unknown): void;
+  reactive<T>(value: T): T;
+}
+
+function createMockAlpine(): MockAlpine {
+  let alpineRef!: MockAlpine;
+  const alpine: MockAlpine = {
+    stores: {},
+    magics: {},
+    plugin(cb) {
+      cb(alpineRef);
+    },
+    store(name, value?) {
+      if (value !== undefined) {
+        alpine.stores[name] = value;
+      }
+      return alpine.stores[name];
+    },
+    magic(name, factory) {
+      alpine.magics[name] = factory;
+    },
+    reactive(value) {
+      return value;
+    },
+  };
+  alpineRef = alpine;
+  return alpine;
+}
+
+type HistoryRegister = (alpine: AlpineBase) => void;
+
+/**
+ * Collision-avoidance: hosts that already own a `history` magic
+ * can rename the integration without touching the controller.
+ */
+describe("historyPlugin — collision-avoidance keys", () => {
+  it("registers under a custom magicKey", () => {
+    const Alpine = createMockAlpine();
+    (historyPlugin({ magicKey: "undo" }) as HistoryRegister)(Alpine as unknown as AlpineBase);
+    expect(Alpine.magics.undo).toBeDefined();
+    expect(Alpine.magics.history).toBeUndefined();
+  });
+
+  it("leaves the default magicKey untouched when no rename is supplied", () => {
+    const Alpine = createMockAlpine();
+    (historyPlugin({}) as HistoryRegister)(Alpine as unknown as AlpineBase);
+    expect(Alpine.magics.history).toBeDefined();
+    expect(Alpine.magics.undo).toBeUndefined();
+  });
+
+  it("registers the store and magic under a custom storeKey + magicKey pair", () => {
+    const Alpine = createMockAlpine();
+    (
+      historyPlugin({
+        storeKey: "undoStack",
+        magicKey: "undo",
+      }) as HistoryRegister
+    )(Alpine as unknown as AlpineBase);
+    expect(Alpine.stores.undoStack).toBeDefined();
+    expect(Alpine.magics.undo).toBeDefined();
+    expect(Alpine.stores.history).toBeUndefined();
+    expect(Alpine.magics.history).toBeUndefined();
+  });
+});

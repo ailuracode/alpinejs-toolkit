@@ -20,3 +20,7 @@ export type {
   ShortcutHandler,
   ShortcutMetadata,
 } from "./types.js";
+export {
+  DEFAULT_KEYBOARD_MAGIC_KEY,
+  DEFAULT_KEYBOARD_STORE_KEY,
+} from "./types.js";

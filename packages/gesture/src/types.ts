@@ -119,7 +119,38 @@ export interface GestureOptions {
    * includes mobile input without extra configuration.
    */
   readonly mouseButtons?: readonly GestureMouseButton[];
+  /**
+   * `$store` key the Alpine plugin registers under. Defaults to
+   * {@link DEFAULT_GESTURE_STORE_KEY}. Set when the host already owns
+   * a `gesture` store or another toolkit plugin would collide on that
+   * name — the rename avoids the collision without touching the
+   * controller. Ignored by the standalone `createGesture` factory.
+   */
+  readonly storeKey?: string;
+  /**
+   * `$gesture` magic key the Alpine plugin registers under. Defaults
+   * to {@link DEFAULT_GESTURE_MAGIC_KEY}, or to `storeKey` when that
+   * is renamed (the magic follows the store so consumers only rename
+   * one). Ignored by the standalone factory.
+   */
+  readonly magicKey?: string;
+  /**
+   * Directive key the `Alpine.directive()` call uses. Defaults to
+   * `"gesture"`, matching the `x-gesture` markup. Renaming it lets
+   * hosts with an existing `gesture` Alpine directive move the
+   * integration without forking the controller.
+   */
+  readonly directiveKey?: string;
 }
+
+/** Default `$store` key registered by {@link gesturePlugin}. */
+export const DEFAULT_GESTURE_STORE_KEY = "gesture";
+
+/** Default `$gesture` magic key registered by {@link gesturePlugin}. */
+export const DEFAULT_GESTURE_MAGIC_KEY = "gesture";
+
+/** Default `x-gesture` directive key registered by {@link gesturePlugin}. */
+export const DEFAULT_GESTURE_DIRECTIVE_KEY = "gesture";
 
 /* -------------------------------------------------------------------------- */
 /*                              Event detail shapes                           */

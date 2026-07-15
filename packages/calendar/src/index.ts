@@ -34,4 +34,6 @@ export type {
   CalendarMode,
   CalendarOptions,
   CalendarSelection,
+  CreateCalendarPluginOptions,
 } from "./types.js";
+export { DEFAULT_CALENDAR_MAGIC_KEY } from "./types.js";

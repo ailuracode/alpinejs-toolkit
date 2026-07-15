@@ -290,6 +290,7 @@ Alpine.plugin(
     maxVisible: 3,
     listenToWindowEvents: true,
     storeKey: "toast",
+    magicKey: "toast",
     promise: {
       loadingVariant: "success",
       successVariant: "success",
@@ -298,6 +299,21 @@ Alpine.plugin(
   })
 );
 ```
+
+### Avoiding name collisions
+
+If your application already owns a `$toast` store or magic — or another toolkit plugin registers on that name — rename the integration surface without touching the controller:
+
+```ts
+Alpine.plugin(
+  toast({
+    storeKey: "alerts", // → $store.alerts
+    magicKey: "snack", // → $snack
+  }),
+);
+```
+
+The exposed constants `TOAST_STORE_KEY` and `TOAST_MAGIC_KEY` keep the renames discoverable from TypeScript.
 
 ## Related packages
 

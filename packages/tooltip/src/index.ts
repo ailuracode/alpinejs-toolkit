@@ -28,3 +28,5 @@ export type {
   TooltipPluginCallback,
   TooltipStore,
 } from "./types";
+// --- Public constants ----------------------------------------------------
+export { DEFAULT_TOOLTIP_STORE_KEY } from "./types";

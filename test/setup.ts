@@ -1,4 +1,4 @@
-import { clearAllSingletons } from "@ailuracode/alpine-core";
+import { clearAllSingletons, resetRegistrationTracking } from "@ailuracode/alpine-core";
 import { afterEach, beforeEach, vi } from "vitest";
 
 const mediaListeners = new Map<string, Set<() => void>>();
@@ -122,6 +122,13 @@ afterEach(() => {
   // plugins (theme, sidebar, scroll, lang, …) do not leak controllers
   // — and their options fingerprints — into the next test case.
   clearAllSingletons();
+  // Reset the Alpine registration-guard tracking sets so a magic or
+  // directive registered in one test does not collide with the next
+  // test that mounts a fresh Alpine runtime. Production code cleans
+  // its own tracking through `bridgeControllerStore`'s lifecycle;
+  // tests need the same reset because each test owns a fresh Alpine
+  // instance and the tracker is process-local.
+  resetRegistrationTracking();
 });
 
 // Replace `globalThis.fetch` with a stub that rejects synchronously. This prevents

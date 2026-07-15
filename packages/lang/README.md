@@ -50,6 +50,16 @@ The plugin registers `$store.lang` and the `$lang` magic. Both expose the same s
 
 `set()` is a no-op when the value is empty or unchanged, so Alpine bindings do not re-fire needlessly.
 
+### Avoiding name collisions
+
+If your application already owns a `$store.lang` — or another toolkit plugin registers on that name — rename the integration surface without touching the controller:
+
+```ts
+Alpine.plugin(langPlugin({ storeKey: "i18n" })); // → $store.i18n
+```
+
+The exposed constant `DEFAULT_LANG_STORE_KEY` keeps the rename discoverable from TypeScript.
+
 ## HTML examples
 
 ### Reactive content switching

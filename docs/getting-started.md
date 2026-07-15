@@ -203,6 +203,21 @@ Each package ships `dist/index.d.ts` (imports) and `dist/global.d.ts` (Alpine au
 
 Or import the plugin module — generated types augment globals automatically.
 
+## Avoiding name collisions
+
+Alpine silently overwrites whatever a previous plugin registered under the same key. Toolkit feature plugins guard their registrations through `@ailuracode/alpine-core` and throw `RegistrationError("REGISTRATION_COLLISION")` instead of clobbering the host's store or magic.
+
+If the host already owns a name (own `$store.theme`, sibling toolkit plugin registered `$store.toast`, etc.) the recommended fix is renaming the integration surface, not overriding:
+
+```js
+Alpine.plugin(themePlugin({ storeKey: "appearance" })); // → $store.appearance
+Alpine.plugin(toastPlugin({ magicKey: "notify" }));     // → $notify
+```
+
+Feature plugin options accept `storeKey` / `magicKey` (and the matching one for directives) for exactly this case. The escape hatch is the global flag `registrationOverride: true` on the bridge helpers exposed by `@ailuracode/alpine-core`, but prefer renaming — silent overwrites are the bug class this guard exists to catch.
+
+See [Core — Avoiding name collisions](./core.md#avoiding-name-collisions) for the full API and the `architecture:check` rule that enforces it.
+
 ## Next steps
 
 - [Core](./core.md) — lazy registry and dynamic imports

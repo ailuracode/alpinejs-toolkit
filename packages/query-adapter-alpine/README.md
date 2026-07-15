@@ -21,6 +21,16 @@ Alpine.plugin(query({ adapter: createAlpineStoreAdapter }));
 Alpine.start();
 ```
 
+### Avoiding name collisions
+
+If your application already owns a `$store.query` — or another toolkit plugin registers on that name — rename the integration surface without touching the query cache:
+
+```ts
+Alpine.plugin(query({ adapter: createAlpineStoreAdapter, storeKey: "cache" })); // → $store.cache
+```
+
+The exposed constant `DEFAULT_QUERY_STORE_KEY` keeps the rename discoverable from TypeScript.
+
 ## Exports
 
 | Export | Description |
@@ -28,6 +38,9 @@ Alpine.start();
 | `createAlpineStoreAdapter` | Factory for `query({ adapter })` |
 | `alpineStoreQueryAdapter` | Alias of `createAlpineStoreAdapter` |
 | `default` | Convenience plugin wrapping `query({ adapter })` |
+| `DEFAULT_QUERY_STORE_KEY` | Default `$store.query` key |
+| `CreateQueryPluginOptions` | Options accepted by `createQueryPlugin` |
+| `QueryRegisterOptions` | Options accepted by `query({...})` |
 
 ## Integration note
 

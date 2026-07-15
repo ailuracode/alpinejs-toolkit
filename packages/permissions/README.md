@@ -32,6 +32,23 @@ Alpine.plugin(
 Alpine.start();
 ```
 
+### Avoiding name collisions
+
+If your application already owns a `$store.permissions` or another toolkit plugin registers on that name, rename the integration surface without touching the controller:
+
+```ts
+Alpine.plugin(
+  permissionsPlugin({
+    storeKey: "caps",             // → $store.caps
+    // magicKey follows storeKey by default → $caps
+    magicKey: "capsState",        // explicit override → $capsState
+    adapters: [/* ... */],
+  })
+);
+```
+
+`storeKey` is the only argument most hosts need. `magicKey` moves independently only when both names must be freed. The exposed constants `DEFAULT_PERMISSIONS_STORE_KEY` and `DEFAULT_PERMISSIONS_MAGIC_KEY` keep the rename discoverable from TypeScript.
+
 ```html
 <button
   x-show="$permissions.registry.notifications?.canRequest"
@@ -114,6 +131,23 @@ Alpine.plugin(
 
 Alpine.start();
 ```
+
+### Avoiding name collisions
+
+If your application already owns a `$store.permissions` or another toolkit plugin registers on that name, rename the integration surface without touching the controller:
+
+```ts
+Alpine.plugin(
+  permissionsPlugin({
+    storeKey: "caps",             // → $store.caps
+    // magicKey follows storeKey by default → $caps
+    magicKey: "capsState",        // explicit override → $capsState
+    adapters: [/* ... */],
+  })
+);
+```
+
+`storeKey` is the only argument most hosts need. `magicKey` moves independently only when both names must be freed. The exposed constants `DEFAULT_PERMISSIONS_STORE_KEY` and `DEFAULT_PERMISSIONS_MAGIC_KEY` keep the rename discoverable from TypeScript.
 
 When the plugin registers, it **queries** each adapter for the current permission and starts **watching** for revocations. This never opens a native prompt.
 

@@ -1,3 +1,4 @@
+import { guardMagic } from "@ailuracode/alpine-core";
 import type AlpineType from "alpinejs";
 import {
   createNotifyMagic,
@@ -5,6 +6,7 @@ import {
   resolveNotifyConfig,
 } from "./controller.js";
 import type { NotifyPluginOptions } from "./types.js";
+import { DEFAULT_NOTIFY_MAGIC_KEY } from "./types.js";
 
 export {
   closeNotification,
@@ -24,6 +26,7 @@ export {
   supportsDirectNotifications,
 } from "./controller.js";
 export type { NotifyMagic, NotifyPluginOptions } from "./types.js";
+export { DEFAULT_NOTIFY_MAGIC_KEY } from "./types.js";
 
 function registerNotifyPlugin(Alpine: AlpineType.Alpine, options: NotifyPluginOptions): void {
   const config = resolveNotifyConfig(options);
@@ -32,7 +35,9 @@ function registerNotifyPlugin(Alpine: AlpineType.Alpine, options: NotifyPluginOp
     void registerNotifyServiceWorker(options);
   }
 
-  Alpine.magic("notify", () => createNotifyMagic(options));
+  const magicKey = options.magicKey ?? DEFAULT_NOTIFY_MAGIC_KEY;
+
+  guardMagic(Alpine, magicKey, () => createNotifyMagic(options), "notify");
 }
 
 /** Alpine.js notify plugin. Registers magic `$notify`. */

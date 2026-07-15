@@ -26,7 +26,7 @@
     }
   },
   "peerDependencies": {
-    "@ailuracode/alpine-query": "workspace:*",
+    "@ailuracode/alpine-core": "^0.2.0",
     "@types/alpinejs": "^3.13.11",
     "alpinejs": "^3.0.0"
   },
@@ -35,8 +35,12 @@
       "optional": true
     }
   },
-  "dependencies": {
+  "devDependencies": {
+    "@ailuracode/alpine-core": "workspace:*",
     "@ailuracode/alpine-query": "workspace:*"
+  },
+  "dependencies": {
+    "@ailuracode/alpine-query": "^0.6.1"
   },
   "scripts": {
     "build": "tsup src/index.ts --format esm --dts --clean --out-dir dist --tsconfig tsconfig.build.json",
@@ -62,12 +66,13 @@
       "import": "*",
       "ignore": [
         "alpinejs",
+        "@ailuracode/alpine-core",
         "@ailuracode/alpine-query",
         "@types/alpinejs"
       ],
       "gzip": true,
       "brotli": true,
-      "limit": "1 kB"
+      "limit": "1.2 kB"
     }
   ]
 }

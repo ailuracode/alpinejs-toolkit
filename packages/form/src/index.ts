@@ -81,6 +81,11 @@ export type {
   ValidationResult,
   ValidationTrigger,
 } from "./types.js";
+// --- Public constants ------------------------------------------------
+export {
+  DEFAULT_FORM_MAGIC_KEY,
+  DEFAULT_FORM_STORE_KEY,
+} from "./types.js";
 export {
   composeValidationAdapters,
   createFieldValidatorsAdapter,

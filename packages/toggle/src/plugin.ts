@@ -9,7 +9,7 @@
  * transition back through Alpine's reactive proxy.
  */
 
-import type { Unsubscribe } from "@ailuracode/alpine-core";
+import { guardMagic, type Unsubscribe } from "@ailuracode/alpine-core";
 import type { Alpine as AlpineBase } from "alpinejs";
 import { ToggleController } from "./controller";
 import { buildReactiveToggleView, syncReactiveToggleView } from "./internal/reactive-adapter";
@@ -22,8 +22,7 @@ import type {
   ToggleReactiveViewValue,
   Writable,
 } from "./types";
-
-const TOGGLE_MAGIC_KEY = "toggle";
+import { DEFAULT_TOGGLE_MAGIC_KEY } from "./types";
 
 interface RegistryEntry {
   readonly controller: Destroyable;
@@ -35,6 +34,8 @@ interface Destroyable {
 }
 
 export function togglePlugin(options: CreateToggleOptions = {}): TogglePluginCallback {
+  const magicKey = options.magicKey ?? DEFAULT_TOGGLE_MAGIC_KEY;
+
   return function registerToggle(alpine: AlpineBase): void {
     const Alpine = alpine as unknown as ToggleAlpine;
     const registry = new Map<string, RegistryEntry>();
@@ -65,7 +66,7 @@ export function togglePlugin(options: CreateToggleOptions = {}): TogglePluginCal
       return reactive;
     };
 
-    Alpine.magic(TOGGLE_MAGIC_KEY, () => factory);
+    guardMagic(Alpine, magicKey, () => factory, "toggle");
 
     if (typeof Alpine.cleanup === "function") {
       Alpine.cleanup(() => {
@@ -78,8 +79,6 @@ export function togglePlugin(options: CreateToggleOptions = {}): TogglePluginCal
         registry.clear();
       });
     }
-
-    void options;
   };
 }
 

@@ -102,6 +102,40 @@ describe("scrollPlugin — registration", () => {
   });
 });
 
+/**
+ * Collision-avoidance: hosts that already own a `scroll` store can
+ * rename the registrations without touching the controller. The
+ * magic follows the store when only `storeKey` is provided, so the
+ * common case is a single argument.
+ */
+describe("scrollPlugin — collision-avoidance keys", () => {
+  it("registers under a custom storeKey", () => {
+    const Alpine = createMockAlpine();
+    scrollPlugin({ storeKey: "viewport" })(Alpine as unknown as AlpineBase);
+    expect(Alpine.stores.viewport).toBeDefined();
+    expect(Alpine.stores.scroll).toBeUndefined();
+    expect(Alpine.magics.viewport).toBeDefined();
+  });
+
+  it("lets magicKey move independently from storeKey", () => {
+    const Alpine = createMockAlpine();
+    scrollPlugin({ storeKey: "viewport", magicKey: "scrollState" })(
+      Alpine as unknown as AlpineBase
+    );
+    expect(Alpine.stores.viewport).toBeDefined();
+    expect(Alpine.stores.scroll).toBeUndefined();
+    expect(Alpine.magics.scrollState).toBeDefined();
+    expect(Alpine.magics.viewport).toBeUndefined();
+  });
+
+  it("leaves the default keys untouched when no rename is supplied", () => {
+    const Alpine = createMockAlpine();
+    scrollPlugin()(Alpine as unknown as AlpineBase);
+    expect(Alpine.stores.scroll).toBeDefined();
+    expect(Alpine.magics.scroll).toBeDefined();
+  });
+});
+
 describe("scrollPlugin — store reactivity", () => {
   let Alpine: MockAlpine;
 

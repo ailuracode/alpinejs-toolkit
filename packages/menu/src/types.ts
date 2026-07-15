@@ -85,7 +85,18 @@ export interface CreateMenuOptions {
   /** When true (default), opening a menu closes all other open menus. */
   readonly exclusive?: boolean;
   readonly scroll?: ScrollStore;
+  /**
+   * `$store.menu` store key the Alpine plugin registers under.
+   * Defaults to {@link DEFAULT_MENU_STORE_KEY}. Set when the host
+   * already owns a `menu` store or another toolkit plugin would
+   * collide on that name — the rename avoids the collision without
+   * touching the controller.
+   */
+  readonly storeKey?: string;
 }
+
+/** Default `$store.menu` key registered by {@link menuPlugin}. */
+export const DEFAULT_MENU_STORE_KEY = "menu";
 
 /** Controller-level config (no id). */
 export type MenuControllerConfig = {

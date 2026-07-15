@@ -49,6 +49,24 @@ When multiple recognisers are active the controller cancels losers:
 | Option | Default | Description |
 |--------|---------|-------------|
 | `mouseButtons` | `[0]` | Mouse buttons that may start recognition (`0` = left, `2` = right). Touch always uses `0`. |
+| `storeKey` | `'gesture'` | `$store` key the Alpine plugin registers under |
+| `magicKey` | `'gesture'` (or `storeKey` when renamed) | `$gesture` magic key the Alpine plugin registers under |
+| `directiveKey` | `'gesture'` | `Alpine.directive()` key (paired with `x-gesture` markup) |
+
+### Avoiding name collisions
+
+If your application already owns a `$store.gesture`, a `$gesture` magic, or an `x-gesture` directive (or another toolkit plugin hits those names first), rename the integration surfaces without touching the controller:
+
+```ts
+Alpine.plugin(gesturePlugin({
+  storeKey: "pointer",        // → $store.pointer
+  // magicKey follows storeKey by default → $pointer
+  magicKey: "gestureState",   // explicit override → $gestureState
+  directiveKey: "swipe",      // → x-swipe
+}));
+```
+
+`storeKey` is the only argument most hosts need. `magicKey` follows the store when both must move out of a collided name, and `directiveKey` is independent — keep it separate when only the markup collides with another `x-gesture`. The exposed constants `DEFAULT_GESTURE_STORE_KEY`, `DEFAULT_GESTURE_MAGIC_KEY`, and `DEFAULT_GESTURE_DIRECTIVE_KEY` keep the renames discoverable from TypeScript.
 
 ## Headless API
 

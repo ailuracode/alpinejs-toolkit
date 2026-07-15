@@ -44,8 +44,24 @@ Factory returning a `PluginCallback` for `Alpine.plugin()`. Options:
 | `id` | `string` | auto-generated | Controller identifier |
 | `reserveScrollbarGap` | `boolean` | `true` | Reserve `--ailura-scrollbar-gap` on lock |
 | `target` | `Element \| string \| null` | `null` | Element for scrollbar-gap compensation |
+| `storeKey` | `string` | `'scroll'` | `$store` key the Alpine plugin registers under |
+| `magicKey` | `string` | `'scroll'` (or `storeKey` when renamed) | `$scroll` magic key the Alpine plugin registers under |
 
 Registers `$store.scroll` and `$scroll` magic. Multiple registrations share the same singleton controller.
+
+#### Avoiding name collisions
+
+If your application already owns a `$store.scroll` or another toolkit plugin registers on that name, rename the integration surface without touching the controller:
+
+```ts
+Alpine.plugin(scrollPlugin({
+  storeKey: "viewport",        // → $store.viewport
+  // magicKey follows storeKey by default → $viewport
+  magicKey: "scrollState",     // explicit override → $scrollState
+}));
+```
+
+`storeKey` is the only argument most hosts need. `magicKey` moves independently only when both names must be freed. The exposed constants `DEFAULT_SCROLL_STORE_KEY` and `DEFAULT_SCROLL_MAGIC_KEY` keep the rename discoverable from TypeScript.
 
 ### `ScrollController`
 

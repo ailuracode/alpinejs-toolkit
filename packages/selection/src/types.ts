@@ -103,7 +103,18 @@ export type SelectionStore = {
 /** Options accepted by the selection plugin factory. */
 export interface CreateSelectionOptions {
   readonly id?: string;
+  /**
+   * `$store.selection` store key the Alpine plugin registers under.
+   * Defaults to {@link DEFAULT_SELECTION_STORE_KEY}. Set when the host
+   * already owns a `selection` store or another toolkit plugin would
+   * collide on that name — the rename avoids the collision without
+   * touching the controller.
+   */
+  readonly storeKey?: string;
 }
+
+/** Default `$store.selection` key registered by {@link selectionPlugin}. */
+export const DEFAULT_SELECTION_STORE_KEY = "selection";
 
 /** Typed view of `Alpine` the selection plugin uses internally. */
 export type SelectionAlpine = Alpine<{ selection: SelectionStore }> & {

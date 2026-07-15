@@ -49,7 +49,18 @@ export interface ChildDirectiveConfig {
  */
 export interface ChildPluginOptions {
   readonly id?: string;
+  /**
+   * `x-child` directive key the Alpine plugin registers under. Defaults
+   * to {@link DEFAULT_CHILD_DIRECTIVE_KEY}. Set when the host already
+   * owns a `child` directive or another toolkit plugin would collide
+   * on that name — the rename avoids the collision without touching
+   * the unwrap pass or attribute transfer helpers.
+   */
+  readonly directiveKey?: string;
 }
+
+/** Default `x-child` directive key registered by {@link childPlugin}. */
+export const DEFAULT_CHILD_DIRECTIVE_KEY = "child";
 
 /**
  * Typed view of `Alpine` the child plugin uses internally.

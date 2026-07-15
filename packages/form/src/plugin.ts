@@ -2,16 +2,28 @@
  * Alpine.js integration for `@ailuracode/alpine-form`.
  */
 
+import { bridgeControllerStore } from "@ailuracode/alpine-core";
 import type { Alpine } from "alpinejs";
 import { FormController } from "./controller.js";
 import { normalizeFormPluginOptions } from "./options.js";
 import { createFormStoreFromController, syncInstanceRegistry } from "./store.js";
-import type { CreateFormOptions, FormAlpine, FormPluginCallback } from "./types.js";
-
-const FORM_STORE_KEY = "form";
+import {
+  type CreateFormOptions,
+  DEFAULT_FORM_MAGIC_KEY,
+  DEFAULT_FORM_STORE_KEY,
+  type FormAlpine,
+  type FormPluginCallback,
+  type FormStore,
+} from "./types.js";
 
 /** Plugin factory — returns the `Alpine.plugin()` callback. */
 export function formPlugin(options: CreateFormOptions = {}): FormPluginCallback {
+  // Resolve the registration keys once. The magic follows the store
+  // so renames stay in sync: a single `storeKey` is enough when both
+  // must move out of a collided name.
+  const storeKey = options.storeKey ?? DEFAULT_FORM_STORE_KEY;
+  const magicKey = options.magicKey ?? options.storeKey ?? DEFAULT_FORM_MAGIC_KEY;
+
   return function registerForm(alpine: Alpine): void {
     const Alpine = alpine as unknown as FormAlpine;
     const normalized = normalizeFormPluginOptions(options);
@@ -20,22 +32,30 @@ export function formPlugin(options: CreateFormOptions = {}): FormPluginCallback 
       normalized.id
     );
     const store = createFormStoreFromController(controller);
-    Alpine.store(FORM_STORE_KEY, store);
-    const reactiveStore = Alpine.store(FORM_STORE_KEY);
 
-    const syncReactiveInstances = () => {
-      syncInstanceRegistry(reactiveStore.instances, controller.snapshotInstances());
-    };
+    bridgeControllerStore<FormStore, FormController>({
+      alpine: Alpine,
+      storeKey,
+      magicKey,
+      store,
+      controller,
+      packageName: "form",
+      subscribe: (reactiveStore) => {
+        const syncReactiveInstances = (): void => {
+          syncInstanceRegistry(reactiveStore.instances, controller.snapshotInstances());
+        };
 
-    controller.on("change", syncReactiveInstances);
-    controller.on("submit", syncReactiveInstances);
-    controller.on("submit-error", syncReactiveInstances);
+        const changeUnsub = controller.on("change", syncReactiveInstances);
+        const submitUnsub = controller.on("submit", syncReactiveInstances);
+        const submitErrorUnsub = controller.on("submit-error", syncReactiveInstances);
 
-    Alpine.magic(FORM_STORE_KEY, () => reactiveStore);
-
-    if (typeof Alpine.cleanup === "function") {
-      Alpine.cleanup(() => controller.destroy());
-    }
+        return (): void => {
+          changeUnsub();
+          submitUnsub();
+          submitErrorUnsub();
+        };
+      },
+    });
   };
 }
 

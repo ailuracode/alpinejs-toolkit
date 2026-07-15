@@ -77,6 +77,30 @@ Alpine.start();
 
 Disabled commands remain visible unless `hidden` is true. Keyboard navigation and `run()` skip disabled or loading commands.
 
+## Plugin options
+
+| Option | Default | Description |
+|--------|---------|-------------|
+| `id` | auto-generated | Controller identifier |
+| `rank` / `searchStrategy` | substring | Ranker for the filter pipeline |
+| `persistence` | — | Recent/pinned hooks (maxRecent, getRecent, setRecent, getPinned, setPinned) |
+| `storeKey` | `'command'` | `$store` key the Alpine plugin registers under |
+| `magicKey` | `'command'` (or `storeKey` when renamed) | `$command` magic key the Alpine plugin registers under |
+
+### Avoiding name collisions
+
+If your application already owns a `$store.command` or another toolkit plugin registers on that name, rename the integration surface without touching the controller:
+
+```ts
+Alpine.plugin(commandPlugin({
+  storeKey: "palette",         // → $store.palette
+  // magicKey follows storeKey by default → $palette
+  magicKey: "cmd",             // explicit override → $cmd
+}));
+```
+
+`storeKey` is the only argument most hosts need. `magicKey` moves independently only when both names must be freed. The exposed constants `DEFAULT_COMMAND_STORE_KEY` and `DEFAULT_COMMAND_MAGIC_KEY` keep the rename discoverable from TypeScript.
+
 ## Integration
 
 - **Overlay** — optional `overlayId` documents a palette layer id for `$store.overlay.zIndexOf(overlayId, layer)`

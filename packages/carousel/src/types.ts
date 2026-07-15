@@ -89,7 +89,18 @@ export type CarouselStore = {
 /** Options accepted by the carousel plugin factory. */
 export interface CreateCarouselOptions {
   readonly id?: string;
+  /**
+   * `$store.carousel` store key the Alpine plugin registers under.
+   * Defaults to {@link DEFAULT_CAROUSEL_STORE_KEY}. Set when the
+   * host already owns a `carousel` store or another toolkit plugin
+   * would collide on that name — the rename avoids the collision
+   * without touching the controller.
+   */
+  readonly storeKey?: string;
 }
+
+/** Default `$store.carousel` key registered by {@link carouselPlugin}. */
+export const DEFAULT_CAROUSEL_STORE_KEY = "carousel";
 
 /** Typed view of `Alpine` the carousel plugin uses internally. */
 export type CarouselAlpine = Alpine<{ carousel: CarouselStore }> & {

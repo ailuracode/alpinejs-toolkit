@@ -44,7 +44,28 @@ export interface KeyboardPluginOptions {
   readonly controller?: KeyboardController;
   readonly options?: KeyboardOptions;
   readonly shortcuts?: readonly KeyboardShortcutDefinition[];
+  /**
+   * `$store` key the Alpine plugin registers under. Defaults to
+   * {@link DEFAULT_KEYBOARD_STORE_KEY}. Set when the host already
+   * owns a `keyboard` store or another toolkit plugin would collide
+   * on that name — the rename avoids the collision without touching
+   * the controller. Ignored by the standalone `createKeyboard`.
+   */
+  readonly storeKey?: string;
+  /**
+   * `$keyboard` magic key the Alpine plugin registers under.
+   * Defaults to {@link DEFAULT_KEYBOARD_MAGIC_KEY}, or to `storeKey`
+   * when that is renamed (the magic follows the store so consumers
+   * only rename one). Ignored by the standalone factory.
+   */
+  readonly magicKey?: string;
 }
+
+/** Default `$store` key registered by {@link keyboardPlugin}. */
+export const DEFAULT_KEYBOARD_STORE_KEY = "keyboard";
+
+/** Default `$keyboard` magic key registered by {@link keyboardPlugin}. */
+export const DEFAULT_KEYBOARD_MAGIC_KEY = "keyboard";
 
 export interface KeyboardShortcutDefinition {
   readonly shortcut: string;

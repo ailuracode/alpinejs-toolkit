@@ -8,7 +8,18 @@ export interface NotifyPluginOptions {
   serviceWorkerUrl?: string;
   /** Register the service worker when the plugin loads. Default: true when `serviceWorkerUrl` is set. */
   autoRegisterServiceWorker?: boolean;
+  /**
+   * `$notify` magic key the Alpine plugin registers under. Defaults to
+   * {@link DEFAULT_NOTIFY_MAGIC_KEY}. Set when the host already owns
+   * a `notify` magic or another toolkit plugin would collide on that
+   * name — the rename avoids the collision without touching the
+   * controller. Ignored by the standalone `createNotifyMagic` helper.
+   */
+  readonly magicKey?: string;
 }
+
+/** Default `$notify` magic key registered by {@link notifyPlugin}. */
+export const DEFAULT_NOTIFY_MAGIC_KEY = "notify";
 
 /** Alpine-facing `$notify` magic surface. */
 export interface NotifyMagic {

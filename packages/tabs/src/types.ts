@@ -65,7 +65,29 @@ export interface TabsStore {
 /** Options accepted by the tabs plugin factory. */
 export interface CreateTabsOptions {
   readonly id?: string;
+  /**
+   * `$store` key the Alpine plugin registers under. Defaults to
+   * {@link DEFAULT_TABS_STORE_KEY}. Set when the host already owns
+   * a `tabs` store or another toolkit plugin would collide on that
+   * name — the rename avoids the collision without touching the
+   * controller. Ignored by the standalone
+   * `createTabsController` factory.
+   */
+  readonly storeKey?: string;
+  /**
+   * `$tabs` magic key the Alpine plugin registers under. Defaults
+   * to {@link DEFAULT_TABS_MAGIC_KEY}, or to `storeKey` when that is
+   * renamed (the magic follows the store so consumers only rename
+   * one). Ignored by the standalone factory.
+   */
+  readonly magicKey?: string;
 }
+
+/** Default `$store` key registered by {@link tabsPlugin}. */
+export const DEFAULT_TABS_STORE_KEY = "tabs";
+
+/** Default `$tabs` magic key registered by {@link tabsPlugin}. */
+export const DEFAULT_TABS_MAGIC_KEY = "tabs";
 
 /** Typed view of `Alpine` the tabs plugin uses internally. */
 export type TabsAlpine = Alpine<{ tabs: TabsStore }> & {

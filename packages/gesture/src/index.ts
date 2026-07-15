@@ -68,3 +68,9 @@ export type {
   GestureSwipeDetail,
   GestureTapDetail,
 } from "./types.js";
+// --- Public constants ------------------------------------------------
+export {
+  DEFAULT_GESTURE_DIRECTIVE_KEY,
+  DEFAULT_GESTURE_MAGIC_KEY,
+  DEFAULT_GESTURE_STORE_KEY,
+} from "./types.js";

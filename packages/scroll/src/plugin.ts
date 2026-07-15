@@ -30,16 +30,15 @@ import { bridgeControllerStore } from "@ailuracode/alpine-core";
 import type { Alpine } from "alpinejs";
 import { createScrollStore as buildStore } from "./alpine/store";
 import { createScroll, type ScrollController } from "./controller";
-import type {
-  ScrollAlpine,
-  ScrollOptions,
-  ScrollPluginCallback,
-  ScrollState,
-  ScrollStore,
+import {
+  DEFAULT_SCROLL_MAGIC_KEY,
+  DEFAULT_SCROLL_STORE_KEY,
+  type ScrollAlpine,
+  type ScrollOptions,
+  type ScrollPluginCallback,
+  type ScrollState,
+  type ScrollStore,
 } from "./types";
-
-/** Key under which the scroll store is registered on `$store`. */
-const SCROLL_STORE_KEY = "scroll";
 
 /**
  * Plugin factory — returns the `Alpine.plugin()` callback. Pass
@@ -54,6 +53,12 @@ const SCROLL_STORE_KEY = "scroll";
  * releasing the singleton slot.
  */
 export function scrollPlugin(options: ScrollOptions = {}): ScrollPluginCallback {
+  // Resolve the registration keys once. The magic follows the store
+  // so renames stay in sync: a single `storeKey` is enough when both
+  // must move out of a collided name.
+  const storeKey = options.storeKey ?? DEFAULT_SCROLL_STORE_KEY;
+  const magicKey = options.magicKey ?? options.storeKey ?? DEFAULT_SCROLL_MAGIC_KEY;
+
   return function registerScroll(alpine: Alpine): void {
     // Narrow the base `Alpine` runtime to the toolkit's typed view.
     // The boundary cast is the only `as unknown as` in this file —
@@ -69,9 +74,11 @@ export function scrollPlugin(options: ScrollOptions = {}): ScrollPluginCallback 
 
     bridgeControllerStore<ScrollStore, ScrollController>({
       alpine: Alpine,
-      storeKey: SCROLL_STORE_KEY,
+      storeKey,
+      magicKey,
       store,
       controller,
+      packageName: "scroll",
       subscribe: (reactiveStore) =>
         controller.on("change", (detail) => {
           const state: ScrollState = detail.state;

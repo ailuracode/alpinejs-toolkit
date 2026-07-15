@@ -49,7 +49,29 @@ export type PermissionRegistry = Readonly<Record<string, PermissionSnapshot>>;
 export interface PermissionsPluginOptions {
   readonly controller?: PermissionsController;
   readonly adapters?: readonly PermissionAdapter[];
+  /**
+   * `$store` key the Alpine plugin registers under. Defaults to
+   * {@link DEFAULT_PERMISSIONS_STORE_KEY}. Set when the host already
+   * owns a `permissions` store or another toolkit plugin would
+   * collide on that name — the rename avoids the collision without
+   * touching the controller. Ignored by the standalone
+   * `createPermissions` factory.
+   */
+  readonly storeKey?: string;
+  /**
+   * `$permissions` magic key the Alpine plugin registers under.
+   * Defaults to {@link DEFAULT_PERMISSIONS_MAGIC_KEY}, or to `storeKey`
+   * when that is renamed (the magic follows the store so consumers
+   * only rename one). Ignored by the standalone factory.
+   */
+  readonly magicKey?: string;
 }
+
+/** Default `$store` key registered by {@link permissionsPlugin}. */
+export const DEFAULT_PERMISSIONS_STORE_KEY = "permissions";
+
+/** Default `$permissions` magic key registered by {@link permissionsPlugin}. */
+export const DEFAULT_PERMISSIONS_MAGIC_KEY = "permissions";
 
 export interface PermissionsMagic {
   readonly registry: PermissionRegistry;

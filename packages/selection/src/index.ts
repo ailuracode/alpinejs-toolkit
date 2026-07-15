@@ -43,3 +43,4 @@ export type {
   SelectionValue,
   UncontrolledSelectionOptions,
 } from "./types.js";
+export { DEFAULT_SELECTION_STORE_KEY } from "./types.js";

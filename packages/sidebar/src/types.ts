@@ -200,7 +200,18 @@ export interface CreateSidebarOptions {
    * `createSingletonScope()`.
    */
   readonly scope?: SingletonScope;
+  /**
+   * `$store.sidebar` store key the Alpine plugin registers under.
+   * Defaults to {@link DEFAULT_SIDEBAR_STORE_KEY}. Set when the host
+   * already owns a `sidebar` store or another toolkit plugin would
+   * collide on that name — the rename avoids the collision without
+   * touching the controller.
+   */
+  readonly storeKey?: string;
 }
+
+/** Default `$store.sidebar` key registered by {@link sidebarPlugin}. */
+export const DEFAULT_SIDEBAR_STORE_KEY = "sidebar";
 
 /** Default `localStorage` key used by {@link createLocalStorageSidebarStorage}. */
 export const DEFAULT_SIDEBAR_STORAGE_KEY = "sidebar-visible";

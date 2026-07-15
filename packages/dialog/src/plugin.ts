@@ -10,9 +10,7 @@ import type { Alpine } from "alpinejs";
 import { DialogController } from "./controller.js";
 import { createDialogStoreFromController } from "./store.js";
 import type { CreateDialogOptions, DialogAlpine, DialogPluginCallback } from "./types.js";
-
-/** Key under which the dialog store is registered on `$store`. */
-const DIALOG_STORE_KEY = "dialog";
+import { DEFAULT_DIALOG_STORE_KEY } from "./types.js";
 
 /**
  * Plugin factory — returns the `Alpine.plugin()` callback. Pass
@@ -20,6 +18,8 @@ const DIALOG_STORE_KEY = "dialog";
  * or `{}` for the package defaults.
  */
 export function dialogPlugin(options: CreateDialogOptions = {}): DialogPluginCallback {
+  const storeKey = options.storeKey ?? DEFAULT_DIALOG_STORE_KEY;
+
   return function registerDialog(alpine: Alpine): void {
     const Alpine = alpine as unknown as DialogAlpine;
     const controller = new DialogController(
@@ -34,9 +34,10 @@ export function dialogPlugin(options: CreateDialogOptions = {}): DialogPluginCal
 
     bridgeControllerStore({
       alpine: Alpine,
-      storeKey: DIALOG_STORE_KEY,
+      storeKey,
       store: createDialogStoreFromController(controller),
       controller,
+      packageName: "dialog",
       subscribe: (reactiveStore) => {
         reactiveStore.isOpen = (id: string) => reactiveStore.instances?.[id]?.open ?? false;
         return controller.on("change", () => {

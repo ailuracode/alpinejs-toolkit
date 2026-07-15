@@ -22,9 +22,14 @@ import type {
   MediaPluginCallback,
   MediaStore,
 } from "./types";
+import { DEFAULT_MEDIA_STORE_KEY } from "./types";
 
-/** Key under which the media store is registered on `$store`. */
-export const MEDIA_STORE_KEY = "media";
+/**
+ * @deprecated Use {@link DEFAULT_MEDIA_STORE_KEY}. Kept as a re-export
+ * for back-compat with consumers that imported the legacy constant
+ * directly from the package barrel.
+ */
+export const MEDIA_STORE_KEY = DEFAULT_MEDIA_STORE_KEY;
 
 /**
  * Plugin factory — returns the `Alpine.plugin()` callback. Pass
@@ -41,6 +46,8 @@ export const MEDIA_STORE_KEY = "media";
 export function mediaPlugin<Name extends string = string>(
   options: CreateMediaOptions<Name> = {}
 ): MediaPluginCallback {
+  const storeKey = options.storeKey ?? DEFAULT_MEDIA_STORE_KEY;
+
   return function registerMedia(alpine: Alpine): void {
     const Alpine = alpine as unknown as MediaAlpine;
     const controller = createMedia<Name>(options) as MediaController<Name>;
@@ -48,9 +55,10 @@ export function mediaPlugin<Name extends string = string>(
 
     bridgeControllerStore({
       alpine: Alpine,
-      storeKey: MEDIA_STORE_KEY,
+      storeKey,
       store,
       controller,
+      packageName: "media",
       subscribe: (reactiveStore) =>
         controller.on("change", (detail: MediaChangeDetail<Name>) => {
           syncMediaStoreMirror(reactiveStore, detail);

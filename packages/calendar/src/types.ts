@@ -88,6 +88,21 @@ export interface CalendarInstance {
 /** `$calendar` magic signature. */
 export type CalendarMagic = (options?: CalendarOptions) => CalendarInstance;
 
+/** Options accepted by the calendar plugin factory. */
+export interface CreateCalendarPluginOptions {
+  /**
+   * `$calendar` magic key the Alpine plugin registers under. Defaults
+   * to {@link DEFAULT_CALENDAR_MAGIC_KEY}. Set when the host already
+   * owns a `calendar` magic or another toolkit plugin would collide
+   * on that name — the rename avoids the collision without touching
+   * the controller. Ignored by the standalone `createCalendar`.
+   */
+  readonly magicKey?: string;
+}
+
+/** Default `$calendar` magic key registered by {@link calendarPlugin}. */
+export const DEFAULT_CALENDAR_MAGIC_KEY = "calendar";
+
 /** Internal resolved configuration — options normalized once at construction. */
 export type ResolvedCalendarConfig = {
   readonly context: ResolvedDateFnsContext;

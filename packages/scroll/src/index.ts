@@ -86,3 +86,8 @@ export type {
   ScrollState,
   ScrollStore,
 } from "./types.js";
+// --- Public constants ------------------------------------------------
+export {
+  DEFAULT_SCROLL_MAGIC_KEY,
+  DEFAULT_SCROLL_STORE_KEY,
+} from "./types.js";
