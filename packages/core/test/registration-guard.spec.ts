@@ -47,7 +47,11 @@ function createMockAlpine(): MockAlpine {
     },
     directive(name, callback) {
       alpine.directives[name] = callback;
-      return { before() {} };
+      return {
+        before() {
+          /* Alpine directive chain — no-op for the mock */
+        },
+      };
     },
   };
   return alpine;
@@ -186,16 +190,21 @@ describe("guardMagic", () => {
 describe("guardDirective", () => {
   it("registers a directive", () => {
     const alpine = createMockAlpine();
-    const handler: Base.DirectiveCallback = () => {};
+    const handler: Base.DirectiveCallback = () => {
+      /* placeholder for directive test */
+    };
     guardDirective(alpine as unknown as Alpine, "demo", handler, "demo-pkg");
     assert.equal(alpine.directives.demo, handler);
   });
 
   it("throws when the same directive is registered twice", () => {
     const alpine = createMockAlpine();
-    guardDirective(alpine as unknown as Alpine, "demo", () => {}, "demo-pkg");
+    const noop: Base.DirectiveCallback = () => {
+      /* placeholder */
+    };
+    guardDirective(alpine as unknown as Alpine, "demo", noop, "demo-pkg");
     assert.throws(
-      () => guardDirective(alpine as unknown as Alpine, "demo", () => {}, "demo-pkg"),
+      () => guardDirective(alpine as unknown as Alpine, "demo", noop, "demo-pkg"),
       (error: unknown) => {
         assert.ok(error instanceof RegistrationError);
         assert.equal(error.kind, "directive");
@@ -214,8 +223,11 @@ describe("guardDirective", () => {
       warnings.push(message);
     };
     try {
-      guardDirective(alpine as unknown as Alpine, "demo", () => {}, "demo-pkg");
-      guardDirective(alpine as unknown as Alpine, "demo", () => {}, "demo-pkg", {
+      const noop: Base.DirectiveCallback = () => {
+        /* placeholder */
+      };
+      guardDirective(alpine as unknown as Alpine, "demo", noop, "demo-pkg");
+      guardDirective(alpine as unknown as Alpine, "demo", noop, "demo-pkg", {
         override: true,
       });
     } finally {

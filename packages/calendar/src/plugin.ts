@@ -21,7 +21,7 @@ export function calendarPlugin(
 export function calendarPlugin(Alpine: AlpineType.Alpine): void;
 export function calendarPlugin(
   optionsOrAlpine?: CreateCalendarPluginOptions | AlpineType.Alpine
-): ((Alpine: AlpineType.Alpine) => void) | void {
+): ((Alpine: AlpineType.Alpine) => void) | undefined {
   if (optionsOrAlpine && typeof (optionsOrAlpine as AlpineType.Alpine).magic === "function") {
     // Direct Alpine registration — `Alpine.plugin(calendarPlugin)`.
     // Magic key falls back to the default since no options were passed.

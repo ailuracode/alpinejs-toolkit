@@ -27,7 +27,7 @@ export function attentionPlugin(
 export function attentionPlugin(alpine: AlpineType.Alpine): void;
 export function attentionPlugin(
   optionsOrAlpine?: CreateAttentionPluginOptions | AlpineType.Alpine
-): ((alpine: AlpineType.Alpine) => void) | void {
+): ((alpine: AlpineType.Alpine) => void) | undefined {
   if (optionsOrAlpine && typeof (optionsOrAlpine as AlpineType.Alpine).magic === "function") {
     registerAttention(optionsOrAlpine as AlpineType.Alpine, {});
     return;

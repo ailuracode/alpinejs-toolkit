@@ -8,7 +8,7 @@
  */
 
 import type { Alpine as AlpineBase } from "alpinejs";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 import calendarPlugin from "../src/index";
 
 interface MockAlpine {

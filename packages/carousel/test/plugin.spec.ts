@@ -24,7 +24,7 @@ function createMockAlpine(): MockAlpine {
       cb(alpineRef);
     },
     store(name, value?) {
-      if (arguments.length === 2) {
+      if (value !== undefined) {
         alpine.stores[name] = value;
       }
       return alpine.stores[name];

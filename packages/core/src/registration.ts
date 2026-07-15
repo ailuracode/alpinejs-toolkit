@@ -104,6 +104,7 @@ function warnOverride(packageName: string, kind: RegistrationKind, name: string)
     return;
   }
   warnedOverrides.add(key);
+  // biome-ignore lint/suspicious/noConsole: intentional developer-visible warning when override replaces an existing registration
   console.warn(
     `[alpine-toolkit:${packageName}] Overriding existing ${kind} "${name}". ` +
       `Pass a unique key instead to keep both registrations.`
