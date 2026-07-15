@@ -30,9 +30,7 @@ import type {
   SidebarPluginCallback,
   SidebarStore,
 } from "./types";
-
-/** Key under which the sidebar store is registered on `$store`. */
-const SIDEBAR_STORE_KEY = "sidebar";
+import { DEFAULT_SIDEBAR_STORE_KEY } from "./types";
 
 /**
  * Plugin factory — returns the `Alpine.plugin()` callback. Pass
@@ -54,6 +52,8 @@ const SIDEBAR_STORE_KEY = "sidebar";
  * option — the shortcut always defaults to `crossTab: true`.
  */
 export function sidebarPlugin(options: CreateSidebarOptions = {}): SidebarPluginCallback {
+  const storeKey = options.storeKey ?? DEFAULT_SIDEBAR_STORE_KEY;
+
   return function registerSidebar(alpine: Alpine): void {
     // Narrow the base `Alpine` runtime to the toolkit's typed view.
     // The boundary cast is the only `as unknown as` in this file —
@@ -68,9 +68,10 @@ export function sidebarPlugin(options: CreateSidebarOptions = {}): SidebarPlugin
 
     bridgeControllerStore({
       alpine: Alpine,
-      storeKey: SIDEBAR_STORE_KEY,
+      storeKey,
       store,
       controller: manager,
+      packageName: "sidebar",
       subscribe: (reactiveStore) =>
         manager.on("change", (detail) => {
           reactiveStore.visible = detail.visible;

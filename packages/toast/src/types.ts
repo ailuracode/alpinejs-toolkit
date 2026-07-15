@@ -16,7 +16,11 @@ export type { Unsubscribe };
 /** Built-in Alpine store key for the toast queue. */
 export const TOAST_STORE_KEY = "toast" as const;
 
+/** Built-in `$toast` magic key registered by {@link toastPlugin}. */
+export const TOAST_MAGIC_KEY = "toast" as const;
+
 export type ToastStoreKey = typeof TOAST_STORE_KEY;
+export type ToastMagicKey = typeof TOAST_MAGIC_KEY;
 
 /** Built-in position used when none is provided. Map to CSS in your UI layer. */
 export type DefaultToastPosition = "bottom-right";
@@ -121,6 +125,14 @@ export interface ToastPluginOptions<
   listenToWindowEvents?: boolean;
   /** Internal store key. Default: `"toast"`. */
   storeKey?: ToastStoreKey;
+  /**
+   * `$toast` magic key the Alpine plugin registers under. Defaults to
+   * {@link TOAST_MAGIC_KEY}. Set when the host already owns a `toast`
+   * magic or another toolkit plugin would collide on that name — the
+   * rename avoids the collision without touching the controller.
+   * Ignored by the standalone `createToastController` helper.
+   */
+  magicKey?: string;
 }
 
 export interface ToastPromiseMessages<
@@ -243,6 +255,7 @@ export type ResolvedToastPluginConfig<
   maxVisible: number;
   listenToWindowEvents: boolean;
   storeKey: ToastStoreKey;
+  magicKey: string;
   variants: TVariants;
   positions: TPositions;
   promise: ResolvedPromiseConfig<TVariants>;

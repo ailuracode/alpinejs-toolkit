@@ -37,7 +37,18 @@ export interface OverlayOptions {
    * `createSingletonScope()`.
    */
   readonly scope?: SingletonScope;
+  /**
+   * `$store.overlay` store key the Alpine plugin registers under.
+   * Defaults to {@link DEFAULT_OVERLAY_STORE_KEY}. Set when the host
+   * already owns an `overlay` store or another toolkit plugin would
+   * collide on that name — the rename avoids the collision without
+   * touching the controller.
+   */
+  readonly storeKey?: string;
 }
+
+/** Default `$store.overlay` key registered by {@link overlayPlugin}. */
+export const DEFAULT_OVERLAY_STORE_KEY = "overlay";
 
 /** Normalized, fully-resolved options. */
 export interface NormalizedOverlayOptions {

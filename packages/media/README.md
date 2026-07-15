@@ -79,8 +79,19 @@ Alpine.plugin(
     ] as const,
   })
 );
+
 Alpine.start();
 ```
+
+### Avoiding name collisions
+
+If your application already owns a `$store.media` — or another toolkit plugin registers on that name — rename the integration surface without touching the controller:
+
+```ts
+Alpine.plugin(mediaPlugin({ storeKey: "viewport" })); // → $store.viewport
+```
+
+The exposed constant `DEFAULT_MEDIA_STORE_KEY` keeps the rename discoverable from TypeScript. `MEDIA_STORE_KEY` is retained as a deprecated alias for back-compat.
 
 ```html
 <span x-show="$store.media.breakpoint === 'mobile'">Mobile nav</span>

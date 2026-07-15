@@ -10,9 +10,7 @@ import type { Alpine } from "alpinejs";
 import { TooltipController } from "./controller.js";
 import { createTooltipStoreFromController } from "./store.js";
 import type { CreateTooltipOptions, TooltipAlpine, TooltipPluginCallback } from "./types.js";
-
-/** Key under which the tooltip store is registered on `$store`. */
-const TOOLTIP_STORE_KEY = "tooltip";
+import { DEFAULT_TOOLTIP_STORE_KEY } from "./types.js";
 
 /**
  * Plugin factory — returns the `Alpine.plugin()` callback. Pass
@@ -20,15 +18,18 @@ const TOOLTIP_STORE_KEY = "tooltip";
  * or `{}` for the package defaults.
  */
 export function tooltipPlugin(options: CreateTooltipOptions = {}): TooltipPluginCallback {
+  const storeKey = options.storeKey ?? DEFAULT_TOOLTIP_STORE_KEY;
+
   return function registerTooltip(alpine: Alpine): void {
     const Alpine = alpine as unknown as TooltipAlpine;
     const controller = new TooltipController(options.id);
 
     bridgeControllerStore({
       alpine: Alpine,
-      storeKey: TOOLTIP_STORE_KEY,
+      storeKey,
       store: createTooltipStoreFromController(controller),
       controller,
+      packageName: "tooltip",
       subscribe: (reactiveStore) => {
         reactiveStore.isOpen = (id: string) => reactiveStore.instances[id]?.open ?? false;
         return controller.on("change", () => {

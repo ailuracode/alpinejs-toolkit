@@ -61,7 +61,39 @@ export type EnvPluginOptions = {
   visibility?: boolean;
   battery?: boolean;
   platform?: boolean;
+  /**
+   * `$network` magic key the plugin registers under. Defaults to
+   * {@link DEFAULT_ENV_NETWORK_KEY}. Set when the host already owns
+   * a `network` magic or another toolkit plugin would collide on
+   * that name — the rename avoids the collision without touching
+   * the underlying state.
+   */
+  readonly networkKey?: string;
+  /**
+   * `$visibility` magic key the plugin registers under. Defaults to
+   * {@link DEFAULT_ENV_VISIBILITY_KEY}.
+   */
+  readonly visibilityKey?: string;
+  /**
+   * `$battery` magic key the plugin registers under. Defaults to
+   * {@link DEFAULT_ENV_BATTERY_KEY}.
+   */
+  readonly batteryKey?: string;
+  /**
+   * `$platform` magic key the plugin registers under. Defaults to
+   * {@link DEFAULT_ENV_PLATFORM_KEY}.
+   */
+  readonly platformKey?: string;
 };
+
+/** Default `$network` magic key registered by {@link envPlugin}. */
+export const DEFAULT_ENV_NETWORK_KEY = "network";
+/** Default `$visibility` magic key registered by {@link envPlugin}. */
+export const DEFAULT_ENV_VISIBILITY_KEY = "visibility";
+/** Default `$battery` magic key registered by {@link envPlugin}. */
+export const DEFAULT_ENV_BATTERY_KEY = "battery";
+/** Default `$platform` magic key registered by {@link envPlugin}. */
+export const DEFAULT_ENV_PLATFORM_KEY = "platform";
 
 /** Options accepted by {@link createEnv}. */
 export interface CreateEnvOptions {

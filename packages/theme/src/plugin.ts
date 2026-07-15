@@ -10,10 +10,14 @@ import { bridgeControllerStore } from "@ailuracode/alpine-core";
 import type { Alpine } from "alpinejs";
 import type { ThemeController } from "./controller";
 import { createTheme } from "./controller";
-import type { CreateThemeOptions, ThemeAlpine, ThemePluginCallback, ThemeStore } from "./types";
-
-/** Key under which the theme store is registered on `$store`. */
-const THEME_STORE_KEY = "theme";
+import {
+  type CreateThemeOptions,
+  DEFAULT_THEME_MAGIC_KEY,
+  DEFAULT_THEME_STORE_KEY,
+  type ThemeAlpine,
+  type ThemePluginCallback,
+  type ThemeStore,
+} from "./types";
 
 /**
  * Plugin factory — returns the `Alpine.plugin()` callback. Pass
@@ -22,6 +26,12 @@ const THEME_STORE_KEY = "theme";
  * integration contract.
  */
 export function themePlugin(options: CreateThemeOptions = {}): ThemePluginCallback {
+  // Resolve the registration keys once. The magic follows the store
+  // so renames stay in sync: a single `storeKey` is enough when both
+  // must move out of a collided name.
+  const storeKey = options.storeKey ?? DEFAULT_THEME_STORE_KEY;
+  const magicKey = options.magicKey ?? options.storeKey ?? DEFAULT_THEME_MAGIC_KEY;
+
   return function registerTheme(alpine: Alpine): void {
     // Narrow the base `Alpine` runtime to the toolkit's typed view.
     // The boundary cast is the only `as unknown as` in this file —
@@ -67,9 +77,11 @@ export function themePlugin(options: CreateThemeOptions = {}): ThemePluginCallba
 
     bridgeControllerStore({
       alpine: Alpine,
-      storeKey: THEME_STORE_KEY,
+      storeKey,
+      magicKey,
       store,
       controller: manager,
+      packageName: "theme",
       subscribe: (reactiveStore) =>
         manager.on("change", (detail) => {
           reactiveStore.current = detail.current;

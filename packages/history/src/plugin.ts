@@ -17,13 +17,19 @@ import type {
 
 /** Default store key. */
 export const HISTORY_STORE_KEY = "history";
+/** Default `$history` magic key registered by {@link historyPlugin}. */
+export const DEFAULT_HISTORY_MAGIC_KEY = "history";
 
 /** Resolves plugin options with defaults. */
 export function resolveHistoryPluginConfig(
-  options: Partial<CreateHistoryControllerOptions<unknown>> & { storeKey?: string } = {}
+  options: Partial<CreateHistoryControllerOptions<unknown>> & {
+    storeKey?: string;
+    magicKey?: string;
+  } = {}
 ): ResolvedHistoryPluginConfig {
   return {
     storeKey: options.storeKey ?? HISTORY_STORE_KEY,
+    magicKey: options.magicKey ?? DEFAULT_HISTORY_MAGIC_KEY,
     initialValue: options.initialValue,
     limit: options.limit ?? 100,
     maxSize: options.maxSize,
@@ -85,23 +91,32 @@ export function createHistoryMagic<T, TMeta = unknown>(
 export function historyPlugin<T, TMeta = unknown>(
   options: CreateHistoryControllerOptions<T> & {
     storeKey?: string;
+    magicKey?: string;
   } = {} as CreateHistoryControllerOptions<T> & {
     storeKey?: string;
+    magicKey?: string;
   }
 ): HistoryPluginCallback {
   return function registerHistory(alpine: Alpine): void {
     const Alpine = alpine as unknown as HistoryAlpine;
     const config = resolveHistoryPluginConfig(
-      options as Partial<CreateHistoryControllerOptions<unknown>> & { storeKey?: string }
+      options as Partial<CreateHistoryControllerOptions<unknown>> & {
+        storeKey?: string;
+        magicKey?: string;
+      }
     );
     const controller = new HistoryController<T, TMeta>(options);
     const store = wrapHistoryStore<T, TMeta>(controller);
+    const magic = createHistoryMagic<T, TMeta>(config, () => store);
 
     bridgeControllerStore({
       alpine: Alpine,
       storeKey: config.storeKey as "history",
+      magicKey: config.magicKey,
       store: store as unknown as HistoryStore<unknown>,
       controller,
+      packageName: "history",
+      magicAccessor: () => magic,
       subscribe: (reactiveStore) => {
         const sync = () => {
           const rs = reactiveStore as HistoryStore<T, TMeta>;
@@ -116,8 +131,5 @@ export function historyPlugin<T, TMeta = unknown>(
         return controller.on("change", sync);
       },
     });
-
-    const magic = createHistoryMagic<T, TMeta>(config, () => store);
-    Alpine.magic("history", () => magic);
   };
 }

@@ -82,4 +82,16 @@ export const ARCHITECTURE_CHECK_POLICY = {
    * @type {readonly string[]}
    */
   constructorSideEffectExceptions: [],
+
+  /**
+   * Packages that still call `Alpine.store` / `Alpine.magic` /
+   * `Alpine.directive` directly instead of routing through
+   * `guardStore` / `guardMagic` / `guardDirective` from
+   * `@ailuracode/alpine-core`.
+   *
+   * Each entry is a temporary opt-out: remove the package once it
+   * migrates to the guards. New packages MUST NOT be added — they
+   * ship with the guards already wired up.
+   */
+  registrationGuardPending: [],
 };

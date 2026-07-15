@@ -39,3 +39,5 @@ export type {
   ChildPluginCallback,
   ChildPluginOptions,
 } from "./types.js";
+// --- Public constants -------------------------------------------------
+export { DEFAULT_CHILD_DIRECTIVE_KEY } from "./types.js";

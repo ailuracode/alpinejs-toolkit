@@ -65,6 +65,16 @@ Store name: `$store.sidebar`
 | `hide()` | Hide the sidebar (emits `change` with `source: 'user'`) |
 | `toggle()` | Toggle visible/hidden (emits `change` with `source: 'user'`) |
 
+### Avoiding name collisions
+
+If your application already owns a `$store.sidebar` — or another toolkit plugin registers on that name — rename the integration surface without touching the controller:
+
+```ts
+Alpine.plugin(sidebarPlugin({ storeKey: "drawer" })); // → $store.drawer
+```
+
+The exposed constant `DEFAULT_SIDEBAR_STORE_KEY` keeps the rename discoverable from TypeScript.
+
 ## Controller API
 
 The headless controller is exposed as a named export for advanced consumers that need typed event subscription outside of Alpine:

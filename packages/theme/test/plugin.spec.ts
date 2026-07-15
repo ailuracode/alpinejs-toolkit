@@ -97,6 +97,38 @@ describe("themePlugin — registration", () => {
   });
 });
 
+/**
+ * Collision-avoidance: hosts that already own a `theme` store can
+ * rename the registrations without touching the controller. The
+ * magic follows the store when only `storeKey` is provided, so the
+ * common case is a single argument.
+ */
+describe("themePlugin — collision-avoidance keys", () => {
+  it("registers under a custom storeKey", () => {
+    const Alpine = createMockAlpine();
+    themePlugin({ storeKey: "appearance" })(Alpine as never);
+    assert.ok(Alpine.stores.appearance);
+    assert.equal(Alpine.stores.theme, undefined);
+    assert.ok(Alpine.magics.appearance);
+  });
+
+  it("lets magicKey move independently from storeKey", () => {
+    const Alpine = createMockAlpine();
+    themePlugin({ storeKey: "appearance", magicKey: "look" })(Alpine as never);
+    assert.ok(Alpine.stores.appearance);
+    assert.equal(Alpine.stores.theme, undefined);
+    assert.ok(Alpine.magics.look);
+    assert.equal(Alpine.magics.appearance, undefined);
+  });
+
+  it("leaves the default keys untouched when no rename is supplied", () => {
+    const Alpine = createMockAlpine();
+    themePlugin()(Alpine as never);
+    assert.ok(Alpine.stores.theme);
+    assert.ok(Alpine.magics.theme);
+  });
+});
+
 describe("themePlugin — store surface", () => {
   it("forwards set() to the manager", () => {
     setMatchMedia(PREFERS_DARK, false);

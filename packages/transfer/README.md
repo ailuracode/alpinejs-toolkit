@@ -32,6 +32,22 @@ Alpine.start();
 Alpine.plugin(transfer({ share: false }));
 ```
 
+### Avoiding name collisions
+
+If your application already owns a `$clipboard`, `$share`, or `$export` magic — or another toolkit plugin registers on one of those names — rename the integration surface without forking the helpers:
+
+```ts
+Alpine.plugin(
+  transfer({
+    clipboardKey: "copy", // → $copy
+    shareKey: "shareOut", // → $shareOut
+    exportKey: "download", // → $download
+  }),
+);
+```
+
+The exposed constants `DEFAULT_TRANSFER_CLIPBOARD_KEY`, `DEFAULT_TRANSFER_SHARE_KEY`, and `DEFAULT_TRANSFER_EXPORT_KEY` keep the renames discoverable from TypeScript.
+
 ## `$clipboard`
 
 Copy text with automatic fallback between the Clipboard API and `execCommand`.

@@ -46,3 +46,5 @@ export type {
   DialogStore,
   DialogStoreConfig,
 } from "./types";
+// --- Public constants ----------------------------------------------------
+export { DEFAULT_DIALOG_STORE_KEY } from "./types";

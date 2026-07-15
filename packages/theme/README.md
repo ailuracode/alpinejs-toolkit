@@ -117,6 +117,20 @@ Alpine.start();
 
 The plugin registers `$store.theme` and `$theme` (both backed by the same manager instance). It is a thin reactive mirror — every method forwards to the manager.
 
+### Renaming the store and magic keys
+
+If your application already owns a `$store.theme` or another toolkit plugin registers on that name, rename the integration surface without touching the controller or the `$theme` consumers:
+
+```ts
+Alpine.plugin(themePlugin({
+  storeKey: 'appearance',           // → $store.appearance
+  // magicKey follows storeKey by default → $appearance
+  magicKey: 'look',                  // explicit override → $look
+}));
+```
+
+`storeKey` is the only argument most hosts need. `magicKey` moves independently only when both names must be freed (e.g. `$store.theme` is reserved and `$theme` should track the renamed store). The exposed constants `DEFAULT_THEME_STORE_KEY` and `DEFAULT_THEME_MAGIC_KEY` keep the rename discoverable from TypeScript.
+
 ## DOM strategies
 
 `strategy: 'class'` (default) — toggles a class on the target:
@@ -251,9 +265,27 @@ theme.reset()   // restores defaultTheme, removes persisted value
 theme.apply()   // re-applies resolved to the DOM (after external <html> mutations)
 theme.on('change', listener)  // returns unsubscribe
 theme.destroy() // idempotent, releases all listeners
+
+// Alpine plugin — accepts the same options as createTheme(), plus
+// storeKey/magicKey for collision-free integration in apps that
+// already own $store.theme or $theme.
+Alpine.plugin(themePlugin({
+  // ...createTheme options...
+  storeKey?: string,    // default: DEFAULT_THEME_STORE_KEY ('theme')
+  magicKey?: string,    // default: DEFAULT_THEME_MAGIC_KEY ('theme'); follows storeKey when renamed
+}));
 ```
 
 `toggle()` creates an explicit user preference — the manager does NOT return to `'system'`. `reset()` removes the persisted value and applies the configured `defaultTheme`. `apply()` re-runs the DOM strategy with the currently resolved value, bypassing the strategy's last-applied cache — useful when something else (Astro view transitions, browser extensions, hot reloads) has removed the class / attribute the strategy set on mount. It does not change internal state, persistence, or emit a `change` event.
+
+## Constants
+
+| Export                          | Value     | Used by                                       |
+| ------------------------------- | --------- | --------------------------------------------- |
+| `DEFAULT_THEME_PREFERENCE`      | `'system'`| `createTheme({ defaultTheme })` fallback      |
+| `DEFAULT_THEME_STORAGE_KEY`     | `'theme'` | Built-in localStorage adapter key             |
+| `DEFAULT_THEME_STORE_KEY`       | `'theme'` | `themePlugin({ storeKey })` fallback          |
+| `DEFAULT_THEME_MAGIC_KEY`       | `'theme'` | `themePlugin({ magicKey })` fallback          |
 
 ## Initialization order
 

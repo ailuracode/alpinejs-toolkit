@@ -27,3 +27,4 @@ export type {
   OverlayState,
   OverlayStore,
 } from "./types.js";
+export { DEFAULT_OVERLAY_STORE_KEY } from "./types.js";

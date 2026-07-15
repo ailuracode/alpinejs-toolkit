@@ -101,6 +101,12 @@ export interface ScrollSectionOptions {
   readonly rootMargin?: string;
 }
 
+/** Default `$store` key registered by {@link scrollPlugin}. */
+export const DEFAULT_SCROLL_STORE_KEY = "scroll";
+
+/** Default `$scroll` magic key registered by {@link scrollPlugin}. */
+export const DEFAULT_SCROLL_MAGIC_KEY = "scroll";
+
 /** Options accepted by `ScrollController` and `ScrollPlugin.init()`. */
 export interface ScrollOptions {
   /** Stable identifier exposed via `controller.id`. Default: auto. */
@@ -134,6 +140,21 @@ export interface ScrollOptions {
    * `createSingletonScope()`.
    */
   readonly scope?: SingletonScope;
+  /**
+   * `$store` key the Alpine plugin registers under. Defaults to
+   * {@link DEFAULT_SCROLL_STORE_KEY}. Set when the host already owns
+   * a `scroll` store or another toolkit plugin would collide on that
+   * name — the rename avoids the collision without touching the
+   * controller. Ignored by the standalone `createScroll` factory.
+   */
+  readonly storeKey?: string;
+  /**
+   * `$scroll` magic key the Alpine plugin registers under. Defaults
+   * to {@link DEFAULT_SCROLL_MAGIC_KEY}, or to `storeKey` when that
+   * is renamed (the magic follows the store so consumers only rename
+   * one). Ignored by the standalone factory.
+   */
+  readonly magicKey?: string;
 }
 
 /* -------------------------------------------------------------------------- */

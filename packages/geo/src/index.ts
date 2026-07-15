@@ -28,8 +28,14 @@ export {
 export { geoOptions, geoPlugin, geoPlugin as default } from "./plugin";
 // --- Public types ---------------------------------------------------------
 export type {
+  CreateGeoOptions,
   GeoAlpine,
   GeoPluginCallback,
   GeoPositionOptions,
   GeoStore,
+} from "./types";
+// --- Public constants ------------------------------------------------
+export {
+  DEFAULT_GEO_MAGIC_KEY,
+  DEFAULT_GEO_STORE_KEY,
 } from "./types";

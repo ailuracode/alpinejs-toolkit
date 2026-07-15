@@ -31,3 +31,4 @@ export type {
   VirtualScrollToIndexOptions,
   VirtualStore,
 } from "./types.js";
+export { DEFAULT_VIRTUAL_STORE_KEY } from "./types.js";

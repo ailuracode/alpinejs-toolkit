@@ -23,4 +23,29 @@ export type TransferPluginOptions = {
   share?: boolean;
   /** Register `$export`. Default: `true`. */
   export?: boolean;
+  /**
+   * `$clipboard` magic key the plugin registers under. Defaults to
+   * {@link DEFAULT_TRANSFER_CLIPBOARD_KEY}. Set when the host already
+   * owns a `clipboard` magic or another toolkit plugin would collide
+   * on that name — the rename avoids the collision without touching
+   * the underlying helper.
+   */
+  readonly clipboardKey?: string;
+  /**
+   * `$share` magic key the plugin registers under. Defaults to
+   * {@link DEFAULT_TRANSFER_SHARE_KEY}.
+   */
+  readonly shareKey?: string;
+  /**
+   * `$export` magic key the plugin registers under. Defaults to
+   * {@link DEFAULT_TRANSFER_EXPORT_KEY}.
+   */
+  readonly exportKey?: string;
 };
+
+/** Default `$clipboard` magic key registered by {@link transferPlugin}. */
+export const DEFAULT_TRANSFER_CLIPBOARD_KEY = "clipboard";
+/** Default `$share` magic key registered by {@link transferPlugin}. */
+export const DEFAULT_TRANSFER_SHARE_KEY = "share";
+/** Default `$export` magic key registered by {@link transferPlugin}. */
+export const DEFAULT_TRANSFER_EXPORT_KEY = "export";

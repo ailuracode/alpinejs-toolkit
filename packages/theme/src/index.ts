@@ -55,6 +55,8 @@ export type {
 } from "./types";
 // --- Public constants ------------------------------------------------
 export {
+  DEFAULT_THEME_MAGIC_KEY,
   DEFAULT_THEME_PREFERENCE,
   DEFAULT_THEME_STORAGE_KEY,
+  DEFAULT_THEME_STORE_KEY,
 } from "./types";

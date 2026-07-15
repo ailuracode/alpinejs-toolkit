@@ -71,7 +71,29 @@ export interface AccordionStore {
 /** Options accepted by the accordion plugin factory. */
 export interface CreateAccordionOptions {
   readonly id?: string;
+  /**
+   * `$store` key the Alpine plugin registers under. Defaults to
+   * {@link DEFAULT_ACCORDION_STORE_KEY}. Set when the host already
+   * owns an `accordion` store or another toolkit plugin would
+   * collide on that name — the rename avoids the collision without
+   * touching the controller. Ignored by the standalone
+   * `createAccordionController` factory.
+   */
+  readonly storeKey?: string;
+  /**
+   * `$accordion` magic key the Alpine plugin registers under.
+   * Defaults to {@link DEFAULT_ACCORDION_MAGIC_KEY}, or to `storeKey`
+   * when that is renamed (the magic follows the store so consumers
+   * only rename one). Ignored by the standalone factory.
+   */
+  readonly magicKey?: string;
 }
+
+/** Default `$store` key registered by {@link accordionPlugin}. */
+export const DEFAULT_ACCORDION_STORE_KEY = "accordion";
+
+/** Default `$accordion` magic key registered by {@link accordionPlugin}. */
+export const DEFAULT_ACCORDION_MAGIC_KEY = "accordion";
 
 /** Typed view of `Alpine` the accordion plugin uses internally. */
 export type AccordionAlpine = Alpine<{ accordion: AccordionStore }> & {

@@ -22,6 +22,12 @@ export const DEFAULT_THEME_PREFERENCE: ThemePreference = "system";
 /** Default `localStorage` key used by the bundled adapter. */
 export const DEFAULT_THEME_STORAGE_KEY = "theme";
 
+/** Default `$store` key registered by {@link themePlugin}. */
+export const DEFAULT_THEME_STORE_KEY = "theme";
+
+/** Default `$theme` magic key registered by {@link themePlugin}. */
+export const DEFAULT_THEME_MAGIC_KEY = "theme";
+
 /** Re-exported so consumers can grab every theme type from one path. */
 export type { Unsubscribe };
 
@@ -167,6 +173,22 @@ export interface CreateThemeOptions {
    * `createSingletonScope()`.
    */
   readonly scope?: SingletonScope;
+  /**
+   * `$store` key the Alpine plugin registers under. Defaults to
+   * {@link DEFAULT_THEME_STORE_KEY}. Set when the host application
+   * already owns a `theme` store or another toolkit plugin would
+   * collide on that name — the rename avoids the collision without
+   * touching the controller. Ignored by the standalone
+   * {@link createTheme} factory.
+   */
+  readonly storeKey?: string;
+  /**
+   * `$theme` magic key the Alpine plugin registers under. Defaults
+   * to {@link DEFAULT_THEME_MAGIC_KEY}, or to `storeKey` when that is
+   * renamed (the magic follows the store so consumers only rename
+   * one). Ignored by the standalone factory.
+   */
+  readonly magicKey?: string;
 }
 
 /** Public, framework-agnostic manager returned by {@link createTheme}. */

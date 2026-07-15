@@ -71,6 +71,7 @@ The magic also exposes read-only accessors: `$history.current`, `$history.canUnd
 | `nestedTransactionPolicy` | `"stack" \| "abort"` | `"stack"` | How to handle nested `.transaction()` calls |
 | `persistence` | `PersistenceAdapter<T>` | `undefined` | Optional adapter for persisting undo history |
 | `storeKey` | `string` | `"history"` | Alpine store key |
+| `magicKey` | `string` | `"history"` | `$history` magic key |
 
 ## Transactions
 
@@ -84,6 +85,21 @@ tx.commit(); // pushes a single undo entry
 ```
 
 Calling `tx.rollback()` discards all intermediate commits and restores the snapshot taken when `transaction()` was called.
+
+### Avoiding name collisions
+
+If your application already owns a `$history` store or magic — or another toolkit plugin registers on that name — rename the integration surface without touching the controller:
+
+```ts
+Alpine.plugin(
+  historyPlugin({
+    storeKey: "undoStack", // → $store.undoStack
+    magicKey: "undo", // → $undo
+  }),
+);
+```
+
+The exposed constants `DEFAULT_HISTORY_MAGIC_KEY` and `HISTORY_STORE_KEY` keep the renames discoverable from TypeScript.
 
 ## Persistence
 

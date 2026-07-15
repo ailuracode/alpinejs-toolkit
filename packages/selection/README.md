@@ -139,6 +139,16 @@ controller.on("change", ({ selectedKeys }) => {
 });
 ```
 
+### Avoiding name collisions
+
+If your application already owns a `$store.selection` — or another toolkit plugin registers on that name — rename the integration surface without touching the controller:
+
+```ts
+Alpine.plugin(selectionPlugin({ storeKey: "pick" })); // → $store.pick
+```
+
+The exposed constant `DEFAULT_SELECTION_STORE_KEY` keeps the rename discoverable from TypeScript.
+
 ## Serialization
 
 ```ts

@@ -19,3 +19,8 @@ export type {
   TabsPluginCallback,
   TabsStore,
 } from "./types";
+// --- Public constants ------------------------------------------------
+export {
+  DEFAULT_TABS_MAGIC_KEY,
+  DEFAULT_TABS_STORE_KEY,
+} from "./types";

@@ -1,8 +1,8 @@
 import type { Alpine } from "@ailuracode/alpine-core";
+import { bridgeControllerStore } from "@ailuracode/alpine-core";
 import type AlpineType from "alpinejs";
 import { createKeyboard, type KeyboardController } from "./controller.js";
 import type {
-  KeyboardMagic,
   KeyboardPluginOptions,
   KeyboardShortcutDefinition,
   KeyboardStore,
@@ -10,12 +10,11 @@ import type {
   ShortcutRegistrationOptions,
   ShortcutScope,
 } from "./types.js";
+import { DEFAULT_KEYBOARD_MAGIC_KEY, DEFAULT_KEYBOARD_STORE_KEY } from "./types.js";
 
 type KeyboardAlpine = Alpine<{ keyboard: KeyboardStore }> & {
   cleanup?(callback: () => void): void;
 };
-
-const KEYBOARD_STORE_KEY = "keyboard";
 
 function createKeyboardStore(controller: KeyboardController): KeyboardStore {
   const store: KeyboardStore = {
@@ -84,6 +83,12 @@ function registerKeyboard(
   alpine: AlpineType.Alpine,
   options: KeyboardPluginOptions = {}
 ): KeyboardController {
+  // Resolve the registration keys once. The magic follows the store
+  // so renames stay in sync: a single `storeKey` is enough when both
+  // must move out of a collided name.
+  const storeKey = options.storeKey ?? DEFAULT_KEYBOARD_STORE_KEY;
+  const magicKey = options.magicKey ?? options.storeKey ?? DEFAULT_KEYBOARD_MAGIC_KEY;
+
   const Alpine = alpine as unknown as KeyboardAlpine;
   const controller = options.controller ?? createKeyboard(options.options);
   registerInitialShortcuts(controller, options.shortcuts ?? []);
@@ -92,16 +97,14 @@ function registerKeyboard(
     controller.mount();
   }
 
-  Alpine.store(KEYBOARD_STORE_KEY, createKeyboardStore(controller));
-  const reactiveStore = Alpine.store(KEYBOARD_STORE_KEY) as KeyboardStore;
-
-  Alpine.magic(KEYBOARD_STORE_KEY, () => reactiveStore as KeyboardMagic);
-
-  if (typeof Alpine.cleanup === "function") {
-    Alpine.cleanup(() => {
-      controller.destroy();
-    });
-  }
+  bridgeControllerStore<KeyboardStore, KeyboardController>({
+    alpine: Alpine,
+    storeKey,
+    magicKey,
+    store: createKeyboardStore(controller),
+    controller,
+    packageName: "keyboard",
+  });
 
   return controller;
 }

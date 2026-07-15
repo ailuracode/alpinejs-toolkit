@@ -1,4 +1,6 @@
+import { guardMagic } from "@ailuracode/alpine-core";
 import type AlpineType from "alpinejs";
+import { DEFAULT_TRANSFER_SHARE_KEY } from "./types.js";
 
 export type ShareMagic = ((data: ShareData) => Promise<boolean>) & {
   readonly isSupported: boolean;
@@ -67,5 +69,5 @@ export function createShareMagic(): ShareMagic {
 
 /** Registers callable `$share` magic on Alpine. */
 export function registerShareMagic(Alpine: AlpineType.Alpine): void {
-  Alpine.magic("share", () => createShareMagic());
+  guardMagic(Alpine, DEFAULT_TRANSFER_SHARE_KEY, () => createShareMagic(), "transfer");
 }

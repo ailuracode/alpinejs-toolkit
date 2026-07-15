@@ -38,4 +38,4 @@ export type {
   NavigatorLike,
   Unsubscribe,
 } from "./types";
-export { DEFAULT_LANG_FALLBACK } from "./types";
+export { DEFAULT_LANG_FALLBACK, DEFAULT_LANG_STORE_KEY } from "./types";

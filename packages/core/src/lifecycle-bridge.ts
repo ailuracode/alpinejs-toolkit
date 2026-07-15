@@ -12,8 +12,16 @@
  * centralize the invariant wiring and document cleanup order.
  */
 
+import type Base from "alpinejs";
 import type { Unsubscribe } from "./core/event";
 import type { Alpine } from "./core/type";
+import {
+  guardDirective,
+  guardMagic,
+  guardStore,
+  untrackDirective,
+  untrackMagic,
+} from "./registration";
 
 /** Controller with an idempotent `destroy()` — every bridged adapter owns one. */
 export interface Destroyable {
@@ -109,6 +117,13 @@ export interface ControllerStoreBridgeOptions<TStore, TController extends Destro
   storeKey: string;
   store: TStore;
   controller: TController;
+  /**
+   * Package name surfaced in the collision error message (e.g.
+   * `"theme"` so the error reads `themePlugin()`). Defaults to
+   * `"alpine"` — feature packages SHOULD pass their own short name
+   * so the error message points to the right factory.
+   */
+  packageName?: string;
   /** Defaults to `storeKey`. Use when the magic name differs (e.g. toast). */
   magicKey?: string;
   /** Defaults to `() => reactiveStore`. Use for composite magics. */
@@ -120,6 +135,16 @@ export interface ControllerStoreBridgeOptions<TStore, TController extends Destro
   subscribe?: (reactiveStore: TStore) => Unsubscribe;
   /** Extra adapter teardown such as DOM listeners. */
   onCleanup?: () => void;
+  /**
+   * Forwarded to {@link guardStore} and {@link guardMagic}.
+   *
+   * Default: `true` — silently replace any prior registration. This
+   * matches Alpine's native behaviour and keeps HMR / hot reloads /
+   * repeated integration tests working. Set to `false` to refuse
+   * overwrites and throw `RegistrationError("REGISTRATION_COLLISION")`
+   * instead, surfacing collisions as bugs instead of silent clobbers.
+   */
+  registrationOverride?: boolean;
 }
 
 /** Result of {@link bridgeControllerStore}. */
@@ -131,7 +156,22 @@ export interface ControllerStoreBridge<TStore> {
  * Wires the invariant controller-backed adapter sequence.
  *
  * Store field mirroring stays in `subscribe` so each package keeps
- * readable, domain-specific synchronization logic.
+ * readable, domain-specific synchronization logic. Both `store` and
+ * `magic` registrations route through {@link guardStore} and
+ * {@link guardMagic}.
+ *
+ * Collision policy:
+ *
+ * - Default (`registrationOverride: true`) — silently replace any
+ *   prior registration. Matches Alpine's native behaviour and keeps
+ *   HMR, hot reloads, and repeated integration tests working
+ *   without per-plugin opt-in.
+ * - `{ registrationOverride: false }` — refuse to overwrite and
+ *   throw `RegistrationError("REGISTRATION_COLLISION")`. Use when
+ *   the host application or another toolkit plugin is expected to
+ *   register the same key, so the collision surfaces as a bug
+ *   instead of a silent clobber. Plugins that opt in here own the
+ *   `Alpine.cleanup` lifecycle of their previous registration.
  */
 export function bridgeControllerStore<TStore, TController extends Destroyable>(
   options: ControllerStoreBridgeOptions<TStore, TController>
@@ -141,27 +181,125 @@ export function bridgeControllerStore<TStore, TController extends Destroyable>(
     storeKey,
     store,
     controller,
+    packageName = "alpine",
     magicKey = storeKey,
     magicAccessor,
     subscribe,
     onCleanup,
+    registrationOverride = true,
   } = options;
 
-  const { reactiveStore } = registerReactiveStore(alpine, storeKey, store);
+  const guardOptions = { override: registrationOverride, silent: true };
+  const { reactiveStore } = guardStore(alpine, storeKey, store, packageName, guardOptions);
 
   const subscriptions: Unsubscribe[] = [];
   if (subscribe) {
     subscriptions.push(subscribe(reactiveStore));
   }
 
-  registerStoreMagic(alpine, magicKey, magicAccessor ?? (() => reactiveStore));
+  guardMagic(alpine, magicKey, magicAccessor ?? (() => reactiveStore), packageName, guardOptions);
+
+  // Drop the guard's tracking entry when the controller goes away so
+  // HMR / repeated integration tests do not collide with themselves.
+  // Runs alongside the host's `onCleanup` so order with any DOM
+  // teardown stays predictable.
+  const untrack = (): void => {
+    untrackMagic(magicKey);
+  };
 
   wireControllerLifecycle(alpine, controller, {
     subscriptions,
-    onCleanup: onCleanup ? [onCleanup] : undefined,
+    onCleanup: onCleanup ? [untrack, onCleanup] : [untrack],
   });
 
   return { reactiveStore };
+}
+
+/** Options for {@link bridgeControllerDirective}. */
+export interface BridgeControllerDirectiveOptions<TController extends Destroyable | undefined> {
+  alpine: AlpineLifecycleHost;
+  /**
+   * The directive name registered on Alpine (without the `x-` prefix the
+   * consumer types in markup). Feature packages expose this through
+   * their plugin options so the host can rename around a collision.
+   */
+  directiveKey: string;
+  /** The directive handler wired into {@link Alpine.directive}. */
+  directive: Base.DirectiveCallback;
+  /**
+   * Optional controller that owns the directive's lifecycle. When
+   * omitted the bridge does not register any destroy hook — the
+   * directive stays registered for the lifetime of the Alpine runtime.
+   * Cleanup still calls `untrackDirective` so HMR and repeated
+   * integration tests do not collide with themselves.
+   */
+  controller?: TController;
+  /**
+   * Package name surfaced in the collision error message (e.g.
+   * `"alpine-child"` so the error reads `childPlugin()`). Defaults to
+   * `"alpine"` — feature packages SHOULD pass their own short name so
+   * the error message points to the right factory.
+   */
+  packageName?: string;
+  /**
+   * Forwarded to {@link guardDirective}.
+   *
+   * Default: `true` — silently replace any prior registration of the
+   * same name. Matches Alpine's native behaviour and keeps HMR, hot
+   * reloads, and repeated integration tests working. Set to `false`
+   * to refuse overwrites and throw `RegistrationError("REGISTRATION_COLLISION")`
+   * instead, surfacing collisions as bugs instead of silent clobbers.
+   */
+  registrationOverride?: boolean;
+}
+
+/**
+ * Wires the invariant controller-backed directive sequence.
+ *
+ * Counterpart to {@link bridgeControllerStore} for plugins that
+ * register Alpine directives instead of store + magic pairs (e.g.
+ * `x-child`, `x-gesture`). Routes the directive through
+ * {@link guardDirective} so collisions surface as
+ * `RegistrationError("REGISTRATION_COLLISION")` instead of silently
+ * overwriting an existing directive of the same name.
+ *
+ * Cleanup order (when `controller` is supplied):
+ *
+ * 1. `controller.destroy()` — release any held resources
+ * 2. `untrackDirective` — clear the guard's tracking entry so the
+ *    next plugin instance can re-register without colliding with
+ *    itself across HMR boundaries or repeated integration tests.
+ *
+ * Each step is idempotent. When `Alpine.cleanup` is missing the
+ * bridge cannot perform any cleanup; the directive stays registered
+ * for the lifetime of the Alpine runtime.
+ */
+export function bridgeControllerDirective<TController extends Destroyable | undefined>(
+  options: BridgeControllerDirectiveOptions<TController>
+): void {
+  const {
+    alpine,
+    directiveKey,
+    directive,
+    controller,
+    packageName = "alpine",
+    registrationOverride = true,
+  } = options;
+
+  const guardOptions = { override: registrationOverride, silent: true };
+  guardDirective(alpine as Alpine, directiveKey, directive, packageName, guardOptions);
+
+  if (!controller) {
+    return;
+  }
+
+  wireControllerLifecycle(alpine, controller, {
+    onCleanup: [
+      () => {
+        untrackDirective(directiveKey);
+      },
+    ],
+  });
 }
 
 /**

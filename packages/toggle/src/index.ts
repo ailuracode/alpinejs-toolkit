@@ -31,7 +31,6 @@ export type { ToggleEvents } from "./events";
 // --- Public factory (framework-agnostic) -----------------------------
 // --- Alpine integration ----------------------------------------------
 export { createToggle, togglePlugin, togglePlugin as default } from "./plugin";
-// --- Public types (state contracts, options, plugin callback) --------
 export type {
   CreateToggleOptions,
   ToggleAlpine,
@@ -47,3 +46,5 @@ export type {
   ToggleTernaryStates,
   Writable,
 } from "./types";
+// --- Public types (state contracts, options, plugin callback) --------
+export { DEFAULT_TOGGLE_MAGIC_KEY } from "./types";

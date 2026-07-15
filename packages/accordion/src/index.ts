@@ -37,3 +37,8 @@ export type {
   AccordionStore,
   CreateAccordionOptions,
 } from "./types";
+// --- Public constants ------------------------------------------------
+export {
+  DEFAULT_ACCORDION_MAGIC_KEY,
+  DEFAULT_ACCORDION_STORE_KEY,
+} from "./types";

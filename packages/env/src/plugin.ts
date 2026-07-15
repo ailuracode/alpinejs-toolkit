@@ -1,3 +1,4 @@
+import { guardMagic } from "@ailuracode/alpine-core";
 import type AlpineType from "alpinejs";
 import { type BatteryManagerLike, readBatteryState } from "./internal/battery.js";
 import { readNetworkState } from "./internal/network.js";
@@ -9,6 +10,12 @@ import type {
   NetworkMagic,
   PlatformMagic,
   VisibilityMagic,
+} from "./types.js";
+import {
+  DEFAULT_ENV_BATTERY_KEY,
+  DEFAULT_ENV_NETWORK_KEY,
+  DEFAULT_ENV_PLATFORM_KEY,
+  DEFAULT_ENV_VISIBILITY_KEY,
 } from "./types.js";
 
 interface AlpineAugmented {
@@ -233,7 +240,7 @@ function subscribe(listener: RuntimeSubscriber): () => void {
 
 function createReactiveMagics(
   Alpine: AlpineInstall,
-  options: Required<EnvPluginOptions>
+  options: Pick<EnvPluginOptions, "network" | "visibility" | "battery" | "platform">
 ): ReactiveMagics {
   return {
     network: options.network ? Alpine.reactive({ ...runtime.network }) : null,
@@ -257,11 +264,32 @@ function createReactiveMagics(
   };
 }
 
-function registerMagics(Alpine: AlpineInstall, magics: ReactiveMagics): void {
-  for (const [name, value] of Object.entries(magics)) {
-    if (value) {
-      Alpine.magic(name, () => value);
-    }
+function registerMagics(
+  Alpine: AlpineType.Alpine,
+  magics: ReactiveMagics,
+  keys: {
+    network: string;
+    visibility: string;
+    battery: string;
+    platform: string;
+  }
+): void {
+  // `silent: true` keeps the dev console clean when a host re-registers
+  // the same env magics (HMR / repeated integration tests). Collision
+  // detection still runs — `RegistrationError` fires when a host tries
+  // to register a different magic under the same key.
+  const guardOptions = { override: true, silent: true } as const;
+  if (magics.network) {
+    guardMagic(Alpine, keys.network, () => magics.network, "env", guardOptions);
+  }
+  if (magics.visibility) {
+    guardMagic(Alpine, keys.visibility, () => magics.visibility, "env", guardOptions);
+  }
+  if (magics.battery) {
+    guardMagic(Alpine, keys.battery, () => magics.battery, "env", guardOptions);
+  }
+  if (magics.platform) {
+    guardMagic(Alpine, keys.platform, () => magics.platform, "env", guardOptions);
   }
 }
 
@@ -299,7 +327,12 @@ export default function envPlugin(options: EnvPluginOptions = {}): AlpineType.Pl
       platform: enablePlatform,
     });
 
-    registerMagics(typedAlpine, magics);
+    registerMagics(Alpine, magics, {
+      network: options.networkKey ?? DEFAULT_ENV_NETWORK_KEY,
+      visibility: options.visibilityKey ?? DEFAULT_ENV_VISIBILITY_KEY,
+      battery: options.batteryKey ?? DEFAULT_ENV_BATTERY_KEY,
+      platform: options.platformKey ?? DEFAULT_ENV_PLATFORM_KEY,
+    });
 
     const unsubscribe = subscribe((state) => {
       syncMagics(state, magics);

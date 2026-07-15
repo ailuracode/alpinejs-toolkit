@@ -146,6 +146,7 @@ export function realtimePlugin(
   return function registerRealtime(alpine: Alpine): void {
     const typedAlpine = alpine as unknown as RealtimeAlpine;
     const storeKey = resolveStoreKey(defaultConfig);
+    const magicKey = defaultConfig.magicKey ?? REALTIME_MAGIC_KEY;
     const controller = new RealtimeController({ ...defaultConfig, id: storeKey });
 
     const store: RealtimeStore = createRealtimeStore(controller);
@@ -156,7 +157,8 @@ export function realtimePlugin(
       storeKey,
       store,
       controller: controller as RealtimeController & Destroyable,
-      magicKey: REALTIME_MAGIC_KEY,
+      magicKey,
+      packageName: "realtime",
       magicAccessor: () => magic,
       subscribe: (reactiveStore) =>
         controller.on("statuschange", (state) => {

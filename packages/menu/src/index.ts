@@ -43,3 +43,5 @@ export type {
   MenuPluginCallback,
   MenuStore,
 } from "./types";
+// --- Public constants ----------------------------------------------------
+export { DEFAULT_MENU_STORE_KEY } from "./types";

@@ -11,9 +11,7 @@ import type { Alpine } from "alpinejs";
 import type { LangController } from "./controller";
 import { createLang } from "./controller";
 import type { LangAlpine, LangPluginCallback, LangPluginOptions, LangStore } from "./types";
-
-/** Key under which the lang store is registered on `$store`. */
-const LANG_STORE_KEY = "lang";
+import { DEFAULT_LANG_STORE_KEY } from "./types";
 
 /**
  * Plugin factory — returns the `Alpine.plugin()` callback. Pass
@@ -27,6 +25,8 @@ const LANG_STORE_KEY = "lang";
  * is documented in the `lang-architecture-2026-07` changeset.
  */
 export function langPlugin(options: LangPluginOptions = {}): LangPluginCallback {
+  const storeKey = options.storeKey ?? DEFAULT_LANG_STORE_KEY;
+
   return function registerLang(alpine: Alpine): void {
     // Narrow the base `Alpine` runtime to the toolkit's typed view.
     // The boundary cast is the only `as unknown as` in this file —
@@ -40,9 +40,10 @@ export function langPlugin(options: LangPluginOptions = {}): LangPluginCallback 
 
     bridgeControllerStore<LangStore, LangController>({
       alpine: Alpine,
-      storeKey: LANG_STORE_KEY,
+      storeKey,
       store,
       controller: manager,
+      packageName: "lang",
       subscribe: (reactiveStore) =>
         manager.on("change", (detail) => {
           reactiveStore.current = detail.current;

@@ -9,8 +9,11 @@
  * @module
  */
 
+import { guardMagic } from "@ailuracode/alpine-core";
 import type AlpineType from "alpinejs";
 import { IdleController } from "./idle-controller.js";
+import type { CreateAttentionPluginOptions } from "./types.js";
+import { DEFAULT_ATTENTION_IDLE_KEY, DEFAULT_ATTENTION_WAKELOCK_KEY } from "./types.js";
 import { WakeLockController } from "./wakelock-controller.js";
 
 interface AttentionAlpine extends AlpineType.Alpine {
@@ -18,8 +21,29 @@ interface AttentionAlpine extends AlpineType.Alpine {
 }
 
 /** Alpine.js attention plugin. Registers `$wakelock` and `$idle` magics. */
-export default function attentionPlugin(alpine: AlpineType.Alpine): void {
+export function attentionPlugin(
+  options: CreateAttentionPluginOptions
+): (alpine: AlpineType.Alpine) => void;
+export function attentionPlugin(alpine: AlpineType.Alpine): void;
+export function attentionPlugin(
+  optionsOrAlpine?: CreateAttentionPluginOptions | AlpineType.Alpine
+): ((alpine: AlpineType.Alpine) => void) | void {
+  if (optionsOrAlpine && typeof (optionsOrAlpine as AlpineType.Alpine).magic === "function") {
+    registerAttention(optionsOrAlpine as AlpineType.Alpine, {});
+    return;
+  }
+
+  const options = (optionsOrAlpine as CreateAttentionPluginOptions | undefined) ?? {};
+  return (alpine: AlpineType.Alpine) => {
+    registerAttention(alpine, options);
+  };
+}
+
+function registerAttention(alpine: AlpineType.Alpine, options: CreateAttentionPluginOptions): void {
   const Alpine = alpine as AttentionAlpine;
+  const wakelockKey = options.wakelockKey ?? DEFAULT_ATTENTION_WAKELOCK_KEY;
+  const idleKey = options.idleKey ?? DEFAULT_ATTENTION_IDLE_KEY;
+
   const wakeLock = new WakeLockController();
   const idle = new IdleController();
 
@@ -49,7 +73,7 @@ export default function attentionPlugin(alpine: AlpineType.Alpine): void {
     wlState.isActive = detail.isActive;
   });
 
-  Alpine.magic("wakelock", () => wlState);
+  guardMagic(Alpine, wakelockKey, () => wlState, "attention");
 
   // ── $idle ────────────────────────────────────────────────────
 
@@ -93,7 +117,7 @@ export default function attentionPlugin(alpine: AlpineType.Alpine): void {
     idleState.isWatching = detail.isWatching;
   });
 
-  Alpine.magic("idle", () => idleState);
+  guardMagic(Alpine, idleKey, () => idleState, "attention");
 
   // ── Cleanup ──────────────────────────────────────────────────
 
@@ -104,3 +128,5 @@ export default function attentionPlugin(alpine: AlpineType.Alpine): void {
     });
   }
 }
+
+export default attentionPlugin;

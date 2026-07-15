@@ -69,6 +69,18 @@ The package follows the toolkit's HEADLESS PATTERN:
 
 `pnpm run architecture:check` enforces that controller modules never import `alpinejs` at runtime, and that constructors never touch browser globals.
 
+### Avoiding name collisions
+
+If your application already owns a `$store.realtime` / `$realtime` — or another toolkit plugin registers on those names — rename the integration surface without touching the controller or transport adapter:
+
+```ts
+Alpine.plugin(
+  realtimePlugin({ id: "live", magicKey: "live" })
+); // → $store.live / $live
+```
+
+The store key is derived from `id`; the magic key uses `magicKey`. Both fall back to `"realtime"` when unset.
+
 ## Tests
 
 ```bash

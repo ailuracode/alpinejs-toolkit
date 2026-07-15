@@ -1,3 +1,4 @@
+import { guardStore } from "@ailuracode/alpine-core";
 import type { QueryPluginOptions, QueryStateAdapter } from "@ailuracode/alpine-query";
 import {
   createQueryStore,
@@ -20,7 +21,30 @@ export type QueryAdapterFactory = (Alpine: AlpineType.Alpine) => QueryStateAdapt
 
 export type QueryRegisterOptions = QueryPluginOptions & {
   adapter: QueryStateAdapter | QueryAdapterFactory;
+  /**
+   * `$store.query` store key the Alpine plugin registers under.
+   * Defaults to {@link DEFAULT_QUERY_STORE_KEY}. Set when the host
+   * already owns a `query` store or another toolkit plugin would
+   * collide on that name — the rename avoids the collision without
+   * touching the query cache.
+   */
+  readonly storeKey?: string;
 };
+
+/** Options accepted by {@link createQueryPlugin} (no `adapter` required). */
+export interface CreateQueryPluginOptions extends Omit<QueryPluginOptions, "adapter"> {
+  /**
+   * `$store.query` store key the Alpine plugin registers under.
+   * Defaults to {@link DEFAULT_QUERY_STORE_KEY}. Set when the host
+   * already owns a `query` store or another toolkit plugin would
+   * collide on that name — the rename avoids the collision without
+   * touching the query cache.
+   */
+  readonly storeKey?: string;
+}
+
+/** Default `$store.query` key registered by {@link createQueryPlugin}. */
+export const DEFAULT_QUERY_STORE_KEY = "query";
 
 function resolveAdapter(
   adapter: QueryStateAdapter | QueryAdapterFactory,
@@ -32,10 +56,11 @@ function resolveAdapter(
 /** Registers `$store.query` using the given state adapter. */
 export function createQueryPlugin(
   adapter: QueryStateAdapter | QueryAdapterFactory,
-  options: QueryPluginOptions = {}
+  options: CreateQueryPluginOptions = {}
 ): AlpineType.PluginCallback {
   const defaultQueryOptions = options.defaultOptions?.queries ?? {};
   const defaultMutationOptions = options.defaultOptions?.mutations ?? {};
+  const storeKey = options.storeKey ?? DEFAULT_QUERY_STORE_KEY;
 
   return function registerQuery(Alpine) {
     const cache = new QueryCache({
@@ -45,7 +70,10 @@ export function createQueryPlugin(
       adapter: resolveAdapter(adapter, Alpine),
     });
 
-    Alpine.store("query", createQueryStore(cache));
+    guardStore(Alpine, storeKey, createQueryStore(cache), "query-adapter-alpine", {
+      override: true,
+      silent: true,
+    });
 
     const augmented = Alpine as AlpineType.Alpine & {
       cleanup?(callback: () => void): void;

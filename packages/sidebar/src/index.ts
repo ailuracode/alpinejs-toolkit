@@ -56,4 +56,4 @@ export type {
   SidebarStore,
 } from "./types";
 // --- Public constants ------------------------------------------------
-export { DEFAULT_SIDEBAR_STORAGE_KEY } from "./types";
+export { DEFAULT_SIDEBAR_STORAGE_KEY, DEFAULT_SIDEBAR_STORE_KEY } from "./types";

@@ -18,6 +18,7 @@
  * Alpine APIs.
  */
 
+import { guardDirective } from "@ailuracode/alpine-core";
 import type { Alpine } from "alpinejs";
 import {
   clearTransferredAttributes,
@@ -32,9 +33,7 @@ import type {
   ChildPluginCallback,
   ChildPluginOptions,
 } from "./types";
-
-/** Key under which `Alpine.directive(...)` registers the unwrap pass. */
-const CHILD_DIRECTIVE_KEY = "child";
+import { DEFAULT_CHILD_DIRECTIVE_KEY } from "./types";
 
 /**
  * Plugin factory — returns the `Alpine.plugin()` callback. Pass
@@ -43,6 +42,8 @@ const CHILD_DIRECTIVE_KEY = "child";
  * integration contract.
  */
 export function childPlugin(options: ChildPluginOptions = {}): ChildPluginCallback {
+  const directiveKey = options.directiveKey ?? DEFAULT_CHILD_DIRECTIVE_KEY;
+
   return function registerChild(alpine: Alpine): void {
     // Narrow the base Alpine runtime to the toolkit's typed view.
     // The cast is the only `as unknown as` in this file — every
@@ -50,7 +51,7 @@ export function childPlugin(options: ChildPluginOptions = {}): ChildPluginCallba
     const Alpine = alpine as unknown as ChildAlpine;
     const processedWrappers = new WeakSet<Element>();
 
-    Alpine.addInitSelector(() => `[${Alpine.prefixed(CHILD_DIRECTIVE_KEY)}]`);
+    Alpine.addInitSelector(() => `[${Alpine.prefixed(directiveKey)}]`);
 
     Alpine.interceptInit((el: Element, skip: () => void) => {
       const config = parseChildDirective(el);
@@ -115,16 +116,21 @@ export function childPlugin(options: ChildPluginOptions = {}): ChildPluginCallba
       });
     });
 
-    Alpine.directive(CHILD_DIRECTIVE_KEY, () => {
-      // Unwrap runs in interceptInit before other directives on the wrapper.
-    }).before("ignore");
+    const directiveChain = guardDirective(
+      Alpine,
+      directiveKey,
+      () => {
+        // Unwrap runs in interceptInit before other directives on the wrapper.
+        return {};
+      },
+      "child"
+    );
 
-    // `options.id` is currently unused at the plugin level — the
-    // directive auto-tracks each wrapper via `processedWrappers`. The
-    // field is reserved for future cross-cutting configuration
-    // (logging hooks, scoped mutation observers, etc.). Reference the
-    // parameter to keep the lint rule happy and signal intent.
-    void options;
+    // Schedule the unwrap pass before `x-ignore` so the wrapper is
+    // hidden before any directive evaluates against it.
+    if (directiveChain && typeof (directiveChain as { before?: unknown }).before === "function") {
+      (directiveChain as { before: (modifier: string) => unknown }).before("ignore");
+    }
   };
 }
 

@@ -112,7 +112,18 @@ export interface CreateMediaOptions<Name extends string = string> {
    * `createSingletonScope()`.
    */
   readonly scope?: SingletonScope;
+  /**
+   * `$store.media` store key the Alpine plugin registers under.
+   * Defaults to {@link DEFAULT_MEDIA_STORE_KEY}. Set when the host
+   * already owns a `media` store or another toolkit plugin would
+   * collide on that name — the rename avoids the collision without
+   * touching the controller.
+   */
+  readonly storeKey?: string;
 }
+
+/** Default `$store.media` key registered by {@link mediaPlugin}. */
+export const DEFAULT_MEDIA_STORE_KEY = "media";
 
 /**
  * Public, framework-agnostic manager returned by {@link createMedia}.

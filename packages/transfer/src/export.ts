@@ -1,4 +1,6 @@
+import { guardMagic } from "@ailuracode/alpine-core";
 import type AlpineType from "alpinejs";
+import { DEFAULT_TRANSFER_EXPORT_KEY } from "./types.js";
 
 export type ExportOptions = {
   filename?: string;
@@ -137,5 +139,5 @@ export function createExportMagic(): ExportMagic {
 
 /** Registers callable `$export` magic on Alpine. */
 export function registerExportMagic(Alpine: AlpineType.Alpine): void {
-  Alpine.magic("export", () => createExportMagic());
+  guardMagic(Alpine, DEFAULT_TRANSFER_EXPORT_KEY, () => createExportMagic(), "transfer");
 }

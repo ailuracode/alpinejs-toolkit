@@ -71,3 +71,25 @@ export const DEFAULT_IDLE_THRESHOLD = 60_000;
 
 /** Minimum idle threshold enforced by the browser (60 s). */
 export const MIN_IDLE_THRESHOLD = 60_000;
+
+/** Options accepted by the attention plugin factory. */
+export interface CreateAttentionPluginOptions {
+  /**
+   * `$wakelock` magic key the Alpine plugin registers under. Defaults
+   * to {@link DEFAULT_ATTENTION_WAKELOCK_KEY}. Set when the host
+   * already owns a `wakelock` magic or another toolkit plugin would
+   * collide on that name — the rename avoids the collision without
+   * touching the underlying controller.
+   */
+  readonly wakelockKey?: string;
+  /**
+   * `$idle` magic key the Alpine plugin registers under. Defaults to
+   * {@link DEFAULT_ATTENTION_IDLE_KEY}.
+   */
+  readonly idleKey?: string;
+}
+
+/** Default `$wakelock` magic key registered by {@link attentionPlugin}. */
+export const DEFAULT_ATTENTION_WAKELOCK_KEY = "wakelock";
+/** Default `$idle` magic key registered by {@link attentionPlugin}. */
+export const DEFAULT_ATTENTION_IDLE_KEY = "idle";

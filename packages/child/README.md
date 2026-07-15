@@ -126,6 +126,16 @@ This package registers a single directive:
 
 No stores or magics are added.
 
+### Avoiding name collisions
+
+If your application already owns an `x-child` directive — or another toolkit plugin registers on that name — rename the integration surface without touching the unwrap pass:
+
+```ts
+Alpine.plugin(childPlugin({ directiveKey: "unwrap" })); // → x-unwrap
+```
+
+The exposed constant `DEFAULT_CHILD_DIRECTIVE_KEY` keeps the rename discoverable from TypeScript.
+
 ## License
 
 MIT

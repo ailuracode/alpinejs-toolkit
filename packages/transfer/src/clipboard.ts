@@ -1,4 +1,6 @@
+import { guardMagic } from "@ailuracode/alpine-core";
 import type AlpineType from "alpinejs";
+import { DEFAULT_TRANSFER_CLIPBOARD_KEY } from "./types.js";
 
 export const CLIPBOARD_COPY_MODES = ["auto", "clipboard", "legacy"] as const;
 
@@ -108,5 +110,5 @@ export const copyToClipboard: CopyToClipboard = async (
 
 /** Registers callable `$clipboard` magic on Alpine. */
 export function registerClipboardMagic(Alpine: AlpineType.Alpine): void {
-  Alpine.magic("clipboard", () => copyToClipboard);
+  guardMagic(Alpine, DEFAULT_TRANSFER_CLIPBOARD_KEY, () => copyToClipboard, "transfer");
 }

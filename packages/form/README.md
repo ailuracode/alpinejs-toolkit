@@ -67,6 +67,21 @@ await form.handleSubmit();
 | **Factory** | `createForm({ defaultValues, validators, onSubmit })` — TanStack Form-like API |
 | **Schema** | Standard Schema v1 (Zod 3.24+, Valibot, ArkType) via `validators` or `createStandardSchemaAdapter()` |
 | **Headless** | `createFormController()` / `FormController` |
+| **Renames** | `formPlugin({ storeKey, magicKey })` — rename to avoid a collision |
+
+### Avoiding name collisions
+
+If your application already owns a `$store.form` or another toolkit plugin registers on that name, rename the integration surface without touching the controller:
+
+```ts
+Alpine.plugin(formPlugin({
+  storeKey: "formkit",         // → $store.formkit
+  // magicKey follows storeKey by default → $formkit
+  magicKey: "formState",       // explicit override → $formState
+}));
+```
+
+`storeKey` is the only argument most hosts need. `magicKey` moves independently only when both names must be freed. The exposed constants `DEFAULT_FORM_STORE_KEY` and `DEFAULT_FORM_MAGIC_KEY` keep the rename discoverable from TypeScript.
 
 ## Standalone usage (no Alpine)
 

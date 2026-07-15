@@ -14,6 +14,7 @@
  * ```
  */
 
+import { bridgeControllerDirective, bridgeControllerStore } from "@ailuracode/alpine-core";
 import type { Alpine } from "alpinejs";
 import { GestureController } from "./controller";
 import type {
@@ -28,8 +29,11 @@ import type {
   GestureState,
   GestureStore,
 } from "./types";
-
-const GESTURE_STORE_KEY = "gesture";
+import {
+  DEFAULT_GESTURE_DIRECTIVE_KEY,
+  DEFAULT_GESTURE_MAGIC_KEY,
+  DEFAULT_GESTURE_STORE_KEY,
+} from "./types";
 
 /**
  * Mutable view of {@link GestureStore} used by the adapter to write
@@ -180,28 +184,40 @@ function createDirectiveHandler(
  * Plugin factory — returns the `Alpine.plugin()` callback.
  */
 export function gesturePlugin(options: GestureOptions = {}): GesturePluginCallback {
+  // Resolve the registration keys once. The magic follows the store
+  // so renames stay in sync: a single `storeKey` is enough when both
+  // must move out of a collided name. The directive key is independent
+  // because consumers may want a different `x-*` for a renamed store.
+  const storeKey = options.storeKey ?? DEFAULT_GESTURE_STORE_KEY;
+  const magicKey = options.magicKey ?? options.storeKey ?? DEFAULT_GESTURE_MAGIC_KEY;
+  const directiveKey = options.directiveKey ?? DEFAULT_GESTURE_DIRECTIVE_KEY;
+
+  const directiveHandler = createDirectiveHandler(options);
+
   return function registerGesture(alpine: Alpine): void {
     const Alpine = alpine as unknown as GestureAlpine;
     const controller = new GestureController(options);
 
-    const store = createGestureStore(controller);
-    Alpine.store(GESTURE_STORE_KEY, store);
-    const reactiveStore = Alpine.store(GESTURE_STORE_KEY) as GestureStore;
-
-    const unsubscribe = controller.on("change", (detail: GestureChangeDetail) => {
-      syncGestureStore(reactiveStore, detail.state);
+    bridgeControllerStore<GestureStore, GestureController>({
+      alpine: Alpine,
+      storeKey,
+      magicKey,
+      store: createGestureStore(controller),
+      controller,
+      packageName: "gesture",
+      subscribe: (reactiveStore) =>
+        controller.on("change", (detail: GestureChangeDetail) => {
+          syncGestureStore(reactiveStore, detail.state);
+        }),
     });
 
-    Alpine.directive?.("gesture" as never, createDirectiveHandler(options) as never);
-
-    Alpine.magic(GESTURE_STORE_KEY, () => reactiveStore);
-
-    if (typeof Alpine.cleanup === "function") {
-      Alpine.cleanup(() => {
-        unsubscribe();
-        controller.destroy();
-      });
-    }
+    bridgeControllerDirective({
+      alpine: Alpine,
+      directiveKey,
+      directive: directiveHandler as never,
+      controller,
+      packageName: "gesture",
+    });
   };
 }
 

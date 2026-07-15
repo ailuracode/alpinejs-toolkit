@@ -54,7 +54,18 @@ export interface TooltipStore {
 /** Options accepted by the tooltip plugin factory. */
 export interface CreateTooltipOptions {
   readonly id?: string;
+  /**
+   * `$store.tooltip` store key the Alpine plugin registers under.
+   * Defaults to {@link DEFAULT_TOOLTIP_STORE_KEY}. Set when the host
+   * already owns a `tooltip` store or another toolkit plugin would
+   * collide on that name — the rename avoids the collision without
+   * touching the controller.
+   */
+  readonly storeKey?: string;
 }
+
+/** Default `$store.tooltip` key registered by {@link tooltipPlugin}. */
+export const DEFAULT_TOOLTIP_STORE_KEY = "tooltip";
 
 /** Typed view of `Alpine` the tooltip plugin uses internally. */
 export type TooltipAlpine = Alpine<{ tooltip: TooltipStore }> & {

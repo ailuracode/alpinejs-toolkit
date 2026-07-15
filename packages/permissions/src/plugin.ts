@@ -1,18 +1,17 @@
+import { bridgeControllerStore } from "@ailuracode/alpine-core";
 import type AlpineType from "alpinejs";
 import { createPermissions, type PermissionsController } from "./controller.js";
 import type {
   PermissionAdapter,
   PermissionSnapshot,
-  PermissionsMagic,
   PermissionsPluginOptions,
   PermissionsStore,
 } from "./types.js";
+import { DEFAULT_PERMISSIONS_MAGIC_KEY, DEFAULT_PERMISSIONS_STORE_KEY } from "./types.js";
 
 interface PermissionsAlpine extends AlpineType.Alpine {
   cleanup?(callback: () => void): void;
 }
-
-const PERMISSIONS_STORE_KEY = "permissions";
 
 function syncRegistry(
   registry: Record<string, PermissionSnapshot>,
@@ -79,6 +78,12 @@ function registerPermissions(
   Alpine: PermissionsAlpine,
   options: PermissionsPluginOptions = {}
 ): PermissionsController {
+  // Resolve the registration keys once. The magic follows the store
+  // so renames stay in sync: a single `storeKey` is enough when both
+  // must move out of a collided name.
+  const storeKey = options.storeKey ?? DEFAULT_PERMISSIONS_STORE_KEY;
+  const magicKey = options.magicKey ?? options.storeKey ?? DEFAULT_PERMISSIONS_MAGIC_KEY;
+
   const controller = options.controller ?? createPermissions();
   const adapters = options.adapters ?? [];
 
@@ -86,27 +91,27 @@ function registerPermissions(
     controller.register(adapter);
   }
 
-  const store = createPermissionsStore(controller);
-  Alpine.store(PERMISSIONS_STORE_KEY, store);
-  const reactiveStore = Alpine.store(PERMISSIONS_STORE_KEY) as PermissionsStore;
+  bridgeControllerStore<PermissionsStore, PermissionsController>({
+    alpine: Alpine,
+    storeKey,
+    magicKey,
+    store: createPermissionsStore(controller),
+    controller,
+    packageName: "permissions",
+    subscribe: (reactiveStore) => {
+      const changeUnsub = controller.on("change", () => {
+        syncReactiveRegistry(reactiveStore, controller);
+      });
 
-  controller.on("change", () => {
-    syncReactiveRegistry(reactiveStore, controller);
+      // Query and observe current permission state without prompting.
+      for (const name of Object.keys(controller.getRegistry())) {
+        void controller.query(name);
+        void controller.watch(name);
+      }
+
+      return changeUnsub;
+    },
   });
-
-  Alpine.magic(PERMISSIONS_STORE_KEY, () => reactiveStore as PermissionsMagic);
-
-  // Query and observe current permission state without prompting.
-  for (const name of Object.keys(controller.getRegistry())) {
-    void controller.query(name);
-    void controller.watch(name);
-  }
-
-  if (typeof Alpine.cleanup === "function") {
-    Alpine.cleanup(() => {
-      controller.destroy();
-    });
-  }
 
   return controller;
 }

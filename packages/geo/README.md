@@ -18,6 +18,20 @@ Alpine.plugin(geo);
 Alpine.start();
 ```
 
+### Avoiding name collisions
+
+If your application already owns a `$store.geo` or another toolkit plugin registers on that name, rename the integration surface without touching the controller:
+
+```ts
+Alpine.plugin(geoPlugin({
+  storeKey: "location",        // → $store.location
+  // magicKey follows storeKey by default → $location
+  magicKey: "geoState",        // explicit override → $geoState
+}));
+```
+
+`storeKey` is the only argument most hosts need. `magicKey` moves independently only when both names must be freed. The exposed constants `DEFAULT_GEO_STORE_KEY` and `DEFAULT_GEO_MAGIC_KEY` keep the rename discoverable from TypeScript.
+
 ## Store API
 
 ### State

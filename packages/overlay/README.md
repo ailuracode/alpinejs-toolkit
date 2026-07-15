@@ -33,6 +33,16 @@ Template:
 </template>
 ```
 
+### Avoiding name collisions
+
+If your application already owns a `$store.overlay` — or another toolkit plugin registers on that name — rename the integration surface without touching the controller:
+
+```ts
+Alpine.plugin(overlayPlugin({ storeKey: "stack" })); // → $store.stack
+```
+
+The exposed constant `DEFAULT_OVERLAY_STORE_KEY` keeps the rename discoverable from TypeScript.
+
 ## API
 
 ### `$store.overlay`

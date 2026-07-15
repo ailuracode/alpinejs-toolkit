@@ -62,6 +62,7 @@ export {
 // --- Controller-backed Alpine adapter lifecycle bridge -------------------
 export type {
   AlpineLifecycleHost,
+  BridgeControllerDirectiveOptions,
   ControllerStoreBridge,
   ControllerStoreBridgeOptions,
   Destroyable,
@@ -69,6 +70,7 @@ export type {
   WireControllerLifecycleOptions,
 } from "./lifecycle-bridge";
 export {
+  bridgeControllerDirective,
   bridgeControllerStore,
   registerReactiveStore,
   registerStoreMagic,
@@ -83,6 +85,20 @@ export {
   pluginCallback,
   pluginLoader,
 } from "./loader";
+// --- Registration guards (collision detection for Alpine.store / magic / directive) ---
+export type {
+  GuardedStoreResult,
+  RegistrationErrorCode,
+  RegistrationGuardOptions,
+  RegistrationKind,
+} from "./registration";
+export {
+  guardDirective,
+  guardMagic,
+  guardStore,
+  RegistrationError,
+  resetRegistrationTracking,
+} from "./registration";
 // --- Plugin registry -----------------------------------------------------
 export {
   getRegisteredPlugin,

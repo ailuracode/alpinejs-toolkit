@@ -39,6 +39,17 @@ Alpine.plugin(anchor);
 |--------|---------|-------------|
 | `exclusive` | `true` | When opening a menu, close all other open menus |
 | `scroll` | — | Optional `@ailuracode/alpine-scroll` store locked while at least one menu is open |
+| `storeKey` | `"menu"` | Alpine store key (see [Avoiding name collisions](#avoiding-name-collisions)) |
+
+### Avoiding name collisions
+
+If your application already owns a `$store.menu` — or another toolkit plugin registers on that name — rename the integration surface without touching the controller:
+
+```ts
+Alpine.plugin(menuPlugin({ storeKey: "dropdown" })); // → $store.dropdown
+```
+
+The exposed constant `DEFAULT_MENU_STORE_KEY` keeps the rename discoverable from TypeScript.
 
 ## Exclusive mode
 

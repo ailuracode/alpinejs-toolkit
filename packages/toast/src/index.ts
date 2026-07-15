@@ -64,6 +64,7 @@ export type {
   ToastEventPayload,
   ToastItem,
   ToastMagic,
+  ToastMagicKey,
   ToastManager,
   ToastPayload,
   ToastPayloadWithoutVariant,
@@ -80,4 +81,4 @@ export type {
   Unsubscribe,
 } from "./types";
 // --- Public constants ----------------------------------------------------
-export { TOAST_STORE_KEY } from "./types";
+export { TOAST_MAGIC_KEY, TOAST_STORE_KEY } from "./types";

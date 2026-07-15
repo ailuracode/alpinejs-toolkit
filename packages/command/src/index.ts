@@ -38,3 +38,8 @@ export type {
   CommandStoreConfig,
   NormalizedCommandOptions,
 } from "./types.js";
+// --- Public constants ------------------------------------------------
+export {
+  DEFAULT_COMMAND_MAGIC_KEY,
+  DEFAULT_COMMAND_STORE_KEY,
+} from "./types.js";

@@ -69,6 +69,16 @@ controller.on("rangeChange", ({ virtualItems }) => {
 });
 ```
 
+### Avoiding name collisions
+
+If your application already owns a `$store.virtual` — or another toolkit plugin registers on that name — rename the integration surface without touching the controller:
+
+```ts
+Alpine.plugin(virtualPlugin({ storeKey: "windowed" })); // → $store.windowed
+```
+
+The exposed constant `DEFAULT_VIRTUAL_STORE_KEY` keeps the rename discoverable from TypeScript.
+
 ## Accessibility
 
 Offscreen rows are not in the DOM. Do not move keyboard focus to unmounted items — use `scrollToIndex` to bring the active row into the visible range before focusing.

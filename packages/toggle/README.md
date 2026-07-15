@@ -83,6 +83,16 @@ Alpine.plugin(togglePlugin());
 Alpine.start();
 ```
 
+### Avoiding name collisions
+
+If your application already owns a `$toggle` magic or another toolkit plugin registers on that name, rename the integration surface without touching the controller:
+
+```ts
+Alpine.plugin(togglePlugin({ magicKey: "switch" })); // → $switch
+```
+
+The exposed constant `DEFAULT_TOGGLE_MAGIC_KEY` keeps the rename discoverable from TypeScript.
+
 ```html
 <div x-data="{ power: $toggle({ states: { on: 'on', off: 'off' } }) }">
   <p>Power: <strong x-text="power.value"></strong></p>

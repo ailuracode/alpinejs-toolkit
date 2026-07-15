@@ -36,6 +36,16 @@ Callable factory:
 
 Each call returns a new object with its own month, selection, and grid data.
 
+### Avoiding name collisions
+
+If your application already owns a `$calendar` magic or another toolkit plugin registers on that name, rename the integration surface without touching the controller:
+
+```ts
+Alpine.plugin(calendarPlugin({ magicKey: "datePicker" })); // → $datePicker
+```
+
+The exposed constant `DEFAULT_CALENDAR_MAGIC_KEY` keeps the rename discoverable from TypeScript.
+
 ## Options
 
 | Option | Type | Default | Description |

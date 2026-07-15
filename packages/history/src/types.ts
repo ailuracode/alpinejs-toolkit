@@ -130,6 +130,7 @@ export type HistoryAlpine = Alpine<{ history: HistoryStore<unknown> }> & {
 /** Resolved plugin configuration. */
 export type ResolvedHistoryPluginConfig = {
   readonly storeKey: string;
+  readonly magicKey: string;
   readonly initialValue?: unknown;
   readonly limit: number;
   readonly maxSize?: number;

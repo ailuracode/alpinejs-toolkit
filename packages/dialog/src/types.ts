@@ -93,7 +93,18 @@ export interface CreateDialogOptions {
   readonly closeOnEscape?: boolean;
   readonly closeOnOutsideClick?: boolean;
   readonly scrollLock?: boolean;
+  /**
+   * `$store.dialog` store key the Alpine plugin registers under.
+   * Defaults to {@link DEFAULT_DIALOG_STORE_KEY}. Set when the host
+   * already owns a `dialog` store or another toolkit plugin would
+   * collide on that name — the rename avoids the collision without
+   * touching the controller.
+   */
+  readonly storeKey?: string;
 }
+
+/** Default `$store.dialog` key registered by {@link dialogPlugin}. */
+export const DEFAULT_DIALOG_STORE_KEY = "dialog";
 
 /** Typed view of `Alpine` the dialog plugin uses internally. */
 export type DialogAlpine = Alpine<{ dialog: DialogStore }> & {

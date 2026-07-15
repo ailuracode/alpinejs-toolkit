@@ -57,8 +57,19 @@ dialogPlugin({
   closeOnOutsideClick?: boolean,  // default: true
   scrollLock?: boolean,           // default: true
   scroll?: ScrollStore,           // optional @ailuracode/alpine-scroll store
+  storeKey?: string,              // Alpine store key (default: "dialog")
 });
 ```
+
+### Avoiding name collisions
+
+If your application already owns a `$store.dialog` — or another toolkit plugin registers on that name — rename the integration surface without touching the controller:
+
+```ts
+Alpine.plugin(dialogPlugin({ storeKey: "modal" })); // → $store.modal
+```
+
+The exposed constant `DEFAULT_DIALOG_STORE_KEY` keeps the rename discoverable from TypeScript.
 
 ## Standalone usage (no Alpine)
 

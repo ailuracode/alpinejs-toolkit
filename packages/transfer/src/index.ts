@@ -46,3 +46,9 @@ export type {
   ShareMagic,
   TransferPluginOptions,
 } from "./types.js";
+// --- Public constants ---------------------------------------------------
+export {
+  DEFAULT_TRANSFER_CLIPBOARD_KEY,
+  DEFAULT_TRANSFER_EXPORT_KEY,
+  DEFAULT_TRANSFER_SHARE_KEY,
+} from "./types.js";

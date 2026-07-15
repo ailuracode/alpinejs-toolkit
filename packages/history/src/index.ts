@@ -8,6 +8,7 @@ export { HistoryError, type HistoryErrorCode } from "./error.js";
 export type { HistoryChangeDetail, HistoryEvents } from "./events.js";
 export {
   createHistoryMagic,
+  DEFAULT_HISTORY_MAGIC_KEY,
   HISTORY_STORE_KEY,
   historyOptions,
   historyPlugin,

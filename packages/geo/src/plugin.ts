@@ -5,55 +5,74 @@
  * `$store.geo` and the `$geo` magic.
  */
 
+import { bridgeControllerStore } from "@ailuracode/alpine-core";
 import type { Alpine } from "alpinejs";
 import { GeoController } from "./controller";
-import type { GeoAlpine, GeoPluginCallback, GeoStore } from "./types";
-
-/** Key under which the geo store is registered on `$store`. */
-const GEO_STORE_KEY = "geo";
+import {
+  type CreateGeoOptions,
+  DEFAULT_GEO_MAGIC_KEY,
+  DEFAULT_GEO_STORE_KEY,
+  type GeoAlpine,
+  type GeoPluginCallback,
+  type GeoStore,
+} from "./types";
 
 /**
  * Plugin factory — returns the `Alpine.plugin()` callback.
  * Registers `$store.geo` and the `$geo` magic, syncing controller
  * state into the reactive store on every event.
  */
-export function geoPlugin(): GeoPluginCallback {
+export function geoPlugin(options: CreateGeoOptions = {}): GeoPluginCallback {
+  // Resolve the registration keys once. The magic follows the store
+  // so renames stay in sync: a single `storeKey` is enough when both
+  // must move out of a collided name.
+  const storeKey = options.storeKey ?? DEFAULT_GEO_STORE_KEY;
+  const magicKey = options.magicKey ?? options.storeKey ?? DEFAULT_GEO_MAGIC_KEY;
+
   return function registerGeo(alpine: Alpine): void {
     const Alpine = alpine as unknown as GeoAlpine;
     const controller = new GeoController();
-
-    // Build a mutable store object that delegates to the controller.
     const store: GeoStore = controller.toStore();
-    Alpine.store(GEO_STORE_KEY, store);
-    const reactiveStore = Alpine.store(GEO_STORE_KEY) as unknown as GeoStore;
 
-    // Sync controller state into the reactive store on every event.
-    const sync = (): void => {
-      reactiveStore.latitude = controller.latitude;
-      reactiveStore.longitude = controller.longitude;
-      reactiveStore.accuracy = controller.accuracy;
-      reactiveStore.altitude = controller.altitude;
-      reactiveStore.altitudeAccuracy = controller.altitudeAccuracy;
-      reactiveStore.heading = controller.heading;
-      reactiveStore.speed = controller.speed;
-      reactiveStore.timestamp = controller.timestamp;
-      reactiveStore.error = controller.error;
-      reactiveStore.errorCode = controller.errorCode;
-      reactiveStore.loading = controller.loading;
-      reactiveStore.watching = controller.watching;
-    };
+    bridgeControllerStore<GeoStore, GeoController>({
+      alpine: Alpine,
+      storeKey,
+      magicKey,
+      store,
+      controller,
+      packageName: "geo",
+      subscribe: (reactiveStore) => {
+        // Sync controller state into the reactive store on every event.
+        const sync = (): void => {
+          reactiveStore.latitude = controller.latitude;
+          reactiveStore.longitude = controller.longitude;
+          reactiveStore.accuracy = controller.accuracy;
+          reactiveStore.altitude = controller.altitude;
+          reactiveStore.altitudeAccuracy = controller.altitudeAccuracy;
+          reactiveStore.heading = controller.heading;
+          reactiveStore.speed = controller.speed;
+          reactiveStore.timestamp = controller.timestamp;
+          reactiveStore.error = controller.error;
+          reactiveStore.errorCode = controller.errorCode;
+          reactiveStore.loading = controller.loading;
+          reactiveStore.watching = controller.watching;
+        };
 
-    controller.on("position", sync);
-    controller.on("error", sync);
-    controller.on("watchStart", sync);
-    controller.on("watchStop", sync);
-    controller.on("update", sync);
+        const positionUnsub = controller.on("position", sync);
+        const errorUnsub = controller.on("error", sync);
+        const watchStartUnsub = controller.on("watchStart", sync);
+        const watchStopUnsub = controller.on("watchStop", sync);
+        const updateUnsub = controller.on("update", sync);
 
-    Alpine.magic(GEO_STORE_KEY, () => reactiveStore);
-
-    if (typeof Alpine.cleanup === "function") {
-      Alpine.cleanup(() => controller.destroy());
-    }
+        return (): void => {
+          positionUnsub();
+          errorUnsub();
+          watchStartUnsub();
+          watchStopUnsub();
+          updateUnsub();
+        };
+      },
+    });
   };
 }
 

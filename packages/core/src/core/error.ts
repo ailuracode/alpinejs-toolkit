@@ -12,7 +12,9 @@ export type ToolkitErrorCode =
   | "PLUGIN_LOADER_INVALID"
   | "PLUGIN_INIT_IN_FLIGHT"
   // Lifecycle
-  | "CONTROLLER_DESTROYED";
+  | "CONTROLLER_DESTROYED"
+  // Registration guards (store / magic / directive collision detection)
+  | "REGISTRATION_COLLISION";
 
 export class ToolkitError extends Error {
   readonly code: ToolkitErrorCode;

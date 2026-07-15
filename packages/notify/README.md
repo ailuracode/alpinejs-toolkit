@@ -34,6 +34,16 @@ Alpine.plugin(
 );
 ```
 
+### Avoiding name collisions
+
+If your application already owns a `$notify` magic or another toolkit plugin registers on that name, rename the integration surface without touching the controller:
+
+```ts
+Alpine.plugin(notifyPlugin({ magicKey: "alerts" })); // → $alerts
+```
+
+The exposed constant `DEFAULT_NOTIFY_MAGIC_KEY` keeps the rename discoverable from TypeScript.
+
 ## Magic API
 
 | Member | Type | Description |
