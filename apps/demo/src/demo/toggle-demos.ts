@@ -7,6 +7,19 @@ import type { AlpineInstance } from "../types/alpine.js";
  * these factories cover the `createToggle()` path documented in the
  * README's "Standalone usage" section so the demo exercises both
  * integration modes (Alpine magic + framework-agnostic controller).
+ *
+ * The controller is held in a closure (NOT as a reactive field on
+ * the data scope) because Alpine.reactive wraps nested objects —
+ * storing the controller on `this` would cause every method call
+ * (`controller.toggle()`, `controller.destroy()`) to run with the
+ * Alpine Proxy as `this`, and the controller's private-field
+ * accesses (`this.#destroyed`, `this.#value`) would throw because
+ * the Proxy is not a ToggleController instance.
+ *
+ * Instead, the factory subscribes to the controller's `change` event
+ * and mirrors the new value onto the Alpine data fields — those
+ * writes trigger Alpine's reactive proxy and re-render the bindings.
+ * `cycle()` / `reset()` close over the same controller reference.
  */
 
 type YesNo = "yes" | "no";
@@ -15,7 +28,6 @@ type YesNoUnknown = YesNo | "unknown";
 type StandaloneBinaryData = {
   power: YesNo;
   isOn: boolean;
-  controller: ReturnType<typeof createToggle<"yes", "no">> | null;
   cycle(): void;
   reset(): void;
   init(): void;
@@ -24,31 +36,27 @@ type StandaloneBinaryData = {
 type StandaloneTernaryData = {
   answer: YesNoUnknown;
   isUnknown: boolean;
-  controller: ReturnType<typeof createToggle<"yes", "no", "unknown">> | null;
   cycle(): void;
   reset(): void;
   init(): void;
 };
 
 export function registerToggleDemos(Alpine: AlpineInstance): void {
-  Alpine.data(
-    "toggleStandaloneDemo",
-    (): StandaloneBinaryData => ({
+  Alpine.data("toggleStandaloneDemo", (): StandaloneBinaryData => {
+    let controller: ReturnType<typeof createToggle<"yes", "no">> | null = null;
+    return {
       power: "no",
       isOn: false,
-      controller: null,
       init(this: StandaloneBinaryData) {
-        const controller = createToggle<"yes", "no">({
+        controller = createToggle<"yes", "no">({
           states: { on: "yes", off: "no" },
           initial: "no",
         });
         controller.mount();
 
-        // Subscribe to the controller's typed `change` event and mirror
-        // the value onto the Alpine data fields. This is the same
-        // bridge pattern the plugin uses internally to keep its facade
-        // in sync — see `internal/reactive-adapter.ts` for the
-        // Alpine-side equivalent.
+        // Mirror the controller's `change` event onto the Alpine
+        // data fields. Same bridge pattern the plugin uses internally
+        // — see `internal/reactive-adapter.ts`.
         controller.on("change", (detail) => {
           // `detail.current` carries the controller's wide union
           // (`TA | TB | TN`); for this binary case TN is `undefined`,
@@ -56,26 +64,23 @@ export function registerToggleDemos(Alpine: AlpineInstance): void {
           this.power = detail.current as YesNo;
           this.isOn = detail.current === "yes";
         });
+      },
+      cycle() {
+        controller?.toggle();
+      },
+      reset() {
+        controller?.reset();
+      },
+    };
+  });
 
-        this.controller = controller;
-      },
-      cycle(this: StandaloneBinaryData) {
-        this.controller?.toggle();
-      },
-      reset(this: StandaloneBinaryData) {
-        this.controller?.reset();
-      },
-    })
-  );
-
-  Alpine.data(
-    "toggleStandaloneTernaryDemo",
-    (): StandaloneTernaryData => ({
+  Alpine.data("toggleStandaloneTernaryDemo", (): StandaloneTernaryData => {
+    let controller: ReturnType<typeof createToggle<"yes", "no", "unknown">> | null = null;
+    return {
       answer: "unknown",
       isUnknown: true,
-      controller: null,
       init(this: StandaloneTernaryData) {
-        const controller = createToggle<"yes", "no", "unknown">({
+        controller = createToggle<"yes", "no", "unknown">({
           states: { on: "yes", off: "no", indeterminate: "unknown" },
           initial: "unknown",
         });
@@ -85,15 +90,13 @@ export function registerToggleDemos(Alpine: AlpineInstance): void {
           this.answer = detail.current;
           this.isUnknown = detail.current === "unknown";
         });
-
-        this.controller = controller;
       },
-      cycle(this: StandaloneTernaryData) {
-        this.controller?.toggle();
+      cycle() {
+        controller?.toggle();
       },
-      reset(this: StandaloneTernaryData) {
-        this.controller?.reset();
+      reset() {
+        controller?.reset();
       },
-    })
-  );
+    };
+  });
 }
