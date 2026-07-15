@@ -2,54 +2,6 @@
 
 Framework-agnostic state machine for Alpine.js. Two required opposite states (`on`, `off`) and an optional independent state (`indeterminate`). Returns a reactive, evented, lifecycle-aware controller per call — no DOM, no storage, no system observers. Built on `@ailuracode/alpine-core`'s `EventEmitter`.
 
-## Architecture
-
-```mermaid
-flowchart TD
-    entry["$toggle()<br/>(plugin.ts)"]:::entry
-
-    controller["ToggleController<br/>(controller.ts)"]:::module
-    facade["buildReactiveToggleView<br/>(internal/reactive-adapter.ts)"]:::module
-    validation["validation<br/>(internal/validation.ts)"]:::module
-    events["ToggleEvents<br/>(events.ts)"]:::module
-
-    classDef entry fill:#fef3c7,stroke:#b45309,color:#1f2937
-    classDef module fill:#dbeafe,stroke:#1d4ed8,color:#1f2937
-
-    entry --> facade
-    facade --> controller
-    controller --> validation
-    controller --> events
-```
-
-The core is engine-free: no Alpine import, no DOM mutation, no `window`/`document`/`localStorage` access at any time. The Alpine integration is a thin adapter that wires the controller into the `$toggle` magic.
-
-### Reactivity wiring
-
-`ToggleController` stores state in JS private fields (`#value`, `#hasTernary`, `#destroyed`, `#mounted`) — storage locations Alpine's reactive `Proxy` cannot intercept. To make the Alpine-facing instance truly reactive, the plugin builds a small **mutable facade** between the controller and `Alpine.reactive`:
-
-1. `buildReactiveToggleView(controller)` constructs a plain object whose commands (`set`, `toggle`, `next`, `reset`) delegate to the controller. `setSilently` (hydration path) writes the new value directly because it does not emit a `change` event.
-2. `Alpine.reactive(view)` wraps the facade. Every command goes through the controller; the controller emits a typed `change` event synchronously.
-3. The plugin's bridge subscription — closing over the **reactive proxy**, not the raw facade — writes `reactive.value = detail.current` once per transition. The write fires Alpine's `set` trap, so every `x-text` / `x-bind` / `x-show` binding re-renders.
-
-Each transition fires exactly one `set` trap. The facade's lifecycle flags (`isMounted`, `isDestroyed`, `id`) are getters that delegate to the controller so they always reflect current state.
-
-## State model
-
-Two cases, one shape:
-
-| Field                    | Meaning                                                              | Required                                  |
-| ------------------------ | -------------------------------------------------------------------- | ----------------------------------------- |
-| `states.on`              | The first opposite state                                             | **yes** — binary case                     |
-| `states.off`             | The second opposite state                                            | **yes** — binary case                     |
-| `states.indeterminate`   | An independent third state (skipped by `toggle()`, walked by `next()`) | no — opt-in, only when genuinely needed   |
-| `initial`                | Starting value                                                       | optional — defaults to `on` (binary) or `indeterminate` (ternary) |
-| `id`                     | Stable identifier exposed through `controller.id`                    | optional — auto-generated as `toggle-<n>` |
-
-**The binary case is the default.** Most consumers only need `on` and `off`; that is what `toggle()`, `set()`, and `next()` cover. Add `indeterminate` only when the third value is genuinely outside the on/off opposition (tri-state checkboxes, `'loading'` placeholders, `'unknown'` answers).
-
-`toggle()` flips between `on` and `off`. From `indeterminate` it moves to `on` — never the other way around. `next()` advances through every configured state in declaration order (`on` → `off` → `indeterminate` → `on`).
-
 ## Install
 
 ```bash
@@ -137,6 +89,54 @@ Each `$toggle(options)` call returns an independent reactive facade backed by a 
   </button>
 </div>
 ```
+
+## Architecture
+
+```mermaid
+flowchart TD
+    entry["$toggle()<br/>(plugin.ts)"]:::entry
+
+    controller["ToggleController<br/>(controller.ts)"]:::module
+    facade["buildReactiveToggleView<br/>(internal/reactive-adapter.ts)"]:::module
+    validation["validation<br/>(internal/validation.ts)"]:::module
+    events["ToggleEvents<br/>(events.ts)"]:::module
+
+    classDef entry fill:#fef3c7,stroke:#b45309,color:#1f2937
+    classDef module fill:#dbeafe,stroke:#1d4ed8,color:#1f2937
+
+    entry --> facade
+    facade --> controller
+    controller --> validation
+    controller --> events
+```
+
+The core is engine-free: no Alpine import, no DOM mutation, no `window`/`document`/`localStorage` access at any time. The Alpine integration is a thin adapter that wires the controller into the `$toggle` magic.
+
+### Reactivity wiring
+
+`ToggleController` stores state in JS private fields (`#value`, `#hasTernary`, `#destroyed`, `#mounted`) — storage locations Alpine's reactive `Proxy` cannot intercept. To make the Alpine-facing instance truly reactive, the plugin builds a small **mutable facade** between the controller and `Alpine.reactive`:
+
+1. `buildReactiveToggleView(controller)` constructs a plain object whose commands (`set`, `toggle`, `next`, `reset`) delegate to the controller. `setSilently` (hydration path) writes the new value directly because it does not emit a `change` event.
+2. `Alpine.reactive(view)` wraps the facade. Every command goes through the controller; the controller emits a typed `change` event synchronously.
+3. The plugin's bridge subscription — closing over the **reactive proxy**, not the raw facade — writes `reactive.value = detail.current` once per transition. The write fires Alpine's `set` trap, so every `x-text` / `x-bind` / `x-show` binding re-renders.
+
+Each transition fires exactly one `set` trap. The facade's lifecycle flags (`isMounted`, `isDestroyed`, `id`) are getters that delegate to the controller so they always reflect current state.
+
+## State model
+
+Two cases, one shape:
+
+| Field                    | Meaning                                                              | Required                                  |
+| ------------------------ | -------------------------------------------------------------------- | ----------------------------------------- |
+| `states.on`              | The first opposite state                                             | **yes** — binary case                     |
+| `states.off`             | The second opposite state                                            | **yes** — binary case                     |
+| `states.indeterminate`   | An independent third state (skipped by `toggle()`, walked by `next()`) | no — opt-in, only when genuinely needed   |
+| `initial`                | Starting value                                                       | optional — defaults to `on` (binary) or `indeterminate` (ternary) |
+| `id`                     | Stable identifier exposed through `controller.id`                    | optional — auto-generated as `toggle-<n>` |
+
+**The binary case is the default.** Most consumers only need `on` and `off`; that is what `toggle()`, `set()`, and `next()` cover. Add `indeterminate` only when the third value is genuinely outside the on/off opposition (tri-state checkboxes, `'loading'` placeholders, `'unknown'` answers).
+
+`toggle()` flips between `on` and `off`. From `indeterminate` it moves to `on` — never the other way around. `next()` advances through every configured state in declaration order (`on` → `off` → `indeterminate` → `on`).
 
 ## Cleanup
 

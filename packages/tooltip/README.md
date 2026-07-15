@@ -14,6 +14,16 @@ Positioning (Floating UI via Alpine):
 pnpm add @alpinejs/anchor
 ```
 
+## Quick start
+
+```js
+import Alpine from "alpinejs";
+import { tooltipPlugin } from "@ailuracode/alpine-tooltip";
+
+Alpine.plugin(tooltipPlugin());
+Alpine.start();
+```
+
 ## Store API
 
 | Method | Description |
@@ -119,3 +129,7 @@ Delays require client-side timers — initialize on the client via `x-init`.
 - Placement is your responsibility — use `@alpinejs/anchor` (`x-anchor.*.fixed`) for flip, shift, and scroll tracking
 - Use `<template x-teleport="body">` + `x-anchor.fixed` when the floating node sits inside `overflow-hidden` ancestors
 - Wire `@keydown.window` while open so Escape works when focus stays on the trigger
+
+## License
+
+MIT

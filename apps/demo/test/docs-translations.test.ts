@@ -31,6 +31,9 @@ describe("docs translations", () => {
     const missing: string[] = [];
 
     for (const entry of getDocumentedCatalogEntries()) {
+      if (entry.docs?.i18n === false) {
+        continue;
+      }
       const routeId = packageDocsRouteId(entry);
       for (const locale of LOCALES) {
         const filePath = pluginTranslationPath(locale, routeId);

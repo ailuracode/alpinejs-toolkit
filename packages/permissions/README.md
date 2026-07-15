@@ -10,7 +10,7 @@ pnpm add @ailuracode/alpine-permissions @ailuracode/alpine-core alpinejs
 
 Register only the adapters you need from feature packages such as `@ailuracode/alpine-notify`, `@ailuracode/alpine-geo`, and `@ailuracode/alpine-attention`.
 
-## Quick example
+## Quick start
 
 ```ts
 import Alpine from "alpinejs";
@@ -110,7 +110,7 @@ permissions.destroy();
 - Do not re-request permissions already reported as denied.
 - Distinguish unsupported APIs, insecure contexts, policy blocks, and platform restrictions.
 
-## Setup
+## Quick start
 
 ```ts
 import Alpine from "alpinejs";

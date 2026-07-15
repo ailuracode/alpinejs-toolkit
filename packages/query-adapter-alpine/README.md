@@ -10,7 +10,7 @@ No external store library. Best when you want the smallest dependency footprint.
 pnpm add @ailuracode/alpine-query @ailuracode/alpine-query-adapter-alpine alpinejs
 ```
 
-## Setup
+## Quick start
 
 ```ts
 import Alpine from "alpinejs";

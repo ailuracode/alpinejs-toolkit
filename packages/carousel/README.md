@@ -10,7 +10,7 @@ pnpm add @ailuracode/alpine-carousel alpinejs
 
 Peer dependencies: `embla-carousel` and `embla-carousel-autoplay` are bundled as direct dependencies.
 
-## Setup
+## Quick start
 
 ```ts
 import Alpine from "alpinejs";

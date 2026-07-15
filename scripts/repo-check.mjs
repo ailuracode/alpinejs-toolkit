@@ -3,6 +3,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { validateHeadlessCssPolicy } from "./headless-css-policy.mjs";
 import { validatePackageCatalogSurfaces } from "./package-catalog-check.mjs";
+import { validateReadmes } from "./readme-check.mjs";
 import { REPO_CHECK_POLICY } from "./repo-check-policy.mjs";
 
 const SCOPE = "@ailuracode/alpine-";
@@ -759,6 +760,7 @@ export function runRepoCheck(options = {}) {
       ...validateRepositorySurfaces(root, packages, catalog, demo),
       ...validateDocumentedCounts(root, catalog.length),
       ...validatePackageCatalogSurfaces(root),
+      ...validateReadmes(root),
       ...validateSizeBudgets(packages, root),
       ...validatePackageTests(packages),
       ...validateTooling(root, publishable),

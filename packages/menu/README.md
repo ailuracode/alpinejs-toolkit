@@ -8,7 +8,7 @@ Headless menu store for dropdowns and context menus. Keyboard navigation (`Arrow
 pnpm add @ailuracode/alpine-menu alpinejs
 ```
 
-## Setup
+## Quick start
 
 ```js
 import Alpine from "alpinejs";
@@ -217,3 +217,7 @@ Register items during `x-init` on the client. Control visibility with `x-show` (
 - Use `<template x-teleport="body">` with `bindTrigger()` + `bindMenu()` when the menu sits inside `overflow-hidden` ancestors
 - Call `bindMenu()` on the menu root so arrow keys move roving focus to the active item
 - Position with `@alpinejs/anchor` — the store does not set `top` / `left`
+
+## License
+
+MIT

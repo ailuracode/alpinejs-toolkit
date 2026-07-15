@@ -16,7 +16,7 @@ Query Devtools (styled development panel) ships from a separate subpath:
 pnpm add @ailuracode/alpine-query-kit alpinejs nanostores @nanostores/alpine
 ```
 
-## Quick example
+## Quick start
 
 ```ts
 import Alpine from "alpinejs";
@@ -94,9 +94,9 @@ Everything from the core package is re-exported:
 | Nanostores adapter | `@ailuracode/alpine-query-kit` | `nanostoresQueryAdapter`, `createAlpineNanostoresAdapter`, `NanoStores` |
 | Devtools | `@ailuracode/alpine-query-kit/devtools` | Styled inspector panel (development-only) |
 
-For Alpine/Zustand-only setups without Nanostores, use [`@ailuracode/alpine-query`](../query.md) with [`query-adapter-alpine`](../query.md) or [`query-adapter-zustand`](../query.md).
+For Alpine/Zustand-only setups without Nanostores, use [`@ailuracode/alpine-query`](../query/README.md) with [`query-adapter-alpine`](../query-adapter-alpine/README.md) or [`query-adapter-zustand`](../query-adapter-zustand/README.md).
 
-## Setup
+## Registration details
 
 ```js
 import Alpine from "alpinejs";
@@ -208,7 +208,7 @@ import {
 } from "@ailuracode/alpine-query-kit/devtools";
 ```
 
-See [Query cache](../query.md) for fetch options, mutations, and adapter authoring.
+See [Query cache](../query/README.md) for fetch options, mutations, and adapter authoring.
 
 ## License
 

@@ -2,23 +2,13 @@
 
 Headless in-app toast queue for Alpine.js. Registers the `$toast` magic and an internal reactive store for UI integrators.
 
-## CSS-framework agnostic
-
-This plugin ships **no HTML, no CSS, and no design tokens**. Variant and position names are **not hardcoded** — you declare the sets your UI needs. The only built-in concepts are:
-
-- **`default`** — `$toast('Message')` or `{ variant: 'default' }`
-- **`bottom-right`** — default `position` when omitted
-- **`promise`** — `$toast.promise(factoryOrPromise, messages?)`
-
-Map `toast.variant` and `toast.position` to layout/CSS in your own renderer (e.g. `data-position`, Tailwind classes, coordinates).
-
 ## Install
 
 ```bash
 pnpm add @ailuracode/alpine-toast alpinejs
 ```
 
-## Setup
+## Quick start
 
 ```js
 import Alpine from "alpinejs";
@@ -40,6 +30,16 @@ Alpine.start();
 ```
 
 `toastOptions()`, `toastVariants()`, and `toastPositions()` preserve literal types for strongly typed payloads and `$toast.<variant>()` shortcuts.
+
+## CSS-framework agnostic
+
+This plugin ships **no HTML, no CSS, and no design tokens**. Variant and position names are **not hardcoded** — you declare the sets your UI needs. The only built-in concepts are:
+
+- **`default`** — `$toast('Message')` or `{ variant: 'default' }`
+- **`bottom-right`** — default `position` when omitted
+- **`promise`** — `$toast.promise(factoryOrPromise, messages?)`
+
+Map `toast.variant` and `toast.position` to layout/CSS in your own renderer (e.g. `data-position`, Tailwind classes, coordinates).
 
 ## Magic API
 
@@ -318,3 +318,7 @@ The exposed constants `TOAST_STORE_KEY` and `TOAST_MAGIC_KEY` keep the renames d
 ## Related packages
 
 - [`@ailuracode/alpine-notify`](./notify.md) — OS-level Web Notifications (`$notify`)
+
+## License
+
+MIT

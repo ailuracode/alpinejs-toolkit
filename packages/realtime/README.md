@@ -4,6 +4,35 @@
 
 Headless realtime transport controller for Alpine.js — Server-Sent Events, WebSocket, and pluggable transport adapters with automatic reconnect, exponential backoff, heartbeat, and visibility-aware pausing.
 
+## Install
+
+```bash
+pnpm add @ailuracode/alpine-realtime
+```
+
+## Quick start
+
+```ts
+import {
+  calculateBackoff,
+  HeartbeatManager,
+  ReconnectManager,
+  VisibilityManager,
+} from "@ailuracode/alpine-realtime";
+
+const reconnect = new ReconnectManager({
+  setTimeout: globalThis.setTimeout,
+  clearTimeout: globalThis.clearTimeout,
+});
+
+const { controller, done } = reconnect.schedule(
+  () => fetchOnce(),
+  0,
+  { maxRetries: 5, baseDelayMs: 500, maxDelayMs: 8_000, jitterFactor: 0.5 }
+);
+done.then((result) => console.log("retry finished", result));
+```
+
 ## Why
 
 Long-lived realtime connections fail in interesting ways: networks drop silently, browser tabs go to sleep, servers restart, proxies idle-out connections. This package gives you a single controller that handles the messy parts — reconnect, backoff, heartbeat, visibility — while leaving transport selection, UI, and error messaging to your application.
@@ -28,35 +57,6 @@ Later phases add:
 - `RealtimeController` extending `BaseController`.
 - SSE and WebSocket adapters wired to the runtime transports.
 - Alpine `$store.realtime` + `$realtime` magic.
-
-## Installation
-
-```bash
-pnpm add @ailuracode/alpine-realtime
-```
-
-## Headless usage (no Alpine)
-
-```ts
-import {
-  calculateBackoff,
-  HeartbeatManager,
-  ReconnectManager,
-  VisibilityManager,
-} from "@ailuracode/alpine-realtime";
-
-const reconnect = new ReconnectManager({
-  setTimeout: globalThis.setTimeout,
-  clearTimeout: globalThis.clearTimeout,
-});
-
-const { controller, done } = reconnect.schedule(
-  () => fetchOnce(),
-  0,
-  { maxRetries: 5, baseDelayMs: 500, maxDelayMs: 8_000, jitterFactor: 0.5 }
-);
-done.then((result) => console.log("retry finished", result));
-```
 
 ## Architecture
 

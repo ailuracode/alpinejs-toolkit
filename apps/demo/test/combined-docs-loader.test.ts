@@ -13,21 +13,17 @@ describe("combined docs loader helpers", () => {
     expect(ids).toContain("query");
     expect(ids).toContain("plugins/theme");
     expect(ids).toContain("plugins/gesture");
-    expect(ids).not.toContain("plugins/overlay");
+    expect(ids).toContain("plugins/overlay");
+    expect(ids).toContain("plugins/collection");
+    expect(ids).toContain("plugins/realtime");
   });
 
-  it("keeps English guide docs for core, query, and form", () => {
-    const guideEntries = getDocumentedCatalogEntries().filter((entry) => usesGuideDocs(entry));
-    expect(guideEntries.map((entry) => entry.id)).toEqual(["core", "form", "query"]);
-    expect(getReadmeBackedDocumentedEntries().map((entry) => docsEntryId(entry))).not.toContain(
-      "core"
-    );
-    expect(getReadmeBackedDocumentedEntries().map((entry) => docsEntryId(entry))).not.toContain(
-      "query"
-    );
-    expect(getReadmeBackedDocumentedEntries().map((entry) => docsEntryId(entry))).not.toContain(
-      "plugins/form"
-    );
+  it("serves package reference pages from READMEs", () => {
+    const readmeBacked = getReadmeBackedDocumentedEntries().map((entry) => docsEntryId(entry));
+    expect(readmeBacked).toContain("core");
+    expect(readmeBacked).toContain("query");
+    expect(readmeBacked).toContain("plugins/form");
+    expect(getDocumentedCatalogEntries().filter((entry) => usesGuideDocs(entry))).toEqual([]);
   });
 
   it("rewrites relative README links to site routes", () => {

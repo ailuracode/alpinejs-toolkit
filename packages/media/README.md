@@ -2,41 +2,6 @@
 
 Framework-agnostic reactive viewport, breakpoint, and media-feature manager for Alpine.js, Blade, Livewire, and any TypeScript front end. Exposes the viewport snapshot (`width` / `height` / `breakpoint`) plus browser media features (`prefersReducedMotion`, `prefersContrast`, `prefersColorScheme`, `hover`, `pointer`, `orientation`) and touch / pointer capabilities through a single `$store.media` store and `$media` magic.
 
-## Architecture
-
-```mermaid
-flowchart TD
-    entry["createMedia()<br/>(controller.ts)"]:::entry
-    plugin["mediaPlugin()<br/>(plugin.ts)"]:::entry
-
-    controller["MediaController<br/>(controller.ts)"]:::module
-    events["MediaEvents<br/>(events.ts)"]:::module
-    validation["breakpoint / queries<br/>(internal/*)"]:::module
-
-    classDef entry fill:#fef3c7,stroke:#b45309,color:#1f2937
-    classDef module fill:#dbeafe,stroke:#1d4ed8,color:#1f2937
-
-    entry --> controller
-    plugin --> controller
-    controller --> events
-    controller --> validation
-```
-
-The core is engine-free: no Alpine import, no DOM mutation outside the matchMedia / `resize` listeners the controller owns. The Alpine integration is a thin adapter that exposes the manager through `$store.media` and `$media`. The `MediaController` extends `BaseController` from `@ailuracode/alpine-core`, so consumers get `id` / `phase` / `isDestroyed` / `mount()` / `destroy()` for free.
-
-## State model
-
-Two complementary slices:
-
-| Slice                       | Members                                                                                |
-| --------------------------- | -------------------------------------------------------------------------------------- |
-| **Viewport**                | `width`, `height`, `breakpoint`, `intervals`                                            |
-| **Derived viewport**        | `isTouch`, `isCoarse`, `isFine`, `canHover`                                            |
-| **Media features**          | `prefersReducedMotion`, `prefersContrast`, `prefersColorScheme`, `hover`, `pointer`, `orientation` |
-| **Touch / pointer**         | `maxTouchPoints`, `isTouch`, `isCoarse`, `isFine`, `canHover`                          |
-
-`breakpoint` is resolved from the live `matchMedia` queries (one `(max-width: Xpx)` per interval except the trailing "infinite" fallback) — the browser's own breakpoint signal, not a re-derivation from `window.innerWidth`. This keeps the value consistent across zoom and DPR rounding.
-
 ## Install
 
 ```bash
@@ -103,6 +68,41 @@ The exposed constant `DEFAULT_MEDIA_STORE_KEY` keeps the rename discoverable fro
 ```
 
 The plugin registers `$store.media` and `$media` (both backed by the same controller). Every method forwards to the controller, and `Alpine.cleanup` destroys it when the runtime tears down.
+
+## Architecture
+
+```mermaid
+flowchart TD
+    entry["createMedia()<br/>(controller.ts)"]:::entry
+    plugin["mediaPlugin()<br/>(plugin.ts)"]:::entry
+
+    controller["MediaController<br/>(controller.ts)"]:::module
+    events["MediaEvents<br/>(events.ts)"]:::module
+    validation["breakpoint / queries<br/>(internal/*)"]:::module
+
+    classDef entry fill:#fef3c7,stroke:#b45309,color:#1f2937
+    classDef module fill:#dbeafe,stroke:#1d4ed8,color:#1f2937
+
+    entry --> controller
+    plugin --> controller
+    controller --> events
+    controller --> validation
+```
+
+The core is engine-free: no Alpine import, no DOM mutation outside the matchMedia / `resize` listeners the controller owns. The Alpine integration is a thin adapter that exposes the manager through `$store.media` and `$media`. The `MediaController` extends `BaseController` from `@ailuracode/alpine-core`, so consumers get `id` / `phase` / `isDestroyed` / `mount()` / `destroy()` for free.
+
+## State model
+
+Two complementary slices:
+
+| Slice                       | Members                                                                                |
+| --------------------------- | -------------------------------------------------------------------------------------- |
+| **Viewport**                | `width`, `height`, `breakpoint`, `intervals`                                            |
+| **Derived viewport**        | `isTouch`, `isCoarse`, `isFine`, `canHover`                                            |
+| **Media features**          | `prefersReducedMotion`, `prefersContrast`, `prefersColorScheme`, `hover`, `pointer`, `orientation` |
+| **Touch / pointer**         | `maxTouchPoints`, `isTouch`, `isCoarse`, `isFine`, `canHover`                          |
+
+`breakpoint` is resolved from the live `matchMedia` queries (one `(max-width: Xpx)` per interval except the trailing "infinite" fallback) — the browser's own breakpoint signal, not a re-derivation from `window.innerWidth`. This keeps the value consistent across zoom and DPR rounding.
 
 ## Default intervals
 

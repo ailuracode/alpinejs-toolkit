@@ -10,13 +10,13 @@ The **cache engine** has no store dependency. Pick an adapter plugin for Alpine.
 | [`@ailuracode/alpine-query-adapter-alpine`](../query-adapter-alpine/README.md) | Native `Alpine.reactive` | Zero extra store deps |
 | [`@ailuracode/alpine-query-adapter-zustand`](../query-adapter-zustand/README.md) | Zustand vanilla | Manual bridge (no official zustand-alpine) |
 
-## Install (recommended)
+## Install
 
 ```bash
 pnpm add @ailuracode/alpine-query @ailuracode/alpine-query-kit alpinejs nanostores @nanostores/alpine
 ```
 
-## Setup (Alpine + Nanostores)
+## Quick start
 
 ```ts
 import Alpine from "alpinejs";
@@ -261,6 +261,36 @@ See adapter plugin READMEs for Alpine setup with Nanostores, Zustand, or native 
 ## Devtools
 
 Use [`@ailuracode/alpine-query-kit`](../query-kit/README.md).
+
+## Concepts
+
+### Query keys
+
+Arrays identify cached entries. Use stable, serializable values:
+
+```js
+['todos']
+['todos', todoId]
+['users', userId, 'posts']
+```
+
+### `observe()` vs `fetch()`
+
+- **`observe()`** — for `x-data`. Subscribes to the cache entry; call `destroy()` when the subscription is no longer needed so entries can be garbage-collected.
+- **`fetch()`** — imperative fetch without holding a subscription.
+
+### Stale time and garbage collection
+
+- **`staleTime`** — how long cached data is treated as fresh.
+- **`gcTime`** — how long unused entries stay in memory after all observers disconnect.
+
+### Mutations
+
+`$store.query.mutate()` returns a reactive mutation object with `mutate()`, `reset()`, and status getters (`isPending`, `isSuccess`, …). Use `invalidate()` in `onSuccess` to refresh related queries.
+
+### Pagination
+
+Use the page number in the query key so each page is cached independently. Call `destroy()` on the previous `observe()` result when changing pages so unused entries can be garbage-collected.
 
 ## License
 

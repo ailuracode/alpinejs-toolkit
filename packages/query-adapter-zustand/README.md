@@ -10,7 +10,7 @@ There is **no official zustand-alpine integration**. This package uses Zustand's
 pnpm add @ailuracode/alpine-query @ailuracode/alpine-query-adapter-zustand alpinejs zustand
 ```
 
-## Setup
+## Quick start
 
 ```ts
 import Alpine from "alpinejs";

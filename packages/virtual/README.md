@@ -8,7 +8,7 @@ Headless virtual list controller for Alpine.js — TanStack Virtual-style range 
 pnpm add @ailuracode/alpine-virtual alpinejs @ailuracode/alpine-core
 ```
 
-## Quick example
+## Quick start
 
 ```ts
 import Alpine from "alpinejs";

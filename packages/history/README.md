@@ -10,7 +10,7 @@ Headless undo/redo history controller for Alpine.js — transactions, persistenc
 pnpm add @ailuracode/alpine-history alpinejs @ailuracode/alpine-core
 ```
 
-## Quick example
+## Quick start
 
 ```ts
 import Alpine from "alpinejs";
@@ -161,3 +161,7 @@ The `change` event fires on every mutation with a typed `source`:
 ## See also
 
 - [Core](../core.md) — plugin registry (`registerPlugin`, `initPlugins`)
+
+## License
+
+MIT

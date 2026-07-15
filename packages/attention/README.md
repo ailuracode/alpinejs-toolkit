@@ -10,7 +10,7 @@ For tab visibility, use [`@ailuracode/alpine-env`](./env.md) (`$visibility`).
 pnpm add @ailuracode/alpine-attention alpinejs
 ```
 
-## Setup
+## Quick start
 
 ```js
 import Alpine from "alpinejs";
@@ -121,3 +121,7 @@ Alpine.plugin(
 ```
 
 Registry key: `idle-detection`. `IdleController` uses the same adapter internally. See [permissions.md](./permissions.md).
+
+## License
+
+MIT

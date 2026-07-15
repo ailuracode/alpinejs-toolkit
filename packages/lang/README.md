@@ -10,7 +10,7 @@ The plugin **only manages the current language** — it does not translate conte
 pnpm add @ailuracode/alpine-lang alpinejs
 ```
 
-## Setup
+## Quick start
 
 ```js
 import Alpine from "alpinejs";
@@ -170,3 +170,7 @@ import { normalizeLanguageTag, parseLanguageTag } from "@ailuracode/alpine-lang"
 normalizeLanguageTag("EN_us"); // "en-us"
 parseLanguageTag("es-EC"); // { base: "es", region: "EC" }
 ```
+
+## License
+
+MIT

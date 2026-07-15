@@ -8,7 +8,7 @@ Reactive geolocation via the `$store.geo` store. Wraps the browser [Geolocation 
 pnpm add @ailuracode/alpine-geo alpinejs
 ```
 
-## Setup
+## Quick start
 
 ```js
 import Alpine from "alpinejs";
@@ -129,3 +129,7 @@ Alpine.plugin(
 ```
 
 Registry key: `geolocation`. See [permissions.md](./permissions.md).
+
+## License
+
+MIT

@@ -8,7 +8,7 @@ Headless scoped keyboard shortcut registry with chords, sequences, conflict reso
 pnpm add @ailuracode/alpine-keyboard @ailuracode/alpine-core alpinejs
 ```
 
-## Quick example
+## Quick start
 
 ```ts
 import Alpine from "alpinejs";

@@ -60,6 +60,8 @@ export type PackageCatalogEntry = {
      * (default) loads package README content via the combined docs loader.
      */
     source?: "readme" | "guide";
+    /** When false, Spanish and Portuguese markdown pages are not required yet. */
+    i18n?: boolean;
   };
 };
 

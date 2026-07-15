@@ -14,7 +14,7 @@ The plugin is **headless** and knows nothing about the width, mode, or appearanc
 pnpm add @ailuracode/alpine-sidebar alpinejs
 ```
 
-## Setup
+## Quick start
 
 ```ts
 import Alpine from "alpinejs";

@@ -10,6 +10,16 @@ pnpm add @ailuracode/alpine-accordion alpinejs
 
 Open panel state is backed by an inline lightweight state — no extra dependency.
 
+## Quick start
+
+```js
+import Alpine from "alpinejs";
+import { accordionPlugin } from "@ailuracode/alpine-accordion";
+
+Alpine.plugin(accordionPlugin());
+Alpine.start();
+```
+
 ## Store API
 
 | Method | Description |
@@ -168,3 +178,7 @@ Optional modifiers: `x-collapse.duration.300ms`, `x-collapse.min.50px`. See the 
 ## SSR
 
 Safe when panels start collapsed; visibility is controlled with `x-show` on the client. Use `defaultOpen` only when markup is hydrated on the client.
+
+## License
+
+MIT
