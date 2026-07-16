@@ -1,3 +1,4 @@
+import { createQueryDevtoolsInstrumentation } from "@ailuracode/alpine-query/instrumentation";
 import type AlpineType from "alpinejs";
 import nanostoresQueryPlugin, { type NanostoresQueryPluginOptions } from "../nanostores/index.js";
 import queryDevtoolsPlugin, { type QueryDevtoolsPluginOptions } from "./index.js";
@@ -12,7 +13,8 @@ export default function queryKitWithDevtoolsPlugin(
   options: QueryKitWithDevtoolsPluginOptions = {}
 ): AlpineType.PluginCallback {
   const { devtools = {}, ...queryOptions } = options;
-  const registerQuery = nanostoresQueryPlugin(queryOptions);
+  const instrumentation = createQueryDevtoolsInstrumentation();
+  const registerQuery = nanostoresQueryPlugin({ ...queryOptions, instrumentation });
 
   return function registerQueryKitWithDevtools(Alpine) {
     registerQuery(Alpine);

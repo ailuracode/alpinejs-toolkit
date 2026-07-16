@@ -6,6 +6,9 @@
   "packageManager": "pnpm@11.8.0",
   "scripts": {
     "architecture:check": "node scripts/architecture-check.mjs",
+    "bundle:report": "node scripts/bundle-report.mjs",
+    "bundle:report:check": "pnpm run build && node scripts/bundle-report.mjs --check --baseline bundle/baseline.json",
+    "bundle:baseline": "pnpm run build && node scripts/bundle-report.mjs --write-baseline --baseline bundle/baseline.json",
     "build": "pnpm -r --if-present build",
     "build:demo": "pnpm --filter alpinejs-toolkit-demo build",
     "changeset": "changeset",

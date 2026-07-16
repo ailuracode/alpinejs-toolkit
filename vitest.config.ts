@@ -55,11 +55,33 @@ const coreSubpathAliases: Array<{ find: string; replacement: string }> = [
   },
 ];
 
+const SUBPATH_SOURCE_ENTRIES: Record<string, string> = {
+  "@ailuracode/alpine-query-kit/devtools": "query-kit/src/devtools-entry.ts",
+  "@ailuracode/alpine-query/instrumentation": "query/src/instrumentation-entry.ts",
+  "@ailuracode/alpine-calendar/date-fns": "calendar/src/date-fns-entry.ts",
+  "@ailuracode/alpine-carousel/autoplay": "carousel/src/autoplay-entry.ts",
+  "@ailuracode/alpine-realtime/sse": "realtime/src/entries/sse.ts",
+  "@ailuracode/alpine-realtime/websocket": "realtime/src/entries/websocket.ts",
+  "@ailuracode/alpine-scroll/lock": "scroll/src/entries/lock.ts",
+  "@ailuracode/alpine-scroll/navigation": "scroll/src/entries/navigation.ts",
+  "@ailuracode/alpine-form/controller": "form/src/entries/controller.ts",
+  "@ailuracode/alpine-form/validation": "form/src/entries/validation.ts",
+  "@ailuracode/alpine-form/json-api": "form/src/entries/json-api.ts",
+  "@ailuracode/alpine-form/standard-schema": "form/src/entries/standard-schema.ts",
+  "@ailuracode/alpine-selection/controller": "selection/src/entries/controller.ts",
+  "@ailuracode/alpine-selection/serialization": "selection/src/entries/serialization.ts",
+  "@ailuracode/alpine-selection/navigation": "selection/src/entries/navigation.ts",
+};
+
+const bundleSubpathAliases: Array<{ find: string; replacement: string }> = Object.entries(
+  SUBPATH_SOURCE_ENTRIES
+).map(([find, relativePath]) => ({
+  find,
+  replacement: path.resolve(packagesDir, relativePath),
+}));
+
 const subpathAliases: Array<{ find: string | RegExp; replacement: string }> = [
-  {
-    find: "@ailuracode/alpine-query-kit/devtools",
-    replacement: path.resolve(packagesDir, "query-kit/src/devtools-entry.ts"),
-  },
+  ...bundleSubpathAliases,
   ...coreSubpathAliases,
 ];
 

@@ -1,37 +1,40 @@
+import { createNativeCalendarDateAdapter, nativeCalendarDateAdapter } from "./adapters/native.js";
 import type {
-  ContextOptions,
-  Day,
-  FirstWeekContainsDateOptions,
-  FormatOptions,
-  Locale,
-  WeekOptions,
-} from "date-fns";
-import { enUS } from "date-fns/locale";
+  CalendarDateAdapter,
+  CalendarDateAdapterOptions,
+  ResolvedCalendarContext,
+} from "./adapters/types.js";
+import { resolveCalendarContext } from "./adapters/types.js";
 
-export type CalendarDateFnsOptions = ContextOptions<Date> &
-  WeekOptions &
-  FirstWeekContainsDateOptions &
-  Pick<FormatOptions, "useAdditionalWeekYearTokens" | "useAdditionalDayOfYearTokens"> & {
-    locale?: Locale;
-  };
+export type {
+  CalendarDateAdapter,
+  CalendarDateAdapterOptions,
+  CalendarDateContext,
+  CalendarLocale,
+  CalendarWeekDay,
+  ResolvedCalendarContext,
+} from "./adapters/types.js";
 
-export type ResolvedDateFnsContext = CalendarDateFnsOptions & {
-  locale: Locale;
-  weekStartsOn: Day;
+/** @deprecated Use {@link ResolvedCalendarContext}. */
+export type ResolvedDateFnsContext = ResolvedCalendarContext;
+
+/** @deprecated Use {@link CalendarDateAdapterOptions}. */
+export type CalendarDateFnsOptions = CalendarDateAdapterOptions;
+
+type CalendarContextInput = CalendarDateAdapterOptions & {
+  adapter?: CalendarDateAdapter;
 };
 
-type DateFnsOptionInput = {
-  locale?: Locale;
-  weekStartsOn?: Day;
-  dateFns?: CalendarDateFnsOptions;
-};
-
-export function resolveDateFnsContext(options: DateFnsOptionInput = {}): ResolvedDateFnsContext {
-  const dateFns = options.dateFns ?? {};
-
-  return {
-    ...dateFns,
-    locale: options.locale ?? dateFns.locale ?? enUS,
-    weekStartsOn: options.weekStartsOn ?? dateFns.weekStartsOn ?? 0,
-  };
+export function resolveCalendarDateContext(
+  options: CalendarContextInput = {}
+): ResolvedCalendarContext {
+  const adapter = options.adapter ?? nativeCalendarDateAdapter;
+  return resolveCalendarContext(adapter, options);
 }
+
+/** @deprecated Use {@link resolveCalendarDateContext}. */
+export function resolveDateFnsContext(options: CalendarContextInput = {}): ResolvedCalendarContext {
+  return resolveCalendarDateContext(options);
+}
+
+export { createNativeCalendarDateAdapter, nativeCalendarDateAdapter };

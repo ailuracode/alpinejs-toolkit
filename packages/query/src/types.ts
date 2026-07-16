@@ -1,5 +1,6 @@
 import type { QueryStateAdapter } from "./adapters/types.js";
 import type { QueryDevtoolsApi } from "./devtools.js";
+import type { QueryCacheInstrumentation } from "./instrumentation.js";
 
 export type QueryKey = readonly unknown[];
 
@@ -110,6 +111,8 @@ export interface QueryPluginOptions {
       retryDelay?: number | ((attempt: number) => number);
     };
   };
+  /** Optional cache instrumentation (Query Devtools, profilers). */
+  instrumentation?: QueryCacheInstrumentation;
 }
 
 export interface QueryClientOptions extends QueryPluginOptions {

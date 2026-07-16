@@ -1,3 +1,4 @@
+import type { QueryStateAdapter } from "@ailuracode/alpine-query";
 import { createQueryClient } from "@ailuracode/alpine-query";
 import { createAlpineStoreAdapter } from "@ailuracode/alpine-query-adapter-alpine";
 import { createAlpineZustandAdapter } from "@ailuracode/alpine-query-adapter-zustand";
@@ -5,12 +6,19 @@ import { describe, expect, it, vi } from "vitest";
 import { startAlpine } from "../../../test/helpers.js";
 import { createMergedQueryDevtools } from "../src/devtools/merge-stores.js";
 import { nanostoresQueryAdapter } from "../src/nanostores/adapter.js";
+import { withDevtoolsClientInstrumentation } from "./instrumentation-helper.js";
+
+function createInstrumentedClient(
+  options: Parameters<typeof createQueryClient>[0] & { adapter: QueryStateAdapter }
+) {
+  return createQueryClient(withDevtoolsClientInstrumentation(options));
+}
 
 describe("query devtools merge stores", () => {
   it("merges snapshots from multiple query clients", async () => {
     const Alpine = startAlpine();
-    const alpineClient = createQueryClient({ adapter: createAlpineStoreAdapter(Alpine) });
-    const zustandClient = createQueryClient({ adapter: createAlpineZustandAdapter(Alpine) });
+    const alpineClient = createInstrumentedClient({ adapter: createAlpineStoreAdapter(Alpine) });
+    const zustandClient = createInstrumentedClient({ adapter: createAlpineZustandAdapter(Alpine) });
     const merged = createMergedQueryDevtools([alpineClient, zustandClient]);
 
     const alpineQuery = alpineClient.observe(["alpha"], async () => "a");
@@ -46,8 +54,8 @@ describe("query devtools merge stores", () => {
 
   it("notifies listeners when any store changes", async () => {
     const Alpine = startAlpine();
-    const alpineClient = createQueryClient({ adapter: createAlpineStoreAdapter(Alpine) });
-    const zustandClient = createQueryClient({ adapter: createAlpineZustandAdapter(Alpine) });
+    const alpineClient = createInstrumentedClient({ adapter: createAlpineStoreAdapter(Alpine) });
+    const zustandClient = createInstrumentedClient({ adapter: createAlpineZustandAdapter(Alpine) });
     const merged = createMergedQueryDevtools([alpineClient, zustandClient]);
     const listener = vi.fn();
 
@@ -65,8 +73,8 @@ describe("query devtools merge stores", () => {
   });
 
   it("routes actions to the correct store when adapter names repeat", async () => {
-    const primary = createQueryClient({ adapter: nanostoresQueryAdapter });
-    const secondary = createQueryClient({ adapter: nanostoresQueryAdapter });
+    const primary = createInstrumentedClient({ adapter: nanostoresQueryAdapter });
+    const secondary = createInstrumentedClient({ adapter: nanostoresQueryAdapter });
     const merged = createMergedQueryDevtools([primary, secondary]);
 
     primary.observe(["shared", "primary"], async () => "primary");
@@ -94,8 +102,10 @@ describe("query devtools merge stores", () => {
   });
 
   it("exposes adapter options for each merged store", () => {
-    const primary = createQueryClient({ adapter: nanostoresQueryAdapter });
-    const secondary = createQueryClient({ adapter: createAlpineStoreAdapter(startAlpine()) });
+    const primary = createInstrumentedClient({ adapter: nanostoresQueryAdapter });
+    const secondary = createInstrumentedClient({
+      adapter: createAlpineStoreAdapter(startAlpine()),
+    });
     const merged = createMergedQueryDevtools([primary, secondary]);
 
     expect(merged.getAdapterOptions()).toEqual([
@@ -114,7 +124,7 @@ describe("query devtools merge stores", () => {
   });
 
   it("throws when a store lacks devtools", () => {
-    const valid = createQueryClient({ adapter: nanostoresQueryAdapter });
+    const valid = createInstrumentedClient({ adapter: nanostoresQueryAdapter });
     const fakeStore = { devtools: undefined } as unknown as Parameters<
       typeof createMergedQueryDevtools
     >[0][number];
@@ -126,22 +136,22 @@ describe("query devtools merge stores", () => {
   });
 
   it("getStoresForScope returns all stores for 'all' scope", () => {
-    const primary = createQueryClient({ adapter: nanostoresQueryAdapter });
-    const secondary = createQueryClient({ adapter: nanostoresQueryAdapter });
+    const primary = createInstrumentedClient({ adapter: nanostoresQueryAdapter });
+    const secondary = createInstrumentedClient({ adapter: nanostoresQueryAdapter });
     const merged = createMergedQueryDevtools([primary, secondary]);
 
     expect(merged.getStoresForScope("all")).toHaveLength(2);
   });
 
   it("getStoresForScope returns empty array for unknown scope", () => {
-    const primary = createQueryClient({ adapter: nanostoresQueryAdapter });
+    const primary = createInstrumentedClient({ adapter: nanostoresQueryAdapter });
     const merged = createMergedQueryDevtools([primary]);
 
     expect(merged.getStoresForScope("unknown")).toEqual([]);
   });
 
   it("getStoreForQuery throws for unknown storeId", () => {
-    const primary = createQueryClient({ adapter: nanostoresQueryAdapter });
+    const primary = createInstrumentedClient({ adapter: nanostoresQueryAdapter });
     const merged = createMergedQueryDevtools([primary]);
 
     expect(() =>
@@ -152,7 +162,7 @@ describe("query devtools merge stores", () => {
   });
 
   it("getStoreForMutation throws for unknown storeId", () => {
-    const primary = createQueryClient({ adapter: nanostoresQueryAdapter });
+    const primary = createInstrumentedClient({ adapter: nanostoresQueryAdapter });
     const merged = createMergedQueryDevtools([primary]);
 
     expect(() =>
@@ -164,8 +174,8 @@ describe("query devtools merge stores", () => {
 
   it("resolveQueryDevtoolsStores uses stores array when provided", async () => {
     const { resolveQueryDevtoolsStores } = await import("../src/devtools/merge-stores.js");
-    const primary = createQueryClient({ adapter: nanostoresQueryAdapter });
-    const secondary = createQueryClient({ adapter: nanostoresQueryAdapter });
+    const primary = createInstrumentedClient({ adapter: nanostoresQueryAdapter });
+    const secondary = createInstrumentedClient({ adapter: nanostoresQueryAdapter });
     const stores = resolveQueryDevtoolsStores({ stores: [primary, secondary] });
 
     expect(stores).toContain(primary);
@@ -174,7 +184,7 @@ describe("query devtools merge stores", () => {
 
   it("resolveQueryDevtoolsStores uses single store when provided", async () => {
     const { resolveQueryDevtoolsStores } = await import("../src/devtools/merge-stores.js");
-    const primary = createQueryClient({ adapter: nanostoresQueryAdapter });
+    const primary = createInstrumentedClient({ adapter: nanostoresQueryAdapter });
     const stores = resolveQueryDevtoolsStores({ store: primary });
 
     expect(stores).toContain(primary);
@@ -182,8 +192,8 @@ describe("query devtools merge stores", () => {
 
   it("resolveQueryDevtoolsStores combines store and additionalStores", async () => {
     const { resolveQueryDevtoolsStores } = await import("../src/devtools/merge-stores.js");
-    const primary = createQueryClient({ adapter: nanostoresQueryAdapter });
-    const secondary = createQueryClient({ adapter: nanostoresQueryAdapter });
+    const primary = createInstrumentedClient({ adapter: nanostoresQueryAdapter });
+    const secondary = createInstrumentedClient({ adapter: nanostoresQueryAdapter });
     const stores = resolveQueryDevtoolsStores({
       store: primary,
       additionalStores: [secondary],
@@ -200,8 +210,8 @@ describe("query devtools merge stores", () => {
 
   it("clearMutations clears all stores", async () => {
     const Alpine = startAlpine();
-    const primary = createQueryClient({ adapter: createAlpineStoreAdapter(Alpine) });
-    const secondary = createQueryClient({ adapter: createAlpineStoreAdapter(Alpine) });
+    const primary = createInstrumentedClient({ adapter: createAlpineStoreAdapter(Alpine) });
+    const secondary = createInstrumentedClient({ adapter: createAlpineStoreAdapter(Alpine) });
     const merged = createMergedQueryDevtools([primary, secondary]);
 
     const mutation = primary.mutate<string, string>({ mutationFn: async (x) => `ok:${x}` });

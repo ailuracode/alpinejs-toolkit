@@ -40,7 +40,31 @@ const REPRESENTATIVE_PACKAGES: TreeShakingFixture[] = [
     label: "query",
     entry: path.join(root, "packages/query/dist/index.js"),
     namedImport: "createQueryClient",
-    marker: "typedFetch",
+    marker: "serializeDevtoolsValue",
+  },
+  {
+    label: "calendar",
+    entry: path.join(root, "packages/calendar/dist/index.js"),
+    namedImport: "createCalendarController",
+    marker: 'from "date-fns/locale"',
+  },
+  {
+    label: "query-instrumentation",
+    entry: path.join(root, "packages/query/dist/index.js"),
+    namedImport: "createQueryClient",
+    marker: "DevtoolsRegistry",
+  },
+  {
+    label: "selection-serialization",
+    entry: path.join(root, "packages/selection/dist/index.js"),
+    namedImport: "selectionPlugin",
+    marker: "serializeSelection",
+  },
+  {
+    label: "form-json-api",
+    entry: path.join(root, "packages/form/dist/index.js"),
+    namedImport: "formPlugin",
+    marker: "mapJsonApiErrors",
   },
 ];
 

@@ -9,15 +9,21 @@
  */
 
 import EmblaCarousel, { type EmblaCarouselType, type EmblaOptionsType } from "embla-carousel";
-import Autoplay, { type AutoplayType } from "embla-carousel-autoplay";
 import { BaseController, generateId } from "./core-deps.js";
-import type { CarouselEvents } from "./events";
+import type { CarouselEvents } from "./events.js";
 import type { CarouselInstance, CarouselOptions } from "./types";
+
+type CarouselAutoplay = {
+  play(): void;
+  stop(): void;
+  isPlaying(): boolean;
+};
 
 type InternalCarouselInstance = CarouselInstance & {
   viewport: HTMLElement | null;
   embla: EmblaCarouselType | null;
-  autoplay: AutoplayType | null;
+  autoplay: CarouselAutoplay | null;
+  bindGeneration: number;
 };
 
 function createInstance(options: CarouselOptions = {}): InternalCarouselInstance {
@@ -36,6 +42,7 @@ function createInstance(options: CarouselOptions = {}): InternalCarouselInstance
     viewport: null,
     embla: null,
     autoplay: null,
+    bindGeneration: 0,
   };
 }
 
@@ -48,24 +55,6 @@ function toEmblaOptions(options: CarouselOptions): EmblaOptionsType {
     dragFree: options.dragFree ?? false,
     duration: options.duration ?? 25,
   };
-}
-
-function createAutoplayPlugin(options: CarouselOptions): AutoplayType | null {
-  if (!options.autoplay) {
-    return null;
-  }
-
-  const autoplayOptions = options.autoplayOptions ?? {};
-  const stopOnMouseEnter = autoplayOptions.stopOnMouseEnter ?? false;
-  const stopOnInteraction = autoplayOptions.stopOnInteraction ?? !stopOnMouseEnter;
-
-  return Autoplay({
-    delay: autoplayOptions.delay ?? 4000,
-    stopOnInteraction,
-    stopOnMouseEnter,
-    stopOnFocusIn: autoplayOptions.stopOnFocusIn ?? true,
-    playOnInit: true,
-  });
 }
 
 function snapshotCarouselInstance(instance: InternalCarouselInstance): CarouselInstance {
@@ -409,13 +398,40 @@ export class CarouselController extends BaseController<CarouselEvents> {
 
     this.#destroyEmbla(id);
     instance.viewport = viewport;
+    const generation = ++instance.bindGeneration;
 
-    const plugins = [];
-    const autoplay = createAutoplayPlugin(instance.options);
-    if (autoplay) {
-      plugins.push(autoplay);
-      instance.autoplay = autoplay;
+    if (instance.options.autoplay) {
+      void import("./autoplay.js")
+        .then((module) => module.createAutoplayPlugin(instance.options))
+        .then((autoplay) => {
+          if (
+            instance.bindGeneration !== generation ||
+            instance.viewport !== viewport ||
+            this.isDestroyed
+          ) {
+            return;
+          }
+
+          this.#mountEmbla(id, viewport, autoplay ? [autoplay] : [], autoplay);
+        });
+      return;
     }
+
+    this.#mountEmbla(id, viewport, [], null);
+  }
+
+  #mountEmbla(
+    id: string,
+    viewport: HTMLElement,
+    plugins: Parameters<typeof EmblaCarousel>[2],
+    autoplay: CarouselAutoplay | null
+  ): void {
+    const instance = this.#instances[id];
+    if (!instance || instance.viewport !== viewport) {
+      return;
+    }
+
+    instance.autoplay = autoplay;
 
     const embla = EmblaCarousel(viewport, toEmblaOptions(instance.options), plugins);
     instance.embla = embla;

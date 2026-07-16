@@ -14,6 +14,7 @@ export type {
 } from "./devtools.js";
 export type { ResponseParser, TypedFetchInit } from "./fetch.js";
 export { HttpError, typedFetch } from "./fetch.js";
+export type { QueryCacheInstrumentation } from "./instrumentation.js";
 export { createQueryObserver } from "./observer.js";
 export { mutationOptions, queryFn, queryKey, queryOptions } from "./options.js";
 export {

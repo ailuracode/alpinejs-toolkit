@@ -1,6 +1,10 @@
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import {
+  BUNDLE_CATEGORY_DEFAULT_COLD_GZIP_BYTES,
+  BUNDLE_CATEGORY_INTRINSIC_GZIP_BYTES,
+} from "./bundle-report-policy.mjs";
 import { validateHeadlessCssPolicy } from "./headless-css-policy.mjs";
 import { validatePackageCatalogSurfaces } from "./package-catalog-check.mjs";
 import { validateReadmes } from "./readme-check.mjs";
@@ -209,6 +213,11 @@ function validateSizeBudgetPolicyEntry(pkg) {
 
   if (typeof rule.category !== "string" || !BUNDLE_BUDGET_CATEGORIES.has(rule.category)) {
     errors.push(`${pkg.name}: bundle budget category must be recognized`);
+  } else if (
+    BUNDLE_CATEGORY_INTRINSIC_GZIP_BYTES[rule.category] == null ||
+    BUNDLE_CATEGORY_DEFAULT_COLD_GZIP_BYTES[rule.category] == null
+  ) {
+    errors.push(`${pkg.name}: bundle budget category "${rule.category}" is missing numeric limits`);
   }
 
   const configPath = path.join(pkg.dir, ".size-limit.json");

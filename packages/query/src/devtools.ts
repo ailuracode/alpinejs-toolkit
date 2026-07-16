@@ -50,32 +50,3 @@ export interface QueryDevtoolsApi {
 }
 
 export type DevtoolsListener = () => void;
-
-export function serializeDevtoolsValue(value: unknown): unknown {
-  if (value === undefined) {
-    return undefined;
-  }
-
-  try {
-    return structuredClone(value);
-  } catch {
-    try {
-      return JSON.parse(JSON.stringify(value));
-    } catch {
-      return String(value);
-    }
-  }
-}
-
-export function serializeDevtoolsError(
-  error: Error | null
-): { message: string; name: string } | null {
-  if (!error) {
-    return null;
-  }
-
-  return {
-    message: error.message,
-    name: error.name,
-  };
-}

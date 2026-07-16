@@ -1,6 +1,21 @@
 # @ailuracode/alpine-calendar
 
-Lightweight calendar logic for Alpine.js, powered by [date-fns](https://date-fns.org/). Registers callable magic `$calendar` that returns an independent calendar instance. The plugin does **not** render UI — you own the markup and styles.
+Lightweight calendar logic for Alpine.js with a native `Date`/`Intl` adapter (optional [date-fns](https://date-fns.org/) adapter). Registers callable magic `$calendar` that returns an independent calendar instance. The plugin does **not** render UI — you own the markup and styles.
+
+## Optional date-fns adapter
+
+The default entry does not bundle date-fns. For date-fns formatting tokens and locales:
+
+```js
+import calendar from "@ailuracode/alpine-calendar";
+import { createDateFnsCalendarAdapter } from "@ailuracode/alpine-calendar/date-fns";
+import { es } from "date-fns/locale";
+
+Alpine.plugin(calendar);
+const cal = Alpine.store("calendar").create("demo", {
+  adapter: createDateFnsCalendarAdapter({ locale: es, weekStartsOn: 1 }),
+});
+```
 
 ## Install
 

@@ -291,13 +291,14 @@ importers:
       alpinejs:
         specifier: ^3.0.0
         version: 3.15.12
-      date-fns:
-        specifier: ^4.1.0
-        version: 4.4.0
     devDependencies:
       '@ailuracode/alpine-core':
         specifier: workspace:*
         version: link:../core
+    optionalDependencies:
+      date-fns:
+        specifier: ^4.1.0
+        version: 4.4.0
 
   packages/carousel:
     dependencies:
