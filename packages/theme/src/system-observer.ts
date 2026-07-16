@@ -19,6 +19,7 @@
  */
 
 import { safeMatchMedia, type Unsubscribe } from "@ailuracode/alpine-core";
+import { createMediaQueryListener } from "@ailuracode/alpine-ui";
 import type { ResolvedTheme } from "./types";
 
 /** Stable media query string — kept in one place so tests can target it. */
@@ -41,27 +42,7 @@ export function readSystemTheme(): ResolvedTheme {
  * manager can wire teardown uniformly.
  */
 export function createSystemObserver(listener: (next: ResolvedTheme) => void): Unsubscribe {
-  const systemMedia = safeMatchMedia(PREFERS_COLOR_SCHEME_DARK_QUERY);
-
-  if (!systemMedia) {
-    return () => undefined;
-  }
-
-  let active = true;
-  const onChange = (event: MediaQueryListEvent): void => {
-    if (!active) {
-      return;
-    }
+  return createMediaQueryListener(PREFERS_COLOR_SCHEME_DARK_QUERY, (event) => {
     listener(event.matches ? "dark" : "light");
-  };
-
-  systemMedia.addEventListener("change", onChange);
-
-  return () => {
-    if (!active) {
-      return;
-    }
-    active = false;
-    systemMedia.removeEventListener("change", onChange);
-  };
+  });
 }

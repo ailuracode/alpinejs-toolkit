@@ -13,7 +13,8 @@
  * needing a separate callback signature.
  */
 
-import { safeMatchMedia, type Unsubscribe } from "@ailuracode/alpine-core";
+import type { Unsubscribe } from "@ailuracode/alpine-core";
+import { createMediaQueryListener } from "@ailuracode/alpine-ui";
 
 /**
  * Subscribes to changes of a CSS media query. Returns a cleanup
@@ -26,27 +27,5 @@ export function observeBreakpoint(
   query: string,
   listener: (event: MediaQueryListEvent) => void
 ): Unsubscribe {
-  const media = safeMatchMedia(query);
-
-  if (!media) {
-    return () => undefined;
-  }
-
-  let active = true;
-  const onChange = (event: MediaQueryListEvent): void => {
-    if (!active) {
-      return;
-    }
-    listener(event);
-  };
-
-  media.addEventListener("change", onChange);
-
-  return () => {
-    if (!active) {
-      return;
-    }
-    active = false;
-    media.removeEventListener("change", onChange);
-  };
+  return createMediaQueryListener(query, listener);
 }

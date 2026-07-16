@@ -55,13 +55,16 @@
     "test:coverage": "vitest run --coverage --config ../../vitest.config.ts packages/sidebar",
     "test:watch": "vitest --config ../../vitest.config.ts packages/sidebar",
     "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.test.json",
-    "test:e2e": "playwright test --config playwright.config.ts",
-    "test:e2e:report": "playwright show-report e2e/playwright-report"
+    "test:e2e": "playwright test --config playwright.config.ts"
+  },
+  "dependencies": {
+    "@ailuracode/alpine-ui": "workspace:*"
   },
   "devDependencies": {
     "@ailuracode/alpine-core": "workspace:*",
     "@ailuracode/alpine-scroll": "workspace:*",
     "@ailuracode/alpine-toggle": "workspace:*",
+    "@ailuracode/alpine-ui": "workspace:*",
     "@types/alpinejs": "^3.13.10",
     "@types/node": "^26.1.0",
     "@vitest/coverage-v8": "^4.1.9",

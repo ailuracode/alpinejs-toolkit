@@ -14,6 +14,7 @@
  */
 
 import type { Unsubscribe } from "@ailuracode/alpine-core";
+import { createMemoryAdapter } from "@ailuracode/alpine-ui";
 import type { SidebarStorage } from "../../types";
 
 /**
@@ -28,33 +29,5 @@ import type { SidebarStorage } from "../../types";
 export function createMemorySidebarStorage(initial: boolean | null = null): SidebarStorage & {
   subscribe: (listener: (next: boolean | null) => void) => Unsubscribe;
 } {
-  let value: boolean | null = initial;
-  const listeners = new Set<(next: boolean | null) => void>();
-
-  return {
-    get(): boolean | null {
-      return value;
-    },
-    set(next: boolean): void {
-      value = next;
-      for (const listener of listeners) {
-        listener(next);
-      }
-    },
-    remove(): void {
-      if (value === null) {
-        return;
-      }
-      value = null;
-      for (const listener of listeners) {
-        listener(null);
-      }
-    },
-    subscribe(listener): Unsubscribe {
-      listeners.add(listener);
-      return () => {
-        listeners.delete(listener);
-      };
-    },
-  };
+  return createMemoryAdapter<boolean>({ initial });
 }

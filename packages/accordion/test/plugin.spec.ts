@@ -7,44 +7,9 @@
  * asserted without booting the real runtime.
  */
 
-import type { Alpine as AlpineBase } from "alpinejs";
 import { afterEach, describe, expect, it } from "vitest";
+import { asAlpine, createMockAlpine } from "../../../test/mock-alpine";
 import { accordionPlugin } from "../src/index";
-
-interface MockAlpine {
-  stores: Record<string, unknown>;
-  magics: Record<string, () => unknown>;
-  cleanups: Array<() => void>;
-  plugin(cb: (alpine: MockAlpine) => void): void;
-  store(name: string, value?: unknown): unknown;
-  magic(name: string, factory: () => unknown): void;
-  cleanup(cb: () => void): void;
-}
-
-function createMockAlpine(): MockAlpine {
-  const alpine: MockAlpine = {
-    stores: {},
-    magics: {},
-    cleanups: [],
-    plugin(cb) {
-      cb(alpine);
-    },
-    store(name, value?) {
-      if (value === undefined) {
-        return alpine.stores[name];
-      }
-      alpine.stores[name] = value;
-      return undefined;
-    },
-    magic(name, factory) {
-      alpine.magics[name] = factory;
-    },
-    cleanup(cb) {
-      alpine.cleanups.push(cb);
-    },
-  };
-  return alpine;
-}
 
 afterEach(() => {
   // Each test owns a fresh Alpine mock so no shared state leaks.
@@ -59,7 +24,7 @@ afterEach(() => {
 describe("accordionPlugin — collision-avoidance keys", () => {
   it("registers under a custom storeKey", () => {
     const Alpine = createMockAlpine();
-    accordionPlugin({ storeKey: "faq" })(Alpine as unknown as AlpineBase);
+    accordionPlugin({ storeKey: "faq" })(asAlpine(Alpine));
     expect(Alpine.stores.faq).toBeDefined();
     expect(Alpine.stores.accordion).toBeUndefined();
     expect(Alpine.magics.faq).toBeDefined();
@@ -67,7 +32,7 @@ describe("accordionPlugin — collision-avoidance keys", () => {
 
   it("lets magicKey move independently from storeKey", () => {
     const Alpine = createMockAlpine();
-    accordionPlugin({ storeKey: "faq", magicKey: "disclosure" })(Alpine as unknown as AlpineBase);
+    accordionPlugin({ storeKey: "faq", magicKey: "disclosure" })(asAlpine(Alpine));
     expect(Alpine.stores.faq).toBeDefined();
     expect(Alpine.stores.accordion).toBeUndefined();
     expect(Alpine.magics.disclosure).toBeDefined();
@@ -76,7 +41,7 @@ describe("accordionPlugin — collision-avoidance keys", () => {
 
   it("leaves the default keys untouched when no rename is supplied", () => {
     const Alpine = createMockAlpine();
-    accordionPlugin()(Alpine as unknown as AlpineBase);
+    accordionPlugin()(asAlpine(Alpine));
     expect(Alpine.stores.accordion).toBeDefined();
     expect(Alpine.magics.accordion).toBeDefined();
   });
