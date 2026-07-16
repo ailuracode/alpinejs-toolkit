@@ -16,7 +16,16 @@ import {
 
 const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../../..");
 
-const PACKAGE_EDIT_BASE = "https://github.com/ailuracode/alpinejs-toolkit/edit/master/packages";
+const REPO_EDIT_BASE = "https://github.com/ailuracode/alpinejs-toolkit/edit/master";
+
+export function packageReadmeEditUrl(folder: string): string {
+  return `${REPO_EDIT_BASE}/packages/${folder}/README.md`;
+}
+
+/** Starlight synthesizes edit links as `editLink.baseUrl + filePath` (paths relative to `src/content/docs/`). */
+export function docsContentEditUrl(relativePath: string): string {
+  return `${REPO_EDIT_BASE}/docs/${relativePath.replace(/^\//, "")}`;
+}
 
 export function docsEntryId(entry: PackageCatalogEntry): string {
   const routeId = packageDocsRouteId(entry);
@@ -108,7 +117,7 @@ async function loadPackageReadmeDocs(context: LoaderContext): Promise<void> {
       data: {
         title: entry.title,
         description: `Package: ${entry.npmPackage}`,
-        editUrl: `${PACKAGE_EDIT_BASE}/${entry.folder}/README.md`,
+        editUrl: packageReadmeEditUrl(entry.folder),
         ...paginationForEntry(entry),
       },
       filePath: relativeReadmePath,

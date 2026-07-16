@@ -4,7 +4,12 @@ import {
   getReadmeBackedDocumentedEntries,
   usesGuideDocs,
 } from "../src/catalog/index.js";
-import { docsEntryId, transformReadmeLinks } from "../src/loaders/combined-docs-loader.js";
+import {
+  docsContentEditUrl,
+  docsEntryId,
+  packageReadmeEditUrl,
+  transformReadmeLinks,
+} from "../src/loaders/combined-docs-loader.js";
 
 describe("combined docs loader helpers", () => {
   it("maps catalog entries to stable Starlight doc ids", () => {
@@ -39,5 +44,17 @@ describe("combined docs loader helpers", () => {
     expect(transformed).toContain("](/plugins/attention/)");
     expect(transformed).toContain("](/device-detection/)");
     expect(transformed).toContain("](/query/)");
+  });
+
+  it("builds GitHub edit URLs for README-backed and Starlight docs content", () => {
+    expect(packageReadmeEditUrl("overlay")).toBe(
+      "https://github.com/ailuracode/alpinejs-toolkit/edit/master/packages/overlay/README.md"
+    );
+    expect(docsContentEditUrl("es/plugins/theme.md")).toBe(
+      "https://github.com/ailuracode/alpinejs-toolkit/edit/master/docs/es/plugins/theme.md"
+    );
+    expect(docsContentEditUrl("getting-started.md")).toBe(
+      "https://github.com/ailuracode/alpinejs-toolkit/edit/master/docs/getting-started.md"
+    );
   });
 });

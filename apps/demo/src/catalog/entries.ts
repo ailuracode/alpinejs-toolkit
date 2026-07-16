@@ -40,7 +40,7 @@ export const PACKAGE_CATALOG: readonly PackageCatalogEntry[] = [
     badges: ["infrastructure"],
     related: ["dialog", "menu", "tooltip", "command"],
     demo: { available: true, componentId: "overlay" },
-    docs: { available: true, i18n: false },
+    docs: { available: true },
   }),
   entry({
     id: "keyboard",
@@ -504,7 +504,7 @@ export const PACKAGE_CATALOG: readonly PackageCatalogEntry[] = [
     tier: "headless",
     order: 11,
     related: ["selection", "virtual", "command"],
-    docs: { available: true, i18n: false },
+    docs: { available: true },
   }),
   entry({
     id: "form",
@@ -560,7 +560,7 @@ export const PACKAGE_CATALOG: readonly PackageCatalogEntry[] = [
     badges: ["adapter"],
     related: ["query", "query-kit"],
     requires: ["query"],
-    docs: { available: true, i18n: false },
+    docs: { available: true },
   }),
   entry({
     id: "query-adapter-zustand",
@@ -579,7 +579,7 @@ export const PACKAGE_CATALOG: readonly PackageCatalogEntry[] = [
     badges: ["adapter"],
     related: ["query", "query-kit"],
     requires: ["query"],
-    docs: { available: true, i18n: false },
+    docs: { available: true },
   }),
   entry({
     id: "query-kit",
@@ -650,6 +650,6 @@ export const PACKAGE_CATALOG: readonly PackageCatalogEntry[] = [
     tier: "advanced",
     order: 7,
     related: ["query"],
-    docs: { available: true, i18n: false },
+    docs: { available: true },
   }),
 ] as const;

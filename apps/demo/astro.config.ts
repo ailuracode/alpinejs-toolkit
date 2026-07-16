@@ -54,7 +54,7 @@ export default defineConfig({
         },
       ],
       editLink: {
-        baseUrl: "https://github.com/ailuracode/alpinejs-toolkit/edit/master/packages/",
+        baseUrl: "https://github.com/ailuracode/alpinejs-toolkit/edit/master/docs/",
       },
       head: [
         {
