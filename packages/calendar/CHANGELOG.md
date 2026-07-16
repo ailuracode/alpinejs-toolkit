@@ -1,5 +1,44 @@
 # @ailuracode/alpine-calendar
 
+## 0.1.3
+
+### Patch Changes
+
+- 2c95a00: Migrate `@ailuracode/alpine-calendar` to the canonical controller architecture.
+
+  - Add headless `CalendarController` extending `BaseController<CalendarEvents>` with typed `select`, `monthChange`, and `clear` events.
+  - Extract public types into `types.ts` (all `readonly`) and events into `events.ts`.
+  - Extract grid computation to `internal/grid.ts` and selection logic to `internal/selection.ts`.
+  - `CalendarController` owns mutable state privately — exposed through getters and `toStore()`.
+  - Options are readonly and normalized once at construction.
+  - `createCalendar()` preserved as backward-compatible alias.
+  - Alpine registration isolated in thin `plugin.ts` adapter.
+  - `index.ts` is exports-only barrel.
+  - `CalendarOptions` fields are now `readonly`.
+  - `CalendarInstance` properties (`month`, `selected`, etc.) are now getters (read-only snapshots).
+  - `CalendarDay` fields are now `readonly`.
+  - Internal modules (`internal/grid.ts`, `internal/selection.ts`) are NOT re-exported.
+  - `CalendarInstance` no longer has public fields — all mutations go through controller commands.
+  - New peer dependency `@ailuracode/alpine-core` required.
+
+- 2511f89: Declare `"sideEffects": false` on publishable packages that were missing the metadata, and enforce the policy in `repo:check` and `pack:check`.
+- 9a44380: `@ailuracode/alpine-calendar` now accepts a `CreateCalendarPluginOptions` argument (added by this release) exposing `magicKey` so hosts with a pre-existing `$calendar` collision can move the integration surface without forking the controller. The new `DEFAULT_CALENDAR_MAGIC_KEY` constant keeps the rename discoverable from TypeScript. The Alpine integration now goes through `guardMagic` with `packageName: "calendar"` so the new `RegistrationError("REGISTRATION_COLLISION")` messages name `calendarPlugin()` instead of the raw key. This unblocks `@ailuracode/alpine-calendar` from the `registrationGuardPending` migration list tracked by `architecture:check`.
+- 12ca21e: Minify published package builds to reduce final dist artifact size and declare `@ailuracode/alpine-core` as a peer dependency where package runtime code uses core primitives.
+- Updated dependencies [3c8b40f]
+- Updated dependencies [1ae869c]
+- Updated dependencies [ade9bc7]
+- Updated dependencies [556055a]
+- Updated dependencies [a488cbb]
+- Updated dependencies [aa88539]
+- Updated dependencies [173379d]
+- Updated dependencies [9a44380]
+- Updated dependencies [9a44380]
+- Updated dependencies [9a44380]
+- Updated dependencies [9a44380]
+- Updated dependencies [364ad60]
+- Updated dependencies [3031b13]
+  - @ailuracode/alpine-core@0.2.1
+
 ## 0.1.2
 
 ### Patch Changes

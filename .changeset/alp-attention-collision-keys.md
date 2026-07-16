@@ -1,5 +1,0 @@
----
-"@ailuracode/alpine-attention": patch
----
-
-`@ailuracode/alpine-attention` now accepts a `CreateAttentionPluginOptions` argument exposing `wakelockKey` and `idleKey` so hosts with pre-existing magic collisions can move either integration surface without forking the underlying controllers. The new `DEFAULT_ATTENTION_WAKELOCK_KEY` and `DEFAULT_ATTENTION_IDLE_KEY` constants keep the renames discoverable from TypeScript. The Alpine integration now goes through `guardMagic` with `packageName: "attention"` so the new `RegistrationError("REGISTRATION_COLLISION")` messages name `attentionPlugin()` instead of the raw keys. The plugin retains a direct-Alpine overload for backwards compatibility. This unblocks `@ailuracode/alpine-attention` from the `registrationGuardPending` migration list tracked by `architecture:check`.

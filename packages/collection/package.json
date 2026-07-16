@@ -1,6 +1,6 @@
 {
   "name": "@ailuracode/alpine-collection",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Framework-agnostic collection primitives for Alpine.js — filtering, sorting, grouping, pagination, and active-item navigation over a stable key registry.",
   "keywords": [
     "alpinejs",
@@ -50,7 +50,7 @@
     "typecheck": "tsc --noEmit"
   },
   "peerDependencies": {
-    "@ailuracode/alpine-core": "^0.2.0"
+    "@ailuracode/alpine-core": "^0.2.1"
   },
   "devDependencies": {
     "@ailuracode/alpine-core": "workspace:*",

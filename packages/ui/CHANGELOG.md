@@ -1,5 +1,11 @@
 # @ailuracode/alpine-ui
 
+## 1.0.1
+
+### Patch Changes
+
+- 31949cf: Clarify `@ailuracode/alpine-ui` as framework-agnostic infrastructure, remove unnecessary `@ailuracode/alpine-core` dependency metadata, and add a packed consumer contract test.
+
 ## 1.0.0
 
 ### Minor Changes

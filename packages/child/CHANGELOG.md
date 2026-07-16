@@ -1,5 +1,26 @@
 # @ailuracode/alpine-child
 
+## 1.0.1
+
+### Patch Changes
+
+- ade9bc7: Add package-owned Playwright E2E coverage for Alpine Toolkit packages under epic ALP-55.
+- 9a44380: `@ailuracode/alpine-child` `ChildPluginOptions` now accepts a `directiveKey` so hosts with a pre-existing `x-child` collision can move the integration surface without forking the unwrap pass. The new `DEFAULT_CHILD_DIRECTIVE_KEY` constant keeps the rename discoverable from TypeScript. The Alpine integration now goes through `guardDirective` with `packageName: "child"` so the new `RegistrationError("REGISTRATION_COLLISION")` messages name `childPlugin()` instead of the raw key. `guardDirective` in `@ailuracode/alpine-core` now returns the Alpine-built directive chain so callers can attach priority modifiers (e.g. `.before("ignore")`) without re-registering. This unblocks `@ailuracode/alpine-child` from the `registrationGuardPending` migration list tracked by `architecture:check`.
+- Updated dependencies [3c8b40f]
+- Updated dependencies [1ae869c]
+- Updated dependencies [ade9bc7]
+- Updated dependencies [556055a]
+- Updated dependencies [a488cbb]
+- Updated dependencies [aa88539]
+- Updated dependencies [173379d]
+- Updated dependencies [9a44380]
+- Updated dependencies [9a44380]
+- Updated dependencies [9a44380]
+- Updated dependencies [9a44380]
+- Updated dependencies [364ad60]
+- Updated dependencies [3031b13]
+  - @ailuracode/alpine-core@0.2.1
+
 ## 1.0.0
 
 ### Minor Changes

@@ -1,5 +1,0 @@
----
-"@ailuracode/alpine-gesture": patch
----
-
-`@ailuracode/alpine-gesture` now exposes `storeKey`, `magicKey`, and `directiveKey` on `GestureOptions` so hosts with pre-existing `$store.gesture`, `$gesture`, or `x-gesture` collisions can move every integration surface (`store` + magic + directive) without forking the controller. `magicKey` follows `storeKey` by default, and `directiveKey` is independent so the markup can change without retuning the store. The new `DEFAULT_GESTURE_STORE_KEY` / `DEFAULT_GESTURE_MAGIC_KEY` / `DEFAULT_GESTURE_DIRECTIVE_KEY` constants keep the renames discoverable from TypeScript. The Alpine integration now goes through `bridgeControllerStore` (store + magic) and `bridgeControllerDirective` (the `x-gesture` directive) with `packageName: "gesture"` so the new `RegistrationError("REGISTRATION_COLLISION")` messages name `gesturePlugin()` instead of the raw key. This unblocks `@ailuracode/alpine-gesture` from the `registrationGuardPending` migration list tracked by `architecture:check`.

@@ -1,6 +1,6 @@
 {
   "name": "@ailuracode/alpine-gesture",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Headless gesture recognition — tap, swipe, pan, pinch, and long press via pointer events",
   "type": "module",
   "sideEffects": false,
@@ -40,7 +40,7 @@
   },
   "peerDependencies": {
     "alpinejs": "^3.0.0",
-    "@ailuracode/alpine-core": "^0.2.0"
+    "@ailuracode/alpine-core": "^0.2.1"
   },
   "devDependencies": {
     "@ailuracode/alpine-core": "workspace:*",

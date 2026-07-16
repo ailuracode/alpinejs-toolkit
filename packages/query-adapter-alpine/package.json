@@ -1,6 +1,6 @@
 {
   "name": "@ailuracode/alpine-query-adapter-alpine",
-  "version": "4.0.1",
+  "version": "4.1.0",
   "description": "Native Alpine.reactive adapter plugin for @ailuracode/alpine-query",
   "type": "module",
   "license": "MIT",
@@ -26,7 +26,7 @@
     }
   },
   "peerDependencies": {
-    "@ailuracode/alpine-core": "^0.2.0",
+    "@ailuracode/alpine-core": "^0.2.1",
     "@types/alpinejs": "^3.13.11",
     "alpinejs": "^3.0.0"
   },
@@ -40,7 +40,7 @@
     "@ailuracode/alpine-query": "workspace:*"
   },
   "dependencies": {
-    "@ailuracode/alpine-query": "^0.6.1"
+    "@ailuracode/alpine-query": "^0.6.2"
   },
   "scripts": {
     "build": "tsup src/index.ts --format esm --dts --clean --out-dir dist --tsconfig tsconfig.build.json --minify",
