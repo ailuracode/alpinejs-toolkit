@@ -87,7 +87,7 @@ describe("@ailuracode/alpine-sidebar type contract", () => {
       remove(): void;
       subscribe?(
         listener: (next: boolean | null) => void
-      ): import("@ailuracode/alpine-core").Unsubscribe;
+      ): import("@ailuracode/alpine-core/types").Unsubscribe;
     }>().toMatchTypeOf<import("../src/index").SidebarStorage>();
   });
 
