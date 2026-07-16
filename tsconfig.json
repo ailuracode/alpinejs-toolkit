@@ -59,7 +59,9 @@
       "@ailuracode/alpine-form/json-api": ["./packages/form/src/entries/json-api.ts"],
       "@ailuracode/alpine-form/standard-schema": ["./packages/form/src/entries/standard-schema.ts"],
       "@ailuracode/alpine-selection/controller": ["./packages/selection/src/entries/controller.ts"],
-      "@ailuracode/alpine-selection/serialization": ["./packages/selection/src/entries/serialization.ts"],
+      "@ailuracode/alpine-selection/serialization": [
+        "./packages/selection/src/entries/serialization.ts"
+      ],
       "@ailuracode/alpine-selection/navigation": ["./packages/selection/src/entries/navigation.ts"],
       "@ailuracode/alpine-media": ["./packages/media/src/index.ts"],
       "@ailuracode/alpine-sidebar": ["./packages/sidebar/src/index.ts"],

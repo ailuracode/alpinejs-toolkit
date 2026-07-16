@@ -8,9 +8,9 @@
  * @module
  */
 
-import { BaseController } from "./core-deps.js";
 import type { ResolvedCalendarContext } from "./context.js";
 import { resolveCalendarDateContext } from "./context.js";
+import { BaseController } from "./core-deps.js";
 import type { CalendarEvents, CalendarSelectDetail } from "./events.js";
 import { chunkWeeks, getMonthDays, getWeekdayLabels, normalizeDate } from "./internal/grid.js";
 import {
