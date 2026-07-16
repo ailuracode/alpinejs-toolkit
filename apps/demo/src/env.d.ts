@@ -25,6 +25,7 @@ type ToastMagic = import("@ailuracode/alpine-toast").ToastMagic<
 type ExportMagic = import("@ailuracode/alpine-transfer").ExportMagic;
 type CalendarMagic = import("@ailuracode/alpine-calendar").CalendarMagic;
 type ToggleMagic = import("@ailuracode/alpine-toggle").ToggleMagic;
+type TimerMagic = import("@ailuracode/alpine-timer").TimerMagic;
 type PlatformMagic = import("@ailuracode/alpine-env").PlatformMagic;
 type PermissionsStore = import("@ailuracode/alpine-permissions").PermissionsStore;
 type PermissionsMagic = import("@ailuracode/alpine-permissions").PermissionsMagic;
@@ -89,6 +90,7 @@ declare module "alpinejs" {
       $export: ExportMagic;
       $calendar: CalendarMagic;
       $toggle: ToggleMagic;
+      $timer: TimerMagic;
       $platform: PlatformMagic;
       $notify: NotifyMagic;
       $share: ShareMagic;

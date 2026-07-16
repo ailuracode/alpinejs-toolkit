@@ -26,6 +26,7 @@ import SelectionDemo from "../components/demos/SelectionDemo.astro";
 import SidebarDemo from "../components/demos/SidebarDemo.astro";
 import TabsDemo from "../components/demos/TabsDemo.astro";
 import ThemeDemo from "../components/demos/ThemeDemo.astro";
+import TimerDemo from "../components/demos/TimerDemo.astro";
 import ToastDemo from "../components/demos/ToastDemo.astro";
 import ToggleDemo from "../components/demos/ToggleDemo.astro";
 import TooltipDemo from "../components/demos/TooltipDemo.astro";
@@ -34,6 +35,7 @@ import VirtualDemo from "../components/demos/VirtualDemo.astro";
 
 export const PLAYGROUND_DEMOS: Record<string, AstroComponentFactory> = {
   theme: ThemeDemo,
+  timer: TimerDemo,
   sidebar: SidebarDemo,
   media: MediaDemo,
   scroll: ScrollDemo,

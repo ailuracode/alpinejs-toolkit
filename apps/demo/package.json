@@ -48,6 +48,7 @@
     "@ailuracode/alpine-sidebar": "workspace:*",
     "@ailuracode/alpine-tabs": "workspace:*",
     "@ailuracode/alpine-theme": "workspace:*",
+    "@ailuracode/alpine-timer": "workspace:*",
     "@ailuracode/alpine-toast": "workspace:*",
     "@ailuracode/alpine-toggle": "workspace:*",
     "@ailuracode/alpine-tooltip": "workspace:*",

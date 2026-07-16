@@ -1,0 +1,55 @@
+---
+import { getPluginNavItem } from "../../plugin-nav";
+import DemoButton from "../astro/DemoButton.astro";
+import DemoSection from "../DemoSection.astro";
+
+const plugin = getPluginNavItem("timer")!;
+---
+
+<DemoSection id={plugin.id} title={plugin.title} api={plugin.api} description={plugin.description}>
+	<div class="grid gap-6">
+		<div class="grid gap-4" x-data="{ timer: $timer.countdown({ duration: 10_000 }) }">
+			<p class="text-xs text-[var(--ios-label-secondary)] m-0">Countdown preset</p>
+			<strong class="text-2xl tabular-nums" x-text="timer.formatted"></strong>
+			<div class="flex flex-wrap gap-2">
+				<DemoButton @click="timer.toggle()">
+					<span x-text="timer.running ? 'Pause' : 'Start'"></span>
+				</DemoButton>
+				<DemoButton @click="timer.reset()">Reset</DemoButton>
+			</div>
+		</div>
+
+		<div class="grid gap-4" x-data="{ counter: $timer.countup() }">
+			<p class="text-xs text-[var(--ios-label-secondary)] m-0">Countup preset</p>
+			<strong class="text-2xl tabular-nums" x-text="counter.formatted"></strong>
+			<div class="flex flex-wrap gap-2">
+				<DemoButton @click="counter.toggle()">
+					<span x-text="counter.running ? 'Pause' : 'Start'"></span>
+				</DemoButton>
+				<DemoButton @click="counter.reset()">Reset</DemoButton>
+			</div>
+		</div>
+
+		<div class="grid gap-4" x-data="{ stopwatch: $timer.stopwatch() }">
+			<p class="text-xs text-[var(--ios-label-secondary)] m-0">Stopwatch with laps</p>
+			<strong class="text-2xl tabular-nums" x-text="stopwatch.formatted"></strong>
+			<div class="flex flex-wrap gap-2">
+				<DemoButton @click="stopwatch.toggle()">
+					<span x-text="stopwatch.running ? 'Pause' : 'Start'"></span>
+				</DemoButton>
+				<DemoButton @click="stopwatch.lap()" :disabled="!stopwatch.running">Lap</DemoButton>
+				<DemoButton @click="stopwatch.reset()">Reset</DemoButton>
+			</div>
+			<template x-for="lap in stopwatch.laps" :key="lap.id">
+				<div class="flex gap-3 text-sm tabular-nums">
+					<span x-text="`#${lap.index}`"></span>
+					<span x-text="lap.formatted"></span>
+					<span class="text-[var(--ios-label-secondary)]" x-text="`+${lap.splitFormatted}`"></span>
+				</div>
+			</template>
+		</div>
+	</div>
+	<p class="text-xs text-[var(--ios-label-secondary)] mt-3">
+		Package: <code>{plugin.package}</code>
+	</p>
+</DemoSection>

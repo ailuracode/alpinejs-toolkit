@@ -4,7 +4,7 @@ Guidance for AI agents and contributors working on **@ailuracode/alpinejs-toolki
 
 ## Project
 
-Alpine.js plugin monorepo by **ailuracode**. 37 independent npm packages under `packages/`, plus shared tests and docs. The root package `@ailuracode/alpinejs-toolkit` is **private** and never published.
+Alpine.js plugin monorepo by **ailuracode**. 38 independent npm packages under `packages/`, plus shared tests and docs. The root package `@ailuracode/alpinejs-toolkit` is **private** and never published.
 
 | Package | Type | Store / Magic |
 |---------|------|---------------|
@@ -33,6 +33,7 @@ Alpine.js plugin monorepo by **ailuracode**. 37 independent npm packages under `
 | `@ailuracode/alpine-toast` | Magic | `$toast` — headless queue (no markup/CSS) |
 | `@ailuracode/alpine-calendar` | Magic | `$calendar` |
 | `@ailuracode/alpine-toggle` | Magic | `$toggle` |
+| `@ailuracode/alpine-timer` | Magic | `$timer` — countdown, countup, and stopwatch factories |
 | `@ailuracode/alpine-child` | Directive | `x-child` |
 | `@ailuracode/alpine-gesture` | Store | `$store.gesture` / `x-gesture` — headless pointer gesture recognition |
 | `@ailuracode/alpine-history` | Store | `$store.history` / `$history` — headless undo/redo history controller |

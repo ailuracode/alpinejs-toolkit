@@ -11,8 +11,8 @@ import {
 
 describe("package catalog", () => {
   it("covers every public package folder except ui", () => {
-    expect(PACKAGE_CATALOG).toHaveLength(37);
-    expect(new Set(PACKAGE_CATALOG.map((entry) => entry.id)).size).toBe(37);
+    expect(PACKAGE_CATALOG).toHaveLength(38);
+    expect(new Set(PACKAGE_CATALOG.map((entry) => entry.id)).size).toBe(38);
     expect(PACKAGE_CATALOG.every((entry) => entry.readmePath.startsWith("packages/"))).toBe(true);
   });
 
