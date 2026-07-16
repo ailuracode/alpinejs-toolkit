@@ -13,7 +13,6 @@ export type { Unsubscribe } from "./core-deps.js";
 export { createForm, createFormOptions } from "./create-form.js";
 export { FormError, type FormErrorCode, isFormErrorCode } from "./error.js";
 export type { FormEvents } from "./events.js";
-export { type JsonApiErrorLike, mapJsonApiErrors, pointerToFieldPath } from "./json-api-errors.js";
 export {
   deleteValueAtPath,
   getValueAtPath,
@@ -29,17 +28,6 @@ export {
   formPlugin,
   formPlugin as default,
 } from "./plugin.js";
-export {
-  createStandardSchemaAdapter,
-  isStandardSchema,
-  issuePathToFieldPath,
-  parseFieldWithStandardSchema,
-  type StandardSchemaIssue,
-  type StandardSchemaResult,
-  type StandardSchemaV1,
-  standardSchemaIssuesToFieldErrors,
-  validateStandardSchema,
-} from "./standard-schema.js";
 export { createFormStore, createFormStoreFromController, syncInstanceRegistry } from "./store.js";
 export type {
   CreateFormApiOptions,
@@ -81,7 +69,6 @@ export type {
   ValidationResult,
   ValidationTrigger,
 } from "./types.js";
-// --- Public constants ------------------------------------------------
 export {
   DEFAULT_FORM_MAGIC_KEY,
   DEFAULT_FORM_STORE_KEY,
@@ -92,11 +79,3 @@ export {
   runFieldValidator,
   runValidationAdapter,
 } from "./validation.js";
-export {
-  buildFormValidatorsAdapter,
-  buildTriggerValidator,
-  composeFormValidatorsAdapter,
-  isValidatorFn,
-  runFormValidatorSource,
-  runValidatorSource,
-} from "./validators-runtime.js";

@@ -23,6 +23,9 @@
       "@ailuracode/alpine-carousel": ["../../packages/carousel/src/index.ts"],
       "@ailuracode/alpine-virtual": ["../../packages/virtual/src/index.ts"],
       "@ailuracode/alpine-selection": ["../../packages/selection/src/index.ts"],
+      "@ailuracode/alpine-selection/serialization": [
+        "../../packages/selection/src/entries/serialization.ts"
+      ],
       "@ailuracode/alpine-core/browser": ["../../packages/core/src/browser.ts"],
       "@ailuracode/alpine-core/controller": ["../../packages/core/src/exports/controller.ts"],
       "@ailuracode/alpine-core/bridge": ["../../packages/core/src/exports/bridge.ts"],
@@ -41,6 +44,9 @@
       "@ailuracode/alpine-notify": ["../../packages/notify/src/index.ts"],
       "@ailuracode/alpine-overlay": ["../../packages/overlay/src/index.ts"],
       "@ailuracode/alpine-permissions": ["../../packages/permissions/src/index.ts"],
+      "@ailuracode/alpine-query/instrumentation": [
+        "../../packages/query/src/instrumentation-entry.ts"
+      ],
       "@ailuracode/alpine-query": ["../../packages/query/src/index.ts"],
       "@ailuracode/alpine-query-adapter-alpine": [
         "../../packages/query-adapter-alpine/src/index.ts"

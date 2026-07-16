@@ -23,6 +23,7 @@ on:
       - "pnpm-workspace.yaml"
       - "tsconfig.json"
       - "vitest.config.ts"
+      - "bundle/**"
       - "e2e/**"
       - "biome.json"
       - "docs/**"
@@ -164,6 +165,10 @@ jobs:
             cmd+=(run size)
             "${cmd[@]}"
           fi
+
+      - name: Consumer bundle report
+        if: needs.detect.outputs.run_validate == 'true' && needs.detect.outputs.run_size == 'true'
+        run: node scripts/bundle-report.mjs --check --baseline bundle/baseline.json --write-summary
 
       - name: Build demo app
         if: needs.detect.outputs.run_validate == 'true' && needs.detect.outputs.run_demo == 'true'

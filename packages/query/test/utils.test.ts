@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { serializeDevtoolsError, serializeDevtoolsValue } from "../src/devtools.js";
+import { serializeDevtoolsError, serializeDevtoolsValue } from "../src/instrumentation-factory.js";
 import {
   getRetryDelay,
   hashKey,

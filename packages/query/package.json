@@ -31,13 +31,17 @@
       "types": "./dist/adapters/vanilla.d.ts",
       "default": "./dist/adapters/vanilla.js"
     },
+    "./instrumentation": {
+      "types": "./dist/instrumentation.d.ts",
+      "default": "./dist/instrumentation.js"
+    },
     "./global": {
       "types": "./dist/global.d.ts"
     }
   },
   "types": "./dist/global.d.ts",
   "scripts": {
-    "build": "tsup src/index.ts src/adapters/vanilla.ts --format esm --dts --clean --out-dir dist && cp src/global.d.ts dist/global.d.ts",
+    "build": "tsup src/index.ts src/adapters/vanilla.ts src/instrumentation-entry.ts --format esm --dts --clean --out-dir dist && mv dist/instrumentation-entry.js dist/instrumentation.js && mv dist/instrumentation-entry.d.ts dist/instrumentation.d.ts && cp src/global.d.ts dist/global.d.ts",
     "prepublishOnly": "pnpm run build",
     "size": "size-limit",
     "test": "vitest run --config ../../vitest.config.ts test"
@@ -59,7 +63,7 @@
   },
   "size-limit": [
     {
-      "name": "full surface",
+      "name": "intrinsic full",
       "path": "dist/index.js",
       "import": "*",
       "ignore": [
@@ -67,8 +71,7 @@
         "@types/alpinejs"
       ],
       "gzip": true,
-      "brotli": true,
-      "limit": "5.2 kB"
+      "limit": "4307 B"
     }
   ]
 }

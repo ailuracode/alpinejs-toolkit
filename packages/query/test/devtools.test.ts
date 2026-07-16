@@ -2,12 +2,18 @@ import query, { createAlpineStoreAdapter } from "@ailuracode/alpine-query-adapte
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { startAlpine } from "../../../test/helpers.js";
 import type { QueryStore } from "../src/index.js";
+import { createTestQueryInstrumentation } from "./instrumentation-helper.js";
 
 describe("@ailuracode/alpine-query devtools", () => {
   let store: QueryStore;
 
   beforeEach(() => {
-    const Alpine = startAlpine(query({ adapter: createAlpineStoreAdapter }));
+    const Alpine = startAlpine(
+      query({
+        adapter: createAlpineStoreAdapter,
+        instrumentation: createTestQueryInstrumentation(),
+      })
+    );
     store = Alpine.store("query") as QueryStore;
   });
 

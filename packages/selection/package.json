@@ -27,6 +27,18 @@
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
     },
+    "./controller": {
+      "types": "./dist/controller.d.ts",
+      "default": "./dist/controller.js"
+    },
+    "./serialization": {
+      "types": "./dist/serialization.d.ts",
+      "default": "./dist/serialization.js"
+    },
+    "./navigation": {
+      "types": "./dist/navigation.d.ts",
+      "default": "./dist/navigation.js"
+    },
     "./global": {
       "types": "./dist/global.d.ts"
     }
@@ -46,7 +58,7 @@
     }
   },
   "scripts": {
-    "build": "tsup src/index.ts --format esm --dts --clean --out-dir dist && cp src/global.d.ts dist/global.d.ts",
+    "build": "tsup --config tsup.config.ts && cp src/global.d.ts dist/global.d.ts",
     "prepublishOnly": "pnpm run build",
     "size": "size-limit",
     "test": "vitest run --config ../../vitest.config.ts test",

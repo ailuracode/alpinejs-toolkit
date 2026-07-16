@@ -44,6 +44,14 @@
       "types": "./dist/plugin.d.ts",
       "default": "./dist/plugin.js"
     },
+    "./sse": {
+      "types": "./dist/sse.d.ts",
+      "default": "./dist/sse.js"
+    },
+    "./websocket": {
+      "types": "./dist/websocket.d.ts",
+      "default": "./dist/websocket.js"
+    },
     "./test": {
       "types": "./dist/test.d.ts",
       "default": "./dist/test.js"

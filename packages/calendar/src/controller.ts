@@ -8,19 +8,9 @@
  * @module
  */
 
-import type { Day, Locale } from "date-fns";
-import {
-  addMonths,
-  format,
-  isSameDay,
-  isSameMonth,
-  isToday as isTodayDate,
-  isWithinInterval,
-  startOfMonth,
-  subMonths,
-} from "date-fns";
-import { resolveDateFnsContext } from "./context.js";
 import { BaseController } from "./core-deps.js";
+import type { ResolvedCalendarContext } from "./context.js";
+import { resolveCalendarDateContext } from "./context.js";
 import type { CalendarEvents, CalendarSelectDetail } from "./events.js";
 import { chunkWeeks, getMonthDays, getWeekdayLabels, normalizeDate } from "./internal/grid.js";
 import {
@@ -55,14 +45,14 @@ type Writable<T> = {
 };
 
 function resolveConfig(options: CalendarOptions = {}): ResolvedCalendarConfig {
-  const context = resolveDateFnsContext(options);
+  const context = resolveCalendarDateContext(options);
 
   return Object.freeze({
     context,
     minDate: options.minDate ? normalizeDate(options.minDate, context) : undefined,
     maxDate: options.maxDate ? normalizeDate(options.maxDate, context) : undefined,
     mode: options.mode ?? "single",
-    month: startOfMonth(options.month ?? new Date(), context),
+    month: context.adapter.startOfMonth(options.month ?? new Date(), context),
     selected: normalizeSelection(options.selected ?? null, options.mode ?? "single", context),
     disabled: normalizeMatchers(options.disabled),
   });
@@ -104,11 +94,11 @@ export class CalendarController extends BaseController<CalendarEvents> {
     return readCalendarSelection(this.#selection, this.#config.context);
   }
 
-  get locale(): Locale {
+  get locale() {
     return this.#config.context.locale;
   }
 
-  get weekStartsOn(): Day {
+  get weekStartsOn() {
     return this.#config.context.weekStartsOn;
   }
 
@@ -116,17 +106,23 @@ export class CalendarController extends BaseController<CalendarEvents> {
     return this.#config.context;
   }
 
+  /** Resolved calendar date context (adapter + locale + week start). */
+  get dateContext(): ResolvedCalendarContext {
+    return this.#config.context;
+  }
+
   // ── Derived state ────────────────────────────────────────────────
 
   get weeks(): CalendarDay[][] {
-    const days = getMonthDays(this.#month, this.#config.context);
+    const context = this.#config.context;
+    const days = getMonthDays(this.#month, context);
     const currentSelected = this.selected;
 
     return chunkWeeks(days).map((week) =>
       week.map((date) => ({
         date,
-        isCurrentMonth: isSameMonth(date, this.#month, this.#config.context),
-        isToday: isTodayDate(date, this.#config.context),
+        isCurrentMonth: context.adapter.isSameMonth(date, this.#month, context),
+        isToday: context.adapter.isToday(date, context),
         isSelected: this.#isSelectedWith(currentSelected, date),
         isDisabled: this.isDisabled(date),
         isRangeStart: this.isRangeStart(date),
@@ -146,7 +142,8 @@ export class CalendarController extends BaseController<CalendarEvents> {
     if (this.isDestroyed) {
       return;
     }
-    this.#month = subMonths(this.#month, 1, this.#config.context);
+    const context = this.#config.context;
+    this.#month = context.adapter.subMonths(this.#month, 1, context);
     this.emit("monthChange", { month: this.#month });
   }
 
@@ -154,7 +151,8 @@ export class CalendarController extends BaseController<CalendarEvents> {
     if (this.isDestroyed) {
       return;
     }
-    this.#month = addMonths(this.#month, 1, this.#config.context);
+    const context = this.#config.context;
+    this.#month = context.adapter.addMonths(this.#month, 1, context);
     this.emit("monthChange", { month: this.#month });
   }
 
@@ -162,7 +160,8 @@ export class CalendarController extends BaseController<CalendarEvents> {
     if (this.isDestroyed) {
       return;
     }
-    this.#month = startOfMonth(date, this.#config.context);
+    const context = this.#config.context;
+    this.#month = context.adapter.startOfMonth(date, context);
     this.emit("monthChange", { month: this.#month });
   }
 
@@ -244,11 +243,12 @@ export class CalendarController extends BaseController<CalendarEvents> {
   }
 
   isToday(date: Date): boolean {
-    return isTodayDate(date, this.#config.context);
+    return this.#config.context.adapter.isToday(date, this.#config.context);
   }
 
   isSameMonth(date: Date, month?: Date): boolean {
-    return isSameMonth(date, month ?? this.#month, this.#config.context);
+    const context = this.#config.context;
+    return context.adapter.isSameMonth(date, month ?? this.#month, context);
   }
 
   isInRange(date: Date): boolean {
@@ -262,37 +262,43 @@ export class CalendarController extends BaseController<CalendarEvents> {
       return false;
     }
 
-    const day = normalizeDate(date, this.#config.context);
+    const context = this.#config.context;
+    const day = normalizeDate(date, context);
 
     return (
-      isWithinInterval(day, { start: range.from, end: range.to }, this.#config.context) &&
-      !isSameDay(day, range.from, this.#config.context) &&
-      !isSameDay(day, range.to, this.#config.context)
+      context.adapter.isWithinInterval(day, { start: range.from, end: range.to }, context) &&
+      !context.adapter.isSameDay(day, range.from, context) &&
+      !context.adapter.isSameDay(day, range.to, context)
     );
   }
 
   isRangeStart(date: Date): boolean {
     const range = this.selected as CalendarDateRange | null;
-    return range?.from ? isSameDay(date, range.from, this.#config.context) : false;
+    const context = this.#config.context;
+    return range?.from ? context.adapter.isSameDay(date, range.from, context) : false;
   }
 
   isRangeEnd(date: Date): boolean {
     const range = this.selected as CalendarDateRange | null;
-    return range?.to ? isSameDay(date, range.to, this.#config.context) : false;
+    const context = this.#config.context;
+    return range?.to ? context.adapter.isSameDay(date, range.to, context) : false;
   }
 
   // ── Formatting ───────────────────────────────────────────────────
 
   format(date: Date, pattern: string): string {
-    return format(date, pattern, this.#config.context);
+    return this.#config.context.adapter.formatPattern(date, pattern, this.#config.context);
   }
 
   formatMonth(month?: Date): string {
-    return format(month ?? this.#month, "LLLL yyyy", this.#config.context);
+    return this.#config.context.adapter.formatMonthLabel(
+      month ?? this.#month,
+      this.#config.context
+    );
   }
 
   formatYear(month?: Date): string {
-    return format(month ?? this.#month, "yyyy", this.#config.context);
+    return this.#config.context.adapter.formatYear(month ?? this.#month, this.#config.context);
   }
 
   // ── Backward-compatible adapter ──────────────────────────────────

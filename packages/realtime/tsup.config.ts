@@ -28,6 +28,8 @@ export default defineConfig({
     adapters: "src/adapters/index.ts",
     alpine: "src/alpine/index.ts",
     plugin: "src/plugin/index.ts",
+    sse: "src/entries/sse.ts",
+    websocket: "src/entries/websocket.ts",
     test: "src/test/mocks.ts",
   },
   format: ["esm", "cjs"],

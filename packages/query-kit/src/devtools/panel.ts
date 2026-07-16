@@ -1422,9 +1422,9 @@ export function getQueryStore(
 
   const store = source.store(storeName) as QueryStore | undefined;
 
-  if (!store?.devtools) {
+  if (!store?.devtools || store.devtools.getSnapshot().adapterName === "") {
     throw new Error(
-      `@ailuracode/alpine-query-kit could not find $store.${storeName}. Register @ailuracode/alpine-query first.`
+      `@ailuracode/alpine-query-kit could not find enabled query devtools on $store.${storeName}. Register @ailuracode/alpine-query-kit/devtools or pass instrumentation to the query plugin.`
     );
   }
 
@@ -1441,9 +1441,9 @@ function isQueryStore(value: unknown): value is QueryStore {
 }
 
 function assertQueryStoreWithDevtools(store: QueryStore): void {
-  if (!store.devtools) {
+  if (!store.devtools || store.devtools.getSnapshot().adapterName === "") {
     throw new Error(
-      "@ailuracode/alpine-query-kit requires @ailuracode/alpine-query with devtools support"
+      "@ailuracode/alpine-query-kit requires query instrumentation. Import @ailuracode/alpine-query/instrumentation and pass instrumentation to createQueryClient() or the query plugin."
     );
   }
 }

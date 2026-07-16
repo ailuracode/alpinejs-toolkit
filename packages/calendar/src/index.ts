@@ -5,7 +5,22 @@
  * `./plugin.ts`, `./context.ts`, and `./matchers.ts`.
  */
 
-export type { CalendarDateFnsOptions, ResolvedDateFnsContext } from "./context.js";
+export type {
+  CalendarDateAdapter,
+  CalendarDateAdapterOptions,
+  CalendarDateContext,
+  CalendarDateFnsOptions,
+  CalendarLocale,
+  CalendarWeekDay,
+  ResolvedCalendarContext,
+  ResolvedDateFnsContext,
+} from "./context.js";
+export {
+  createNativeCalendarDateAdapter,
+  nativeCalendarDateAdapter,
+  resolveCalendarDateContext,
+  resolveDateFnsContext,
+} from "./context.js";
 export {
   CalendarController,
   createCalendar,
@@ -25,7 +40,7 @@ export {
   matchesCalendarMatcher,
   normalizeMatchers,
 } from "./matchers.js";
-export { default } from "./plugin.js";
+export { default, default as calendarPlugin } from "./plugin.js";
 export type {
   CalendarDateRange,
   CalendarDay,

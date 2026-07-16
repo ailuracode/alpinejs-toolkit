@@ -68,6 +68,7 @@ export function createQueryPlugin(
       defaultMutationRetry: resolveRetryCount(defaultMutationOptions.retry, 0),
       defaultMutationRetryDelay: resolveRetryDelay(defaultMutationOptions.retryDelay, 1000),
       adapter: resolveAdapter(adapter, Alpine),
+      instrumentation: options.instrumentation,
     });
 
     guardStore(Alpine, storeKey, createQueryStore(cache), "query-adapter-alpine", {

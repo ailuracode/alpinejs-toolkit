@@ -147,6 +147,7 @@ export function createQueryClient(options: QueryClientOptions = {}): QueryStore 
   const cache = new QueryCache({
     ...resolveCacheConfig(options),
     adapter,
+    instrumentation: options.instrumentation,
   });
 
   return createQueryStore(cache);

@@ -27,6 +27,14 @@
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
     },
+    "./lock": {
+      "types": "./dist/lock.d.ts",
+      "default": "./dist/lock.js"
+    },
+    "./navigation": {
+      "types": "./dist/navigation.d.ts",
+      "default": "./dist/navigation.js"
+    },
     "./global": {
       "types": "./dist/global.d.ts"
     }

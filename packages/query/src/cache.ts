@@ -1,6 +1,7 @@
 import type { QueryStateAdapter } from "./adapters/types.js";
 import type { QueryEntry } from "./cache-internals.js";
-import { DevtoolsRegistry } from "./devtools-registry.js";
+import type { QueryDevtoolsApi } from "./devtools.js";
+import type { QueryCacheInstrumentation } from "./instrumentation.js";
 import { createQueryObserver } from "./observer.js";
 import type {
   MutationOptions,
@@ -14,6 +15,16 @@ import type {
 } from "./types.js";
 import { getRetryDelay, hashKey, matchesQueryKey, resolveQueryOptions } from "./utils.js";
 
+const disabledQueryDevtoolsApi: QueryDevtoolsApi = {
+  subscribe: () => () => {
+    /* intentional no-op */
+  },
+  getSnapshot: () => ({ adapterName: "", queries: [], mutations: [], updatedAt: 0 }),
+  clearMutations: () => {
+    /* intentional no-op */
+  },
+};
+
 type QueryCacheConfig = {
   defaultQueryOptions: Partial<QueryOptions>;
   defaultMutationRetry: number;
@@ -22,13 +33,14 @@ type QueryCacheConfig = {
 
 type QueryCacheOptions = QueryCacheConfig & {
   adapter: QueryStateAdapter;
+  instrumentation?: QueryCacheInstrumentation;
 };
 
 export class QueryCache {
   private readonly entries = new Map<string, QueryEntry>();
   private readonly config: QueryCacheConfig;
   private readonly adapter: QueryStateAdapter;
-  private readonly devtools = new DevtoolsRegistry();
+  private readonly instrumentation?: QueryCacheInstrumentation;
   private destroyed = false;
   private onWindowFocus: (() => void) | null = null;
   private onDocumentVisibilityChange: (() => void) | null = null;
@@ -36,6 +48,7 @@ export class QueryCache {
   constructor(options: QueryCacheOptions) {
     this.config = options;
     this.adapter = options.adapter;
+    this.instrumentation = options.instrumentation;
   }
 
   get isDestroyed(): boolean {
@@ -51,16 +64,22 @@ export class QueryCache {
       this.disposeAndRemoveEntry(entry);
     }
     this.detachFocusListeners();
-    this.devtools.destroy();
+    this.instrumentation?.destroy();
     this.destroyed = true;
   }
 
   getDevtools() {
+    if (!this.instrumentation) {
+      return disabledQueryDevtoolsApi;
+    }
+
+    const instrumentation = this.instrumentation;
+
     return {
-      subscribe: (listener: () => void) => this.devtools.subscribe(listener),
-      getSnapshot: () => this.devtools.buildSnapshot(this.entries.values(), this.adapter.name),
+      subscribe: (listener: () => void) => instrumentation.subscribe(listener),
+      getSnapshot: () => instrumentation.buildSnapshot(this.entries.values(), this.adapter.name),
       clearMutations: () => {
-        this.devtools.clearMutations();
+        instrumentation.clearMutations();
       },
     };
   }
@@ -93,7 +112,7 @@ export class QueryCache {
       void this.fetchEntry(entry);
     }
 
-    this.devtools.notify();
+    this.instrumentation?.notify();
   }
 
   removeEntry(keyHash: string): void {
@@ -103,7 +122,7 @@ export class QueryCache {
     }
 
     if (this.disposeAndRemoveEntry(entry)) {
-      this.devtools.notify();
+      this.instrumentation?.notify();
       this.syncFocusListeners();
     }
   }
@@ -159,7 +178,7 @@ export class QueryCache {
       }
     }
 
-    this.devtools.notify();
+    this.instrumentation?.notify();
   }
 
   remove(key?: QueryKey | QueryKey[]): void {
@@ -175,7 +194,7 @@ export class QueryCache {
     }
 
     if (removed) {
-      this.devtools.notify();
+      this.instrumentation?.notify();
       this.syncFocusListeners();
     }
   }
@@ -211,7 +230,7 @@ export class QueryCache {
     entry.abortController?.abort();
     entry.fetchPromise = null;
     entry.handle.patch({ fetchStatus: "idle" });
-    this.devtools.notify();
+    this.instrumentation?.notify();
   }
 
   reset(): void {
@@ -223,8 +242,8 @@ export class QueryCache {
       this.disposeAndRemoveEntry(entry);
     }
 
-    this.devtools.clearMutations();
-    this.devtools.notify();
+    this.instrumentation?.clearMutations();
+    this.instrumentation?.notify();
     this.syncFocusListeners();
   }
 
@@ -252,7 +271,7 @@ export class QueryCache {
       });
     }
 
-    this.devtools.notify();
+    this.instrumentation?.notify();
   }
 
   mutate<TData, TVariables, TContext>(
@@ -262,7 +281,7 @@ export class QueryCache {
     const handle = this.adapter.createMutationState<TData, TVariables>({
       mutate: async (variables: TVariables) => {
         handle.patch({ status: "pending", error: null });
-        const mutationId = this.devtools.trackMutationStart(variables);
+        const mutationId = this.instrumentation?.trackMutationStart(variables) ?? "";
 
         let context: TContext | undefined;
 
@@ -270,14 +289,14 @@ export class QueryCache {
           context = await options.onMutate?.(variables);
           const data = await this.runMutationWithRetry(options.mutationFn, variables);
           handle.patch({ data, status: "success" });
-          this.devtools.trackMutationSuccess(mutationId, data);
+          this.instrumentation?.trackMutationSuccess(mutationId, data);
           options.onSuccess?.(data, variables, context);
           options.onSettled?.(data, null, variables, context);
           return data;
         } catch (error) {
           const mutationError = error instanceof Error ? error : new Error(String(error));
           handle.patch({ error: mutationError, status: "error" });
-          this.devtools.trackMutationError(mutationId, mutationError);
+          this.instrumentation?.trackMutationError(mutationId, mutationError);
           options.onError?.(mutationError, variables, context);
           options.onSettled?.(undefined, mutationError, variables, context);
           throw mutationError;
@@ -349,14 +368,16 @@ export class QueryCache {
       isInvalidated: false,
       fetchStartedAt: null,
       lastFetchDurationMs: null,
-      devtoolsUnsubscribe: handle.listen(() => {
-        this.devtools.notify();
-      }),
+      devtoolsUnsubscribe: this.instrumentation
+        ? handle.listen(() => {
+            this.instrumentation?.notify();
+          })
+        : undefined,
       disposed: false,
     };
 
     this.entries.set(keyHash, entryRef as QueryEntry);
-    this.devtools.notify();
+    this.instrumentation?.notify();
     return entryRef;
   }
 
@@ -369,7 +390,7 @@ export class QueryCache {
     entry.observers += 1;
     this.ensureFocusListener();
     this.ensureRefetchInterval(entry);
-    this.devtools.notify();
+    this.instrumentation?.notify();
   }
 
   private unsubscribe<TData>(entry: QueryEntry<TData>): void {
@@ -385,7 +406,7 @@ export class QueryCache {
     }
 
     this.syncFocusListeners();
-    this.devtools.notify();
+    this.instrumentation?.notify();
   }
 
   private scheduleGc<TData>(entry: QueryEntry<TData>): void {
@@ -399,7 +420,7 @@ export class QueryCache {
       }
 
       if (this.disposeAndRemoveEntry(entry)) {
-        this.devtools.notify();
+        this.instrumentation?.notify();
         this.syncFocusListeners();
       }
     }, entry.options.gcTime);
@@ -514,7 +535,7 @@ export class QueryCache {
   private fetchEntry<TData>(entry: QueryEntry<TData>, force = false): Promise<void> | undefined {
     if (!entry.options.enabled) {
       entry.handle.patch({ fetchStatus: "paused" });
-      this.devtools.notify();
+      this.instrumentation?.notify();
       return;
     }
 
@@ -539,7 +560,7 @@ export class QueryCache {
     entry.fetchStartedAt = Date.now();
     entry.lastFetchDurationMs = null;
     entry.handle.patch({ fetchStatus: "fetching" });
-    this.devtools.notify();
+    this.instrumentation?.notify();
 
     entry.fetchPromise = this.runQuery(entry, abortController.signal, generation)
       .catch(() => {
@@ -555,7 +576,7 @@ export class QueryCache {
         if (entry.handle.get().fetchStatus === "fetching") {
           entry.handle.patch({ fetchStatus: "idle" });
         }
-        this.devtools.notify();
+        this.instrumentation?.notify();
       });
 
     return entry.fetchPromise;
@@ -643,7 +664,7 @@ export class QueryCache {
       errorUpdatedAt: 0,
       fetchStatus: "idle",
     });
-    this.devtools.notify();
+    this.instrumentation?.notify();
   }
 
   private applyError<TData>(entry: QueryEntry<TData>, error: Error): void {
@@ -654,7 +675,7 @@ export class QueryCache {
       errorUpdatedAt: Date.now(),
       fetchStatus: "idle",
     });
-    this.devtools.notify();
+    this.instrumentation?.notify();
   }
 
   private async runMutationWithRetry<TData, TVariables>(

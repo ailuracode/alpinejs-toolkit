@@ -18,7 +18,8 @@
       "!**/node_modules",
       "!apps/demo/dist",
       "!apps/demo/.astro",
-      "!**/.cursor"
+      "!**/.cursor",
+      "!bundle/baseline.json"
     ]
   },
   "formatter": {
