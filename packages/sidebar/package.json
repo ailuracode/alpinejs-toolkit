@@ -93,7 +93,6 @@
       "ignore": [
         "alpinejs",
         "@ailuracode/alpine-core",
-        "@ailuracode/alpine-ui",
         "@ailuracode/alpine-toggle",
         "@ailuracode/alpine-scroll"
       ],
