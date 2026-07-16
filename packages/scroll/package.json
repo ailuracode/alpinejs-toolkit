@@ -1,6 +1,6 @@
 {
   "name": "@ailuracode/alpine-scroll",
-  "version": "2.0.2",
+  "version": "3.0.0",
   "description": "Alpine.js scroll controller — headless position tracking, body lock, section observer, navigation",
   "type": "module",
   "license": "MIT",
@@ -34,7 +34,7 @@
   "types": "./dist/global.d.ts",
   "peerDependencies": {
     "alpinejs": "^3.0.0",
-    "@ailuracode/alpine-core": "^0.2.2"
+    "@ailuracode/alpine-core": "^0.3.0"
   },
   "peerDependenciesMeta": {
     "@types/alpinejs": {

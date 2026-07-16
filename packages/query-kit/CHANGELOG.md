@@ -1,5 +1,11 @@
 # @ailuracode/alpine-query-kit
 
+## 0.2.2
+
+### Patch Changes
+
+- @ailuracode/alpine-query-adapter-alpine@5.0.0
+
 ## 0.2.1
 
 ### Patch Changes

@@ -1,6 +1,6 @@
 {
   "name": "@ailuracode/alpine-form",
-  "version": "0.1.1",
+  "version": "1.0.0",
   "description": "Alpine.js headless form state and validation controller",
   "type": "module",
   "license": "MIT",
@@ -33,7 +33,7 @@
     }
   },
   "peerDependencies": {
-    "@ailuracode/alpine-core": "^0.2.2",
+    "@ailuracode/alpine-core": "^0.3.0",
     "alpinejs": "^3.0.0"
   },
   "peerDependenciesMeta": {

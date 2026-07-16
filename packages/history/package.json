@@ -1,6 +1,6 @@
 {
   "name": "@ailuracode/alpine-history",
-  "version": "0.0.2",
+  "version": "1.0.0",
   "description": "Headless undo/redo history controller for Alpine.js",
   "type": "module",
   "license": "MIT",
@@ -33,7 +33,7 @@
   },
   "types": "./dist/global.d.ts",
   "peerDependencies": {
-    "@ailuracode/alpine-core": "^0.2.2",
+    "@ailuracode/alpine-core": "^0.3.0",
     "alpinejs": "^3.0.0",
     "@types/alpinejs": "^3.13.11"
   },

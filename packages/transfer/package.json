@@ -1,6 +1,6 @@
 {
   "name": "@ailuracode/alpine-transfer",
-  "version": "1.0.2",
+  "version": "2.0.0",
   "description": "Outbound data transfer magics: clipboard, share, and export",
   "type": "module",
   "license": "MIT",
@@ -35,7 +35,7 @@
   "peerDependencies": {
     "alpinejs": "^3.0.0",
     "@types/alpinejs": "^3.13.11",
-    "@ailuracode/alpine-core": "^0.2.2"
+    "@ailuracode/alpine-core": "^0.3.0"
   },
   "peerDependenciesMeta": {
     "@types/alpinejs": {
