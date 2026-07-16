@@ -6,8 +6,6 @@ import type { Unsubscribe } from "@ailuracode/alpine-core";
 import { EventEmitter, generateId } from "@ailuracode/alpine-core";
 import type { TimerEvents } from "./events.js";
 import { buildFormatParts } from "./format-duration.js";
-import type { FormatPatternOptions, TimerFormatPattern } from "./format-pattern.js";
-import { createFormat } from "./format-pattern.js";
 import { type NormalizedTimerOptions, normalizeCreateTimerOptions } from "./options.js";
 import {
   createIntervalScheduler,
@@ -112,10 +110,6 @@ export class TimerControllerImpl implements TimerController {
 
   get formatted(): string {
     return this.#options.format(buildFormatParts(this.elapsed, this.remaining));
-  }
-
-  format(pattern: TimerFormatPattern, options?: FormatPatternOptions): string {
-    return createFormat(pattern, options)(buildFormatParts(this.elapsed, this.remaining));
   }
 
   get iteration(): number {
@@ -406,9 +400,6 @@ export function buildReactiveTimerView(controller: TimerControllerImpl): TimerRe
     dispose() {
       controller.dispose();
       syncReactiveTimerView(view, controller);
-    },
-    format(pattern, options) {
-      return controller.format(pattern, options);
     },
   };
 

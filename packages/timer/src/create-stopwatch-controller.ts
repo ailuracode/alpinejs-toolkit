@@ -123,9 +123,6 @@ export function createStopwatchController(
       laps = [];
       syncLaps(view);
     },
-    format(pattern, options) {
-      return timer.format(pattern, options);
-    },
   };
 
   syncLaps(view);

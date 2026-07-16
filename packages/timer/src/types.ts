@@ -53,9 +53,6 @@ export interface TimerController {
   readonly formatted: string;
   readonly iteration: number;
 
-  /** Formats the current timer state with a pattern such as `mm:ss` or `hh:mm`. */
-  format(pattern: TimerFormatPattern, options?: FormatPatternOptions): string;
-
   start(): void;
   pause(): void;
   resume(): void;

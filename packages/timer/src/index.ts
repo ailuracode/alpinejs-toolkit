@@ -13,7 +13,6 @@ export {
 } from "./format-duration.js";
 export {
   createFormat,
-  format,
   formatPattern,
 } from "./format-pattern.js";
 export { formatStopwatch } from "./format-stopwatch.js";

@@ -94,7 +94,6 @@ Every factory returns a reactive controller with:
 
 - `direction`, `running`, `paused`, `completed`
 - `elapsed`, `remaining`, `duration`, `progress`, `formatted`, `iteration`
-- `format(pattern, options?)` — format current state with patterns like `mm:ss`, `hh:mm`
 - `start()`, `pause()`, `resume()`, `toggle()`, `reset()`, `restart()`, `dispose()`
 
 Stopwatch controllers also expose:
@@ -106,43 +105,35 @@ Stopwatch controllers also expose:
 
 ### Pattern helper
 
-Use `format(pattern)` to build a formatter or format milliseconds directly:
+Use `formatPattern()` or `createFormat()` to build display strings:
 
 ```ts
-import { format } from "@ailuracode/alpine-timer";
+import { createFormat, formatPattern } from "@ailuracode/alpine-timer";
 
-format("mm:ss", 10_000); // "00:10"
-format("hh:mm", 3_661_000); // "01:01"
-format("hh:mm:ss", 3_661_000); // "01:01:01"
-format("mm:ss.SSS", 65_432); // "01:05.432"
+formatPattern("mm:ss", 10_000); // "00:10"
+formatPattern("hh:mm", 3_661_000); // "01:01"
+formatPattern("hh:mm:ss", 3_661_000); // "01:01:01"
+formatPattern("mm:ss.SSS", 65_432); // "01:05.432"
 
 $timer.countdown({
   duration: 60_000,
   formatPattern: "mm:ss",
 });
 
-// Or format the current state on demand:
-timer.format("hh:mm"); // "00:01" at 60s remaining
-timer.format("mm:ss", { field: "elapsed" }); // elapsed time with another pattern
-
 $timer.stopwatch({
   formatPattern: "mm:ss.SSS",
 });
 ```
 
-Supported tokens:
+Supported presets:
 
-| Token | Meaning | Example |
-|-------|---------|---------|
-| `hh` | Hours (padded) | `01` |
-| `h` | Hours | `1` |
-| `mm` | Minutes (padded) | `05` |
-| `m` | Minutes | `5` |
-| `ss` | Seconds (padded) | `09` |
-| `s` | Seconds | `9` |
-| `SSS` / `mmm` | Milliseconds (padded) | `432` |
+- `mm:ss`
+- `hh:mm`
+- `hh:mm:ss`
+- `mm:ss.SSS` / `mm:ss.mmm`
+- `h:m:s`
 
-When a pattern includes `hh`, `mm` represents minutes within the hour. Without `hh`, `mm` is total minutes (e.g. `90:00` for 90 minutes).
+Unknown patterns fall back to `mm:ss`.
 
 Pass a custom callback when you need full control:
 
