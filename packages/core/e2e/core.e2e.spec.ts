@@ -17,4 +17,19 @@ test.describe("@ailuracode/alpine-core", () => {
     await expect(page.locator("#resolved-theme")).toHaveText("dark");
     await expect(page.locator("html")).toHaveClass(/theme-dark/);
   });
+
+  test("receives namespaced plugin events through Alpine listeners", async ({ page }) => {
+    await page.goto("/");
+    await waitForAlpineFixture(page);
+
+    await page.locator("#dispatch-toggle").click();
+    await expect(page.locator("#toggle-detail")).toHaveText(
+      JSON.stringify({ previous: false, current: true, source: "toggle" })
+    );
+
+    await page.locator("#dispatch-theme").click();
+    await expect(page.locator("#theme-detail")).toHaveText(
+      JSON.stringify({ previous: "light", current: "dark", source: "api" })
+    );
+  });
 });

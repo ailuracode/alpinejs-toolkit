@@ -26,6 +26,14 @@ export type { ToolkitErrorCode } from "./core/error";
 // --- Event-emitter type helpers ----------------------------------------
 // Pure type helpers from `core/event` (no runtime; tree-shaken away).
 export type { EventListener, Unsubscribe } from "./core/event";
+// --- Plugin DOM event contract -----------------------------------------
+export type {
+  ChangeSource,
+  DispatchPluginEventOptions,
+  PluginCustomEvent,
+  PluginEventMap,
+  PluginEventName,
+} from "./core/plugin-event";
 
 // --- Registry type helpers ---------------------------------------------
 export type { RegisteredInstance } from "./core/registry";

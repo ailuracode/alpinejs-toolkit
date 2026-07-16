@@ -42,6 +42,14 @@ export type { ToolkitErrorCode } from "./core/error";
 export { ToolkitError } from "./core/error";
 export type { EventListener, Unsubscribe } from "./core/event";
 export { EventEmitter } from "./core/event";
+export type {
+  ChangeSource,
+  DispatchPluginEventOptions,
+  PluginCustomEvent,
+  PluginEventMap,
+  PluginEventName,
+} from "./core/plugin-event";
+export { dispatchPluginEvent } from "./core/plugin-event";
 export type { RegisteredInstance } from "./core/registry";
 export { InstanceRegistry } from "./core/registry";
 // --- Generic Alpine typings ----------------------------------------------
