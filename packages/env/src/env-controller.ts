@@ -199,6 +199,6 @@ export function createEnv(options: CreateEnvOptions = {}): EnvController {
       controller.mount();
       return controller;
     },
-    { scope, options }
+    { scope }
   );
 }

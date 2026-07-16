@@ -1,6 +1,6 @@
 {
   "name": "@ailuracode/alpine-overlay",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Alpine.js overlay plugin — centralized portal root, z-index slot allocation, and open-stack registry.",
   "type": "module",
   "license": "MIT",
@@ -34,7 +34,7 @@
   },
   "peerDependencies": {
     "alpinejs": "^3.0.0",
-    "@ailuracode/alpine-core": "^0.2.1",
+    "@ailuracode/alpine-core": "^0.2.2",
     "@ailuracode/alpine-ui": "^1.0.1",
     "@types/alpinejs": "^3.13.11"
   },
@@ -45,7 +45,9 @@
   },
   "devDependencies": {
     "@ailuracode/alpine-core": "workspace:*",
-    "@ailuracode/alpine-ui": "workspace:*"
+    "@ailuracode/alpine-ui": "workspace:*",
+    "@types/alpinejs": "^3.13.11",
+    "alpinejs": "^3.15.12"
   },
   "scripts": {
     "build": "tsup src/index.ts --format esm --dts --clean --out-dir dist --minify && cp src/global.d.ts dist/global.d.ts",

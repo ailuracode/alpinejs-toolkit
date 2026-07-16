@@ -261,7 +261,7 @@ export function createOverlay(options: OverlayOptions = {}): OverlayController {
       controller.mount();
       return controller;
     },
-    { scope, options: factoryOptions }
+    { scope }
   );
 }
 

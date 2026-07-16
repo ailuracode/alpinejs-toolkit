@@ -133,7 +133,7 @@ export function createMedia<Name extends string>(
       controller.mount();
       return controller;
     },
-    { scope, options: factoryOptions }
+    { scope }
   );
 }
 

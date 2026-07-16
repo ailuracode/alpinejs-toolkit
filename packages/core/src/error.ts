@@ -1,19 +1,9 @@
 export type ToolkitErrorCode =
-  // Generic
   | "TOOLKIT_INVALID_ARGUMENT"
   | "TOOLKIT_INVALID_STATE"
   | "TOOLKIT_NOT_SUPPORTED"
   | "TOOLKIT_SINGLETON_SCOPE_REQUIRED"
-  // Core / registry / loader
-  | "PLUGIN_NAME_REQUIRED"
-  | "PLUGIN_DUPLICATE"
-  | "PLUGIN_UNKNOWN"
-  | "PLUGIN_INVALID_DEFINITION"
-  | "PLUGIN_LOADER_INVALID"
-  | "PLUGIN_INIT_IN_FLIGHT"
-  // Lifecycle
   | "CONTROLLER_DESTROYED"
-  // Registration guards (store / magic / directive collision detection)
   | "REGISTRATION_COLLISION";
 
 export class ToolkitError extends Error {

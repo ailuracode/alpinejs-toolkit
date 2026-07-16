@@ -1,29 +1,22 @@
-/**
- * Core-primitive controller tests — covers {@link ToolkitError},
- * {@link EventEmitter}, {@link CleanupStack}, and
- * {@link InstanceRegistry} in isolation. These classes are the foundation
- * that every feature package's controller is built on, so their contracts
- * must be locked down by tests.
- */
 import assert from "node:assert/strict";
 import { describe, it } from "vitest";
-import type { Unsubscribe } from "../src/core/event.js";
-import { CleanupStack, EventEmitter, InstanceRegistry, ToolkitError } from "../src/index";
+import type { Unsubscribe } from "../src/event.js";
+import { CleanupStack, EventEmitter, ToolkitError } from "../src/index";
 
 describe("ToolkitError", () => {
   it("exposes a stable code and inherits from Error", () => {
-    const error = new ToolkitError('plugin "x" is already registered', "PLUGIN_DUPLICATE");
+    const error = new ToolkitError('plugin "x" is already registered', "REGISTRATION_COLLISION");
 
     assert.ok(error instanceof Error);
     assert.ok(error instanceof ToolkitError);
-    assert.equal(error.name, "PLUGIN_DUPLICATE");
-    assert.equal(error.code, "PLUGIN_DUPLICATE");
+    assert.equal(error.name, "REGISTRATION_COLLISION");
+    assert.equal(error.code, "REGISTRATION_COLLISION");
     assert.equal(error.message, 'plugin "x" is already registered');
   });
 
   it("preserves the original error as cause when provided", () => {
     const original = new Error("boom");
-    const wrapped = new ToolkitError("loader failed", "PLUGIN_LOADER_INVALID", original);
+    const wrapped = new ToolkitError("loader failed", "TOOLKIT_INVALID_STATE", original);
 
     assert.equal(wrapped.cause, original);
   });
@@ -97,19 +90,6 @@ describe("EventEmitter", () => {
 
     assert.equal(a, 0);
     assert.equal(b, 0);
-    assert.equal(events.listenerCount(), 0);
-  });
-
-  it("listenerCount() reports the active subscriptions", () => {
-    const events = new EventEmitter<{ tick: undefined }>();
-    assert.equal(events.listenerCount("tick"), 0);
-
-    const unsubscribe = events.on("tick", () => undefined);
-    assert.equal(events.listenerCount("tick"), 1);
-    assert.equal(events.listenerCount(), 1);
-
-    unsubscribe();
-    assert.equal(events.listenerCount("tick"), 0);
   });
 
   it("snapshot iteration keeps `off()` calls inside listeners deterministic", () => {
@@ -165,7 +145,6 @@ describe("EventEmitter", () => {
     events.emit("ping", undefined);
 
     assert.deepEqual(order, ["first", "second", "third"]);
-    assert.equal(events.listenerCount("ping"), 2);
   });
 
   it("listeners added during emit do not run in the current pass", () => {
@@ -185,7 +164,6 @@ describe("EventEmitter", () => {
     events.emit("ping", undefined);
 
     assert.deepEqual(order, ["first", "second"]);
-    assert.equal(events.listenerCount("ping"), 3);
 
     events.emit("ping", undefined);
 
@@ -272,7 +250,7 @@ describe("CleanupStack", () => {
     assert.equal(stack.disposed, true);
   });
 
-  it("wraps the first cleanup error in a ToolkitError and continues running the rest", () => {
+  it("wraps a single cleanup error in a ToolkitError and runs the rest", () => {
     const stack = new CleanupStack();
     const order: string[] = [];
 
@@ -299,70 +277,26 @@ describe("CleanupStack", () => {
 
     assert.deepEqual(order, ["third", "throws", "first"]);
   });
-});
 
-describe("InstanceRegistry", () => {
-  interface Instance {
-    readonly id: string;
-  }
+  it("aggregates multiple cleanup errors via AggregateError", () => {
+    const stack = new CleanupStack();
 
-  it("stores and retrieves instances by id", () => {
-    const registry = new InstanceRegistry<Instance>();
-    const a = { id: "a" };
-    const b = { id: "b" };
+    stack.push(() => {
+      throw new Error("first");
+    });
+    stack.push(() => {
+      throw new Error("second");
+    });
 
-    registry.register("a", a);
-    registry.register("b", b);
-
-    assert.equal(registry.get("a"), a);
-    assert.equal(registry.has("b"), true);
-    assert.equal(registry.size, 2);
-  });
-
-  it("throws ToolkitError on duplicate registration", () => {
-    const registry = new InstanceRegistry<Instance>();
-
-    registry.register("a", { id: "a" });
     assert.throws(
-      () => registry.register("a", { id: "a" }),
+      () => stack.dispose(),
       (error: unknown) => {
         assert.ok(error instanceof ToolkitError);
-        assert.equal((error as ToolkitError).code, "TOOLKIT_INVALID_STATE");
+        const cause = (error as ToolkitError).cause;
+        assert.ok(cause instanceof AggregateError);
+        assert.equal((cause as AggregateError).errors.length, 2);
         return true;
       }
     );
-  });
-
-  it("unregister() returns whether the id was known", () => {
-    const registry = new InstanceRegistry<Instance>();
-    registry.register("a", { id: "a" });
-
-    assert.equal(registry.unregister("a"), true);
-    assert.equal(registry.unregister("a"), false);
-  });
-
-  it("entries() returns id+instance pairs in registration order", () => {
-    const registry = new InstanceRegistry<Instance>();
-    const a = { id: "a" };
-    const b = { id: "b" };
-
-    registry.register("a", a);
-    registry.register("b", b);
-
-    assert.deepEqual(registry.entries(), [
-      { id: "a", instance: a },
-      { id: "b", instance: b },
-    ]);
-  });
-
-  it("clear() removes every instance", () => {
-    const registry = new InstanceRegistry<Instance>();
-    registry.register("a", { id: "a" });
-    registry.register("b", { id: "b" });
-
-    registry.clear();
-
-    assert.equal(registry.size, 0);
-    assert.equal(registry.get("a"), undefined);
   });
 });

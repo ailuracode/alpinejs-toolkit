@@ -72,7 +72,6 @@ export function createQueryPlugin(
 
     guardStore(Alpine, storeKey, createQueryStore(cache), "query-adapter-alpine", {
       override: true,
-      silent: true,
     });
 
     const augmented = Alpine as AlpineType.Alpine & {

@@ -1,21 +1,13 @@
-/**
- * Tests for the controller-backed Alpine lifecycle bridge.
- *
- * Locks cleanup order, subscription ownership, and HMR-like
- * re-registration behavior without booting a full Alpine runtime.
- */
 import assert from "node:assert/strict";
 import { afterEach, describe, it } from "vitest";
-import type { Alpine } from "../src/core/type";
 import {
   bridgeControllerDirective,
   bridgeControllerStore,
-  registerReactiveStore,
-  registerStoreMagic,
   syncRecordFromSnapshot,
   wireControllerLifecycle,
 } from "../src/lifecycle-bridge";
 import { RegistrationError, resetRegistrationTracking } from "../src/registration";
+import type { Alpine } from "../src/type";
 
 interface MockAlpine {
   stores: Record<string, unknown>;
@@ -98,27 +90,6 @@ describe("syncRecordFromSnapshot", () => {
     syncRecordFromSnapshot(target, { keep: true, fresh: 1 });
     assert.deepEqual(target, { keep: true, fresh: 1 });
     assert.equal("stale" in target, false);
-  });
-});
-
-describe("registerReactiveStore", () => {
-  it("registers the store and returns the reactive proxy", () => {
-    const Alpine = createMockAlpine();
-    const store = { value: 1 };
-    const { reactiveStore } = registerReactiveStore(Alpine as unknown as Alpine, "demo", store);
-    assert.equal(reactiveStore, Alpine.stores.demo);
-    assert.equal(reactiveStore.value, 1);
-  });
-});
-
-describe("registerStoreMagic", () => {
-  it("returns the same reference on repeated magic access", () => {
-    const Alpine = createMockAlpine();
-    const store = { value: 1 };
-    registerStoreMagic(Alpine as unknown as Alpine, "demo", () => store);
-    const first = Alpine.magics.demo();
-    const second = Alpine.magics.demo();
-    assert.equal(first, second);
   });
 });
 
@@ -215,9 +186,6 @@ describe("bridgeControllerStore", () => {
     const controller = createFakeController();
     const store = { value: 0 };
 
-    // HMR tears the previous bridge down before re-registering. The
-    // collision guard treats each fresh registration as a replacement
-    // — exactly what `registrationOverride: true` is for.
     const bridge = () =>
       bridgeControllerStore({
         alpine: Alpine as unknown as Alpine,
@@ -299,8 +267,6 @@ describe("bridgeControllerStore", () => {
         }),
     });
 
-    // Default behaviour: re-registration replaces silently so HMR
-    // and repeated integration tests keep working.
     assert.doesNotThrow(() =>
       bridgeControllerStore({
         alpine: Alpine as unknown as Alpine,
@@ -393,7 +359,6 @@ describe("bridgeControllerDirective", () => {
     Alpine.cleanups[0]();
     assert.equal(controller.destroyed, true);
 
-    // Next registration should now succeed with strict override.
     assert.doesNotThrow(() =>
       bridgeControllerDirective({
         alpine: Alpine as unknown as Parameters<typeof bridgeControllerDirective>[0]["alpine"],

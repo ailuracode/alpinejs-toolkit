@@ -1,6 +1,6 @@
 {
   "name": "@ailuracode/alpine-permissions",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Framework-agnostic browser permission registry with adapter contract",
   "type": "module",
   "license": "MIT",
@@ -37,7 +37,7 @@
   },
   "types": "./dist/global.d.ts",
   "peerDependencies": {
-    "@ailuracode/alpine-core": "^0.2.1",
+    "@ailuracode/alpine-core": "^0.2.2",
     "alpinejs": "^3.0.0",
     "@types/alpinejs": "^3.13.11"
   },
@@ -48,7 +48,8 @@
   },
   "devDependencies": {
     "@ailuracode/alpine-core": "workspace:*",
-    "@types/alpinejs": "^3.13.11"
+    "@types/alpinejs": "^3.13.11",
+    "alpinejs": "^3.15.12"
   },
   "scripts": {
     "build": "tsup src/index.ts src/controller.ts --format esm --dts --clean --out-dir dist --minify && cp src/global.d.ts dist/global.d.ts",

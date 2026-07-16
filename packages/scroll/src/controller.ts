@@ -154,7 +154,7 @@ export function createScroll(options: ScrollOptions = {}): ScrollController {
       controller.mount();
       return controller;
     },
-    { scope, options: factoryOptions }
+    { scope }
   );
 }
 

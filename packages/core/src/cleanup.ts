@@ -1,4 +1,4 @@
-import { ToolkitError } from "./error";
+import { ToolkitError } from "./error.js";
 
 export type Cleanup = () => void;
 
@@ -17,12 +17,9 @@ export class CleanupStack {
   push(cleanup: Cleanup): Cleanup {
     if (this.#disposed) {
       cleanup();
-
       return cleanup;
     }
-
     this.#stack.push(cleanup);
-
     return cleanup;
   }
 
@@ -30,34 +27,26 @@ export class CleanupStack {
     if (this.#disposed) {
       return;
     }
-
     this.#disposed = true;
 
-    const stack = this.#stack;
-    let firstError: unknown;
-
-    while (stack.length > 0) {
-      const cleanup = stack.pop();
-
-      if (cleanup === undefined) {
-        continue;
-      }
-
+    const errors: unknown[] = [];
+    for (let i = this.#stack.length - 1; i >= 0; i--) {
       try {
-        cleanup();
+        this.#stack[i]();
       } catch (error) {
-        if (firstError === undefined) {
-          firstError = error;
-        }
+        errors.push(error);
       }
     }
+    this.#stack.length = 0;
 
-    if (firstError !== undefined) {
-      throw new ToolkitError(
-        "One or more cleanup callbacks threw during dispose()",
-        "TOOLKIT_INVALID_STATE",
-        firstError
-      );
+    if (errors.length === 0) {
+      return;
     }
+
+    const cause =
+      errors.length === 1
+        ? errors[0]
+        : new AggregateError(errors, `${errors.length} cleanups failed`);
+    throw new ToolkitError("Cleanup failed during dispose()", "TOOLKIT_INVALID_STATE", cause);
   }
 }

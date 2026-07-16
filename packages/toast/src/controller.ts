@@ -107,7 +107,7 @@ export function createToastController<
       controller.mount();
       return controller;
     },
-    { scope, options: factoryOptions }
+    { scope }
   ) as ToastController<TPositions, TContent>;
 }
 

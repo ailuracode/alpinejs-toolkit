@@ -1,6 +1,6 @@
 {
   "name": "@ailuracode/alpine-tooltip",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Alpine.js headless tooltip store — open/close, delays, Escape dismiss",
   "type": "module",
   "license": "MIT",
@@ -33,7 +33,7 @@
   },
   "types": "./dist/global.d.ts",
   "peerDependencies": {
-    "@ailuracode/alpine-core": "^0.2.1",
+    "@ailuracode/alpine-core": "^0.2.2",
     "@types/alpinejs": "^3.13.11",
     "alpinejs": "^3.0.0"
   },
@@ -44,7 +44,9 @@
   },
   "devDependencies": {
     "@ailuracode/alpine-core": "workspace:*",
-    "@alpinejs/anchor": "^3.15.12"
+    "@alpinejs/anchor": "^3.15.12",
+    "@types/alpinejs": "^3.13.11",
+    "alpinejs": "^3.15.12"
   },
   "scripts": {
     "build": "tsup src/index.ts --format esm --dts --clean --out-dir dist --minify && cp src/global.d.ts dist/global.d.ts",

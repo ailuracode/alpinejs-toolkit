@@ -1,6 +1,6 @@
 ---
 title: Plugin DOM events
-description: Shared @package:event convention, dispatchPluginEvent() helper, and contributor guidelines for toolkit DOM events.
+description: Shared @package:event convention and contributor guidelines for toolkit DOM events.
 ---
 
 Toolkit packages expose observable behavior to Alpine templates through
@@ -15,9 +15,11 @@ underlying event name is `package:event`.
 ></div>
 ```
 
-`@ailuracode/alpine-core` ships `dispatchPluginEvent()` so every package
-uses the same naming rules, `CustomEvent.detail` contract, defaults, and
-TypeScript augmentation strategy.
+> The `@package:event` convention is a **naming and dispatch contract**,
+> not a helper. Packages dispatch plain `CustomEvent` instances with
+> the namespaced `package:event` type. There is no shared
+> `dispatchPluginEvent()` helper anymore — every package builds the
+> event itself so its tree-shaking footprint stays predictable.
 
 ## Naming rules
 
@@ -41,22 +43,22 @@ Do **not** emit namespaced events that duplicate native DOM events:
 A namespaced event is justified only when it represents toolkit-specific
 state or lifecycle not already represented by a native event.
 
-## Dispatch helper
+## Dispatch shape
 
 ```ts
-import { dispatchPluginEvent } from '@ailuracode/alpine-core';
-
-const event = dispatchPluginEvent(element, 'toggle', 'change', {
-  previous: false,
-  current: true,
-  source: 'toggle',
+const event = new CustomEvent<DialogCloseDetail>("dialog:close", {
+  detail: { previous: true, current: false, source: "api" },
+  bubbles: true,
+  composed: true,
 });
+
+element.dispatchEvent(event);
 ```
 
 ### Defaults
 
-| Option | Default |
-| ------ | ------- |
+| Option | Recommended default |
+| ------ | ------------------- |
 | `bubbles` | `true` |
 | `composed` | `true` |
 | `cancelable` | `false` |
@@ -64,9 +66,13 @@ const event = dispatchPluginEvent(element, 'toggle', 'change', {
 Cancelable lifecycle hooks opt in explicitly:
 
 ```ts
-const event = dispatchPluginEvent(element, 'dialog', 'before-close', detail, {
+const event = new CustomEvent<DialogBeforeCloseDetail>("dialog:before-close", {
+  detail: { reason: "user" },
+  bubbles: true,
+  composed: true,
   cancelable: true,
 });
+element.dispatchEvent(event);
 
 if (event.defaultPrevented) {
   return false;
@@ -81,7 +87,7 @@ Each package defines explicit detail types:
 interface ToggleChangeDetail {
   previous: boolean;
   current: boolean;
-  source: 'on' | 'off' | 'toggle' | 'external';
+  source: "on" | "off" | "toggle" | "external";
 }
 ```
 
@@ -90,37 +96,38 @@ Guidelines:
 - Include only stable public data in `detail`.
 - Avoid ambiguous payloads such as `{ value: true }` when semantics matter.
 - Do not pass internal controller references unless clearly justified.
-- Event detail objects are cloned before dispatch — callers may reuse or
-  mutate their original object after dispatch.
+- Event detail objects are cloned before dispatch — callers may reuse
+  or mutate their original object after dispatch.
 
-Optional normalized sources:
+Packages are encouraged to expose a normalized `source` union when the
+origin matters:
 
 ```ts
-type ChangeSource = 'api' | 'keyboard' | 'pointer' | 'external' | 'system';
+type ChangeSource = "api" | "keyboard" | "pointer" | "external" | "system";
 ```
-
-Packages may expose narrower `source` unions when semantics differ.
 
 ## TypeScript augmentation
 
-Augment the shared map from feature packages:
+Each package declares its event names locally — there is no shared
+`PluginEventMap` to augment. Inline the type alongside the dispatch
+site:
 
 ```ts
-declare module '@ailuracode/alpine-core' {
-  interface PluginEventMap {
-    'toggle:change': ToggleChangeDetail;
-    'dialog:before-close': DialogBeforeCloseDetail;
-  }
-}
+type DialogEventMap = {
+  "dialog:close": DialogCloseDetail;
+  "dialog:before-close": DialogBeforeCloseDetail;
+};
+
+const event = new CustomEvent<DialogCloseDetail>("dialog:close", {
+  detail: { previous: true, current: false, source: "api" },
+  bubbles: true,
+  composed: true,
+});
 ```
 
-Helpers exported from core:
-
-- `PluginEventName<TNamespace, TEvent>` — `` `${namespace}:${event}` ``
-- `PluginCustomEvent<TName>` — `CustomEvent<PluginEventMap[TName]>`
-
-Do not add fragile global DOM overloads unless they provide clear value and
-remain compatible with TypeScript library updates.
+If a consumer wants to type a listener, they can use
+`CustomEvent<DialogCloseDetail>` directly — no global augmentation
+required.
 
 ## Dispatch targets
 
@@ -169,12 +176,14 @@ Skip a new DOM event when:
 - A native DOM event already covers the behavior.
 - The event would fire for every controller method instead of meaningful
   observable transitions.
-- You would need a separate global bus instead of `EventTarget` propagation.
+- You would need a separate global bus instead of `EventTarget`
+  propagation.
 - The payload cannot be described with a stable public detail type.
 
-`dispatchPluginEvent()` does not replace Alpine's `$dispatch`. Use it for
-toolkit-standard namespaced events from controllers, stores, and
-directives.
+Toolkit events complement Alpine's `$dispatch`. Use `$dispatch` when
+you want to fire a one-off custom event from inside an Alpine template;
+use `new CustomEvent("package:event", …)` for toolkit-standard
+namespaced events from controllers, stores, and directives.
 
 ## Testing checklist
 
@@ -183,12 +192,11 @@ directives.
 - Typed detail payloads
 - Dispatch from elements and `window`
 - Supplied detail is not mutated
-- Invalid namespace or event segments throw `TOOLKIT_INVALID_ARGUMENT`
 - SSR-safe module import
 - Repeated dispatches are independent
 - Alpine listeners receive events via `@package:event` and `.window`
 
 ## Related
 
-- [`packages/core/README.md`](../packages/core/README.md) — API reference
-- [`AGENTS.md`](../AGENTS.md) — monorepo conventions
+- [`packages/core/README.md`](../../packages/core/README.md) — API reference
+- [`AGENTS.md`](../../AGENTS.md) — monorepo conventions

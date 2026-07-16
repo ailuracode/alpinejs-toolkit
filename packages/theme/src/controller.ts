@@ -111,7 +111,7 @@ export function createTheme(options: CreateThemeOptions = {}): ThemeController {
       controller.mount();
       return controller;
     },
-    { scope, options: factoryOptions }
+    { scope }
   );
 }
 

@@ -122,7 +122,7 @@ export function createSidebar(options: CreateSidebarOptions = {}): SidebarContro
       controller.mount();
       return controller;
     },
-    { scope, options: factoryOptions }
+    { scope }
   );
 }
 

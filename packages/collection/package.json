@@ -50,7 +50,7 @@
     "typecheck": "tsc --noEmit"
   },
   "peerDependencies": {
-    "@ailuracode/alpine-core": "^0.2.1"
+    "@ailuracode/alpine-core": "^0.2.2"
   },
   "devDependencies": {
     "@ailuracode/alpine-core": "workspace:*",

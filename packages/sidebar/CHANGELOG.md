@@ -1,5 +1,15 @@
 # @ailuracode/alpine-sidebar
 
+## 3.1.1
+
+### Patch Changes
+
+- baa901a: Add local development dependency metadata for peer packages so bundle analysis tools can resolve published package entries.
+- Updated dependencies [baa901a]
+  - @ailuracode/alpine-core@0.2.2
+  - @ailuracode/alpine-scroll@2.0.2
+  - @ailuracode/alpine-toggle@1.0.2
+
 ## 3.1.0
 
 ### Minor Changes
