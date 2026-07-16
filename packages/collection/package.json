@@ -41,13 +41,16 @@
     "access": "public"
   },
   "scripts": {
-    "build": "tsup src/index.ts --format esm --dts --clean --out-dir dist --external @ailuracode/alpine-core",
+    "build": "tsup src/index.ts --format esm --dts --clean --out-dir dist --minify --external @ailuracode/alpine-core",
     "clean": "rm -rf dist",
     "size": "size-limit",
     "test": "vitest run --config ../../vitest.config.ts packages/collection",
     "test:coverage": "vitest run --config ../../vitest.config.ts --coverage test",
     "test:watch": "vitest --config ../../vitest.config.ts",
     "typecheck": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "@ailuracode/alpine-core": "^0.2.0"
   },
   "devDependencies": {
     "@ailuracode/alpine-core": "workspace:*",
@@ -66,7 +69,8 @@
       "path": "dist/index.js",
       "import": "*",
       "ignore": [
-        "alpinejs"
+        "alpinejs",
+        "@ailuracode/alpine-core"
       ],
       "gzip": true,
       "brotli": true,

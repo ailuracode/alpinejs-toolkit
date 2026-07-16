@@ -32,12 +32,10 @@
       "types": "./dist/global.d.ts"
     }
   },
-  "dependencies": {
-    "@ailuracode/alpine-ui": "workspace:*"
-  },
   "peerDependencies": {
     "alpinejs": "^3.0.0",
     "@ailuracode/alpine-core": "^0.2.0",
+    "@ailuracode/alpine-ui": "^1.0.0",
     "@types/alpinejs": "^3.13.11"
   },
   "peerDependenciesMeta": {
@@ -50,7 +48,7 @@
     "@ailuracode/alpine-ui": "workspace:*"
   },
   "scripts": {
-    "build": "tsup src/index.ts --format esm --dts --clean --out-dir dist && cp src/global.d.ts dist/global.d.ts",
+    "build": "tsup src/index.ts --format esm --dts --clean --out-dir dist --minify && cp src/global.d.ts dist/global.d.ts",
     "prepublishOnly": "pnpm run build",
     "size": "size-limit",
     "test": "vitest run --config ../../vitest.config.ts packages/overlay",
@@ -79,6 +77,7 @@
       "ignore": [
         "alpinejs",
         "@ailuracode/alpine-core",
+        "@ailuracode/alpine-ui",
         "@types/alpinejs"
       ],
       "gzip": true,

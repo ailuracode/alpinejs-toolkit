@@ -12,6 +12,7 @@ import {
   readBundleBudgetMetadata,
   readMarkdownPackageNames,
   runRepoCheck,
+  validateCoreDependencyMetadata,
   validateSideEffectsMetadata,
 } from "../scripts/repo-check.mjs";
 
@@ -129,6 +130,69 @@ describe("repo:check", () => {
       validateSideEffectsMetadata({
         ...fixture,
         manifest: { sideEffects: false },
+      })
+    ).toEqual([]);
+  });
+
+  it("keeps alpine-core as a peer dependency for package consumers", () => {
+    const fixture = {
+      folder: "fixture",
+      name: "@ailuracode/alpine-fixture",
+      dir: path.join(root, "packages", "fixture"),
+      manifest: {},
+      isPrivate: false,
+    };
+
+    expect(
+      validateCoreDependencyMetadata({
+        ...fixture,
+        manifest: {
+          dependencies: { "@ailuracode/alpine-core": "^0.2.0" },
+        },
+      })
+    ).toContain(
+      "@ailuracode/alpine-fixture: @ailuracode/alpine-core must be a peer dependency, not a runtime dependency"
+    );
+
+    expect(
+      validateCoreDependencyMetadata({
+        ...fixture,
+        manifest: {
+          devDependencies: { "@ailuracode/alpine-core": "workspace:*" },
+        },
+      })
+    ).toContain(
+      "@ailuracode/alpine-fixture: @ailuracode/alpine-core devDependency must be paired with peerDependencies"
+    );
+
+    expect(
+      validateCoreDependencyMetadata({
+        ...fixture,
+        manifest: {
+          peerDependencies: { "@ailuracode/alpine-core": "^0.2.0" },
+          devDependencies: { "@ailuracode/alpine-core": "workspace:*" },
+        },
+      })
+    ).toEqual([]);
+
+    expect(
+      validateCoreDependencyMetadata({
+        ...fixture,
+        manifest: {
+          dependencies: { "@ailuracode/alpine-ui": "^1.0.0" },
+        },
+      })
+    ).toContain(
+      "@ailuracode/alpine-fixture: @ailuracode/alpine-ui must be a peer dependency, not a runtime dependency"
+    );
+
+    expect(
+      validateCoreDependencyMetadata({
+        ...fixture,
+        manifest: {
+          peerDependencies: { "@ailuracode/alpine-ui": "^1.0.0" },
+          devDependencies: { "@ailuracode/alpine-ui": "workspace:*" },
+        },
       })
     ).toEqual([]);
   });

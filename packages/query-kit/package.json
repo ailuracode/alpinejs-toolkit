@@ -54,7 +54,7 @@
     "nanostores": "^1.4.0"
   },
   "scripts": {
-    "build": "tsup src/index.ts src/devtools-entry.ts --format esm --dts --clean --out-dir dist --tsconfig tsconfig.build.json --external @ailuracode/alpine-query --external @nanostores/alpine --external nanostores && cp src/global.d.ts dist/global.d.ts",
+    "build": "tsup src/index.ts src/devtools-entry.ts --format esm --dts --clean --out-dir dist --tsconfig tsconfig.build.json --minify --external @ailuracode/alpine-query --external @nanostores/alpine --external nanostores && cp src/global.d.ts dist/global.d.ts",
     "prepublishOnly": "pnpm run build",
     "size": "size-limit",
     "test": "vitest run --config ../../vitest.config.ts packages/query-kit",

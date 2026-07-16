@@ -15,6 +15,7 @@ Start with the core registry and the five essential modules:
 ```bash
 pnpm add alpinejs \
   @ailuracode/alpine-core \
+  @ailuracode/alpine-ui \
   @ailuracode/alpine-theme \
   @ailuracode/alpine-toggle \
   @ailuracode/alpine-media \

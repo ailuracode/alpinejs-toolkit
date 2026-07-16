@@ -1,5 +1,5 @@
 ---
-"@ailuracode/alpine-core": major
+"@ailuracode/alpine-core": patch
 ---
 
 Remove the metadata-free `lazyPlugin(importFn)` overload. The single-function form built definitions with empty `kinds` and `names`, which `assertValidDefinition()` rejects in development and could bypass validation in production.

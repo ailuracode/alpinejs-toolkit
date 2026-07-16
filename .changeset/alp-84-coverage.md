@@ -1,5 +1,4 @@
 ---
-"@ailuracode/alpinejs-toolkit": minor
 ---
 
 ALP-84: Increase unit test coverage across the monorepo.

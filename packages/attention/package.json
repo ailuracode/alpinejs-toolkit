@@ -42,7 +42,7 @@
   },
   "peerDependencies": {
     "@ailuracode/alpine-core": "^0.2.0",
-    "@ailuracode/alpine-permissions": "^0.1.0",
+    "@ailuracode/alpine-permissions": "^0.0.0",
     "alpinejs": "^3.0.0",
     "@types/alpinejs": "^3.13.11"
   },
@@ -52,7 +52,7 @@
     }
   },
   "scripts": {
-    "build": "tsup src/index.ts src/controller.ts --format esm --dts --clean --out-dir dist --external @ailuracode/alpine-permissions && cp src/global.d.ts dist/global.d.ts",
+    "build": "tsup src/index.ts src/controller.ts --format esm --dts --clean --out-dir dist --minify --external @ailuracode/alpine-permissions && cp src/global.d.ts dist/global.d.ts",
     "prepublishOnly": "pnpm run build",
     "size": "size-limit",
     "test": "vitest run --config ../../vitest.config.ts packages/attention",

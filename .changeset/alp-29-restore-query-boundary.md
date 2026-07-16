@@ -1,5 +1,5 @@
 ---
-"@ailuracode/alpine-query": major
+"@ailuracode/alpine-query": patch
 "@ailuracode/alpine-query-adapter-alpine": minor
 "@ailuracode/alpine-query-kit": patch
 "@ailuracode/alpine-query-adapter-zustand": patch
@@ -7,9 +7,9 @@
 
 Restore the framework-agnostic boundary of `@ailuracode/alpine-query` by moving all Alpine-specific code into `@ailuracode/alpine-query-adapter-alpine`.
 
-## Breaking changes (`@ailuracode/alpine-query`)
+## Moved Alpine-specific exports (`@ailuracode/alpine-query`)
 
-The following exports have been **removed** from `@ailuracode/alpine-query`:
+The following exports now live in `@ailuracode/alpine-query-adapter-alpine`:
 
 - `query` (default export) — use `query` from `@ailuracode/alpine-query-adapter-alpine` instead
 - `createQueryPlugin` — use from `@ailuracode/alpine-query-adapter-alpine`
