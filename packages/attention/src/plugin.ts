@@ -9,8 +9,8 @@
  * @module
  */
 
-import { guardMagic } from "@ailuracode/alpine-core/registration";
 import type AlpineType from "alpinejs";
+import { guardMagic } from "./core-deps.js";
 import { IdleController } from "./idle-controller.js";
 import type { CreateAttentionPluginOptions } from "./types.js";
 import { DEFAULT_ATTENTION_IDLE_KEY, DEFAULT_ATTENTION_WAKELOCK_KEY } from "./types.js";
