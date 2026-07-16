@@ -50,11 +50,11 @@ describe("combined docs loader helpers", () => {
     expect(packageReadmeEditUrl("overlay")).toBe(
       "https://github.com/ailuracode/alpinejs-toolkit/edit/master/packages/overlay/README.md"
     );
-    expect(docsContentEditUrl("es/plugins/theme.md")).toBe(
-      "https://github.com/ailuracode/alpinejs-toolkit/edit/master/docs/es/plugins/theme.md"
-    );
     expect(docsContentEditUrl("getting-started.md")).toBe(
       "https://github.com/ailuracode/alpinejs-toolkit/edit/master/docs/getting-started.md"
+    );
+    expect(docsContentEditUrl("plugins/toggle.md")).toBe(
+      "https://github.com/ailuracode/alpinejs-toolkit/edit/master/docs/plugins/toggle.md"
     );
   });
 });

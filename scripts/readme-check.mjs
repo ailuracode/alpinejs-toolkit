@@ -287,13 +287,89 @@ export function discoverPublicPackageFolders(packagesDir) {
 }
 
 /**
+ * @param {string} content
+ * @param {string} sectionTitle
+ * @returns {string[]}
+ */
+export function extractInstallPackagesFromSection(content, sectionTitle) {
+  const headingIndex = content.search(new RegExp(`^## ${sectionTitle}`, "m"));
+  if (headingIndex === -1) {
+    return [];
+  }
+
+  const afterHeading = content.slice(headingIndex);
+  const codeMatch = /```(?:bash|sh)\n([\s\S]*?)```/.exec(afterHeading);
+  if (!codeMatch) {
+    return [];
+  }
+
+  const command = codeMatch[1].replace(/\\\n\s*/g, " ");
+  const addMatch = /pnpm add\s+([\s\S]+)/.exec(command);
+  if (!addMatch) {
+    return [];
+  }
+
+  return addMatch[1].trim().split(/\s+/);
+}
+
+/**
+ * @param {string} [root]
+ * @returns {string[]}
+ */
+export function validateGettingStartedInstall(root = process.cwd()) {
+  const guidePath = path.join(root, "docs/getting-started.md");
+  if (!existsSync(guidePath)) {
+    return ["getting-started: missing docs/getting-started.md"];
+  }
+
+  const content = readFileSync(guidePath, "utf8");
+  const installed = new Set(extractInstallPackagesFromSection(content, "Install essentials"));
+  const errors = [];
+
+  if (installed.size === 0) {
+    errors.push("getting-started: missing pnpm add block under ## Install essentials");
+    return errors;
+  }
+
+  if (/\bpnpm install\b/.test(content)) {
+    errors.push("getting-started: use pnpm add instead of pnpm install");
+  }
+
+  for (const pkg of installed) {
+    if (!pkg.startsWith("@ailuracode/alpine-")) {
+      continue;
+    }
+
+    const folder = pkg.slice("@ailuracode/alpine-".length);
+    const packageJsonPath = path.join(root, "packages", folder, "package.json");
+    if (!existsSync(packageJsonPath)) {
+      continue;
+    }
+
+    const packageJson = /** @type {PackageManifest} */ (
+      JSON.parse(readFileSync(packageJsonPath, "utf8"))
+    );
+
+    for (const peer of getRequiredInstallPeers(packageJson)) {
+      if (!installed.has(peer)) {
+        errors.push(
+          `getting-started: Install essentials is missing required peer "${peer}" for "${pkg}"`
+        );
+      }
+    }
+  }
+
+  return errors;
+}
+
+/**
  * @param {string} [root]
  * @returns {string[]}
  */
 export function validateReadmes(root = process.cwd()) {
   const packagesDir = path.join(root, "packages");
   const packageFolders = discoverPublicPackageFolders(packagesDir);
-  return validatePackageReadmes(root, packageFolders);
+  return [...validatePackageReadmes(root, packageFolders), ...validateGettingStartedInstall(root)];
 }
 
 function main() {

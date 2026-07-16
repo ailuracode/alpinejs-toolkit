@@ -4,7 +4,6 @@ import starlight from "@astrojs/starlight";
 import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "astro/config";
 import { buildDocsSidebar } from "./src/catalog/docs-navigation.ts";
-import { getLocaleDetectScript } from "./src/locale-detect.ts";
 
 const root = fileURLToPath(new URL(".", import.meta.url));
 const pkg = (name: string) => `${root}../../packages/${name}/src/index.ts`;
@@ -23,27 +22,8 @@ export default defineConfig({
   site,
   integrations: [
     starlight({
-      title: {
-        en: "Alpine.js Toolkit · @ailuracode",
-        es: "Alpine.js Toolkit · @ailuracode",
-        pt: "Alpine.js Toolkit · @ailuracode",
-      },
+      title: "Alpine.js Toolkit · @ailuracode",
       description: "Modular Alpine.js toolkit — lazy init, headless plugins, modern TypeScript DX.",
-      defaultLocale: "root",
-      locales: {
-        root: {
-          label: "English",
-          lang: "en",
-        },
-        es: {
-          label: "Español",
-          lang: "es",
-        },
-        pt: {
-          label: "Português",
-          lang: "pt",
-        },
-      },
       logo: { src: "./public/logo.png", alt: "ailuracode" },
       routeMiddleware: ["./src/route-data.ts"],
       social: [
@@ -56,12 +36,6 @@ export default defineConfig({
       editLink: {
         baseUrl: "https://github.com/ailuracode/alpinejs-toolkit/edit/master/docs/",
       },
-      head: [
-        {
-          tag: "script",
-          content: getLocaleDetectScript(),
-        },
-      ],
       sidebar,
     }),
     react(),

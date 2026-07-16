@@ -2,9 +2,11 @@ import { readFileSync } from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 import {
+  extractInstallPackagesFromSection,
   extractPrimaryInstallPackages,
   formatInstallCommand,
   parseReadmeSections,
+  validateGettingStartedInstall,
   validateInstallPeers,
   validatePackageReadmes,
   validateReadmeContent,
@@ -156,5 +158,15 @@ MIT
         readFileSync(path.join(process.cwd(), "packages/form/README.md"), "utf8")
       )
     ).toContain("@ailuracode/alpine-core");
+  });
+
+  it("validates getting-started install essentials include required peers", () => {
+    expect(validateGettingStartedInstall(process.cwd())).toEqual([]);
+    const installed = extractInstallPackagesFromSection(
+      readFileSync(path.join(process.cwd(), "docs/getting-started.md"), "utf8"),
+      "Install essentials"
+    );
+    expect(installed).toContain("@ailuracode/alpine-toggle");
+    expect(installed).toContain("@ailuracode/alpine-core");
   });
 });

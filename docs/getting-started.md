@@ -13,9 +13,10 @@ description: "Install the modular Alpine toolkit — lazy init, essentials, and 
 Start with the core registry and the five essential modules:
 
 ```bash
-pnpm install alpinejs \
+pnpm add alpinejs \
   @ailuracode/alpine-core \
   @ailuracode/alpine-theme \
+  @ailuracode/alpine-toggle \
   @ailuracode/alpine-media \
   @ailuracode/alpine-scroll \
   @ailuracode/alpine-sidebar \
