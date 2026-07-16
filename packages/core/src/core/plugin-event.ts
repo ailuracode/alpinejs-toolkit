@@ -41,31 +41,10 @@ export type ChangeSource = "api" | "keyboard" | "pointer" | "external" | "system
 
 const KEBAB_CASE_SEGMENT = /^[a-z][a-z0-9]*(-[a-z0-9]+)*$/;
 
-const DEFAULT_DISPATCH_OPTIONS: Required<DispatchPluginEventOptions> = {
-  bubbles: true,
-  composed: true,
-  cancelable: false,
-};
-
-function assertKebabCaseSegment(value: string, label: "namespace" | "event"): void {
+function assertKebabCaseSegment(value: string): void {
   if (!KEBAB_CASE_SEGMENT.test(value)) {
-    throw new ToolkitError(
-      `Plugin event ${label} must be lowercase kebab-case — got "${value}"`,
-      "TOOLKIT_INVALID_ARGUMENT"
-    );
+    throw new ToolkitError(`Invalid plugin event segment "${value}"`, "TOOLKIT_INVALID_ARGUMENT");
   }
-}
-
-function cloneEventDetail<TDetail>(detail: TDetail): TDetail {
-  if (typeof structuredClone === "function") {
-    return structuredClone(detail);
-  }
-
-  if (detail !== null && typeof detail === "object") {
-    return { ...(detail as Record<string, unknown>) } as TDetail;
-  }
-
-  return detail;
 }
 
 /**
@@ -88,17 +67,16 @@ export function dispatchPluginEvent<TNamespace extends string, TEvent extends st
   detail: TDetail,
   options: DispatchPluginEventOptions = {}
 ): CustomEvent<TDetail> {
-  assertKebabCaseSegment(namespace, "namespace");
-  assertKebabCaseSegment(event, "event");
+  assertKebabCaseSegment(namespace);
+  assertKebabCaseSegment(event);
 
-  const resolved = { ...DEFAULT_DISPATCH_OPTIONS, ...options };
-  const type = `${namespace}:${event}`;
-  const immutableDetail = cloneEventDetail(detail);
+  const immutableDetail =
+    detail !== null && typeof detail === "object" ? structuredClone(detail) : detail;
 
-  const customEvent = new CustomEvent<TDetail>(type, {
-    bubbles: resolved.bubbles,
-    composed: resolved.composed,
-    cancelable: resolved.cancelable,
+  const customEvent = new CustomEvent<TDetail>(`${namespace}:${event}`, {
+    bubbles: options.bubbles ?? true,
+    composed: options.composed ?? true,
+    cancelable: options.cancelable ?? false,
     detail: immutableDetail,
   });
 
