@@ -41,7 +41,7 @@ const plugin = getPluginNavItem("timer")!;
 			</div>
 		</div>
 
-		<div class="grid gap-4" x-data="{ stopwatch: $timer.stopwatch() }">
+		<div class="grid gap-4" x-data="{ stopwatch: $timer.stopwatch({ formatPattern: 'mm:ss', lapFormatPattern: 'mm:ss' }) }">
 			<p class="text-xs text-[var(--ios-label-secondary)] m-0">Stopwatch with laps</p>
 			<strong class="text-2xl tabular-nums" x-text="stopwatch.formatted"></strong>
 			<div class="flex flex-wrap gap-2">
