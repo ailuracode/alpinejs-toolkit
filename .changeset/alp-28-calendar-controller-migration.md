@@ -1,5 +1,5 @@
 ---
-"@ailuracode/alpine-calendar": major
+"@ailuracode/alpine-calendar": patch
 ---
 
 Migrate `@ailuracode/alpine-calendar` to the canonical controller architecture.
@@ -12,9 +12,9 @@ Migrate `@ailuracode/alpine-calendar` to the canonical controller architecture.
 - `createCalendar()` preserved as backward-compatible alias.
 - Alpine registration isolated in thin `plugin.ts` adapter.
 - `index.ts` is exports-only barrel.
-- **BREAKING**: `CalendarOptions` fields are now `readonly`.
-- **BREAKING**: `CalendarInstance` properties (`month`, `selected`, etc.) are now getters (read-only snapshots).
-- **BREAKING**: `CalendarDay` fields are now `readonly`.
-- **BREAKING**: Internal modules (`internal/grid.ts`, `internal/selection.ts`) are NOT re-exported.
-- **BREAKING**: `CalendarInstance` no longer has public fields — all mutations go through controller commands.
-- **BREAKING**: New peer dependency `@ailuracode/alpine-core` required.
+- `CalendarOptions` fields are now `readonly`.
+- `CalendarInstance` properties (`month`, `selected`, etc.) are now getters (read-only snapshots).
+- `CalendarDay` fields are now `readonly`.
+- Internal modules (`internal/grid.ts`, `internal/selection.ts`) are NOT re-exported.
+- `CalendarInstance` no longer has public fields — all mutations go through controller commands.
+- New peer dependency `@ailuracode/alpine-core` required.

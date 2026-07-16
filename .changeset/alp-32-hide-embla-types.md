@@ -1,5 +1,5 @@
 ---
-"@ailuracode/alpine-carousel": major
+"@ailuracode/alpine-carousel": patch
 ---
 
 Hide Embla implementation types from the public API.
