@@ -267,10 +267,6 @@ function formatBytes(bytes) {
 }
 
 function formatDelta(current, baseline) {
-  if (baseline == null) {
-    return "";
-  }
-
   const delta = current - baseline;
   const pct = baseline === 0 ? 0 : (delta / baseline) * 100;
   const sign = delta >= 0 ? "+" : "";
