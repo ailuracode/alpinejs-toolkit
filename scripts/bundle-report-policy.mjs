@@ -43,7 +43,8 @@ export const BUNDLE_CATEGORY_DEFAULT_COLD_GZIP_BYTES = {
  */
 export const DEFAULT_COLD_IMPORT_HINTS = {
   "@ailuracode/alpine-collection": "{ createCollectionController }",
-  "@ailuracode/alpine-core": "{ registerPlugin, initPlugins }",
+  "@ailuracode/alpine-core": "{ BaseController, bridgeControllerStore }",
+  "@ailuracode/alpine-plugin-registry": "{ registerPlugin, initPlugins }",
   "@ailuracode/alpine-query": "{ createQueryClient }",
   "@ailuracode/alpine-permissions": "{ permissionsPlugin }",
   "@ailuracode/alpine-keyboard": "{ keyboardPlugin }",
