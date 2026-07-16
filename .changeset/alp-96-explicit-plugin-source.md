@@ -1,5 +1,5 @@
 ---
-"@ailuracode/alpine-core": minor
+"@ailuracode/alpine-core": patch
 ---
 
 Replace `Function.length` plugin-loader detection with explicit `PluginSource` discrimination via `pluginCallback()` and `pluginLoader()`. Direct Alpine callbacks (including zero-argument callbacks) are never invoked as factories; lazy sync and async factories must wrap with `pluginLoader()`.

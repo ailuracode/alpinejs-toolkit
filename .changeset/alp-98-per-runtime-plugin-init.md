@@ -1,5 +1,5 @@
 ---
-"@ailuracode/alpine-core": minor
+"@ailuracode/alpine-core": patch
 ---
 
 Track plugin initialization per Alpine runtime with WeakMap-backed state and deduplicate concurrent async `initPlugins()` calls via a shared in-flight promise. Failed loads do not mark a plugin initialized and can be retried on the next call.
