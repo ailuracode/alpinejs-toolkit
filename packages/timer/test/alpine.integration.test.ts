@@ -77,4 +77,28 @@ describe("@ailuracode/alpine-timer alpine integration", () => {
 
     expect(document.querySelector("#count")?.textContent).toBe("1");
   });
+
+  it("creates stopwatch timers with formatPattern options", async () => {
+    document.body.innerHTML = `
+      <div x-data="{
+        stopwatch: null,
+        create() {
+          this.stopwatch = $timer.stopwatch({
+            formatPattern: 'mm:ss',
+            lapFormatPattern: 'mm:ss',
+          });
+        },
+      }">
+        <button id="create" @click="create()">Create</button>
+        <span id="formatted" x-text="stopwatch ? stopwatch.formatted : 'missing'"></span>
+      </div>
+    `;
+    Alpine.initTree(document.body);
+    await Alpine.nextTick();
+
+    document.querySelector("#create")?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+    await Alpine.nextTick();
+
+    expect(document.querySelector("#formatted")?.textContent).toBe("00:00");
+  });
 });

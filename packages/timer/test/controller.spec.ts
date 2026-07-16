@@ -236,4 +236,14 @@ describe("@ailuracode/alpine-timer controller", () => {
     timer.dispose();
     watch.dispose();
   });
+
+  it("accepts formatPattern without conflicting with the stopwatch default formatter", () => {
+    const watch = stopwatch({
+      formatPattern: "mm:ss",
+      lapFormatPattern: "mm:ss",
+    });
+
+    expect(watch.formatted).toBe("00:00");
+    watch.dispose();
+  });
 });
