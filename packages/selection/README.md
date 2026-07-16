@@ -5,10 +5,10 @@ Framework-agnostic selection primitives for Alpine.js — single, multiple, and 
 ## Install
 
 ```bash
-pnpm add @ailuracode/alpine-selection alpinejs @ailuracode/alpine-core
+pnpm add @ailuracode/alpine-selection @ailuracode/alpine-core alpinejs
 ```
 
-## Quick example
+## Quick start
 
 ```ts
 import Alpine from "alpinejs";
@@ -190,7 +190,7 @@ try {
 
 `@ailuracode/alpine-calendar`, `@ailuracode/alpine-command`, `@ailuracode/alpine-tabs`, and `@ailuracode/alpine-accordion` build on these primitives internally.
 
-## Setup
+## Quick start
 
 ```js
 import Alpine from "alpinejs";

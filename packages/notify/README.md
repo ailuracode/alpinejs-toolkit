@@ -5,10 +5,10 @@ Thin wrapper around the [Web Notifications API](https://developer.mozilla.org/en
 ## Install
 
 ```bash
-pnpm add @ailuracode/alpine-notify alpinejs
+pnpm add @ailuracode/alpine-notify @ailuracode/alpine-core @ailuracode/alpine-permissions alpinejs
 ```
 
-## Setup
+## Quick start
 
 ```js
 import Alpine from "alpinejs";
@@ -200,3 +200,7 @@ import {
 - **Magic, not store** — notifications are one-off actions, not shared reactive state.
 - **Fail silent** — returning `null` keeps Alpine expressions and event handlers simple.
 - **No UI coupling** — framework-agnostic; pair with your own toast or banner components for in-page feedback.
+
+## License
+
+MIT

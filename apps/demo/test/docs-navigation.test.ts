@@ -22,6 +22,6 @@ describe("docs navigation", () => {
   });
 
   it("counts documented packages from the catalog", () => {
-    expect(getDocumentedPackageCount()).toBeGreaterThan(25);
+    expect(getDocumentedPackageCount()).toBe(37);
   });
 });

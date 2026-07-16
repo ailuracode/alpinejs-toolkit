@@ -19,21 +19,6 @@ This package MUST NOT become a container for feature-specific helpers —
 free of feature-specific behavior, and used (or going to be used) by at
 least two packages.
 
-## Why
-
-| Problem                                                           | This package solves it by                                                                      |
-| ----------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
-| Plugins run side effects the moment they're imported              | `registerPlugin()` only stores the definition                                                  |
-| Dynamic `import()` can't be awaited before `Alpine.start()`       | `initPlugins()` resolves every loader (sync or async) before the consumer's bootstrap          |
-| Mixed sync/async code paths produce subtle init order bugs        | `initPluginsSync()` / `createAlpinePlugin()` enforce a single sync code path                   |
-| `window.matchMedia` throws on the server                          | `safeMatchMedia()`, `isBrowser()`, `safeWindow()`, `safeDocument()` guard DOM access           |
-| Every feature reinvents its own lifecycle, event bus, and cleanup | `BaseController` + `CleanupStack` + `EventEmitter` + `InstanceRegistry` ship the contract     |
-
-> **What core is NOT.** Core stays generic — only Alpine plugin plumbing
-> and SSR-safe wrappers around generic Web APIs. Feature-specific
-> helpers (touch detection, media-query subscription, etc.) belong in
-> dedicated packages.
-
 ## Install
 
 ```bash
@@ -124,6 +109,21 @@ class CounterController extends BaseController<CounterEvents> {
   }
 }
 ```
+
+## Why
+
+| Problem                                                           | This package solves it by                                                                      |
+| ----------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| Plugins run side effects the moment they're imported              | `registerPlugin()` only stores the definition                                                  |
+| Dynamic `import()` can't be awaited before `Alpine.start()`       | `initPlugins()` resolves every loader (sync or async) before the consumer's bootstrap          |
+| Mixed sync/async code paths produce subtle init order bugs        | `initPluginsSync()` / `createAlpinePlugin()` enforce a single sync code path                   |
+| `window.matchMedia` throws on the server                          | `safeMatchMedia()`, `isBrowser()`, `safeWindow()`, `safeDocument()` guard DOM access           |
+| Every feature reinvents its own lifecycle, event bus, and cleanup | `BaseController` + `CleanupStack` + `EventEmitter` + `InstanceRegistry` ship the contract     |
+
+> **What core is NOT.** Core stays generic — only Alpine plugin plumbing
+> and SSR-safe wrappers around generic Web APIs. Feature-specific
+> helpers (touch detection, media-query subscription, etc.) belong in
+> dedicated packages.
 
 ## Lazy dynamic imports
 

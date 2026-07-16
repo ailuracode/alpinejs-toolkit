@@ -28,7 +28,6 @@ Open [http://localhost:4321](http://localhost:4321) for documentation. Interacti
 |------|---------|
 | `../../docs/` | **Source of truth** — Starlight Markdown (YAML frontmatter, no sync step) |
 | `../../docs/plugins/` | Plugin API reference (English) |
-| `../../docs/es/`, `../../docs/pt/` | Translated guides + `plugins/` reference |
 | `src/content/docs/` | Symlink → `../../../../docs` (Starlight content collection) |
 | `src/pages/playground/` | Overview + `[plugin].astro` subpages |
 | `src/demo/` | Alpine demo registrations + playground component registry |

@@ -92,11 +92,6 @@ export function buildDocsSidebar(): SidebarEntry[] {
           link: "/getting-started/",
         },
         {
-          label: "Core",
-          translations: { es: "Core", pt: "Core" },
-          link: "/core/",
-        },
-        {
           label: "Device detection",
           translations: { es: "Detección de dispositivo", pt: "Detecção de dispositivo" },
           link: "/device-detection/",

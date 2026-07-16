@@ -5,12 +5,12 @@ Lightweight calendar logic for Alpine.js, powered by [date-fns](https://date-fns
 ## Install
 
 ```bash
-pnpm add @ailuracode/alpine-calendar @ailuracode/alpine-selection alpinejs
+pnpm add @ailuracode/alpine-calendar @ailuracode/alpine-core alpinejs
 ```
 
 Date selection uses `@ailuracode/alpine-selection` internally (ISO date keys, single/multiple/range modes).
 
-## Setup
+## Quick start
 
 ```js
 import Alpine from "alpinejs";
@@ -327,3 +327,7 @@ For backward compatibility, `CalendarController.toStore()` returns an object mat
 ## SSR
 
 The plugin does not touch `window` or `navigator` during initialization. Calendar instances only use `Date` and date-fns, so they are safe to create during SSR as long as you avoid rendering browser-only UI around them.
+
+## License
+
+MIT

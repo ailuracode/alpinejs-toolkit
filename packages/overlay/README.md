@@ -1,4 +1,4 @@
-# `@ailuracode/alpine-overlay`
+# @ailuracode/alpine-overlay
 
 Centralized portal root, z-index slot allocation, and open-stack registry
 for Alpine.js applications.
@@ -9,10 +9,10 @@ portal root itself.
 ## Install
 
 ```bash
-pnpm add @ailuracode/alpine-overlay alpinejs @ailuracode/alpine-core
+pnpm add @ailuracode/alpine-overlay @ailuracode/alpine-core alpinejs
 ```
 
-## Usage
+## Quick start
 
 ```ts
 import Alpine from "alpinejs";

@@ -5,13 +5,23 @@ Headless tooltip store. Hover/focus triggers, open/close delays, Escape dismiss.
 ## Install
 
 ```bash
-pnpm add @ailuracode/alpine-tooltip alpinejs
+pnpm add @ailuracode/alpine-tooltip @ailuracode/alpine-core alpinejs
 ```
 
 Positioning (Floating UI via Alpine):
 
 ```bash
 pnpm add @alpinejs/anchor
+```
+
+## Quick start
+
+```js
+import Alpine from "alpinejs";
+import { tooltipPlugin } from "@ailuracode/alpine-tooltip";
+
+Alpine.plugin(tooltipPlugin());
+Alpine.start();
 ```
 
 ## Store API
@@ -119,3 +129,7 @@ Delays require client-side timers — initialize on the client via `x-init`.
 - Placement is your responsibility — use `@alpinejs/anchor` (`x-anchor.*.fixed`) for flip, shift, and scroll tracking
 - Use `<template x-teleport="body">` + `x-anchor.fixed` when the floating node sits inside `overflow-hidden` ancestors
 - Wire `@keydown.window` while open so Escape works when focus stays on the trigger
+
+## License
+
+MIT

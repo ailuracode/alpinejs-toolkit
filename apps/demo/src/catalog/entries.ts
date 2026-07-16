@@ -21,7 +21,7 @@ export const PACKAGE_CATALOG: readonly PackageCatalogEntry[] = [
     tier: "essential",
     order: 1,
     badges: ["infrastructure"],
-    docs: { available: true, routeId: "core", source: "guide" },
+    docs: { available: true },
   }),
   entry({
     id: "overlay",
@@ -40,7 +40,7 @@ export const PACKAGE_CATALOG: readonly PackageCatalogEntry[] = [
     badges: ["infrastructure"],
     related: ["dialog", "menu", "tooltip", "command"],
     demo: { available: true, componentId: "overlay" },
-    docs: { available: false },
+    docs: { available: true },
   }),
   entry({
     id: "keyboard",
@@ -321,6 +321,7 @@ export const PACKAGE_CATALOG: readonly PackageCatalogEntry[] = [
     tier: "extended",
     order: 3,
     demo: { available: true, componentId: "history" },
+    docs: { available: true },
   }),
   entry({
     id: "dialog",
@@ -503,7 +504,7 @@ export const PACKAGE_CATALOG: readonly PackageCatalogEntry[] = [
     tier: "headless",
     order: 11,
     related: ["selection", "virtual", "command"],
-    docs: { available: false },
+    docs: { available: true },
   }),
   entry({
     id: "form",
@@ -521,7 +522,7 @@ export const PACKAGE_CATALOG: readonly PackageCatalogEntry[] = [
     order: 12,
     related: ["selection"],
     demo: { available: true, componentId: "form" },
-    docs: { available: true, source: "guide" },
+    docs: { available: true },
   }),
   entry({
     id: "query",
@@ -540,7 +541,7 @@ export const PACKAGE_CATALOG: readonly PackageCatalogEntry[] = [
     badges: ["infrastructure"],
     related: ["query-kit", "query-adapter-alpine", "query-adapter-zustand"],
     demo: { available: true, componentId: "query" },
-    docs: { available: true, routeId: "query", source: "guide" },
+    docs: { available: true, routeId: "query" },
   }),
   entry({
     id: "query-adapter-alpine",
@@ -559,7 +560,7 @@ export const PACKAGE_CATALOG: readonly PackageCatalogEntry[] = [
     badges: ["adapter"],
     related: ["query", "query-kit"],
     requires: ["query"],
-    docs: { available: false },
+    docs: { available: true },
   }),
   entry({
     id: "query-adapter-zustand",
@@ -578,7 +579,7 @@ export const PACKAGE_CATALOG: readonly PackageCatalogEntry[] = [
     badges: ["adapter"],
     related: ["query", "query-kit"],
     requires: ["query"],
-    docs: { available: false },
+    docs: { available: true },
   }),
   entry({
     id: "query-kit",
@@ -649,6 +650,6 @@ export const PACKAGE_CATALOG: readonly PackageCatalogEntry[] = [
     tier: "advanced",
     order: 7,
     related: ["query"],
-    docs: { available: false },
+    docs: { available: true },
   }),
 ] as const;

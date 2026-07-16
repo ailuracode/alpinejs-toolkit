@@ -5,10 +5,20 @@ Headless accessible tabs store with keyboard navigation, manual/automatic activa
 ## Install
 
 ```bash
-pnpm add @ailuracode/alpine-tabs alpinejs
+pnpm add @ailuracode/alpine-tabs @ailuracode/alpine-core alpinejs
 ```
 
 Active tab tracking uses an inline lightweight state — no extra dependency.
+
+## Quick start
+
+```js
+import Alpine from "alpinejs";
+import { tabsPlugin } from "@ailuracode/alpine-tabs";
+
+Alpine.plugin(tabsPlugin());
+Alpine.start();
+```
 
 ## Store API
 
@@ -74,3 +84,7 @@ URL sync reads `window.location` only when `register()` runs on the client.
 ## Integration
 
 - **Toast** — optional feedback in demos when switching tabs; not required by the plugin
+
+## License
+
+MIT

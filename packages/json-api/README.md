@@ -5,7 +5,7 @@ Strongly typed [JSON:API](https://jsonapi.org/) client for Alpine.js. Define you
 ## Install
 
 ```bash
-pnpm add @ailuracode/alpine-json-api @ailuracode/alpine-query alpinejs
+pnpm add @ailuracode/alpine-json-api @ailuracode/alpine-core alpinejs
 ```
 
 ## Quick start

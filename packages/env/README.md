@@ -4,22 +4,13 @@ Browser environment magics in one package: connectivity, tab visibility, battery
 
 The root entrypoint stays focused on Alpine magics. The headless API lives under `@ailuracode/alpine-env/controller`.
 
-## Magics
-
-| Magic | Description |
-|-------|-------------|
-| `$network` | Online / offline state |
-| `$visibility` | Tab visibility (Page Visibility API) |
-| `$battery` | Battery level and charging |
-| `$platform` | OS and device detection |
-
 ## Install
 
 ```bash
-pnpm add @ailuracode/alpine-env alpinejs
+pnpm add @ailuracode/alpine-env @ailuracode/alpine-core alpinejs
 ```
 
-## Setup
+## Quick start
 
 ```js
 import Alpine from "alpinejs";
@@ -28,6 +19,15 @@ import env from "@ailuracode/alpine-env";
 Alpine.plugin(env());
 Alpine.start();
 ```
+
+## Magics
+
+| Magic | Description |
+|-------|-------------|
+| `$network` | Online / offline state |
+| `$visibility` | Tab visibility (Page Visibility API) |
+| `$battery` | Battery level and charging |
+| `$platform` | OS and device detection |
 
 ## Selective registration
 
@@ -135,3 +135,7 @@ env.on("change", (detail) => {
 `EnvController` is SSR-safe to construct, starts subscriptions in `mount()`, and removes listeners on `destroy()`.
 
 Root package no longer exports platform helpers or per-feature controllers. Import the controller subpath for headless usage and use the root package for Alpine integration only.
+
+## License
+
+MIT

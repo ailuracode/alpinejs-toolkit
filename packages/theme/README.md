@@ -2,6 +2,67 @@
 
 Framework-agnostic theme manager for Alpine.js, Blade, Livewire, and any TypeScript front end. Light, dark, and `system` modes; pluggable persistence; class or `data-theme` DOM strategies; cross-tab sync; SSR-safe; head snippet for flash prevention.
 
+## Install
+
+```bash
+pnpm add @ailuracode/alpine-theme @ailuracode/alpine-core @ailuracode/alpine-toggle alpinejs
+```
+
+## Standalone usage (no Alpine)
+
+```ts
+import { createTheme, createLocalStorageThemeStorage } from '@ailuracode/alpine-theme';
+
+const theme = createTheme({
+    defaultTheme: 'system',
+    storage: createLocalStorageThemeStorage({ key: 'app-theme' }),
+    strategy: 'class',
+    darkClass: 'dark',
+    lightClass: 'light',
+    target: document.documentElement,
+});
+
+theme.set('dark');
+theme.set('light');
+theme.set('system');
+theme.toggle();
+theme.reset();
+```
+
+`theme.on('change', detail => { … })` receives every transition with `source: 'user' | 'system' | 'storage' | 'reset' | 'initialization'` plus the previous state.
+
+## Alpine usage
+
+```ts
+import Alpine from 'alpinejs';
+import { themePlugin } from '@ailuracode/alpine-theme';
+
+Alpine.plugin(themePlugin({ defaultTheme: 'system', strategy: 'class' }));
+Alpine.start();
+```
+
+```html
+<button type="button" @click="$theme.toggle()">Toggle theme</button>
+<button type="button" @click="$theme.set('system')">Use system</button>
+<span x-text="$theme.resolved"></span>
+```
+
+The plugin registers `$store.theme` and `$theme` (both backed by the same manager instance). It is a thin reactive mirror — every method forwards to the manager.
+
+### Renaming the store and magic keys
+
+If your application already owns a `$store.theme` or another toolkit plugin registers on that name, rename the integration surface without touching the controller or the `$theme` consumers:
+
+```ts
+Alpine.plugin(themePlugin({
+  storeKey: 'appearance',           // → $store.appearance
+  // magicKey follows storeKey by default → $appearance
+  magicKey: 'look',                  // explicit override → $look
+}));
+```
+
+`storeKey` is the only argument most hosts need. `magicKey` moves independently only when both names must be freed (e.g. `$store.theme` is reserved and `$theme` should track the renamed store). The exposed constants `DEFAULT_THEME_STORE_KEY` and `DEFAULT_THEME_MAGIC_KEY` keep the rename discoverable from TypeScript.
+
 ## Architecture
 
 ```mermaid
@@ -69,67 +130,6 @@ Examples:
 - User picked `dark`, OS is light → `current='dark'`, `system='light'`, `resolved='dark'`.
 
 `resolved` updates automatically when the OS flips **only** when `current === 'system'`. An explicit user choice freezes `resolved` against OS changes.
-
-## Install
-
-```bash
-pnpm add @ailuracode/alpine-theme @ailuracode/alpine-toggle @ailuracode/alpine-core alpinejs
-```
-
-## Standalone usage (no Alpine)
-
-```ts
-import { createTheme, createLocalStorageThemeStorage } from '@ailuracode/alpine-theme';
-
-const theme = createTheme({
-    defaultTheme: 'system',
-    storage: createLocalStorageThemeStorage({ key: 'app-theme' }),
-    strategy: 'class',
-    darkClass: 'dark',
-    lightClass: 'light',
-    target: document.documentElement,
-});
-
-theme.set('dark');
-theme.set('light');
-theme.set('system');
-theme.toggle();
-theme.reset();
-```
-
-`theme.on('change', detail => { … })` receives every transition with `source: 'user' | 'system' | 'storage' | 'reset' | 'initialization'` plus the previous state.
-
-## Alpine usage
-
-```ts
-import Alpine from 'alpinejs';
-import { themePlugin } from '@ailuracode/alpine-theme';
-
-Alpine.plugin(themePlugin({ defaultTheme: 'system', strategy: 'class' }));
-Alpine.start();
-```
-
-```html
-<button type="button" @click="$theme.toggle()">Toggle theme</button>
-<button type="button" @click="$theme.set('system')">Use system</button>
-<span x-text="$theme.resolved"></span>
-```
-
-The plugin registers `$store.theme` and `$theme` (both backed by the same manager instance). It is a thin reactive mirror — every method forwards to the manager.
-
-### Renaming the store and magic keys
-
-If your application already owns a `$store.theme` or another toolkit plugin registers on that name, rename the integration surface without touching the controller or the `$theme` consumers:
-
-```ts
-Alpine.plugin(themePlugin({
-  storeKey: 'appearance',           // → $store.appearance
-  // magicKey follows storeKey by default → $appearance
-  magicKey: 'look',                  // explicit override → $look
-}));
-```
-
-`storeKey` is the only argument most hosts need. `magicKey` moves independently only when both names must be freed (e.g. `$store.theme` is reserved and `$theme` should track the renamed store). The exposed constants `DEFAULT_THEME_STORE_KEY` and `DEFAULT_THEME_MAGIC_KEY` keep the rename discoverable from TypeScript.
 
 ## DOM strategies
 

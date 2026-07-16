@@ -5,10 +5,10 @@ Headless accessible dialog store for Alpine.js — open/close state, focus trap,
 ## Install
 
 ```bash
-pnpm add @ailuracode/alpine-dialog alpinejs
+pnpm add @ailuracode/alpine-dialog @ailuracode/alpine-core alpinejs
 ```
 
-## Setup
+## Quick start
 
 ```ts
 import Alpine from "alpinejs";
@@ -156,3 +156,7 @@ State is in-memory. Guard DOM bindings (`bindContainer`, focus trap) behind `x-i
 
 - Stacking/z-index is consumer-owned — wrap modals in `<template x-teleport="body">` when inside `overflow-hidden` ancestors (`x-teleport` requires a `<template>` tag in Alpine 3)
 - One focus trap per dialog id; bind the dialog panel root element
+
+## License
+
+MIT

@@ -1,7 +1,39 @@
-# `@ailuracode/alpine-collection`
+# @ailuracode/alpine-collection
 
 Framework-agnostic collection primitives for Alpine.js — filtering, sorting,
 grouping, pagination, and active-item navigation over a stable key registry.
+
+## Install
+
+```bash
+pnpm add @ailuracode/alpine-collection
+```
+
+## Quick start
+
+```ts
+import { createCollectionController } from "@ailuracode/alpine-collection";
+
+type Item = { id: string; name: string; group: "fruit" | "veg" };
+
+const collection = createCollectionController<Item>({
+  items: [
+    { id: "a", name: "Apple", group: "fruit" },
+    { id: "b", name: "Banana", group: "fruit" },
+    { id: "c", name: "Carrot", group: "veg" },
+  ],
+  getKey: (item) => item.id,
+  isDisabled: (item) => item.id === "b",
+  filter: { match: (item, query) => item.name.toLowerCase().includes(query) },
+  sort: { compare: (a, b) => a.name.localeCompare(b.name) },
+  group: { by: (item) => item.group },
+});
+
+collection.setFilter("ap");
+collection.view; // [Apple] (Carrot filtered, Banana disabled + filtered)
+collection.setActiveKey("c");
+collection.nextActiveKey(); // "a" (filters + sort)
+```
 
 ## Architectural role
 
@@ -28,38 +60,6 @@ never touches `window`, `document`, or timers in its constructor.
 | Own selection values | `@ailuracode/alpine-selection` |
 | Virtualize oversize windows | `@ailuracode/alpine-virtual` |
 | State management reactivity | Alpine, Nanostores, Zustand (consumers) |
-
-## Install
-
-```bash
-pnpm add @ailuracode/alpine-collection
-```
-
-## Quick example
-
-```ts
-import { createCollectionController } from "@ailuracode/alpine-collection";
-
-type Item = { id: string; name: string; group: "fruit" | "veg" };
-
-const collection = createCollectionController<Item>({
-  items: [
-    { id: "a", name: "Apple", group: "fruit" },
-    { id: "b", name: "Banana", group: "fruit" },
-    { id: "c", name: "Carrot", group: "veg" },
-  ],
-  getKey: (item) => item.id,
-  isDisabled: (item) => item.id === "b",
-  filter: { match: (item, query) => item.name.toLowerCase().includes(query) },
-  sort: { compare: (a, b) => a.name.localeCompare(b.name) },
-  group: { by: (item) => item.group },
-});
-
-collection.setFilter("ap");
-collection.view; // [Apple] (Carrot filtered, Banana disabled + filtered)
-collection.setActiveKey("c");
-collection.nextActiveKey(); // "a" (filters + sort)
-```
 
 ## Controller API
 

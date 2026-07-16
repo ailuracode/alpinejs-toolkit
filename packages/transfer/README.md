@@ -2,21 +2,13 @@
 
 Outbound data transfer magics: clipboard copy, Web Share, and programmatic file downloads.
 
-## Magics
-
-| Magic | Description |
-|-------|-------------|
-| `$clipboard` | Copy text to the clipboard |
-| `$share` | Web Share API |
-| `$export` | Programmatic file downloads |
-
 ## Install
 
 ```bash
-pnpm add @ailuracode/alpine-transfer alpinejs
+pnpm add @ailuracode/alpine-transfer @ailuracode/alpine-core alpinejs
 ```
 
-## Setup
+## Quick start
 
 ```js
 import Alpine from "alpinejs";
@@ -25,6 +17,14 @@ import transfer from "@ailuracode/alpine-transfer";
 Alpine.plugin(transfer());
 Alpine.start();
 ```
+
+## Magics
+
+| Magic | Description |
+|-------|-------------|
+| `$clipboard` | Copy text to the clipboard |
+| `$share` | Web Share API |
+| `$export` | Programmatic file downloads |
 
 ## Selective registration
 
@@ -122,3 +122,7 @@ Aliases: `clipboardPlugin`, `sharePlugin`, `exportPlugin`.
 | `isShareSupported()` | Web Share API availability |
 | `exportData(options)` | Download without Alpine |
 | `isExportSupported()` | Export availability |
+
+## License
+
+MIT

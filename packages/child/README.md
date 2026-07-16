@@ -5,10 +5,10 @@ Alpine.js directive for **asChild-style** composition: transfer attributes, clas
 ## Install
 
 ```bash
-pnpm add @ailuracode/alpine-child @alpinejs/morph alpinejs
+pnpm add @ailuracode/alpine-child @ailuracode/alpine-core @alpinejs/morph alpinejs
 ```
 
-## Setup
+## Quick start
 
 ```ts
 import Alpine from "alpinejs";
@@ -22,7 +22,7 @@ Alpine.start();
 
 Unwrapping uses [`Alpine.morph()`](https://alpinejs.dev/plugins/morph) — register Morph before `x-child`.
 
-## Usage
+## Quick start
 
 ```html
 <span

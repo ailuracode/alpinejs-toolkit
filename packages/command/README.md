@@ -5,12 +5,12 @@ Headless command palette (Spotlight-style) store — searchable actions, groups,
 ## Install
 
 ```bash
-pnpm add @ailuracode/alpine-command alpinejs
+pnpm add @ailuracode/alpine-command @ailuracode/alpine-core alpinejs
 ```
 
 Active item navigation uses inline helpers — no extra dependency.
 
-## Setup
+## Quick start
 
 ```js
 import Alpine from "alpinejs";
@@ -129,3 +129,7 @@ command.open();
 - `register()` now returns an unregister callback; `unregister(id)` remains available
 - `filter` is deprecated in favor of `rank` or `searchStrategy`
 - `filteredItems` now includes disabled commands; use `itemState(id)?.disabled` or `visibleItems` for runtime state
+
+## License
+
+MIT
