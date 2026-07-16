@@ -1,4 +1,7 @@
-# Plugin DOM events
+---
+title: Plugin DOM events
+description: Shared @package:event convention, dispatchPluginEvent() helper, and contributor guidelines for toolkit DOM events.
+---
 
 Toolkit packages expose observable behavior to Alpine templates through
 namespaced DOM events. Consumers listen with Alpine's `@` syntax; the
