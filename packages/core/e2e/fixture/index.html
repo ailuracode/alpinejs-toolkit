@@ -10,6 +10,57 @@
       <h1>Core E2E fixture</h1>
       <p>Resolved theme: <output id="resolved-theme" x-text="$store.theme.resolved"></output></p>
       <button type="button" @click="$store.theme.toggle()">Toggle theme</button>
+
+      <section
+        id="plugin-event-demo"
+        x-data="pluginEventDemo"
+        @toggle:change="toggleDetail = $event.detail"
+        @theme:change.window="themeDetail = $event.detail"
+      >
+        <button type="button" id="dispatch-toggle" @click="dispatchToggle($el.closest('#plugin-event-demo'))">
+          Dispatch toggle change
+        </button>
+        <button type="button" id="dispatch-theme" @click="dispatchTheme()">
+          Dispatch theme change
+        </button>
+        <output id="toggle-detail" x-text="toggleDetail ? JSON.stringify(toggleDetail) : ''"></output>
+        <output id="theme-detail" x-text="themeDetail ? JSON.stringify(themeDetail) : ''"></output>
+      </section>
+
+      <section
+        id="bubbling-demo"
+        x-data="{ parentReceived: false }"
+        @toggle:change="parentReceived = true"
+      >
+        <div id="bubbling-child" x-data="pluginEventDemo">
+          <button
+            type="button"
+            id="dispatch-bubbling"
+            @click="dispatchToggle($el.closest('#bubbling-child'))"
+          >
+            Dispatch bubbling toggle
+          </button>
+          <button
+            type="button"
+            id="dispatch-no-bubble"
+            @click="dispatchToggleNoBubble($el.closest('#bubbling-child'))"
+          >
+            Dispatch non-bubbling toggle
+          </button>
+        </div>
+        <output id="parent-received" x-text="parentReceived ? 'yes' : 'no'"></output>
+      </section>
+
+      <section
+        id="cancelable-demo"
+        x-data="cancelableDemo"
+        @dialog:before-close="handleBeforeClose($event)"
+      >
+        <button type="button" id="try-close" @click="tryClose($el.closest('#cancelable-demo'))">
+          Try dialog close
+        </button>
+        <output id="close-result" x-text="closeResult"></output>
+      </section>
     </main>
     <script type="module" src="/app.js"></script>
   </body>

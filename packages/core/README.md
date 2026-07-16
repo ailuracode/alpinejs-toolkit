@@ -223,6 +223,71 @@ multiple kinds of one plugin (e.g. `magic: ['theme']` + `store: ['theme']`).
 | `InstanceRegistry<T>`     | Map of controller instances keyed by string ID              |
 | `ToolkitError`            | Base error with stable `code` and optional `cause`          |
 
+### Plugin DOM events
+
+Toolkit packages expose observable behavior through Alpine listeners using
+the `@package:event` convention. The underlying DOM event name is
+`package:event` (for example `toggle:change`, `dialog:before-close`).
+
+```html
+<div
+  @toggle:change="handleToggle($event.detail)"
+  @dialog:before-close="validateClose($event)"
+  @theme:change.window="syncTheme($event.detail)"
+></div>
+```
+
+| Export | Description |
+| ------ | ----------- |
+| `dispatchPluginEvent(target, namespace, event, detail, options?)` | Dispatch a namespaced `CustomEvent` with toolkit defaults |
+| `PluginEventMap` | Augmentable map of event names to detail types |
+| `PluginEventName<TNamespace, TEvent>` | Template-literal event name helper |
+| `PluginCustomEvent<TName>` | Typed `CustomEvent` for map entries |
+| `ChangeSource` | Normalized `source` union for change payloads |
+| `DispatchPluginEventOptions` | `bubbles`, `composed`, `cancelable` overrides |
+
+Defaults: `bubbles: true`, `composed: true`, `cancelable: false`.
+Cancelable lifecycle hooks opt in explicitly:
+
+```ts
+const event = dispatchPluginEvent(element, 'dialog', 'before-close', detail, {
+  cancelable: true,
+});
+
+if (event.defaultPrevented) {
+  return false;
+}
+```
+
+Packages augment the shared event map:
+
+```ts
+declare module '@ailuracode/alpine-core' {
+  interface PluginEventMap {
+    'toggle:change': ToggleChangeDetail;
+    'dialog:before-close': DialogBeforeCloseDetail;
+  }
+}
+```
+
+**Dispatch targets**
+
+- Element-bound directives — dispatch from the owning element.
+- Global stores — dispatch from `window` unless a more specific target exists.
+- Unattached controller factories — do not emit DOM events until wired
+  through Alpine integration.
+
+**When not to add an event**
+
+- The behavior is already covered by a native DOM event (`play`, `focus`,
+  `scroll`, …).
+- The event would mirror every controller method instead of observable
+  lifecycle or state transitions.
+- A hidden global event bus would be required — prefer native propagation.
+
+See [`docs/guides/plugin-events.md`](../../docs/guides/plugin-events.md)
+for the full contributor contract.
+
 ### Controller-backed Alpine lifecycle bridge
 
 Use these helpers when a feature package wires a headless controller
