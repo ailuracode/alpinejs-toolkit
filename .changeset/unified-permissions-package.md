@@ -1,5 +1,5 @@
 ---
-"@ailuracode/alpine-permissions": minor
+"@ailuracode/alpine-permissions": patch
 "@ailuracode/alpine-attention": patch
 "@ailuracode/alpine-geo": patch
 "@ailuracode/alpine-notify": patch

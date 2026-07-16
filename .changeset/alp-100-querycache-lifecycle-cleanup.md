@@ -1,5 +1,5 @@
 ---
-"@ailuracode/alpine-query": minor
+"@ailuracode/alpine-query": patch
 "@ailuracode/alpine-query-adapter-alpine": patch
 "@ailuracode/alpine-query-kit": patch
 ---

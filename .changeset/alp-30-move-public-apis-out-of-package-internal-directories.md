@@ -1,5 +1,5 @@
 ---
-"@ailuracode/alpine-core": minor
+"@ailuracode/alpine-core": patch
 "@ailuracode/alpine-lang": minor
 "@ailuracode/alpine-media": minor
 "@ailuracode/alpine-theme": minor

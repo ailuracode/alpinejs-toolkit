@@ -1,8 +1,8 @@
 ---
-"@ailuracode/alpine-core": minor
+"@ailuracode/alpine-core": patch
 "@ailuracode/alpine-theme": minor
 "@ailuracode/alpine-media": minor
-"@ailuracode/alpine-scroll": minor
+"@ailuracode/alpine-scroll": patch
 "@ailuracode/alpine-sidebar": minor
 "@ailuracode/alpine-lang": minor
 "@ailuracode/alpine-overlay": minor
