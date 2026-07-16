@@ -31,7 +31,6 @@
     "test:e2e": "node scripts/e2e-run.mjs",
     "test:e2e:affected": "node scripts/e2e-run.mjs --affected",
     "test:e2e:full": "E2E_BROWSER_PROFILE=full pnpm run test:e2e",
-    "test:packages": "pnpm -r --if-present test",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
     "version": "changeset version"

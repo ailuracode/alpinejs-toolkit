@@ -7,44 +7,9 @@
  * asserted without booting the real runtime.
  */
 
-import type { Alpine as AlpineBase } from "alpinejs";
 import { describe, expect, it } from "vitest";
+import { asAlpine, createMockAlpine } from "../../../test/mock-alpine";
 import { tabsPlugin } from "../src/index";
-
-interface MockAlpine {
-  stores: Record<string, unknown>;
-  magics: Record<string, () => unknown>;
-  cleanups: Array<() => void>;
-  plugin(cb: (alpine: MockAlpine) => void): void;
-  store(name: string, value?: unknown): unknown;
-  magic(name: string, factory: () => unknown): void;
-  cleanup(cb: () => void): void;
-}
-
-function createMockAlpine(): MockAlpine {
-  const alpine: MockAlpine = {
-    stores: {},
-    magics: {},
-    cleanups: [],
-    plugin(cb) {
-      cb(alpine);
-    },
-    store(name, value?) {
-      if (value === undefined) {
-        return alpine.stores[name];
-      }
-      alpine.stores[name] = value;
-      return undefined;
-    },
-    magic(name, factory) {
-      alpine.magics[name] = factory;
-    },
-    cleanup(cb) {
-      alpine.cleanups.push(cb);
-    },
-  };
-  return alpine;
-}
 
 /**
  * Collision-avoidance: hosts that already own a `tabs` store can
@@ -55,7 +20,7 @@ function createMockAlpine(): MockAlpine {
 describe("tabsPlugin — collision-avoidance keys", () => {
   it("registers under a custom storeKey", () => {
     const Alpine = createMockAlpine();
-    tabsPlugin({ storeKey: "panels" })(Alpine as unknown as AlpineBase);
+    tabsPlugin({ storeKey: "panels" })(asAlpine(Alpine));
     expect(Alpine.stores.panels).toBeDefined();
     expect(Alpine.stores.tabs).toBeUndefined();
     expect(Alpine.magics.panels).toBeDefined();
@@ -63,7 +28,7 @@ describe("tabsPlugin — collision-avoidance keys", () => {
 
   it("lets magicKey move independently from storeKey", () => {
     const Alpine = createMockAlpine();
-    tabsPlugin({ storeKey: "panels", magicKey: "tabsState" })(Alpine as unknown as AlpineBase);
+    tabsPlugin({ storeKey: "panels", magicKey: "tabsState" })(asAlpine(Alpine));
     expect(Alpine.stores.panels).toBeDefined();
     expect(Alpine.stores.tabs).toBeUndefined();
     expect(Alpine.magics.tabsState).toBeDefined();
@@ -72,7 +37,7 @@ describe("tabsPlugin — collision-avoidance keys", () => {
 
   it("leaves the default keys untouched when no rename is supplied", () => {
     const Alpine = createMockAlpine();
-    tabsPlugin()(Alpine as unknown as AlpineBase);
+    tabsPlugin()(asAlpine(Alpine));
     expect(Alpine.stores.tabs).toBeDefined();
     expect(Alpine.magics.tabs).toBeDefined();
   });

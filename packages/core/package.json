@@ -50,8 +50,7 @@
     "test:coverage": "vitest run --coverage --config ../../vitest.config.ts packages/core",
     "test:watch": "vitest --config ../../vitest.config.ts packages/core",
     "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.test.json",
-    "test:e2e": "playwright test --config playwright.config.ts",
-    "test:e2e:report": "playwright show-report e2e/playwright-report"
+    "test:e2e": "playwright test --config playwright.config.ts"
   },
   "devDependencies": {
     "@types/alpinejs": "^3.13.11",

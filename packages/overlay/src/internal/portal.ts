@@ -18,6 +18,7 @@
  */
 
 import { safeDocument as coreSafeDocument } from "@ailuracode/alpine-core";
+import { createPortalRoot } from "@ailuracode/alpine-ui";
 
 export interface PortalResolveOptions {
   /**
@@ -43,6 +44,10 @@ export function resolveOrCreatePortalRoot(
 ): HTMLElement | null {
   if (!doc) {
     return null;
+  }
+
+  if (rootOrSelector === null && doc === coreSafeDocument()) {
+    return createPortalRoot({ className: options.className, as: options.tag });
   }
 
   if (rootOrSelector instanceof HTMLElement) {
