@@ -28,6 +28,7 @@ import Puzzle from "@lucide/astro/icons/puzzle";
 import Replace from "@lucide/astro/icons/replace";
 import Send from "@lucide/astro/icons/send";
 import ShieldCheck from "@lucide/astro/icons/shield-check";
+import Timer from "@lucide/astro/icons/timer";
 import ToggleLeft from "@lucide/astro/icons/toggle-left";
 
 type PluginNavIcon = typeof Puzzle;
@@ -43,6 +44,7 @@ const PLUGIN_NAV_ICONS: Record<string, PluginNavIcon> = {
   env: Globe,
   transfer: Send,
   toggle: ToggleLeft,
+  timer: Timer,
   child: Replace,
   toast: MessageSquare,
   attention: Focus,

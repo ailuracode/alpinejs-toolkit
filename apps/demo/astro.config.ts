@@ -83,6 +83,7 @@ export default defineConfig({
         "@ailuracode/alpine-sidebar": pkg("sidebar"),
         "@ailuracode/alpine-scroll": pkg("scroll"),
         "@ailuracode/alpine-theme": pkg("theme"),
+        "@ailuracode/alpine-timer": pkg("timer"),
         "@ailuracode/alpine-toggle": pkg("toggle"),
         "@ailuracode/alpine-history": pkg("history"),
         "@ailuracode/alpine-realtime": pkg("realtime"),
