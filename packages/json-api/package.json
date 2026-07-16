@@ -1,6 +1,6 @@
 {
   "name": "@ailuracode/alpine-json-api",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Strongly typed JSON:API client for Alpine.js",
   "type": "module",
   "license": "MIT",
@@ -36,10 +36,12 @@
     "@ailuracode/alpine-query": "workspace:*"
   },
   "devDependencies": {
-    "@ailuracode/alpine-core": "workspace:*"
+    "@ailuracode/alpine-core": "workspace:*",
+    "@types/alpinejs": "^3.13.11",
+    "alpinejs": "^3.15.12"
   },
   "peerDependencies": {
-    "@ailuracode/alpine-core": "^0.2.1",
+    "@ailuracode/alpine-core": "^0.2.2",
     "@types/alpinejs": "^3.13.11",
     "alpinejs": "^3.0.0"
   },

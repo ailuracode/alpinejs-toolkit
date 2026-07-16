@@ -1,22 +1,12 @@
-import {
-  definePlugin,
-  dispatchPluginEvent,
-  initPluginsSync,
-  registerPlugin,
-} from "@ailuracode/alpine-core";
 import themePlugin from "@ailuracode/alpine-theme";
 import Alpine from "alpinejs";
 
-registerPlugin(
-  "theme",
-  definePlugin(["store"], {
-    names: ["theme"],
-    plugin: themePlugin({
-      defaultTheme: "light",
-      strategy: "class",
-      darkClass: "theme-dark",
-      lightClass: "theme-light",
-    }),
+Alpine.plugin(
+  themePlugin({
+    defaultTheme: "light",
+    strategy: "class",
+    darkClass: "theme-dark",
+    lightClass: "theme-light",
   })
 );
 
@@ -24,26 +14,30 @@ Alpine.data("pluginEventDemo", () => ({
   toggleDetail: null as { current: boolean } | null,
   themeDetail: null as { current: string } | null,
   dispatchToggle(target: HTMLElement): void {
-    dispatchPluginEvent(target, "toggle", "change", {
-      previous: false,
-      current: true,
-      source: "toggle",
-    });
+    target.dispatchEvent(
+      new CustomEvent("toggle:change", {
+        detail: { previous: false, current: true, source: "toggle" },
+        bubbles: true,
+        composed: true,
+      })
+    );
   },
   dispatchTheme(): void {
-    dispatchPluginEvent(window, "theme", "change", {
-      previous: "light",
-      current: "dark",
-      source: "api",
-    });
+    window.dispatchEvent(
+      new CustomEvent("theme:change", {
+        detail: { previous: "light", current: "dark", source: "api" },
+        bubbles: true,
+        composed: true,
+      })
+    );
   },
   dispatchToggleNoBubble(target: HTMLElement): void {
-    dispatchPluginEvent(
-      target,
-      "toggle",
-      "change",
-      { previous: false, current: true, source: "toggle" },
-      { bubbles: false }
+    target.dispatchEvent(
+      new CustomEvent("toggle:change", {
+        detail: { previous: false, current: true, source: "toggle" },
+        bubbles: false,
+        composed: true,
+      })
     );
   },
 }));
@@ -54,16 +48,15 @@ Alpine.data("cancelableDemo", () => ({
     event.preventDefault();
   },
   tryClose(root: HTMLElement): void {
-    const event = dispatchPluginEvent(
-      root,
-      "dialog",
-      "before-close",
-      { reason: "escape" },
-      { cancelable: true }
-    );
+    const event = new CustomEvent("dialog:before-close", {
+      detail: { reason: "escape" },
+      bubbles: true,
+      composed: true,
+      cancelable: true,
+    });
+    root.dispatchEvent(event);
     this.closeResult = event.defaultPrevented ? "blocked" : "allowed";
   },
 }));
 
-initPluginsSync(Alpine, ["theme"]);
 Alpine.start();

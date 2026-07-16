@@ -21,7 +21,7 @@ const REPRESENTATIVE_PACKAGES: TreeShakingFixture[] = [
   {
     label: "core",
     entry: path.join(root, "packages/core/dist/index.js"),
-    namedImport: "registerPlugin",
+    namedImport: "bridgeControllerStore",
     marker: "CleanupStack",
   },
   {

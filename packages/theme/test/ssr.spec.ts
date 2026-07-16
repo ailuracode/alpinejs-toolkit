@@ -9,7 +9,6 @@
  */
 
 import assert from "node:assert/strict";
-import { createSingletonScope } from "@ailuracode/alpine-core";
 import { describe, it } from "vitest";
 import {
   createMemoryThemeStorage,
@@ -69,7 +68,7 @@ describe("SSR-safe package surface", () => {
 
   it("createTheme runs under SSR with a custom storage adapter", () => {
     const restore = shadowGlobals();
-    const scope = createSingletonScope();
+    const scope = {};
     try {
       const theme = createTheme({
         scope,
@@ -92,7 +91,7 @@ describe("SSR-safe package surface", () => {
 
   it("themePlugin runs under SSR with a mock Alpine that does not touch the DOM", () => {
     const restore = shadowGlobals();
-    const scope = createSingletonScope();
+    const scope = {};
     try {
       const stores: Record<string, unknown> = {};
       const magics: Record<string, () => unknown> = {};

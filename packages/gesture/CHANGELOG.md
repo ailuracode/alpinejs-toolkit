@@ -1,5 +1,13 @@
 # @ailuracode/alpine-gesture
 
+## 0.1.1
+
+### Patch Changes
+
+- baa901a: Add local development dependency metadata for peer packages so bundle analysis tools can resolve published package entries.
+- Updated dependencies [baa901a]
+  - @ailuracode/alpine-core@0.2.2
+
 ## 0.1.0
 
 ### Minor Changes

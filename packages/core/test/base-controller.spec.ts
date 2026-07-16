@@ -1,11 +1,3 @@
-/**
- * Controller-layer tests — verifies that {@link BaseController} honors the
- * lifecycle, cleanup, and event contracts from
- * [.cursor/rules/new-package.mdc](../../../../.cursor/rules/new-package.mdc).
- *
- * Subclass is intentionally tiny: the goal is to assert that the base class
- * enforces the rules, not to test feature-specific behavior.
- */
 import assert from "node:assert/strict";
 import { describe, it } from "vitest";
 import { BaseController, ToolkitError } from "../src/index";
@@ -51,10 +43,6 @@ class CounterController extends BaseController<CounterEvents> {
   }
 }
 
-/**
- * Test-only subclass that exposes the `protected emit()` so the test files
- * can validate event semantics without weakening the protected contract.
- */
 class TestCounter extends CounterController {
   emitForTest<Key extends keyof CounterEvents>(event: Key, detail: CounterEvents[Key]): void {
     this.emit(event, detail);
@@ -81,7 +69,6 @@ describe("BaseController", () => {
     assert.equal(controller.isMounted, false);
     controller.mount();
     assert.equal(controller.isMounted, true);
-    assert.equal(controller.phase, "mounted");
 
     controller.mount();
     assert.equal(controller.isMounted, true);
@@ -95,7 +82,6 @@ describe("BaseController", () => {
 
     controller.destroy();
     assert.equal(controller.isDestroyed, true);
-    assert.equal(controller.phase, "destroyed");
     assert.equal(controller.externalTeardownCalls, 2);
 
     controller.destroy();

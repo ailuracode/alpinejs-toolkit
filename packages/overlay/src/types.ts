@@ -33,8 +33,7 @@ export interface OverlayOptions {
   /**
    * Singleton scope for this controller. Defaults to the active
    * `document`, an ambient `runWithSingletonScope()` context, or —
-   * in SSR — must be provided explicitly via
-   * `createSingletonScope()`.
+   * in SSR — must be provided explicitly as a plain object.
    */
   readonly scope?: SingletonScope;
   /**

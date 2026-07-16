@@ -1,6 +1,6 @@
 {
   "name": "@ailuracode/alpine-realtime",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Headless realtime transport controller for Alpine.js — SSE/WebSocket adapters, automatic reconnect with exponential backoff, heartbeat, and visibility-aware pausing.",
   "type": "module",
   "license": "MIT",
@@ -59,7 +59,7 @@
     "prepublishOnly": "pnpm run build"
   },
   "peerDependencies": {
-    "@ailuracode/alpine-core": "^0.2.1",
+    "@ailuracode/alpine-core": "^0.2.2",
     "alpinejs": "^3.0.0"
   },
   "peerDependenciesMeta": {
@@ -71,7 +71,8 @@
     "@ailuracode/alpine-core": "workspace:*",
     "@types/alpinejs": "^3.13.11",
     "@types/node": "^26.1.0",
-    "tsup": "^8.5.0"
+    "tsup": "^8.5.0",
+    "alpinejs": "^3.15.12"
   },
   "keywords": [
     "alpinejs",

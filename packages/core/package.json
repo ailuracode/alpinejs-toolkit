@@ -1,6 +1,6 @@
 {
   "name": "@ailuracode/alpine-core",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Lazy plugin registry, initializer, and browser capability helpers for Alpine.js.",
   "keywords": [
     "alpine",
@@ -55,7 +55,8 @@
   "devDependencies": {
     "@types/alpinejs": "^3.13.11",
     "@types/node": "^26.1.0",
-    "tsup": "^8.5.0"
+    "tsup": "^8.5.0",
+    "alpinejs": "^3.15.12"
   },
   "peerDependencies": {
     "alpinejs": "^3.0.0"
@@ -72,37 +73,48 @@
   },
   "size-limit": [
     {
-      "name": "minimal (registerPlugin + definePlugin)",
+      "name": "primitives (BaseController + EventEmitter + ToolkitError)",
       "path": "dist/index.js",
-      "import": "{ registerPlugin, definePlugin }",
+      "import": "{ BaseController, EventEmitter, ToolkitError }",
       "ignore": [
         "alpinejs"
       ],
       "gzip": true,
       "brotli": true,
-      "limit": "400 B"
+      "limit": "1 kB"
     },
     {
-      "name": "typical (registry + browser helpers)",
+      "name": "guards (registration collision tracking)",
       "path": "dist/index.js",
-      "import": "{ registerPlugin, definePlugin, initPlugins, isBrowser, safeWindow }",
+      "import": "{ guardMagic, guardDirective, RegistrationError }",
       "ignore": [
         "alpinejs"
       ],
       "gzip": true,
       "brotli": true,
-      "limit": "1.1 kB"
+      "limit": "1 kB"
     },
     {
-      "name": "full surface",
+      "name": "lifecycle bridge (controller ↔ Alpine store/magic)",
       "path": "dist/index.js",
-      "import": "*",
+      "import": "{ bridgeControllerStore, bridgeControllerDirective, syncRecordFromSnapshot }",
       "ignore": [
         "alpinejs"
       ],
       "gzip": true,
       "brotli": true,
-      "limit": "4.5 kB"
+      "limit": "1 kB"
+    },
+    {
+      "name": "singleton (scoped state registry)",
+      "path": "dist/index.js",
+      "import": "{ createSingleton, releaseSingleton, clearAllSingletons }",
+      "ignore": [
+        "alpinejs"
+      ],
+      "gzip": true,
+      "brotli": true,
+      "limit": "1 kB"
     }
   ]
 }

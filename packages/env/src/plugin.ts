@@ -274,11 +274,10 @@ function registerMagics(
     platform: string;
   }
 ): void {
-  // `silent: true` keeps the dev console clean when a host re-registers
-  // the same env magics (HMR / repeated integration tests). Collision
-  // detection still runs — `RegistrationError` fires when a host tries
-  // to register a different magic under the same key.
-  const guardOptions = { override: true, silent: true } as const;
+  // `override: true` lets the host re-register the same env magics on
+  // HMR or repeated integration tests. `RegistrationError` still fires
+  // when a host tries to register a different magic under the same key.
+  const guardOptions = { override: true } as const;
   if (magics.network) {
     guardMagic(Alpine, keys.network, () => magics.network, "env", guardOptions);
   }

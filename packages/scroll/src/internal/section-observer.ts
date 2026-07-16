@@ -49,7 +49,14 @@ export function attachSectionObserver(
     return () => undefined;
   }
   const win = safeWindow();
-  if (!win || typeof win.IntersectionObserver === "undefined") {
+  const ObserverCtor =
+    win &&
+    typeof (win as unknown as { IntersectionObserver?: unknown }).IntersectionObserver ===
+      "function"
+      ? (win as unknown as { IntersectionObserver: typeof IntersectionObserver })
+          .IntersectionObserver
+      : undefined;
+  if (!ObserverCtor) {
     return () => undefined;
   }
 
@@ -65,8 +72,8 @@ export function attachSectionObserver(
     }
   };
 
-  const observer = new win.IntersectionObserver(
-    (entries) => {
+  const observer = new ObserverCtor(
+    (entries: IntersectionObserverEntry[]) => {
       for (const entry of entries) {
         const id = (entry.target as Element & { __sectionId?: string }).__sectionId;
         if (!id) {

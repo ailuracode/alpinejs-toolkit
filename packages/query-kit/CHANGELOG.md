@@ -1,5 +1,13 @@
 # @ailuracode/alpine-query-kit
 
+## 0.2.1
+
+### Patch Changes
+
+- baa901a: Add local development dependency metadata for peer packages so bundle analysis tools can resolve published package entries.
+- Updated dependencies [baa901a]
+  - @ailuracode/alpine-query-adapter-alpine@4.1.1
+
 ## 0.2.0
 
 ### Minor Changes

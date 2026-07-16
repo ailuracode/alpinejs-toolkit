@@ -1,18 +1,6 @@
-/**
- * Tests for the registration guards exported from
- * `@ailuracode/alpine-core`. Verifies collision detection, the
- * explicit `override` escape hatch, and the process-local tracking
- * that backs `guardMagic` / `guardDirective`.
- *
- * Alpine has no public "is this registered" hook for stores beyond
- * `store(name)` returning `undefined`. The tests use a mock Alpine
- * with that same shape — the production guard uses the real Alpine
- * runtime, not the mock.
- */
 import assert from "node:assert/strict";
 import type Base from "alpinejs";
 import { afterEach, describe, it } from "vitest";
-import type { Alpine } from "../src/core/type";
 import {
   guardDirective,
   guardMagic,
@@ -20,6 +8,7 @@ import {
   RegistrationError,
   resetRegistrationTracking,
 } from "../src/registration";
+import type { Alpine } from "../src/type";
 
 interface MockAlpine {
   stores: Record<string, unknown>;
@@ -49,7 +38,7 @@ function createMockAlpine(): MockAlpine {
       alpine.directives[name] = callback;
       return {
         before() {
-          /* Alpine directive chain — no-op for the mock */
+          /* no-op */
         },
       };
     },
@@ -66,7 +55,7 @@ describe("guardStore", () => {
     const alpine = createMockAlpine();
     const store = { value: 1 };
     const result = guardStore(alpine as unknown as Alpine, "demo", store, "demo-pkg");
-    assert.equal(result.reactiveStore, alpine.stores.demo);
+    assert.equal(result, alpine.stores.demo);
     assert.equal(alpine.stores.demo, store);
   });
 
@@ -86,43 +75,15 @@ describe("guardStore", () => {
     );
   });
 
-  it("overwrites and warns when override is set", () => {
+  it("overwrites when override is set", () => {
     const alpine = createMockAlpine();
     const original = { value: 1 };
     const replacement = { value: 2 };
 
-    const warn = console.warn;
-    const warnings: string[] = [];
-    console.warn = (message: string) => {
-      warnings.push(message);
-    };
-    try {
-      guardStore(alpine as unknown as Alpine, "demo", original, "demo-pkg");
-      guardStore(alpine as unknown as Alpine, "demo", replacement, "demo-pkg", { override: true });
-    } finally {
-      console.warn = warn;
-    }
+    guardStore(alpine as unknown as Alpine, "demo", original, "demo-pkg");
+    guardStore(alpine as unknown as Alpine, "demo", replacement, "demo-pkg", { override: true });
 
     assert.equal(alpine.stores.demo, replacement);
-    assert.equal(warnings.length, 1);
-    assert.match(warnings[0] ?? "", /Overriding existing store "demo"/);
-  });
-
-  it("emits the override warning only once per package/key pair", () => {
-    const alpine = createMockAlpine();
-    const warn = console.warn;
-    let count = 0;
-    console.warn = () => {
-      count += 1;
-    };
-    try {
-      guardStore(alpine as unknown as Alpine, "demo", { value: 1 }, "demo-pkg", { override: true });
-      guardStore(alpine as unknown as Alpine, "demo", { value: 2 }, "demo-pkg", { override: true });
-      guardStore(alpine as unknown as Alpine, "demo", { value: 3 }, "demo-pkg", { override: true });
-    } finally {
-      console.warn = warn;
-    }
-    assert.equal(count, 1);
   });
 
   it("does not throw when a different key is registered", () => {
@@ -159,27 +120,12 @@ describe("guardMagic", () => {
 
   it("overwrites when override is set", () => {
     const alpine = createMockAlpine();
-    const warn = console.warn;
-    const warnings: string[] = [];
-    console.warn = (message: string) => {
-      warnings.push(message);
-    };
-    try {
-      guardMagic(alpine as unknown as Alpine, "demo", () => 1, "demo-pkg");
-      guardMagic(alpine as unknown as Alpine, "demo", () => 2, "demo-pkg", { override: true });
-    } finally {
-      console.warn = warn;
-    }
+    guardMagic(alpine as unknown as Alpine, "demo", () => 1, "demo-pkg");
+    guardMagic(alpine as unknown as Alpine, "demo", () => 2, "demo-pkg", { override: true });
     assert.equal(alpine.magics.demo(), 2);
-    assert.match(warnings[0] ?? "", /Overriding existing magic "demo"/);
   });
 
   it("does not collide when the host registered the magic outside the guard", () => {
-    // The guard's tracking Set is process-local. A magic the host
-    // installed directly via `Alpine.magic` does not enter the Set
-    // and therefore does not trigger a collision. The host owns
-    // those names; collisions with the host's magics are caught
-    // at integration time, not here.
     const alpine = createMockAlpine();
     alpine.magic("external", () => "host");
     guardMagic(alpine as unknown as Alpine, "external", () => "toolkit", "demo-pkg");
@@ -190,18 +136,14 @@ describe("guardMagic", () => {
 describe("guardDirective", () => {
   it("registers a directive", () => {
     const alpine = createMockAlpine();
-    const handler: Base.DirectiveCallback = () => {
-      /* placeholder for directive test */
-    };
+    const handler: Base.DirectiveCallback = () => undefined;
     guardDirective(alpine as unknown as Alpine, "demo", handler, "demo-pkg");
     assert.equal(alpine.directives.demo, handler);
   });
 
   it("throws when the same directive is registered twice", () => {
     const alpine = createMockAlpine();
-    const noop: Base.DirectiveCallback = () => {
-      /* placeholder */
-    };
+    const noop: Base.DirectiveCallback = () => undefined;
     guardDirective(alpine as unknown as Alpine, "demo", noop, "demo-pkg");
     assert.throws(
       () => guardDirective(alpine as unknown as Alpine, "demo", noop, "demo-pkg"),
@@ -217,30 +159,22 @@ describe("guardDirective", () => {
 
   it("overwrites when override is set", () => {
     const alpine = createMockAlpine();
-    const warn = console.warn;
-    const warnings: string[] = [];
-    console.warn = (message: string) => {
-      warnings.push(message);
-    };
-    try {
-      const noop: Base.DirectiveCallback = () => {
-        /* placeholder */
-      };
-      guardDirective(alpine as unknown as Alpine, "demo", noop, "demo-pkg");
-      guardDirective(alpine as unknown as Alpine, "demo", noop, "demo-pkg", {
-        override: true,
-      });
-    } finally {
-      console.warn = warn;
-    }
-    assert.match(warnings[0] ?? "", /Overriding existing directive "demo"/);
+    const noop: Base.DirectiveCallback = () => undefined;
+    guardDirective(alpine as unknown as Alpine, "demo", noop, "demo-pkg");
+    guardDirective(alpine as unknown as Alpine, "demo", noop, "demo-pkg", {
+      override: true,
+    });
+    assert.equal(alpine.directives.demo, noop);
   });
 });
 
 describe("RegistrationError", () => {
   it("includes the kind, name and package name in its message", () => {
     const error = new RegistrationError("store", "theme", "theme");
-    assert.match(error.message, /store "theme" is already registered/);
+    assert.match(
+      error.message,
+      /store "theme" already registered\. Use \{ override: true \} in themePlugin\(\) to replace/
+    );
     assert.match(error.message, /themePlugin\(\)/);
     assert.match(error.message, /unique key/);
   });

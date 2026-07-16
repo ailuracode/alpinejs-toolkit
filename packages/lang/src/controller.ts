@@ -78,7 +78,7 @@ export function createLang(options: CreateLangOptions = {}): LangController {
       controller.mount();
       return controller;
     },
-    { scope, options: factoryOptions }
+    { scope }
   );
 }
 

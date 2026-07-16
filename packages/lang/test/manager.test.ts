@@ -421,18 +421,11 @@ describe("createLang singleton lifecycle", () => {
   });
 
   it("returns the same instance on repeated factory calls", () => {
-    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => undefined);
     const a = createLang({ navigator: BROWSER_ES_EC });
     const b = createLang({ navigator: BROWSER_PT_BR });
 
     expect(a).toBe(b);
     expect(a.current).toBe("es-ec");
-    expect(warnSpy).toHaveBeenCalledWith(
-      expect.stringContaining(
-        'Singleton "@ailuracode/alpine-lang/default" already exists in this scope with different options'
-      )
-    );
-    warnSpy.mockRestore();
   });
 
   it("builds a fresh instance after destroy", () => {

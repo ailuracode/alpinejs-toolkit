@@ -1,14 +1,3 @@
-/**
- * Type-level contract tests for {@link Alpine} and {@link PluginCallback}.
- *
- * The runtime assertions exercise a real mock Alpine so we can verify
- * the typed overloads also hold at runtime. The structural typing is
- * the real contract — if TypeScript narrows `alpine.store("counter")`
- * to `CounterStore`, the runtime mock must return the same value.
- *
- * Negative cases use `// @ts-expect-error` so the test fails the moment
- * TypeScript stops flagging the line we expected to fail.
- */
 import assert from "node:assert/strict";
 import type { Alpine as BaseAlpine, PluginCallback as BasePluginCallback } from "alpinejs";
 import { describe, it } from "vitest";

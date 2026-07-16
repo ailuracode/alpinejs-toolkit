@@ -252,26 +252,18 @@ importers:
         version: 4.3.2
 
   packages/accordion:
-    dependencies:
-      '@types/alpinejs':
-        specifier: ^3.13.11
-        version: 3.13.11
-      alpinejs:
-        specifier: ^3.0.0
-        version: 3.15.12
     devDependencies:
       '@ailuracode/alpine-core':
         specifier: workspace:*
         version: link:../core
-
-  packages/attention:
-    dependencies:
       '@types/alpinejs':
         specifier: ^3.13.11
         version: 3.13.11
       alpinejs:
-        specifier: ^3.0.0
+        specifier: ^3.15.12
         version: 3.15.12
+
+  packages/attention:
     devDependencies:
       '@ailuracode/alpine-core':
         specifier: workspace:*
@@ -279,15 +271,15 @@ importers:
       '@ailuracode/alpine-permissions':
         specifier: workspace:*
         version: link:../permissions
-
-  packages/calendar:
-    dependencies:
       '@types/alpinejs':
         specifier: ^3.13.11
         version: 3.13.11
       alpinejs:
-        specifier: ^3.0.0
+        specifier: ^3.15.12
         version: 3.15.12
+
+  packages/calendar:
+    dependencies:
       date-fns:
         specifier: ^4.1.0
         version: 4.4.0
@@ -295,15 +287,15 @@ importers:
       '@ailuracode/alpine-core':
         specifier: workspace:*
         version: link:../core
-
-  packages/carousel:
-    dependencies:
       '@types/alpinejs':
         specifier: ^3.13.11
         version: 3.13.11
       alpinejs:
-        specifier: ^3.0.0
+        specifier: ^3.15.12
         version: 3.15.12
+
+  packages/carousel:
+    dependencies:
       embla-carousel:
         specifier: ^8.6.0
         version: 8.6.0
@@ -314,12 +306,14 @@ importers:
       '@ailuracode/alpine-core':
         specifier: workspace:*
         version: link:../core
+      '@types/alpinejs':
+        specifier: ^3.13.11
+        version: 3.13.11
+      alpinejs:
+        specifier: ^3.15.12
+        version: 3.15.12
 
   packages/child:
-    dependencies:
-      alpinejs:
-        specifier: ^3.0.0
-        version: 3.15.12
     devDependencies:
       '@ailuracode/alpine-core':
         specifier: workspace:*
@@ -333,6 +327,9 @@ importers:
       '@types/node':
         specifier: ^26.1.0
         version: 26.1.1
+      alpinejs:
+        specifier: ^3.15.12
+        version: 3.15.12
       tsup:
         specifier: ^8.5.0
         version: 8.5.1(patch_hash=f20e8b64de39029c6d726ef4ed37bc95f4d585b90816509f5533e8e7064d9516)(jiti@2.7.0)(postcss@8.5.16)(typescript@6.0.3)(yaml@2.9.0)
@@ -353,13 +350,6 @@ importers:
         version: 8.5.1(patch_hash=f20e8b64de39029c6d726ef4ed37bc95f4d585b90816509f5533e8e7064d9516)(jiti@2.7.0)(postcss@8.5.17)(typescript@6.0.3)(yaml@2.9.0)
 
   packages/command:
-    dependencies:
-      '@types/alpinejs':
-        specifier: ^3.13.11
-        version: 3.13.11
-      alpinejs:
-        specifier: ^3.0.0
-        version: 3.15.12
     devDependencies:
       '@ailuracode/alpine-core':
         specifier: workspace:*
@@ -367,12 +357,14 @@ importers:
       '@ailuracode/alpine-scroll':
         specifier: workspace:*
         version: link:../scroll
+      '@types/alpinejs':
+        specifier: ^3.13.11
+        version: 3.13.11
+      alpinejs:
+        specifier: ^3.15.12
+        version: 3.15.12
 
   packages/core:
-    dependencies:
-      alpinejs:
-        specifier: ^3.0.0
-        version: 3.15.12
     devDependencies:
       '@types/alpinejs':
         specifier: ^3.13.11
@@ -380,18 +372,14 @@ importers:
       '@types/node':
         specifier: ^26.1.0
         version: 26.1.1
+      alpinejs:
+        specifier: ^3.15.12
+        version: 3.15.12
       tsup:
         specifier: ^8.5.0
         version: 8.5.1(patch_hash=f20e8b64de39029c6d726ef4ed37bc95f4d585b90816509f5533e8e7064d9516)(jiti@2.7.0)(postcss@8.5.16)(typescript@6.0.3)(yaml@2.9.0)
 
   packages/dialog:
-    dependencies:
-      '@types/alpinejs':
-        specifier: ^3.13.11
-        version: 3.13.11
-      alpinejs:
-        specifier: ^3.0.0
-        version: 3.15.12
     devDependencies:
       '@ailuracode/alpine-core':
         specifier: workspace:*
@@ -399,12 +387,14 @@ importers:
       '@ailuracode/alpine-scroll':
         specifier: workspace:*
         version: link:../scroll
+      '@types/alpinejs':
+        specifier: ^3.13.11
+        version: 3.13.11
+      alpinejs:
+        specifier: ^3.15.12
+        version: 3.15.12
 
   packages/env:
-    dependencies:
-      alpinejs:
-        specifier: ^3.0.0
-        version: 3.15.12
     devDependencies:
       '@ailuracode/alpine-core':
         specifier: workspace:*
@@ -412,12 +402,11 @@ importers:
       '@types/alpinejs':
         specifier: ^3.13.11
         version: 3.13.11
+      alpinejs:
+        specifier: ^3.15.12
+        version: 3.15.12
 
   packages/form:
-    dependencies:
-      alpinejs:
-        specifier: ^3.0.0
-        version: 3.15.12
     devDependencies:
       '@ailuracode/alpine-core':
         specifier: workspace:*
@@ -425,15 +414,11 @@ importers:
       '@types/alpinejs':
         specifier: ^3.13.11
         version: 3.13.11
+      alpinejs:
+        specifier: ^3.15.12
+        version: 3.15.12
 
   packages/geo:
-    dependencies:
-      '@types/alpinejs':
-        specifier: ^3.13.11
-        version: 3.13.11
-      alpinejs:
-        specifier: ^3.0.0
-        version: 3.15.12
     devDependencies:
       '@ailuracode/alpine-core':
         specifier: workspace:*
@@ -441,12 +426,14 @@ importers:
       '@ailuracode/alpine-permissions':
         specifier: workspace:*
         version: link:../permissions
+      '@types/alpinejs':
+        specifier: ^3.13.11
+        version: 3.13.11
+      alpinejs:
+        specifier: ^3.15.12
+        version: 3.15.12
 
   packages/gesture:
-    dependencies:
-      alpinejs:
-        specifier: ^3.0.0
-        version: 3.15.12
     devDependencies:
       '@ailuracode/alpine-core':
         specifier: workspace:*
@@ -457,41 +444,39 @@ importers:
       '@types/alpinejs':
         specifier: ^3.13.10
         version: 3.13.11
+      alpinejs:
+        specifier: ^3.15.12
+        version: 3.15.12
 
   packages/history:
-    dependencies:
-      '@types/alpinejs':
-        specifier: ^3.13.11
-        version: 3.13.11
-      alpinejs:
-        specifier: ^3.0.0
-        version: 3.15.12
     devDependencies:
       '@ailuracode/alpine-core':
         specifier: workspace:*
         version: link:../core
+      '@types/alpinejs':
+        specifier: ^3.13.11
+        version: 3.13.11
+      alpinejs:
+        specifier: ^3.15.12
+        version: 3.15.12
 
   packages/json-api:
     dependencies:
       '@ailuracode/alpine-query':
         specifier: workspace:*
         version: link:../query
-      '@types/alpinejs':
-        specifier: ^3.13.11
-        version: 3.13.11
-      alpinejs:
-        specifier: ^3.0.0
-        version: 3.15.12
     devDependencies:
       '@ailuracode/alpine-core':
         specifier: workspace:*
         version: link:../core
+      '@types/alpinejs':
+        specifier: ^3.13.11
+        version: 3.13.11
+      alpinejs:
+        specifier: ^3.15.12
+        version: 3.15.12
 
   packages/keyboard:
-    dependencies:
-      alpinejs:
-        specifier: ^3.0.0
-        version: 3.15.12
     devDependencies:
       '@ailuracode/alpine-core':
         specifier: workspace:*
@@ -499,12 +484,11 @@ importers:
       '@types/alpinejs':
         specifier: ^3.13.11
         version: 3.13.11
+      alpinejs:
+        specifier: ^3.15.12
+        version: 3.15.12
 
   packages/lang:
-    dependencies:
-      alpinejs:
-        specifier: ^3.0.0
-        version: 3.15.12
     devDependencies:
       '@ailuracode/alpine-core':
         specifier: workspace:*
@@ -512,12 +496,11 @@ importers:
       '@types/alpinejs':
         specifier: ^3.13.11
         version: 3.13.11
+      alpinejs:
+        specifier: ^3.15.12
+        version: 3.15.12
 
   packages/media:
-    dependencies:
-      alpinejs:
-        specifier: ^3.0.0
-        version: 3.15.12
     devDependencies:
       '@ailuracode/alpine-core':
         specifier: workspace:*
@@ -528,18 +511,14 @@ importers:
       '@types/node':
         specifier: ^26.1.0
         version: 26.1.1
+      alpinejs:
+        specifier: ^3.15.12
+        version: 3.15.12
       tsup:
         specifier: ^8.5.0
         version: 8.5.1(patch_hash=f20e8b64de39029c6d726ef4ed37bc95f4d585b90816509f5533e8e7064d9516)(jiti@2.7.0)(postcss@8.5.16)(typescript@6.0.3)(yaml@2.9.0)
 
   packages/menu:
-    dependencies:
-      '@types/alpinejs':
-        specifier: ^3.13.11
-        version: 3.13.11
-      alpinejs:
-        specifier: ^3.0.0
-        version: 3.15.12
     devDependencies:
       '@ailuracode/alpine-core':
         specifier: workspace:*
@@ -547,18 +526,18 @@ importers:
       '@ailuracode/alpine-scroll':
         specifier: workspace:*
         version: link:../scroll
+      '@types/alpinejs':
+        specifier: ^3.13.11
+        version: 3.13.11
+      alpinejs:
+        specifier: ^3.15.12
+        version: 3.15.12
 
   packages/notify:
     dependencies:
       '@ailuracode/alpine-env':
         specifier: workspace:*
         version: link:../env
-      '@types/alpinejs':
-        specifier: ^3.13.11
-        version: 3.13.11
-      alpinejs:
-        specifier: ^3.0.0
-        version: 3.15.12
     devDependencies:
       '@ailuracode/alpine-core':
         specifier: workspace:*
@@ -566,15 +545,14 @@ importers:
       '@ailuracode/alpine-permissions':
         specifier: workspace:*
         version: link:../permissions
-
-  packages/overlay:
-    dependencies:
       '@types/alpinejs':
         specifier: ^3.13.11
         version: 3.13.11
       alpinejs:
-        specifier: ^3.0.0
+        specifier: ^3.15.12
         version: 3.15.12
+
+  packages/overlay:
     devDependencies:
       '@ailuracode/alpine-core':
         specifier: workspace:*
@@ -582,12 +560,14 @@ importers:
       '@ailuracode/alpine-ui':
         specifier: workspace:*
         version: link:../ui
+      '@types/alpinejs':
+        specifier: ^3.13.11
+        version: 3.13.11
+      alpinejs:
+        specifier: ^3.15.12
+        version: 3.15.12
 
   packages/permissions:
-    dependencies:
-      alpinejs:
-        specifier: ^3.0.0
-        version: 3.15.12
     devDependencies:
       '@ailuracode/alpine-core':
         specifier: workspace:*
@@ -595,24 +575,27 @@ importers:
       '@types/alpinejs':
         specifier: ^3.13.11
         version: 3.13.11
+      alpinejs:
+        specifier: ^3.15.12
+        version: 3.15.12
 
   packages/query: {}
 
   packages/query-adapter-alpine:
     dependencies:
       '@ailuracode/alpine-query':
-        specifier: ^0.6.2
+        specifier: workspace:*
         version: link:../query
-      '@types/alpinejs':
-        specifier: ^3.13.11
-        version: 3.13.11
-      alpinejs:
-        specifier: ^3.0.0
-        version: 3.15.12
     devDependencies:
       '@ailuracode/alpine-core':
         specifier: workspace:*
         version: link:../core
+      '@types/alpinejs':
+        specifier: ^3.13.11
+        version: 3.13.11
+      alpinejs:
+        specifier: ^3.15.12
+        version: 3.15.12
 
   packages/query-adapter-zustand:
     dependencies:
@@ -622,15 +605,16 @@ importers:
       '@ailuracode/alpine-query-adapter-alpine':
         specifier: workspace:*
         version: link:../query-adapter-alpine
+      zustand:
+        specifier: ^5.0.11
+        version: 5.0.14(@types/react@19.2.17)(react@19.2.7)(use-sync-external-store@1.6.0(react@19.2.7))
+    devDependencies:
       '@types/alpinejs':
         specifier: ^3.13.11
         version: 3.13.11
       alpinejs:
-        specifier: ^3.0.0
+        specifier: ^3.15.12
         version: 3.15.12
-      zustand:
-        specifier: ^5.0.11
-        version: 5.0.14(@types/react@19.2.17)(react@19.2.7)(use-sync-external-store@1.6.0(react@19.2.7))
 
   packages/query-kit:
     dependencies:
@@ -643,21 +627,18 @@ importers:
       '@nanostores/alpine':
         specifier: ^0.1.1
         version: 0.1.1(alpinejs@3.15.12)(nanostores@1.4.0)
+      nanostores:
+        specifier: ^1.4.0
+        version: 1.4.0
+    devDependencies:
       '@types/alpinejs':
         specifier: ^3.13.11
         version: 3.13.11
       alpinejs:
-        specifier: ^3.0.0
+        specifier: ^3.15.12
         version: 3.15.12
-      nanostores:
-        specifier: ^1.4.0
-        version: 1.4.0
 
   packages/realtime:
-    dependencies:
-      alpinejs:
-        specifier: ^3.0.0
-        version: 3.15.12
     devDependencies:
       '@ailuracode/alpine-core':
         specifier: workspace:*
@@ -668,15 +649,14 @@ importers:
       '@types/node':
         specifier: ^26.1.0
         version: 26.1.1
+      alpinejs:
+        specifier: ^3.15.12
+        version: 3.15.12
       tsup:
         specifier: ^8.5.0
         version: 8.5.1(patch_hash=f20e8b64de39029c6d726ef4ed37bc95f4d585b90816509f5533e8e7064d9516)(jiti@2.7.0)(postcss@8.5.17)(typescript@6.0.3)(yaml@2.9.0)
 
   packages/scroll:
-    dependencies:
-      alpinejs:
-        specifier: ^3.0.0
-        version: 3.15.12
     devDependencies:
       '@ailuracode/alpine-core':
         specifier: workspace:*
@@ -690,28 +670,26 @@ importers:
       '@vitest/coverage-v8':
         specifier: ^4.1.9
         version: 4.1.10(vitest@4.1.10)
+      alpinejs:
+        specifier: ^3.15.12
+        version: 3.15.12
       tsup:
         specifier: ^8.5.0
         version: 8.5.1(patch_hash=f20e8b64de39029c6d726ef4ed37bc95f4d585b90816509f5533e8e7064d9516)(jiti@2.7.0)(postcss@8.5.16)(typescript@6.0.3)(yaml@2.9.0)
 
   packages/selection:
-    dependencies:
-      '@types/alpinejs':
-        specifier: ^3.13.11
-        version: 3.13.11
-      alpinejs:
-        specifier: ^3.0.0
-        version: 3.15.12
     devDependencies:
       '@ailuracode/alpine-core':
         specifier: workspace:*
         version: link:../core
+      '@types/alpinejs':
+        specifier: ^3.13.11
+        version: 3.13.11
+      alpinejs:
+        specifier: ^3.15.12
+        version: 3.15.12
 
   packages/sidebar:
-    dependencies:
-      alpinejs:
-        specifier: ^3.0.0
-        version: 3.15.12
     devDependencies:
       '@ailuracode/alpine-core':
         specifier: workspace:*
@@ -734,28 +712,26 @@ importers:
       '@vitest/coverage-v8':
         specifier: ^4.1.9
         version: 4.1.10(vitest@4.1.10)
+      alpinejs:
+        specifier: ^3.15.12
+        version: 3.15.12
       tsup:
         specifier: ^8.5.0
         version: 8.5.1(patch_hash=f20e8b64de39029c6d726ef4ed37bc95f4d585b90816509f5533e8e7064d9516)(jiti@2.7.0)(postcss@8.5.16)(typescript@6.0.3)(yaml@2.9.0)
 
   packages/tabs:
-    dependencies:
-      '@types/alpinejs':
-        specifier: ^3.13.11
-        version: 3.13.11
-      alpinejs:
-        specifier: ^3.0.0
-        version: 3.15.12
     devDependencies:
       '@ailuracode/alpine-core':
         specifier: workspace:*
         version: link:../core
+      '@types/alpinejs':
+        specifier: ^3.13.11
+        version: 3.13.11
+      alpinejs:
+        specifier: ^3.15.12
+        version: 3.15.12
 
   packages/theme:
-    dependencies:
-      alpinejs:
-        specifier: ^3.0.0
-        version: 3.15.12
     devDependencies:
       '@ailuracode/alpine-core':
         specifier: workspace:*
@@ -775,15 +751,14 @@ importers:
       '@vitest/coverage-v8':
         specifier: ^4.1.9
         version: 4.1.10(vitest@4.1.10)
+      alpinejs:
+        specifier: ^3.15.12
+        version: 3.15.12
       tsup:
         specifier: ^8.5.0
         version: 8.5.1(patch_hash=f20e8b64de39029c6d726ef4ed37bc95f4d585b90816509f5533e8e7064d9516)(jiti@2.7.0)(postcss@8.5.16)(typescript@6.0.3)(yaml@2.9.0)
 
   packages/timer:
-    dependencies:
-      alpinejs:
-        specifier: ^3.0.0
-        version: 3.15.12
     devDependencies:
       '@ailuracode/alpine-core':
         specifier: workspace:*
@@ -797,15 +772,14 @@ importers:
       '@types/node':
         specifier: ^26.1.0
         version: 26.1.1
+      alpinejs:
+        specifier: ^3.15.12
+        version: 3.15.12
       tsup:
         specifier: ^8.5.0
         version: 8.5.1(patch_hash=f20e8b64de39029c6d726ef4ed37bc95f4d585b90816509f5533e8e7064d9516)(jiti@2.7.0)(postcss@8.5.17)(typescript@6.0.3)(yaml@2.9.0)
 
   packages/toast:
-    dependencies:
-      alpinejs:
-        specifier: ^3.0.0
-        version: 3.15.12
     devDependencies:
       '@ailuracode/alpine-core':
         specifier: workspace:*
@@ -813,12 +787,11 @@ importers:
       '@types/alpinejs':
         specifier: ^3.13.11
         version: 3.13.11
+      alpinejs:
+        specifier: ^3.15.12
+        version: 3.15.12
 
   packages/toggle:
-    dependencies:
-      alpinejs:
-        specifier: ^3.0.0
-        version: 3.15.12
     devDependencies:
       '@ailuracode/alpine-core':
         specifier: workspace:*
@@ -829,18 +802,14 @@ importers:
       '@types/node':
         specifier: ^26.1.0
         version: 26.1.1
+      alpinejs:
+        specifier: ^3.15.12
+        version: 3.15.12
       tsup:
         specifier: ^8.5.0
         version: 8.5.1(patch_hash=f20e8b64de39029c6d726ef4ed37bc95f4d585b90816509f5533e8e7064d9516)(jiti@2.7.0)(postcss@8.5.16)(typescript@6.0.3)(yaml@2.9.0)
 
   packages/tooltip:
-    dependencies:
-      '@types/alpinejs':
-        specifier: ^3.13.11
-        version: 3.13.11
-      alpinejs:
-        specifier: ^3.0.0
-        version: 3.15.12
     devDependencies:
       '@ailuracode/alpine-core':
         specifier: workspace:*
@@ -848,19 +817,24 @@ importers:
       '@alpinejs/anchor':
         specifier: ^3.15.12
         version: 3.15.12
-
-  packages/transfer:
-    dependencies:
       '@types/alpinejs':
         specifier: ^3.13.11
         version: 3.13.11
       alpinejs:
-        specifier: ^3.0.0
+        specifier: ^3.15.12
         version: 3.15.12
+
+  packages/transfer:
     devDependencies:
       '@ailuracode/alpine-core':
         specifier: workspace:*
         version: link:../core
+      '@types/alpinejs':
+        specifier: ^3.13.11
+        version: 3.13.11
+      alpinejs:
+        specifier: ^3.15.12
+        version: 3.15.12
 
   packages/ui:
     devDependencies:
@@ -875,17 +849,16 @@ importers:
         version: 8.5.1(patch_hash=f20e8b64de39029c6d726ef4ed37bc95f4d585b90816509f5533e8e7064d9516)(jiti@2.7.0)(postcss@8.5.16)(typescript@6.0.3)(yaml@2.9.0)
 
   packages/virtual:
-    dependencies:
-      '@types/alpinejs':
-        specifier: ^3.13.11
-        version: 3.13.11
-      alpinejs:
-        specifier: ^3.0.0
-        version: 3.15.12
     devDependencies:
       '@ailuracode/alpine-core':
         specifier: workspace:*
         version: link:../core
+      '@types/alpinejs':
+        specifier: ^3.13.11
+        version: 3.13.11
+      alpinejs:
+        specifier: ^3.15.12
+        version: 3.15.12
 
 packages:
 

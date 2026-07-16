@@ -1,6 +1,6 @@
 {
   "name": "@ailuracode/alpine-toast",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Alpine.js in-app toast queue magic",
   "type": "module",
   "license": "MIT",
@@ -33,7 +33,7 @@
     }
   },
   "peerDependencies": {
-    "@ailuracode/alpine-core": "^0.2.1",
+    "@ailuracode/alpine-core": "^0.2.2",
     "alpinejs": "^3.0.0"
   },
   "peerDependenciesMeta": {
@@ -43,7 +43,8 @@
   },
   "devDependencies": {
     "@ailuracode/alpine-core": "workspace:*",
-    "@types/alpinejs": "^3.13.11"
+    "@types/alpinejs": "^3.13.11",
+    "alpinejs": "^3.15.12"
   },
   "scripts": {
     "build": "tsup src/index.ts --format esm --dts --clean --out-dir dist --minify && cp src/global.d.ts dist/global.d.ts",
