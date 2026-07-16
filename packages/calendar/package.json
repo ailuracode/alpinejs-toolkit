@@ -1,6 +1,6 @@
 {
   "name": "@ailuracode/alpine-calendar",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Alpine.js calendar date logic powered by date-fns",
   "type": "module",
   "license": "MIT",
@@ -39,7 +39,7 @@
     "@ailuracode/alpine-core": "workspace:*"
   },
   "peerDependencies": {
-    "@ailuracode/alpine-core": "^0.2.0",
+    "@ailuracode/alpine-core": "^0.2.1",
     "alpinejs": "^3.0.0",
     "@types/alpinejs": "^3.13.11"
   },

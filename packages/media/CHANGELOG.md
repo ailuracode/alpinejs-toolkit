@@ -1,5 +1,130 @@
 # @ailuracode/alpine-media
 
+## 1.1.0
+
+### Minor Changes
+
+- 1ae869c: Move all public API modules out of `src/internal/` directories and into top-level `src/` locations so the public surface stays consistent with the architecture visibility contract (ALP-30). No runtime behavior changes — every previously-public helper is still reachable through the package barrel.
+
+  ## `@ailuracode/alpine-core`
+
+  The following modules moved from `src/internal/` to `src/`:
+
+  | Module         | Exports                                                                                                                                                                                                                                                 |
+  | -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+  | `browser.ts`   | `isBrowser`, `safeDocument`, `safeMatchMedia`, `safeWindow`                                                                                                                                                                                             |
+  | `define.ts`    | `definePlugin`, `lazyPlugin`, `DefinePluginOptions`, `LazyPluginOptions`                                                                                                                                                                                |
+  | `init.ts`      | `createAlpinePlugin`, `initPlugins`, `initPluginsSync`                                                                                                                                                                                                  |
+  | `loader.ts`    | `PluginLoaderError`                                                                                                                                                                                                                                     |
+  | `registry.ts`  | `registerPlugin`, `unregisterPlugin`, `getRegisteredPlugin`, `getRegisteredPlugins`, `isPluginInitialized`, `markPluginInitialized`, `resetPluginRegistry`, `resolvePluginEntries`, `setRegistryDebugSink`, `getRegistryDebugSink`, `RegistryEventLike` |
+  | `singleton.ts` | `createSingleton`, `getSingleton`, `setSingleton`, `clearSingleton`, `clearAllSingletons`                                                                                                                                                               |
+
+  `internal/` now contains only `assert.ts` (truly private validation).
+
+  ## `@ailuracode/alpine-lang`
+
+  | Module            | Exports                                    |
+  | ----------------- | ------------------------------------------ |
+  | `language-tag.ts` | `normalizeLanguageTag`, `parseLanguageTag` |
+
+  `internal/` is now empty and has been removed.
+
+  ## `@ailuracode/alpine-media`
+
+  | Module          | Exports                  |
+  | --------------- | ------------------------ |
+  | `breakpoint.ts` | `resolveMediaBreakpoint` |
+
+  `internal/` keeps only the truly-private runtime helpers (`match-media.ts`, `viewport.ts`, `visibility.ts`).
+
+  ## `@ailuracode/alpine-theme`
+
+  The following modules moved from `src/internal/` to `src/`:
+
+  | Module               | Exports                                                             |
+  | -------------------- | ------------------------------------------------------------------- |
+  | `local-storage.ts`   | `createLocalStorageThemeStorage`, `LocalStorageThemeStorageOptions` |
+  | `memory-storage.ts`  | `createMemoryThemeStorage`                                          |
+  | `system-observer.ts` | `readSystemTheme`                                                   |
+
+  `internal/storage/` was emptied by this move and has been removed. `internal/` keeps `validation.ts`, `browser.ts`, and `dom-strategy/` (all truly private).
+
+  ## Migration
+
+  The public package barrel (`@ailuracode/alpine-core`, etc.) keeps exporting every helper with the same name. Application-level consumers don't need any changes — only direct imports into the internal subpath (which violates the architecture contract) are affected.
+
+  If your codebase currently imports from a subpath that was moved (e.g. accidentally through `@ailuracode/alpine-core/internal/browser`), update the import to the public barrel or the new top-level path:
+
+  ```diff
+  - import { isBrowser } from "@ailuracode/alpine-core/internal/browser";
+  + import { isBrowser } from "@ailuracode/alpine-core";
+  ```
+
+  ## Architecture tooling
+
+  A new top-level test (`test/architecture-boundary.test.ts`) enforces the contract: any future `src/index.ts` barrel re-exporting from `src/internal/` fails CI.
+
+  A companion test (`test/public-surface-contract.test.ts`) locks the public surface contract of every moved helper so a future refactor cannot silently drop a public export.
+
+- 3031b13: Scope controller singletons to a document or explicit runtime context.
+
+  ### `@ailuracode/alpine-core`
+
+  - Singleton registries are now keyed by `SingletonScope` (`document`, an explicit object from `createSingletonScope()`, or an ambient scope from `runWithSingletonScope()`).
+  - New exports: `createSingletonScope`, `runWithSingletonScope`, `resolveSingletonScope`, `releaseSingleton`, `SingletonScope`, `SingletonInitOptions`.
+  - `createSingleton` accepts an optional third argument for `scope` and options-conflict diagnostics (first configuration wins; later mismatches emit a `console.warn`).
+  - SSR without `document` must pass `scope` or wrap work in `runWithSingletonScope()` — otherwise factories throw `TOOLKIT_SINGLETON_SCOPE_REQUIRED`.
+
+  ### Controller factories (`theme`, `media`, `scroll`, `sidebar`, `lang`, `overlay`, `toast`, `env`)
+
+  - Each `create*()` options object accepts an optional `scope?: SingletonScope`.
+  - `destroy()` releases only the slot for the scope the instance was created in.
+
+  ### Migration
+
+  **Browser (unchanged for typical apps):** omit `scope` — the active `document` is used automatically.
+
+  **SSR / tests / multi-realm:**
+
+  ```ts
+  import {
+    createSingletonScope,
+    runWithSingletonScope,
+    createTheme,
+  } from "@ailuracode/alpine-core";
+
+  // Per-request scope (recommended)
+  const scope = createSingletonScope();
+  const theme = createTheme({ scope, defaultTheme: "dark" });
+
+  // Or ambient scope for a render pass
+  runWithSingletonScope(scope, () => {
+    createTheme({ defaultTheme: "dark" });
+  });
+  ```
+
+  **Conflicting options:** repeated `createTheme({ ... })` calls in the same scope with different options keep the first instance and warn on mismatch.
+
+### Patch Changes
+
+- 3c8b40f: Extend the shared Alpine lifecycle bridge with `syncRecordFromSnapshot` and migrate instance-registry store adapters (`dialog`, `menu`, `tooltip`, `carousel`, `virtual`, `selection`, `overlay`) to `bridgeControllerStore` with explicit subscription teardown on cleanup.
+- ade9bc7: Add package-owned Playwright E2E coverage for Alpine Toolkit packages under epic ALP-55.
+- 9a44380: `@ailuracode/alpine-media` `CreateMediaOptions` now accepts a `storeKey` so hosts with a pre-existing `$store.media` collision can move the integration surface without forking the controller. The new `DEFAULT_MEDIA_STORE_KEY` constant keeps the rename discoverable from TypeScript; `MEDIA_STORE_KEY` is retained as a deprecated alias for back-compat. The Alpine integration now goes through `bridgeControllerStore` with `packageName: "media"` so the new `RegistrationError("REGISTRATION_COLLISION")` messages name `mediaPlugin()` instead of the raw key. This unblocks `@ailuracode/alpine-media` from the `registrationGuardPending` migration list tracked by `architecture:check`.
+- Updated dependencies [3c8b40f]
+- Updated dependencies [1ae869c]
+- Updated dependencies [ade9bc7]
+- Updated dependencies [556055a]
+- Updated dependencies [a488cbb]
+- Updated dependencies [aa88539]
+- Updated dependencies [173379d]
+- Updated dependencies [9a44380]
+- Updated dependencies [9a44380]
+- Updated dependencies [9a44380]
+- Updated dependencies [9a44380]
+- Updated dependencies [364ad60]
+- Updated dependencies [3031b13]
+  - @ailuracode/alpine-core@0.2.1
+
 ## 1.0.0
 
 ### Major Changes

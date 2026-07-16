@@ -1,8 +1,0 @@
----
-"@ailuracode/alpine-core": patch
-"@ailuracode/alpine-theme": patch
----
-
-Add registration guards (`guardStore`, `guardMagic`, `guardDirective`) to `@ailuracode/alpine-core`. `bridgeControllerStore` now routes both store and magic registrations through the guards and accepts an optional `packageName` so collision messages point to the right factory. The bridge defaults to `registrationOverride: true` (matches Alpine's native behaviour, keeps HMR / hot reloads / repeated integration tests working) — feature packages that need strict collision detection pass `{ registrationOverride: false }` and surface `RegistrationError("REGISTRATION_COLLISION")` instead of silently overwriting a host or sibling registration. Global test setup calls `resetRegistrationTracking()` between specs so guards do not leak state across tests. `@ailuracode/alpine-theme` is the first feature package migrated and now reports collisions with the dedicated `themePlugin()` factory in the error message. New `architecture:check` rule fails the build if a package outside `packages/core/src/registration.ts` calls `Alpine.store` / `Alpine.magic` / `Alpine.directive` directly; remaining packages are tracked in `architecture-check-policy.mjs#registrationGuardPending` and removed from the list as they migrate.
-
-`@ailuracode/alpine-theme` now exposes `storeKey` and `magicKey` on `themePlugin(options)` so hosts with a pre-existing `$store.theme` collision can move the integration surface without forking the controller — `magicKey` follows `storeKey` by default, and the new `DEFAULT_THEME_STORE_KEY` / `DEFAULT_THEME_MAGIC_KEY` constants keep the rename discoverable from TypeScript.

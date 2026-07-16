@@ -1,5 +1,0 @@
----
-"@ailuracode/alpine-geo": patch
----
-
-`@ailuracode/alpine-geo` now accepts a `CreateGeoOptions` argument (added by this release) so hosts with a pre-existing `$store.geo` collision can move the integration surface without forking the controller — pass `{ storeKey, magicKey }` to `geoPlugin()`. `magicKey` follows `storeKey` by default, and the new `DEFAULT_GEO_STORE_KEY` / `DEFAULT_GEO_MAGIC_KEY` constants keep the rename discoverable from TypeScript. The Alpine integration now goes through `bridgeControllerStore` with `packageName: "geo"` so the new `RegistrationError("REGISTRATION_COLLISION")` messages name `geoPlugin()` instead of the raw key. Controller event-bus unsubscribes (`position` / `error` / `watchStart` / `watchStop` / `update`) are now bundled through the bridge's subscription cleanup so the reactive store no longer leaks listeners on plugin destroy. This unblocks `@ailuracode/alpine-geo` from the `registrationGuardPending` migration list tracked by `architecture:check`.

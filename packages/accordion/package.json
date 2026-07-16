@@ -1,6 +1,6 @@
 {
   "name": "@ailuracode/alpine-accordion",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Alpine.js headless accessible accordion store",
   "type": "module",
   "license": "MIT",
@@ -36,7 +36,7 @@
     "@ailuracode/alpine-core": "workspace:*"
   },
   "peerDependencies": {
-    "@ailuracode/alpine-core": "^0.2.0",
+    "@ailuracode/alpine-core": "^0.2.1",
     "alpinejs": "^3.0.0",
     "@types/alpinejs": "^3.13.11"
   },

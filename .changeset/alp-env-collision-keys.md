@@ -1,5 +1,0 @@
----
-"@ailuracode/alpine-env": patch
----
-
-`@ailuracode/alpine-env` `EnvPluginOptions` now accepts `networkKey`, `visibilityKey`, `batteryKey`, and `platformKey` so hosts with pre-existing magic collisions can move any combination of the four integration surfaces without forking the helpers. The new `DEFAULT_ENV_NETWORK_KEY`, `DEFAULT_ENV_VISIBILITY_KEY`, `DEFAULT_ENV_BATTERY_KEY`, and `DEFAULT_ENV_PLATFORM_KEY` constants keep the renames discoverable from TypeScript. The Alpine integration now goes through `guardMagic` with `packageName: "env"` and `{ override: true, silent: true }` so the new `RegistrationError("REGISTRATION_COLLISION")` surfaces for cross-plugin collisions while staying HMR-friendly. This unblocks `@ailuracode/alpine-env` from the `registrationGuardPending` migration list tracked by `architecture:check`.

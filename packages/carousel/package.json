@@ -1,6 +1,6 @@
 {
   "name": "@ailuracode/alpine-carousel",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Alpine.js headless accessible carousel store powered by Embla Carousel",
   "type": "module",
   "license": "MIT",
@@ -40,7 +40,7 @@
     "@ailuracode/alpine-core": "workspace:*"
   },
   "peerDependencies": {
-    "@ailuracode/alpine-core": "^0.2.0",
+    "@ailuracode/alpine-core": "^0.2.1",
     "alpinejs": "^3.0.0",
     "@types/alpinejs": "^3.13.11"
   },
