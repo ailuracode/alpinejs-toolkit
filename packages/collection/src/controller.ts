@@ -21,7 +21,7 @@
  *     stage revision.
  */
 
-import { BaseController } from "@ailuracode/alpine-core";
+import { BaseController } from "./core-deps.js";
 import { CollectionError } from "./error.js";
 import type {
   CollectionChangeDetail,

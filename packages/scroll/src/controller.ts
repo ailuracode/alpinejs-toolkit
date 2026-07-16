@@ -39,6 +39,7 @@
  *   so the change event can carry the caller-supplied intent.
  */
 
+import type { Unsubscribe } from "./core-deps.js";
 import {
   BaseController,
   createSingleton,
@@ -47,8 +48,7 @@ import {
   releaseSingleton,
   safeWindow,
   ToolkitError,
-  type Unsubscribe,
-} from "@ailuracode/alpine-core";
+} from "./core-deps.js";
 import type { ScrollEvents } from "./events";
 import { type LockChangeDetail, LockManager } from "./internal/lock-manager";
 import { readScrollSnapshot } from "./internal/metrics";

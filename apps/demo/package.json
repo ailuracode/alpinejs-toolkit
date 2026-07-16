@@ -27,6 +27,7 @@
     "@ailuracode/alpine-child": "workspace:*",
     "@ailuracode/alpine-command": "workspace:*",
     "@ailuracode/alpine-core": "workspace:*",
+    "@ailuracode/alpine-plugin-registry": "workspace:*",
     "@ailuracode/alpine-dialog": "workspace:*",
     "@ailuracode/alpine-env": "workspace:*",
     "@ailuracode/alpine-gesture": "workspace:*",

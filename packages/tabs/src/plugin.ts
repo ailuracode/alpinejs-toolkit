@@ -5,9 +5,9 @@
  * `$store.tabs` and the `$tabs` magic.
  */
 
-import { bridgeControllerStore } from "@ailuracode/alpine-core";
 import type { Alpine } from "alpinejs";
 import { TabsController } from "./controller";
+import { bridgeControllerStore } from "./core-deps.js";
 import {
   type CreateTabsOptions,
   DEFAULT_TABS_MAGIC_KEY,

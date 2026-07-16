@@ -14,10 +14,10 @@
  *    that wires the controller into `$store.carousel` and `$carousel`.
  */
 
-// --- Re-export core types ------------------------------------------------
-export type { Unsubscribe } from "@ailuracode/alpine-core";
 // --- Controller (framework-agnostic) -------------------------------------
 export { CarouselController, createCarouselController } from "./controller";
+// --- Re-export core types ------------------------------------------------
+export type { Unsubscribe } from "./core-deps.js";
 // --- Event surface -------------------------------------------------------
 export type { CarouselChangeDetail, CarouselEvents, CarouselSlideChangeDetail } from "./events";
 // --- Alpine integration --------------------------------------------------

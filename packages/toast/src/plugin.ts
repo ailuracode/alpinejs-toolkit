@@ -6,7 +6,6 @@
  * (see `AGENTS.md` for the integration contract).
  */
 
-import { bridgeControllerStore } from "@ailuracode/alpine-core";
 import type { Alpine } from "alpinejs";
 import {
   type CreateToastControllerOptions,
@@ -15,6 +14,7 @@ import {
   type ToastController,
   wrapToastStore,
 } from "./controller";
+import { bridgeControllerStore } from "./core-deps.js";
 import type {
   ResolvedPromiseConfig,
   ResolvedToastPluginConfig,

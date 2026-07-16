@@ -2,9 +2,9 @@
  * Public type contracts for `@ailuracode/alpine-command`.
  */
 
-import type { Alpine, PluginCallback } from "@ailuracode/alpine-core";
 import type { ScrollStore } from "@ailuracode/alpine-scroll";
 import type { Alpine as AlpineBase } from "alpinejs";
+import type { Alpine, PluginCallback } from "./core-deps.js";
 
 /** Action callback invoked when a command is executed. */
 export type CommandAction = () => void | Promise<void>;

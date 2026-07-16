@@ -17,7 +17,7 @@
 
 import type { ScrollStore } from "./types.js";
 
-export type { Unsubscribe } from "@ailuracode/alpine-core";
+export type { Unsubscribe } from "./core-deps.js";
 export type {
   ScrollAlpine,
   ScrollPluginCallback,

@@ -7,6 +7,7 @@ import { buildDocsSidebar } from "./src/catalog/docs-navigation.ts";
 
 const root = fileURLToPath(new URL(".", import.meta.url));
 const pkg = (name: string) => `${root}../../packages/${name}/src/index.ts`;
+const coreSubpath = (entry: string) => `${root}../../packages/core/src/${entry}`;
 
 const site =
   process.env.VERCEL_ENV === "production"
@@ -65,8 +66,17 @@ export default defineConfig({
         "@ailuracode/alpine-command": pkg("command"),
         "@ailuracode/alpine-carousel": pkg("carousel"),
         "@ailuracode/alpine-virtual": pkg("virtual"),
+        "@ailuracode/alpine-selection/serialization": `${root}../../packages/selection/src/entries/serialization.ts`,
         "@ailuracode/alpine-selection": pkg("selection"),
+        "@ailuracode/alpine-core/browser": coreSubpath("browser.ts"),
+        "@ailuracode/alpine-core/controller": coreSubpath("exports/controller.ts"),
+        "@ailuracode/alpine-core/bridge": coreSubpath("exports/bridge.ts"),
+        "@ailuracode/alpine-core/registration": coreSubpath("exports/registration.ts"),
+        "@ailuracode/alpine-core/singleton": coreSubpath("exports/singleton.ts"),
+        "@ailuracode/alpine-core/events": coreSubpath("exports/events.ts"),
+        "@ailuracode/alpine-core/types": coreSubpath("public-types.ts"),
         "@ailuracode/alpine-core": pkg("core"),
+        "@ailuracode/alpine-plugin-registry": pkg("plugin-registry"),
         "@ailuracode/alpine-toast": pkg("toast"),
         "@ailuracode/alpine-geo": pkg("geo"),
         "@ailuracode/alpine-json-api": pkg("json-api"),
@@ -76,6 +86,7 @@ export default defineConfig({
         "@ailuracode/alpine-notify": pkg("notify"),
         "@ailuracode/alpine-overlay": pkg("overlay"),
         "@ailuracode/alpine-permissions": pkg("permissions"),
+        "@ailuracode/alpine-query/instrumentation": `${root}../../packages/query/src/instrumentation-entry.ts`,
         "@ailuracode/alpine-query": pkg("query"),
         "@ailuracode/alpine-query-adapter-alpine": pkg("query-adapter-alpine"),
         "@ailuracode/alpine-query-adapter-zustand": pkg("query-adapter-zustand"),

@@ -18,7 +18,6 @@
  * Alpine APIs.
  */
 
-import { guardDirective } from "@ailuracode/alpine-core";
 import type { Alpine } from "alpinejs";
 import {
   clearTransferredAttributes,
@@ -27,6 +26,7 @@ import {
   parseChildDirective,
   transferAttributes,
 } from "./controller.js";
+import { guardDirective } from "./core-deps.js";
 import type {
   ChildAlpine,
   ChildMorphOptions,

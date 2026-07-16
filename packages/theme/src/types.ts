@@ -7,8 +7,8 @@
  * or type are breaking changes.
  */
 
-import type { Alpine, PluginCallback, SingletonScope, Unsubscribe } from "@ailuracode/alpine-core";
 import type { Alpine as AlpineBase } from "alpinejs";
+import type { Alpine, PluginCallback, SingletonScope, Unsubscribe } from "./core-deps.js";
 
 /** The values the user can select. `'system'` defers to the OS preference. */
 export type ThemePreference = "light" | "dark" | "system";

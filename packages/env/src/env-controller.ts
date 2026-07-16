@@ -1,4 +1,4 @@
-import { BaseController, createSingleton, releaseSingleton } from "@ailuracode/alpine-core";
+import { BaseController, createSingleton, releaseSingleton } from "./core-deps.js";
 import { type BatteryManagerLike, readBatteryState } from "./internal/battery.js";
 import { readNetworkState } from "./internal/network.js";
 import { readPlatformState } from "./internal/platform.js";

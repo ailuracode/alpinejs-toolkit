@@ -28,6 +28,22 @@
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
     },
+    "./controller": {
+      "types": "./dist/controller.d.ts",
+      "default": "./dist/controller.js"
+    },
+    "./validation": {
+      "types": "./dist/validation.d.ts",
+      "default": "./dist/validation.js"
+    },
+    "./json-api": {
+      "types": "./dist/json-api.d.ts",
+      "default": "./dist/json-api.js"
+    },
+    "./standard-schema": {
+      "types": "./dist/standard-schema.d.ts",
+      "default": "./dist/standard-schema.js"
+    },
     "./global": {
       "types": "./dist/global.d.ts"
     }
@@ -46,7 +62,7 @@
     "@types/alpinejs": "^3.13.11"
   },
   "scripts": {
-    "build": "tsup src/index.ts --format esm --dts --clean --out-dir dist && cp src/global.d.ts dist/global.d.ts",
+    "build": "tsup --config tsup.config.ts && cp src/global.d.ts dist/global.d.ts",
     "prepublishOnly": "pnpm run build",
     "size": "size-limit",
     "test": "vitest run --config ../../vitest.config.ts test"

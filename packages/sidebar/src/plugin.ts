@@ -21,9 +21,9 @@
  *    `typeof === 'function'` check for older Alpine versions).
  */
 
-import { bridgeControllerStore } from "@ailuracode/alpine-core";
 import type { Alpine } from "alpinejs";
 import { createSidebar, type SidebarController } from "./controller";
+import { bridgeControllerStore } from "./core-deps.js";
 import type {
   CreateSidebarOptions,
   SidebarAlpine,

@@ -14,9 +14,9 @@
  * ```
  */
 
-import { bridgeControllerDirective, bridgeControllerStore } from "@ailuracode/alpine-core";
 import type { Alpine } from "alpinejs";
 import { GestureController } from "./controller";
+import { bridgeControllerDirective, bridgeControllerStore } from "./core-deps.js";
 import type {
   GestureAlpine,
   GestureChangeDetail,

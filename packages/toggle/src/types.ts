@@ -14,8 +14,8 @@
  * or any value that is genuinely neither on nor off.
  */
 
-import type { Alpine, PluginCallback } from "@ailuracode/alpine-core";
 import type { Alpine as AlpineBase } from "alpinejs";
+import type { Alpine, PluginCallback } from "./core-deps.js";
 
 /**
  * Required opposite pair — the binary case. `on` and `off` are the

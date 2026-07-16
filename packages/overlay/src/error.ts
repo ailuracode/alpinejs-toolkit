@@ -15,7 +15,7 @@
  * Mirror pattern: `packages/scroll/src/error.ts`.
  */
 
-import { ToolkitError, type ToolkitErrorCode } from "@ailuracode/alpine-core";
+import { ToolkitError, type ToolkitErrorCode } from "./core-deps.js";
 
 /**
  * Stable, overlay-specific error codes.

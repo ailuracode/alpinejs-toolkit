@@ -2,8 +2,8 @@
  * Store factory for `@ailuracode/alpine-tooltip`.
  */
 
-import { syncRecordFromSnapshot } from "@ailuracode/alpine-core";
 import { TooltipController } from "./controller.js";
+import { syncRecordFromSnapshot } from "./core-deps.js";
 import type { TooltipInstance, TooltipStore } from "./types.js";
 
 function syncInstances(

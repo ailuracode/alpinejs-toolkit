@@ -2,7 +2,7 @@
  * Public errors for `@ailuracode/alpine-virtual`.
  */
 
-import { ToolkitError, type ToolkitErrorCode } from "@ailuracode/alpine-core";
+import { ToolkitError, type ToolkitErrorCode } from "./core-deps.js";
 
 export type VirtualErrorCode = "INSTANCE_NOT_FOUND" | "INVALID_INDEX";
 

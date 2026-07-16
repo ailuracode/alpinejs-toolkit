@@ -11,9 +11,9 @@
  * on their intervals array without losing literal type inference.
  */
 
-import { bridgeControllerStore } from "@ailuracode/alpine-core";
 import type { Alpine } from "alpinejs";
-import { createMedia, MEDIA_SINGLETON_KEY, MediaController } from "./controller";
+import { createMedia, type MediaController } from "./controller";
+import { bridgeControllerStore } from "./core-deps.js";
 import type {
   CreateMediaOptions,
   MediaAlpine,
@@ -250,12 +250,3 @@ function syncMediaStoreMirror<Name extends string>(
 export function mediaIntervals<const T extends readonly MediaInterval[]>(intervals: T): T {
   return intervals;
 }
-
-// Re-export the singleton key so tests and advanced consumers can
-// target the slot directly (e.g. `clearSingleton(MEDIA_SINGLETON_KEY)`).
-// Re-export the controller class so the standalone surface and the
-// Alpine integration both land at the same import path.
-// Re-export `createMedia` because the plugin delegates to it and
-// consumers wiring the Alpine integration want the same factory
-// when they need a standalone handle.
-export { createMedia, MEDIA_SINGLETON_KEY, MediaController };

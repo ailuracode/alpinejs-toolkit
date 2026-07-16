@@ -11,7 +11,7 @@
  * themselves.
  */
 
-import { isBrowser, safeWindow } from "@ailuracode/alpine-core";
+import { isBrowser, safeWindow } from "../core-deps.js";
 import type {
   ScrollBehavior,
   ScrollIntoViewAbsoluteOptions,

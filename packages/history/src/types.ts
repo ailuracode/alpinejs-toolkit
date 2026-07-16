@@ -2,8 +2,8 @@
  * Public type contracts for `@ailuracode/alpine-history`.
  */
 
-import type { Alpine, PluginCallback } from "@ailuracode/alpine-core";
 import type { Alpine as AlpineBase } from "alpinejs";
+import type { Alpine, PluginCallback } from "./core-deps.js";
 
 /** Deep clone strategy for history entries. */
 export type CloneStrategy<T> = (value: T) => T;

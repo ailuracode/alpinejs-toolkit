@@ -5,9 +5,9 @@
  * `$store.menu` and the `$menu` magic.
  */
 
-import { bridgeControllerStore, syncRecordFromSnapshot } from "@ailuracode/alpine-core";
 import type { Alpine } from "alpinejs";
 import { MenuController } from "./controller.js";
+import { bridgeControllerStore, syncRecordFromSnapshot } from "./core-deps.js";
 import { createMenuStoreFromController } from "./store.js";
 import type { CreateMenuOptions, MenuAlpine, MenuPluginCallback } from "./types.js";
 import { DEFAULT_MENU_STORE_KEY } from "./types.js";

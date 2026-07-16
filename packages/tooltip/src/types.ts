@@ -2,8 +2,8 @@
  * Public type contracts for `@ailuracode/alpine-tooltip`.
  */
 
-import type { Alpine, PluginCallback } from "@ailuracode/alpine-core";
 import type { Alpine as AlpineBase } from "alpinejs";
+import type { Alpine, PluginCallback } from "./core-deps.js";
 
 /** Options passed when registering a tooltip instance. */
 export type TooltipInstanceOptions = {

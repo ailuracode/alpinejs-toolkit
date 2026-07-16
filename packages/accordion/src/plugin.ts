@@ -5,9 +5,9 @@
  * `$store.accordion` and the `$accordion` magic.
  */
 
-import { bridgeControllerStore } from "@ailuracode/alpine-core";
 import type { Alpine } from "alpinejs";
 import { AccordionController } from "./controller.js";
+import { bridgeControllerStore } from "./core-deps.js";
 import {
   type AccordionAlpine,
   type AccordionPluginCallback,

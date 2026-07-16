@@ -6,7 +6,7 @@
  * rendering markup. Browser measurement is isolated behind bind APIs.
  */
 
-import { BaseController, generateId, isBrowser, ToolkitError } from "@ailuracode/alpine-core";
+import { BaseController, generateId, isBrowser, ToolkitError } from "./core-deps.js";
 import { VirtualError } from "./error.js";
 import type { VirtualEvents } from "./events.js";
 import {

@@ -14,10 +14,10 @@
  *    that wires the controller into `$store.accordion` and `$accordion`.
  */
 
-// --- Re-export core types ------------------------------------------------
-export type { Unsubscribe } from "@ailuracode/alpine-core";
 // --- Controller (framework-agnostic) -------------------------------------
 export { AccordionController, createAccordionController } from "./controller";
+// --- Re-export core types ------------------------------------------------
+export type { Unsubscribe } from "./core-deps.js";
 // --- Event surface -------------------------------------------------------
 export type { AccordionEvents } from "./events";
 // --- Alpine integration --------------------------------------------------

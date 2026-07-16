@@ -2,8 +2,8 @@
  * Public type contracts for `@ailuracode/alpine-virtual`.
  */
 
-import type { Alpine, PluginCallback } from "@ailuracode/alpine-core";
 import type { Alpine as AlpineBase } from "alpinejs";
+import type { Alpine, PluginCallback } from "./core-deps.js";
 
 /** Stable identity for a virtualized row. */
 export type VirtualKey = string | number;

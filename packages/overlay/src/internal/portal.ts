@@ -17,7 +17,7 @@
  *   `<div id="<selector>">` and appends it to `doc.body`.
  */
 
-import { safeDocument as coreSafeDocument } from "@ailuracode/alpine-core";
+import { safeDocument as coreSafeDocument } from "../core-deps.js";
 
 export interface PortalResolveOptions {
   /**

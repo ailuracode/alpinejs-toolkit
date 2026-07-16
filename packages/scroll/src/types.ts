@@ -20,8 +20,8 @@
  *    controller into `$store.scroll` and the `$scroll` magic.
  */
 
-import type { Alpine, PluginCallback, SingletonScope, Unsubscribe } from "@ailuracode/alpine-core";
 import type { Alpine as AlpineBase } from "alpinejs";
+import type { Alpine, PluginCallback, SingletonScope, Unsubscribe } from "./core-deps.js";
 
 /** Re-exported so consumers can grab the unsubscribe helper from one path. */
 export type { Unsubscribe };

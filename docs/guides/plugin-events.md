@@ -44,7 +44,7 @@ state or lifecycle not already represented by a native event.
 ## Dispatch helper
 
 ```ts
-import { dispatchPluginEvent } from '@ailuracode/alpine-core';
+import { dispatchPluginEvent } from "@ailuracode/alpine-core/events";
 
 const event = dispatchPluginEvent(element, 'toggle', 'change', {
   previous: false,

@@ -25,9 +25,9 @@
  * system helper → constants → types.
  */
 
-export type { Unsubscribe } from "@ailuracode/alpine-core";
 // --- Public factory (framework-agnostic) -----------------------------
 export { createTheme, ThemeController } from "./controller";
+export type { Unsubscribe } from "./core-deps.js";
 // --- Event surface ---------------------------------------------------
 export type { ThemeEvents, ThemeListener } from "./events";
 export type { LocalStorageThemeStorageOptions } from "./local-storage";

@@ -42,6 +42,13 @@ export const PACKAGE_CATEGORIES: readonly PackageCategory[] = [
 
 export const PACKAGE_FAMILIES: readonly PackageFamily[] = [
   {
+    id: "registry",
+    category: "runtime-composition",
+    title: "Plugin Registry",
+    summary: "Lazy plugin registration and Alpine initialization for application entrypoints.",
+    order: 1,
+  },
+  {
     id: "permissions",
     category: "browser-capabilities",
     title: "Permissions",

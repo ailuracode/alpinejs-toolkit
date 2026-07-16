@@ -7,7 +7,7 @@
  * consumers can react programmatically.
  */
 
-import { BaseController, generateId } from "@ailuracode/alpine-core";
+import { BaseController, generateId } from "./core-deps.js";
 import type { TooltipEvents } from "./events";
 import type { TooltipChangeSource, TooltipInstance, TooltipInstanceOptions } from "./types";
 

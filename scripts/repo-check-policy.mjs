@@ -22,8 +22,18 @@ export const REPO_CHECK_POLICY = {
     /** `alpine-ui` must not import any higher-level toolkit package. */
     ui: [],
     /** `alpine-permissions` is infrastructure and must stay capability-agnostic. */
-    permissions: ["@ailuracode/alpine-core"],
+    permissions: [
+      "@ailuracode/alpine-core",
+      "@ailuracode/alpine-core/controller",
+      "@ailuracode/alpine-core/bridge",
+    ],
     /** `alpine-keyboard` is infrastructure and must stay UI-agnostic. */
-    keyboard: ["@ailuracode/alpine-core"],
+    keyboard: [
+      "@ailuracode/alpine-core",
+      "@ailuracode/alpine-core/controller",
+      "@ailuracode/alpine-core/browser",
+      "@ailuracode/alpine-core/types",
+      "@ailuracode/alpine-core/bridge",
+    ],
   },
 };

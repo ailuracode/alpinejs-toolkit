@@ -2,8 +2,15 @@
  * Public type contracts for `@ailuracode/alpine-calendar`.
  */
 
-import type { Day, Locale } from "date-fns";
-import type { CalendarDateFnsOptions, ResolvedDateFnsContext } from "./context.js";
+import type {
+  CalendarDateAdapter,
+  CalendarDateAdapterOptions,
+  CalendarDateFnsOptions,
+  CalendarLocale,
+  CalendarWeekDay,
+  ResolvedCalendarContext,
+  ResolvedDateFnsContext,
+} from "./context.js";
 import type {
   CalendarDateAfterMatcher,
   CalendarDateBeforeMatcher,
@@ -29,15 +36,17 @@ export type CalendarSelection = Date | Date[] | CalendarDateRange | null;
 
 /** Options accepted by `createCalendar()` or `$calendar()`. All fields are readonly. */
 export interface CalendarOptions {
-  readonly locale?: Locale;
-  readonly weekStartsOn?: Day;
+  readonly locale?: string | CalendarLocale;
+  readonly weekStartsOn?: CalendarWeekDay;
   readonly minDate?: Date;
   readonly maxDate?: Date;
   readonly mode?: CalendarMode;
   readonly month?: Date;
   readonly selected?: CalendarSelection;
   readonly disabled?: CalendarMatcher | CalendarMatcher[];
-  readonly dateFns?: CalendarDateFnsOptions;
+  readonly adapter?: CalendarDateAdapter;
+  /** @deprecated Use `adapter: createDateFnsCalendarAdapter()` from `@ailuracode/alpine-calendar/date-fns`. */
+  readonly dateFns?: CalendarDateAdapterOptions;
 }
 
 /** A single day cell in the month grid. */
@@ -61,9 +70,9 @@ export interface CalendarInstance {
   readonly month: Date;
   readonly mode: CalendarMode;
   readonly selected: CalendarSelection;
-  readonly locale: Locale;
-  readonly weekStartsOn: Day;
-  readonly dateFns: ResolvedDateFnsContext;
+  readonly locale: CalendarLocale;
+  readonly weekStartsOn: CalendarWeekDay;
+  readonly dateFns: ResolvedCalendarContext;
   readonly weeks: CalendarDay[][];
   readonly weekdayLabels: string[];
   prevMonth(): void;
@@ -105,7 +114,7 @@ export const DEFAULT_CALENDAR_MAGIC_KEY = "calendar";
 
 /** Internal resolved configuration — options normalized once at construction. */
 export type ResolvedCalendarConfig = {
-  readonly context: ResolvedDateFnsContext;
+  readonly context: ResolvedCalendarContext;
   readonly minDate?: Date;
   readonly maxDate?: Date;
   readonly mode: CalendarMode;
@@ -115,6 +124,8 @@ export type ResolvedCalendarConfig = {
 };
 
 export type {
+  CalendarDateAdapter,
+  CalendarDateAdapterOptions,
   CalendarDateAfterMatcher,
   CalendarDateBeforeMatcher,
   CalendarDateFnsOptions,
@@ -122,7 +133,10 @@ export type {
   CalendarDateOnlyMatcher,
   CalendarDateRangeMatcher,
   CalendarDayOfWeekMatcher,
+  CalendarLocale,
   CalendarMatcher,
   CalendarMatcherFn,
+  CalendarWeekDay,
+  ResolvedCalendarContext,
   ResolvedDateFnsContext,
 };

@@ -12,7 +12,8 @@
     "lib": ["ES2022", "DOM"],
     "baseUrl": "../..",
     "paths": {
-      "@ailuracode/alpine-query": ["packages/query/src/index.ts"]
+      "@ailuracode/alpine-query": ["packages/query/src/index.ts"],
+      "@ailuracode/alpine-query/instrumentation": ["packages/query/src/instrumentation-entry.ts"]
     }
   },
   "include": ["src/**/*.ts"]

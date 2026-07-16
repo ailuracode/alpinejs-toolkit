@@ -2,8 +2,8 @@
  * Store factory for `@ailuracode/alpine-carousel`.
  */
 
-import { syncRecordFromSnapshot } from "@ailuracode/alpine-core";
 import { CarouselController } from "./controller.js";
+import { syncRecordFromSnapshot } from "./core-deps.js";
 import type { CarouselInstance, CarouselStore } from "./types.js";
 
 function syncInstances(

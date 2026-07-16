@@ -3,7 +3,24 @@
  */
 import { es } from "date-fns/locale";
 import { describe, expect, it, vi } from "vitest";
+import {
+  type CalendarDateFnsOptions,
+  createDateFnsCalendarAdapter,
+} from "../src/adapters/date-fns.js";
 import { CalendarController, createCalendarController } from "../src/controller.js";
+import type { CalendarOptions } from "../src/types.js";
+
+function withDateFnsAdapter(
+  options: Omit<CalendarOptions, "adapter" | "dateFns"> & { dateFns?: CalendarDateFnsOptions }
+): CalendarOptions {
+  const { dateFns, weekStartsOn, ...calendarOptions } = options;
+
+  return {
+    ...calendarOptions,
+    weekStartsOn,
+    adapter: createDateFnsCalendarAdapter({ dateFns, weekStartsOn }),
+  };
+}
 
 const JAN_2024 = new Date(2024, 0, 15);
 const FEB_2024 = new Date(2024, 1, 10);
@@ -16,15 +33,17 @@ describe("CalendarController", () => {
     });
 
     it("exposes normalized config as readonly getters", () => {
-      const controller = new CalendarController({
-        month: JAN_2024,
-        mode: "multiple",
-        locale: es,
-        weekStartsOn: 1,
-      });
+      const controller = new CalendarController(
+        withDateFnsAdapter({
+          month: JAN_2024,
+          mode: "multiple",
+          dateFns: { locale: es },
+          weekStartsOn: 1,
+        })
+      );
 
       expect(controller.mode).toBe("multiple");
-      expect(controller.locale).toBe(es);
+      expect(controller.locale.tag).toBe("es");
       expect(controller.weekStartsOn).toBe(1);
       expect(controller.month.getMonth()).toBe(0);
     });
@@ -77,7 +96,9 @@ describe("CalendarController", () => {
     });
 
     it("exposes localized weekday labels", () => {
-      const controller = createCalendarController({ locale: es, weekStartsOn: 1 });
+      const controller = createCalendarController(
+        withDateFnsAdapter({ dateFns: { locale: es }, weekStartsOn: 1 })
+      );
 
       expect(controller.weekdayLabels).toHaveLength(7);
       expect(controller.weekdayLabels[0]).toBe("lu");
@@ -370,19 +391,25 @@ describe("CalendarController", () => {
 
   describe("formatting", () => {
     it("merges dateFns options with top-level shortcuts", () => {
-      const controller = createCalendarController({
-        month: JAN_2024,
-        weekStartsOn: 1,
-        dateFns: { firstWeekContainsDate: 4 },
-      });
+      const controller = createCalendarController(
+        withDateFnsAdapter({
+          month: JAN_2024,
+          weekStartsOn: 1,
+          dateFns: { firstWeekContainsDate: 4 },
+        })
+      );
 
       expect(controller.weekStartsOn).toBe(1);
-      expect(controller.dateFns.firstWeekContainsDate).toBe(4);
+      expect((controller.dateFns as { firstWeekContainsDate?: number }).firstWeekContainsDate).toBe(
+        4
+      );
       expect(controller.weekdayLabels[0]).toBe("Mo");
     });
 
     it("formats dates with the configured locale", () => {
-      const controller = createCalendarController({ month: JAN_2024, locale: es });
+      const controller = createCalendarController(
+        withDateFnsAdapter({ month: JAN_2024, dateFns: { locale: es } })
+      );
 
       expect(controller.formatMonth()).toContain("2024");
       expect(controller.formatYear()).toBe("2024");

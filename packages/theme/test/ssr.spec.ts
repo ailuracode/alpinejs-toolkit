@@ -9,7 +9,7 @@
  */
 
 import assert from "node:assert/strict";
-import { createSingletonScope } from "@ailuracode/alpine-core";
+import { createSingletonScope } from "@ailuracode/alpine-core/singleton";
 import { describe, it } from "vitest";
 import {
   createMemoryThemeStorage,

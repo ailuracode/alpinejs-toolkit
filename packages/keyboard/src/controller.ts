@@ -1,4 +1,4 @@
-import { BaseController, generateId, isBrowser, safeWindow } from "@ailuracode/alpine-core";
+import { BaseController, generateId, isBrowser, safeWindow } from "./core-deps.js";
 import { isEditableTarget } from "./editable.js";
 import { KeyboardError } from "./errors.js";
 import type { KeyboardEvents } from "./events.js";

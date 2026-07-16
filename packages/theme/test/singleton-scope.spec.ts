@@ -2,7 +2,7 @@
  * Scoped singleton tests for `@ailuracode/alpine-theme`.
  */
 import assert from "node:assert/strict";
-import { clearAllSingletons, createSingletonScope } from "@ailuracode/alpine-core";
+import { clearAllSingletons, createSingletonScope } from "@ailuracode/alpine-core/singleton";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { createTheme } from "../src/controller.js";
 

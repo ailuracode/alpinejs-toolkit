@@ -45,16 +45,16 @@
  * - `destroy()` is idempotent under SSR (no listeners to detach).
  */
 
+import type { ScrollStore } from "@ailuracode/alpine-scroll";
+import type { ToggleChangeDetail } from "@ailuracode/alpine-toggle";
+import { ToggleController } from "@ailuracode/alpine-toggle";
 import {
   BaseController,
   createSingleton,
   generateId,
   releaseSingleton,
   safeMatchMedia,
-} from "@ailuracode/alpine-core";
-import type { ScrollStore } from "@ailuracode/alpine-scroll";
-import type { ToggleChangeDetail } from "@ailuracode/alpine-toggle";
-import { ToggleController } from "@ailuracode/alpine-toggle";
+} from "./core-deps.js";
 import type { SidebarEvents } from "./events";
 import { observeBreakpoint } from "./internal/breakpoint-observer";
 import { attachEscapeListener } from "./internal/escape-listener";

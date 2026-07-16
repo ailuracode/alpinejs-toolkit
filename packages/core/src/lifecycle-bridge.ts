@@ -312,12 +312,14 @@ export function syncRecordFromSnapshot<T extends Record<string, unknown>>(
   target: Record<string, unknown>,
   snapshot: T
 ): void {
-  for (const key of Object.keys(snapshot)) {
+  const snapshotKeys = Object.keys(snapshot);
+
+  for (const key of snapshotKeys) {
     target[key] = snapshot[key];
   }
 
   for (const key of Object.keys(target)) {
-    if (!(key in snapshot)) {
+    if (!Object.hasOwn(snapshot, key)) {
       Reflect.deleteProperty(target, key);
     }
   }

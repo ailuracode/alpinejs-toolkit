@@ -8,9 +8,9 @@
  * @module
  */
 
-import { guardMagic } from "@ailuracode/alpine-core";
 import type AlpineType from "alpinejs";
 import { buildReactiveInstance, CalendarController } from "./controller.js";
+import { guardMagic } from "./core-deps.js";
 import type { CalendarOptions, CreateCalendarPluginOptions } from "./types.js";
 import { DEFAULT_CALENDAR_MAGIC_KEY } from "./types.js";
 

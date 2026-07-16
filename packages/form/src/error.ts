@@ -2,7 +2,7 @@
  * Public error type for `@ailuracode/alpine-form`.
  */
 
-import { ToolkitError, type ToolkitErrorCode } from "@ailuracode/alpine-core";
+import { ToolkitError, type ToolkitErrorCode } from "./core-deps.js";
 
 export type FormErrorCode =
   | "FORM_NOT_FOUND"

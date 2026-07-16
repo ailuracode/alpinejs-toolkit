@@ -7,7 +7,7 @@
  * so consumers can react programmatically.
  */
 
-import { BaseController, generateId } from "@ailuracode/alpine-core";
+import { BaseController, generateId } from "./core-deps.js";
 import type { GeoErrorDetail, GeoEvents, GeoPositionDetail } from "./events";
 import type { GeoPositionOptions, GeoStore } from "./types";
 

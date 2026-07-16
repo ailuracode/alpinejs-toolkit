@@ -2,8 +2,8 @@
  * Store factory for `@ailuracode/alpine-virtual`.
  */
 
-import { syncRecordFromSnapshot } from "@ailuracode/alpine-core";
 import { VirtualController } from "./controller.js";
+import { syncRecordFromSnapshot } from "./core-deps.js";
 import type { VirtualInstance, VirtualStore } from "./types.js";
 
 /** @deprecated Import `syncRecordFromSnapshot` from `@ailuracode/alpine-core`. */

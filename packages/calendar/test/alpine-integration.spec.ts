@@ -46,7 +46,7 @@ describe("calendarPlugin — Alpine integration", () => {
     const instance = magic({ weekStartsOn: 1 });
 
     expect(instance.weekStartsOn).toBe(1);
-    expect(instance.weekdayLabels[0]).toBe("Mo");
+    expect(instance.weekdayLabels[0]).toBe("M");
   });
 
   it("createCalendarMagic() wraps instances with Alpine.reactive when Alpine is provided", () => {

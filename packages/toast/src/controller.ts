@@ -33,12 +33,7 @@
  *   timer.
  */
 
-import {
-  BaseController,
-  createSingleton,
-  generateId,
-  releaseSingleton,
-} from "@ailuracode/alpine-core";
+import { BaseController, createSingleton, generateId, releaseSingleton } from "./core-deps.js";
 import type { ToastEvents } from "./events";
 import type {
   CreateToastControllerOptions,

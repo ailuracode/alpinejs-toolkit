@@ -6,7 +6,7 @@ export type PackageCategoryId =
   | "headless-ui"
   | "data-networking";
 
-export type PackageFamilyId = "permissions" | "query-stack";
+export type PackageFamilyId = "permissions" | "query-stack" | "registry";
 
 export type PackageRole =
   | "foundation"

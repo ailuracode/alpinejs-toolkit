@@ -201,7 +201,7 @@ describe("@ailuracode/alpine-carousel", () => {
     expect(store.count("b")).toBe(5);
   });
 
-  it("defaults stopOnInteraction to false when hover pause is enabled", () => {
+  it("defaults stopOnInteraction to false when hover pause is enabled", async () => {
     const viewport = document.createElement("div");
     store.create("gallery", {
       autoplay: true,
@@ -209,16 +209,18 @@ describe("@ailuracode/alpine-carousel", () => {
     });
     store.bindViewport("gallery", viewport);
 
-    expect(AutoplayMock).toHaveBeenCalledWith({
-      delay: 4000,
-      stopOnMouseEnter: true,
-      stopOnInteraction: false,
-      stopOnFocusIn: true,
-      playOnInit: true,
+    await vi.waitFor(() => {
+      expect(AutoplayMock).toHaveBeenCalledWith({
+        delay: 4000,
+        stopOnMouseEnter: true,
+        stopOnInteraction: false,
+        stopOnFocusIn: true,
+        playOnInit: true,
+      });
     });
   });
 
-  it("registers autoplay plugin when enabled", () => {
+  it("registers autoplay plugin when enabled", async () => {
     const viewport = document.createElement("div");
     store.create("gallery", {
       autoplay: true,
@@ -230,20 +232,26 @@ describe("@ailuracode/alpine-carousel", () => {
     });
     store.bindViewport("gallery", viewport);
 
-    expect(AutoplayMock).toHaveBeenCalledWith({
-      delay: 3000,
-      stopOnMouseEnter: false,
-      stopOnInteraction: true,
-      stopOnFocusIn: true,
-      playOnInit: true,
+    await vi.waitFor(() => {
+      expect(AutoplayMock).toHaveBeenCalledWith({
+        delay: 3000,
+        stopOnMouseEnter: false,
+        stopOnInteraction: true,
+        stopOnFocusIn: true,
+        playOnInit: true,
+      });
     });
     expect(store.isPlaying("gallery")).toBe(true);
   });
 
-  it("handles autoplay play and pause", () => {
+  it("handles autoplay play and pause", async () => {
     const viewport = document.createElement("div");
     store.create("gallery", { autoplay: true });
     store.bindViewport("gallery", viewport);
+
+    await vi.waitFor(() => {
+      expect(AutoplayMock).toHaveBeenCalled();
+    });
 
     store.pause("gallery");
     expect(autoplayApi.stop).toHaveBeenCalledOnce();

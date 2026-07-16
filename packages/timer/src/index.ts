@@ -2,7 +2,7 @@
  * Public entrypoint for `@ailuracode/alpine-timer`.
  */
 
-export type { Unsubscribe } from "@ailuracode/alpine-core";
+export type { Unsubscribe } from "./core-deps.js";
 export { createStopwatchController } from "./create-stopwatch-controller.js";
 export { TimerControllerImpl } from "./create-timer.js";
 export type { TimerEvents } from "./events.js";

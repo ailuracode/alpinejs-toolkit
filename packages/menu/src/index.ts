@@ -14,10 +14,10 @@
  *    that wires the controller into `$store.menu` and `$menu`.
  */
 
-// --- Re-export core types ------------------------------------------------
-export type { Unsubscribe } from "@ailuracode/alpine-core";
 // --- Controller (framework-agnostic) -------------------------------------
 export { createMenuController, MenuController } from "./controller";
+// --- Re-export core types ------------------------------------------------
+export type { Unsubscribe } from "./core-deps.js";
 // --- Event surface -------------------------------------------------------
 export type {
   MenuChangeDetail,

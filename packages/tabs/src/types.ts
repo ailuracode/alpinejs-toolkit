@@ -2,8 +2,8 @@
  * Public type contracts for `@ailuracode/alpine-tabs`.
  */
 
-import type { Alpine, PluginCallback } from "@ailuracode/alpine-core";
 import type { Alpine as AlpineBase } from "alpinejs";
+import type { Alpine, PluginCallback } from "./core-deps.js";
 
 /** Tab list orientation. */
 export type TabsOrientation = "horizontal" | "vertical";

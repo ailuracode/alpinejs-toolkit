@@ -1,0 +1,110 @@
+{
+  "name": "@ailuracode/alpine-plugin-registry",
+  "version": "0.0.0",
+  "description": "Lazy plugin registry and Alpine initializer for @ailuracode/alpinejs-toolkit.",
+  "keywords": [
+    "alpine",
+    "alpinejs",
+    "lazy",
+    "plugin",
+    "registry",
+    "tree-shaking"
+  ],
+  "homepage": "https://github.com/ailuracode/alpinejs-toolkit/tree/main/packages/plugin-registry#readme",
+  "bugs": {
+    "url": "https://github.com/ailuracode/alpinejs-toolkit/issues"
+  },
+  "license": "MIT",
+  "author": "ailuracode",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ailuracode/alpinejs-toolkit.git",
+    "directory": "packages/plugin-registry"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "type": "module",
+  "sideEffects": false,
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./types": {
+      "types": "./dist/types.d.ts"
+    }
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsup --config tsup.config.ts",
+    "clean": "rm -rf dist",
+    "size": "size-limit",
+    "test": "vitest run --config ../../vitest.config.ts packages/plugin-registry",
+    "test:coverage": "vitest run --coverage --config ../../vitest.config.ts packages/plugin-registry",
+    "test:watch": "vitest --config ../../vitest.config.ts packages/plugin-registry",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.test.json"
+  },
+  "devDependencies": {
+    "@ailuracode/alpine-core": "workspace:*",
+    "@types/alpinejs": "^3.13.11",
+    "@types/node": "^26.1.0",
+    "tsup": "^8.5.0"
+  },
+  "peerDependencies": {
+    "@ailuracode/alpine-core": "^0.2.0",
+    "alpinejs": "^3.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@types/alpinejs": {
+      "optional": true
+    }
+  },
+  "toolkit": {
+    "bundleBudget": {
+      "category": "infrastructure"
+    }
+  },
+  "size-limit": [
+    {
+      "name": "minimal (registerPlugin + definePlugin)",
+      "path": "dist/index.js",
+      "import": "{ registerPlugin, definePlugin }",
+      "ignore": [
+        "alpinejs",
+        "@ailuracode/alpine-core"
+      ],
+      "gzip": true,
+      "brotli": true,
+      "limit": "400 B"
+    },
+    {
+      "name": "typical (registry + init)",
+      "path": "dist/index.js",
+      "import": "{ registerPlugin, definePlugin, initPluginsSync, createAlpinePlugin }",
+      "ignore": [
+        "alpinejs",
+        "@ailuracode/alpine-core"
+      ],
+      "gzip": true,
+      "brotli": true,
+      "limit": "1.2 kB"
+    },
+    {
+      "name": "full surface",
+      "path": "dist/index.js",
+      "import": "*",
+      "ignore": [
+        "alpinejs",
+        "@ailuracode/alpine-core"
+      ],
+      "gzip": true,
+      "brotli": true,
+      "limit": "2.5 kB"
+    }
+  ]
+}

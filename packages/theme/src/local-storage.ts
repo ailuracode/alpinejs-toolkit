@@ -18,7 +18,8 @@
  * factory.
  */
 
-import { safeWindow, type Unsubscribe } from "@ailuracode/alpine-core";
+import type { Unsubscribe } from "./core-deps.js";
+import { safeWindow } from "./core-deps.js";
 import { isThemePreference } from "./internal/validation";
 import { DEFAULT_THEME_STORAGE_KEY, type ThemePreference, type ThemeStorage } from "./types";
 

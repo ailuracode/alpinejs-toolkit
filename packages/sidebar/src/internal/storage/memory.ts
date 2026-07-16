@@ -13,7 +13,7 @@
  * was cleared" from "a new value was set".
  */
 
-import type { Unsubscribe } from "@ailuracode/alpine-core";
+import type { Unsubscribe } from "../../core-deps.js";
 import type { SidebarStorage } from "../../types";
 
 /**

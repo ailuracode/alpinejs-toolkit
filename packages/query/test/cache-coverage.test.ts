@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { vanillaQueryAdapter } from "../src/adapters/vanilla.js";
 import { QueryCache } from "../src/cache.js";
+import { createTestQueryInstrumentation } from "./instrumentation-helper.js";
 
 type Todo = { id: number; title: string };
 
@@ -8,12 +9,14 @@ function createCache(options?: {
   defaultQueryOptions?: Record<string, unknown>;
   defaultMutationRetry?: number;
   defaultMutationRetryDelay?: number | ((attempt: number) => number);
+  withDevtools?: boolean;
 }) {
   return new QueryCache({
     adapter: vanillaQueryAdapter,
     defaultQueryOptions: options?.defaultQueryOptions ?? {},
     defaultMutationRetry: options?.defaultMutationRetry ?? 3,
     defaultMutationRetryDelay: options?.defaultMutationRetryDelay ?? ((attempt) => attempt * 10),
+    instrumentation: options?.withDevtools ? createTestQueryInstrumentation() : undefined,
   });
 }
 
@@ -513,8 +516,18 @@ describe("QueryCache — comprehensive coverage", () => {
   });
 
   describe("devtools", () => {
+    let devtoolsCache: QueryCache;
+
+    beforeEach(() => {
+      devtoolsCache = createCache({ withDevtools: true });
+    });
+
+    afterEach(() => {
+      devtoolsCache.reset();
+    });
+
     it("getDevtools returns subscribe, getSnapshot, clearMutations", () => {
-      const devtools = cache.getDevtools();
+      const devtools = devtoolsCache.getDevtools();
       expect(typeof devtools.subscribe).toBe("function");
       expect(typeof devtools.getSnapshot).toBe("function");
       expect(typeof devtools.clearMutations).toBe("function");
@@ -522,17 +535,17 @@ describe("QueryCache — comprehensive coverage", () => {
 
     it("devtools snapshot includes query entries", async () => {
       const fn = vi.fn().mockResolvedValue("data");
-      cache.observe(["dt"], fn, { staleTime: 60_000 });
+      devtoolsCache.observe(["dt"], fn, { staleTime: 60_000 });
       await vi.runAllTimersAsync();
 
-      const snapshot = cache.getDevtools().getSnapshot();
+      const snapshot = devtoolsCache.getDevtools().getSnapshot();
       expect(snapshot.queries).toHaveLength(1);
       expect(snapshot.queries[0].keyHash).toBe(JSON.stringify(["dt"]));
     });
 
     it("clearMutations clears mutation history", () => {
-      cache.getDevtools().clearMutations();
-      const snapshot = cache.getDevtools().getSnapshot();
+      devtoolsCache.getDevtools().clearMutations();
+      const snapshot = devtoolsCache.getDevtools().getSnapshot();
       expect(snapshot.mutations).toHaveLength(0);
     });
   });

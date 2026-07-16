@@ -2,8 +2,8 @@
  * Public type contracts for `@ailuracode/alpine-form`.
  */
 
-import type { Alpine, PluginCallback, Unsubscribe } from "@ailuracode/alpine-core";
 import type { Alpine as AlpineBase } from "alpinejs";
+import type { Alpine, PluginCallback, Unsubscribe } from "./core-deps.js";
 import type { FormEvents } from "./events.js";
 import type { StandardSchemaV1 } from "./standard-schema.js";
 

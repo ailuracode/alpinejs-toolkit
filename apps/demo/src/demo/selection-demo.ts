@@ -1,4 +1,5 @@
-import { type SelectionMode, serializeSelection } from "@ailuracode/alpine-selection";
+import type { SelectionMode } from "@ailuracode/alpine-selection";
+import { serializeSelection } from "@ailuracode/alpine-selection/serialization";
 import type { AlpineInstance } from "../types/alpine.js";
 
 const ITEM_CLASS =

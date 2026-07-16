@@ -8,8 +8,8 @@
  * @module
  */
 
-import { BaseController } from "@ailuracode/alpine-core";
 import { getWakeLockApi } from "./browser.js";
+import { BaseController } from "./core-deps.js";
 import type { WakeLockEvents } from "./events.js";
 import type { WakeLockLike, WakeLockSentinelLike } from "./types.js";
 

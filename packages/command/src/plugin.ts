@@ -2,10 +2,10 @@
  * Alpine.js integration for `@ailuracode/alpine-command`.
  */
 
-import { bridgeControllerStore } from "@ailuracode/alpine-core";
 import type { Alpine } from "alpinejs";
 import { createCommandAlpineStore, syncCommandStore } from "./alpine/store.js";
 import { CommandController } from "./controller.js";
+import { bridgeControllerStore } from "./core-deps.js";
 import {
   type CommandAlpine,
   type CommandPluginCallback,

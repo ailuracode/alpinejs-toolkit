@@ -11,8 +11,10 @@ import { DEFAULT_PREFERENCES_STORAGE_KEY } from "../src/devtools/panel-preferenc
 import { applyResponsiveLayout } from "../src/devtools/responsive-layout.js";
 import { DEFAULT_TOGGLE_CORNER_STORAGE_KEY } from "../src/devtools/toggle-corner.js";
 import { createAlpineNanostoresAdapter } from "../src/nanostores/index.js";
+import { withDevtoolsClient, withDevtoolsInstrumentation } from "./instrumentation-helper.js";
 
-const nanostoresQuery = () => query({ adapter: createAlpineNanostoresAdapter });
+const nanostoresQuery = () =>
+  query(withDevtoolsInstrumentation({ adapter: createAlpineNanostoresAdapter }));
 
 describe("@ailuracode/alpine-query-devtools", () => {
   beforeEach(() => {
@@ -687,7 +689,7 @@ describe("@ailuracode/alpine-query-devtools", () => {
     vi.useFakeTimers();
 
     const { createQueryClient } = await import("@ailuracode/alpine-query");
-    const store = getQueryStore(createQueryClient());
+    const store = getQueryStore(createQueryClient(withDevtoolsClient()));
 
     const controller = mountQueryDevtools({ store, initialOpen: true });
     const query = store.observe(["standalone"], async () => "nanostores");
@@ -714,7 +716,9 @@ describe("@ailuracode/alpine-query-devtools", () => {
 
     const Alpine = startAlpine(nanostoresQuery());
     const store = Alpine.store("query") as QueryStore;
-    const headless = createQueryClient({ adapter: createAlpineStoreAdapter(Alpine) });
+    const headless = createQueryClient(
+      withDevtoolsClient({ adapter: createAlpineStoreAdapter(Alpine) })
+    );
 
     const controller = mountQueryDevtools({
       store,
@@ -778,7 +782,9 @@ describe("@ailuracode/alpine-query-devtools", () => {
 
     const Alpine = startAlpine(nanostoresQuery());
     const store = Alpine.store("query") as QueryStore;
-    const headless = createQueryClient({ adapter: createAlpineStoreAdapter(Alpine) });
+    const headless = createQueryClient(
+      withDevtoolsClient({ adapter: createAlpineStoreAdapter(Alpine) })
+    );
 
     mountQueryDevtools({
       store,

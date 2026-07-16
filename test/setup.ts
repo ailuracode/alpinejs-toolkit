@@ -1,4 +1,5 @@
-import { clearAllSingletons, resetRegistrationTracking } from "@ailuracode/alpine-core";
+import { resetRegistrationTracking } from "@ailuracode/alpine-core/registration";
+import { clearAllSingletons } from "@ailuracode/alpine-core/singleton";
 import { afterEach, beforeEach, vi } from "vitest";
 
 const mediaListeners = new Map<string, Set<() => void>>();

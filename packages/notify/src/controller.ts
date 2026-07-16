@@ -1,6 +1,6 @@
 import { isAndroidDevice, isIosDevice } from "@ailuracode/alpine-env";
 
-export { isIosDevice } from "@ailuracode/alpine-env";
+export { isIosDevice };
 
 import type { NotifyConfig, NotifyMagic, NotifyPluginOptions } from "./types";
 

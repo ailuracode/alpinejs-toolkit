@@ -15,9 +15,8 @@
  * @module
  */
 
-import { BaseController, generateId, ToolkitError } from "@ailuracode/alpine-core";
-
 import type { RealtimeTransportAdapter } from "../adapters/RealtimeTransportAdapter";
+import { BaseController, generateId, ToolkitError } from "../core-deps.js";
 import { HeartbeatManager } from "../utils/heartbeat";
 import { VisibilityManager } from "../utils/visibility";
 import {

@@ -15,7 +15,8 @@
  * subscriber cannot crash the rAF loop.
  */
 
-import { isBrowser, safeWindow, type Unsubscribe } from "@ailuracode/alpine-core";
+import type { Unsubscribe } from "../core-deps.js";
+import { isBrowser, safeWindow } from "../core-deps.js";
 import { safeNotify } from "./util";
 
 export interface ScrollObserverOptions {

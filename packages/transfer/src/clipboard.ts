@@ -1,5 +1,5 @@
-import { guardMagic } from "@ailuracode/alpine-core";
 import type AlpineType from "alpinejs";
+import { guardMagic } from "./core-deps.js";
 import { DEFAULT_TRANSFER_CLIPBOARD_KEY } from "./types.js";
 
 export const CLIPBOARD_COPY_MODES = ["auto", "clipboard", "legacy"] as const;

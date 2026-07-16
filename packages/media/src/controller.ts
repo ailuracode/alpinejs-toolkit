@@ -54,18 +54,18 @@
  */
 
 import {
+  resolveBreakpointFromQueries,
+  resolveIntervals,
+  resolveMediaBreakpoint,
+} from "./breakpoint";
+import type { Unsubscribe } from "./core-deps.js";
+import {
   BaseController,
   createSingleton,
   generateId,
   releaseSingleton,
   ToolkitError,
-  type Unsubscribe,
-} from "@ailuracode/alpine-core";
-import {
-  resolveBreakpointFromQueries,
-  resolveIntervals,
-  resolveMediaBreakpoint,
-} from "./breakpoint";
+} from "./core-deps.js";
 import type { MediaEvents } from "./events";
 import { createMatchMediaWatcher } from "./internal/match-media";
 import {

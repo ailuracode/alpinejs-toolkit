@@ -20,7 +20,7 @@
  * core (replaces the previous inlined `Map`-based registry).
  */
 
-import { BaseController, createSingleton, releaseSingleton } from "@ailuracode/alpine-core";
+import { BaseController, createSingleton, releaseSingleton } from "./core-deps.js";
 import { OverlayError } from "./error.js";
 import type { OverlayEvents } from "./events.js";
 import { resolveOrCreatePortalRoot, safeDocument } from "./internal/portal.js";

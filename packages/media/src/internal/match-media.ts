@@ -14,7 +14,7 @@
  * when the runtime does not expose `window.matchMedia`).
  */
 
-import { safeMatchMedia } from "@ailuracode/alpine-core";
+import { safeMatchMedia } from "../core-deps.js";
 
 export function createMatchMediaWatcher(
   queryOrList: string | MediaQueryList,

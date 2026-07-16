@@ -19,7 +19,8 @@
  * back to its configured `initial` — never to a coerced boolean.
  */
 
-import { safeWindow, type Unsubscribe } from "@ailuracode/alpine-core";
+import type { Unsubscribe } from "../../core-deps.js";
+import { safeWindow } from "../../core-deps.js";
 import {
   DEFAULT_SIDEBAR_STORAGE_KEY,
   type LocalStorageSidebarStorageOptions,

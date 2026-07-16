@@ -1,6 +1,4 @@
-import type { Day } from "date-fns";
-import { getDay, isAfter, isBefore, isSameDay, isWithinInterval, startOfDay } from "date-fns";
-import type { ResolvedDateFnsContext } from "./context.js";
+import type { CalendarWeekDay, ResolvedCalendarContext } from "./context.js";
 
 export type CalendarDateRangeMatcher = {
   from: Date;
@@ -29,7 +27,7 @@ export type CalendarDateOnlyMatcher = {
 };
 
 export type CalendarDayOfWeekMatcher = {
-  dayOfWeek: Day | Day[];
+  dayOfWeek: CalendarWeekDay | CalendarWeekDay[];
 };
 
 export type CalendarMatcherFn = (date: Date) => boolean;
@@ -46,8 +44,8 @@ export type CalendarMatcher =
   | CalendarDayOfWeekMatcher
   | CalendarMatcherFn;
 
-function normalizeMatcherDate(date: Date, context: ResolvedDateFnsContext): Date {
-  return startOfDay(date, context);
+function normalizeMatcherDate(date: Date, context: ResolvedCalendarContext): Date {
+  return context.adapter.startOfDay(date, context);
 }
 
 function isInclusiveRangeMatcher(matcher: CalendarMatcher): matcher is CalendarDateRangeMatcher {
@@ -118,29 +116,33 @@ function isDayOfWeekMatcher(matcher: CalendarMatcher): matcher is CalendarDayOfW
 function matchesInclusiveRange(
   day: Date,
   matcher: CalendarDateRangeMatcher,
-  context: ResolvedDateFnsContext
+  context: ResolvedCalendarContext
 ): boolean {
   const from = normalizeMatcherDate(matcher.from, context);
   const to = normalizeMatcherDate(matcher.to, context);
 
-  return isWithinInterval(day, { start: from, end: to }, context);
+  return context.adapter.isWithinInterval(day, { start: from, end: to }, context);
 }
 
 function matchesDateOnly(
   day: Date,
   matcher: CalendarDateOnlyMatcher,
-  context: ResolvedDateFnsContext
+  context: ResolvedCalendarContext
 ): boolean {
   const from = normalizeMatcherDate(matcher.only.from, context);
   const to = normalizeMatcherDate(matcher.only.to, context);
 
-  return isBefore(day, from) || isAfter(day, to);
+  return context.adapter.isBefore(day, from, context) || context.adapter.isAfter(day, to, context);
 }
 
-function matchesDayOfWeek(day: Date, matcher: CalendarDayOfWeekMatcher): boolean {
+function matchesDayOfWeek(
+  day: Date,
+  matcher: CalendarDayOfWeekMatcher,
+  context: ResolvedCalendarContext
+): boolean {
   const days = Array.isArray(matcher.dayOfWeek) ? matcher.dayOfWeek : [matcher.dayOfWeek];
 
-  return days.includes(getDay(day) as Day);
+  return days.includes(context.adapter.getDay(day, context));
 }
 
 export function normalizeMatchers(
@@ -157,7 +159,7 @@ export function normalizeMatchers(
 export function matchesCalendarMatcher(
   date: Date,
   matcher: CalendarMatcher,
-  context: ResolvedDateFnsContext
+  context: ResolvedCalendarContext
 ): boolean {
   const day = normalizeMatcherDate(date, context);
 
@@ -166,11 +168,11 @@ export function matchesCalendarMatcher(
   }
 
   if (matcher instanceof Date) {
-    return isSameDay(day, matcher, context);
+    return context.adapter.isSameDay(day, matcher, context);
   }
 
   if (Array.isArray(matcher)) {
-    return matcher.some((value) => isSameDay(day, value, context));
+    return matcher.some((value) => context.adapter.isSameDay(day, value, context));
   }
 
   if (typeof matcher === "function") {
@@ -189,19 +191,21 @@ export function matchesCalendarMatcher(
     const before = normalizeMatcherDate(matcher.before, context);
     const after = normalizeMatcherDate(matcher.after, context);
 
-    return isAfter(day, after) && isBefore(day, before);
+    return (
+      context.adapter.isAfter(day, after, context) && context.adapter.isBefore(day, before, context)
+    );
   }
 
   if (isDateBeforeMatcher(matcher)) {
-    return isBefore(day, normalizeMatcherDate(matcher.before, context));
+    return context.adapter.isBefore(day, normalizeMatcherDate(matcher.before, context), context);
   }
 
   if (isDateAfterMatcher(matcher)) {
-    return isAfter(day, normalizeMatcherDate(matcher.after, context));
+    return context.adapter.isAfter(day, normalizeMatcherDate(matcher.after, context), context);
   }
 
   if (isDayOfWeekMatcher(matcher)) {
-    return matchesDayOfWeek(day, matcher);
+    return matchesDayOfWeek(day, matcher, context);
   }
 
   return false;
@@ -210,7 +214,7 @@ export function matchesCalendarMatcher(
 export function matchesAnyCalendarMatcher(
   date: Date,
   matchers: CalendarMatcher[],
-  context: ResolvedDateFnsContext
+  context: ResolvedCalendarContext
 ): boolean {
   return matchers.some((matcher) => matchesCalendarMatcher(date, matcher, context));
 }
@@ -220,15 +224,15 @@ export function isDateDisabledByRules(
   minDate: Date | undefined,
   maxDate: Date | undefined,
   matchers: CalendarMatcher[],
-  context: ResolvedDateFnsContext
+  context: ResolvedCalendarContext
 ): boolean {
   const day = normalizeMatcherDate(date, context);
 
-  if (minDate && isBefore(day, minDate)) {
+  if (minDate && context.adapter.isBefore(day, minDate, context)) {
     return true;
   }
 
-  if (maxDate && isAfter(day, maxDate)) {
+  if (maxDate && context.adapter.isAfter(day, maxDate, context)) {
     return true;
   }
 

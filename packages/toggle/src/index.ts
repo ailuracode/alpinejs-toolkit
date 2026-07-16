@@ -23,9 +23,9 @@
  * one pass: factory → Alpine adapter → types → events.
  */
 
-// --- Controller primitives shared with other feature packages --------
-export type { Unsubscribe } from "@ailuracode/alpine-core";
 export { ToggleController } from "./controller";
+// --- Controller primitives shared with other feature packages --------
+export type { Unsubscribe } from "./core-deps.js";
 // --- Event surface ---------------------------------------------------
 export type { ToggleEvents } from "./events";
 // --- Public factory (framework-agnostic) -----------------------------

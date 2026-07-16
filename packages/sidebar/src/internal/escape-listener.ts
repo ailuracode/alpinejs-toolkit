@@ -13,7 +13,8 @@
  * separate callback signature.
  */
 
-import { safeWindow, type Unsubscribe } from "@ailuracode/alpine-core";
+import type { Unsubscribe } from "../core-deps.js";
+import { safeWindow } from "../core-deps.js";
 
 /**
  * Subscribes to `Escape` keydown events on `window`. Returns a

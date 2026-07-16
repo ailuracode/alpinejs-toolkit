@@ -4,8 +4,7 @@
  * @module
  */
 
-import { isBefore, isSameDay, startOfDay } from "date-fns";
-import type { ResolvedDateFnsContext } from "../context.js";
+import type { ResolvedCalendarContext } from "../context.js";
 import type { CalendarDateRange, CalendarMode, CalendarSelection } from "../types.js";
 
 // ── Normalization ──────────────────────────────────────────────────
@@ -13,11 +12,11 @@ import type { CalendarDateRange, CalendarMode, CalendarSelection } from "../type
 /** Normalizes a date range to start-of-day. */
 export function normalizeRange(
   range: CalendarDateRange,
-  context: ResolvedDateFnsContext
+  context: ResolvedCalendarContext
 ): CalendarDateRange {
   return {
-    from: range.from ? startOfDay(range.from, context) : undefined,
-    to: range.to ? startOfDay(range.to, context) : undefined,
+    from: range.from ? context.adapter.startOfDay(range.from, context) : undefined,
+    to: range.to ? context.adapter.startOfDay(range.to, context) : undefined,
   };
 }
 
@@ -25,14 +24,14 @@ export function normalizeRange(
 export function normalizeSelection(
   selection: CalendarSelection,
   mode: CalendarMode,
-  context: ResolvedDateFnsContext
+  context: ResolvedCalendarContext
 ): CalendarSelection {
   if (selection === null) {
     return null;
   }
 
   if (mode === "single") {
-    return selection instanceof Date ? startOfDay(selection, context) : null;
+    return selection instanceof Date ? context.adapter.startOfDay(selection, context) : null;
   }
 
   if (mode === "multiple") {
@@ -40,7 +39,7 @@ export function normalizeSelection(
       return [];
     }
 
-    return selection.map((date) => startOfDay(date, context));
+    return selection.map((date) => context.adapter.startOfDay(date, context));
   }
 
   if (typeof selection === "object" && !Array.isArray(selection) && !(selection instanceof Date)) {
@@ -61,10 +60,10 @@ export function selectSingleDate(_current: CalendarSelection, day: Date): Calend
 export function selectMultipleDate(
   current: CalendarSelection,
   day: Date,
-  context: ResolvedDateFnsContext
+  context: ResolvedCalendarContext
 ): CalendarSelection {
   const dates = Array.isArray(current) ? [...current] : [];
-  const existingIndex = dates.findIndex((value) => isSameDay(value, day, context));
+  const existingIndex = dates.findIndex((value) => context.adapter.isSameDay(value, day, context));
 
   if (existingIndex >= 0) {
     dates.splice(existingIndex, 1);
@@ -79,7 +78,7 @@ export function selectMultipleDate(
 export function selectRangeDate(
   current: CalendarSelection,
   day: Date,
-  context: ResolvedDateFnsContext
+  context: ResolvedCalendarContext
 ): CalendarSelection {
   const range = (current as CalendarDateRange | null) ?? {};
 
@@ -87,11 +86,11 @@ export function selectRangeDate(
     return { from: day, to: undefined };
   }
 
-  if (isSameDay(day, range.from, context)) {
+  if (context.adapter.isSameDay(day, range.from, context)) {
     return current;
   }
 
-  if (isBefore(day, range.from)) {
+  if (context.adapter.isBefore(day, range.from, context)) {
     return { from: day, to: range.from };
   }
 
@@ -104,25 +103,27 @@ export function selectRangeDate(
 export function isSingleSelected(
   selected: CalendarSelection,
   day: Date,
-  context: ResolvedDateFnsContext
+  context: ResolvedCalendarContext
 ): boolean {
-  return selected instanceof Date ? isSameDay(selected, day, context) : false;
+  return selected instanceof Date ? context.adapter.isSameDay(selected, day, context) : false;
 }
 
 /** Returns `true` when `day` is one of the multiple-date selections. */
 export function isMultipleSelected(
   selected: CalendarSelection,
   day: Date,
-  context: ResolvedDateFnsContext
+  context: ResolvedCalendarContext
 ): boolean {
-  return Array.isArray(selected) ? selected.some((value) => isSameDay(value, day, context)) : false;
+  return Array.isArray(selected)
+    ? selected.some((value) => context.adapter.isSameDay(value, day, context))
+    : false;
 }
 
 /** Returns `true` when `day` is a range endpoint (from or to). */
 export function isRangeEndpointSelected(
   selected: CalendarSelection,
   day: Date,
-  context: ResolvedDateFnsContext
+  context: ResolvedCalendarContext
 ): boolean {
   const range = selected as CalendarDateRange | null;
 
@@ -131,7 +132,7 @@ export function isRangeEndpointSelected(
   }
 
   return (
-    (range.from ? isSameDay(range.from, day, context) : false) ||
-    (range.to ? isSameDay(range.to, day, context) : false)
+    (range.from ? context.adapter.isSameDay(range.from, day, context) : false) ||
+    (range.to ? context.adapter.isSameDay(range.to, day, context) : false)
   );
 }

@@ -22,7 +22,7 @@
  * `$persist` are allowed to coexist.
  */
 
-import { ToolkitError } from "@ailuracode/alpine-core";
+import { ToolkitError } from "../../core-deps.js";
 import {
   DEFAULT_SIDEBAR_STORAGE_KEY,
   type PersistSidebarVisibleOptions,

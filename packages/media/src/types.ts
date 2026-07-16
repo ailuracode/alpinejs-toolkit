@@ -11,8 +11,9 @@
  * parameter preserves literal interval names when consumers pass
  * `as const` arrays through {@link mediaIntervals}.
  */
-import type { Alpine, PluginCallback, SingletonScope, Unsubscribe } from "@ailuracode/alpine-core";
+
 import type { Alpine as AlpineBase } from "alpinejs";
+import type { Alpine, PluginCallback, SingletonScope, Unsubscribe } from "./core-deps.js";
 
 /** Re-exported so consumers can grab every media type from one path. */
 export type { Unsubscribe };

@@ -1,4 +1,3 @@
-import { guardStore } from "@ailuracode/alpine-core";
 import type { QueryPluginOptions, QueryStateAdapter } from "@ailuracode/alpine-query";
 import {
   createQueryStore,
@@ -9,6 +8,7 @@ import {
 } from "@ailuracode/alpine-query";
 import type AlpineType from "alpinejs";
 import { createAlpineStoreAdapter } from "./adapter.js";
+import { guardStore } from "./core-deps.js";
 
 export { alpineStoreQueryAdapter, createAlpineStoreAdapter } from "./adapter.js";
 export {
@@ -68,6 +68,7 @@ export function createQueryPlugin(
       defaultMutationRetry: resolveRetryCount(defaultMutationOptions.retry, 0),
       defaultMutationRetryDelay: resolveRetryDelay(defaultMutationOptions.retryDelay, 1000),
       adapter: resolveAdapter(adapter, Alpine),
+      instrumentation: options.instrumentation,
     });
 
     guardStore(Alpine, storeKey, createQueryStore(cache), "query-adapter-alpine", {

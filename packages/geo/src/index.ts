@@ -14,10 +14,10 @@
  *    that wires the controller into `$store.geo` and `$geo`.
  */
 
-// --- Re-export core types ------------------------------------------------
-export type { Unsubscribe } from "@ailuracode/alpine-core";
 // --- Controller (framework-agnostic) -------------------------------------
 export { createGeoController, createGeoStore, GeoController } from "./controller";
+// --- Re-export core types ------------------------------------------------
+export type { Unsubscribe } from "./core-deps.js";
 // --- Event surface -------------------------------------------------------
 export type { GeoErrorDetail, GeoEvents, GeoPositionDetail } from "./events";
 export {

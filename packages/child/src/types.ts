@@ -12,8 +12,8 @@
  * in `./plugin`.
  */
 
-import type { Alpine, PluginCallback } from "@ailuracode/alpine-core";
 import type { Alpine as AlpineBase } from "alpinejs";
+import type { Alpine, PluginCallback } from "./core-deps.js";
 
 /**
  * How wrapper attributes interact with the first element child during the

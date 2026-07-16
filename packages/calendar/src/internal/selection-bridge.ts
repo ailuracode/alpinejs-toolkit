@@ -5,8 +5,7 @@
  * overhead.
  */
 
-import { format } from "date-fns";
-import type { ResolvedDateFnsContext } from "../context.js";
+import type { ResolvedCalendarContext } from "../context.js";
 import type { CalendarDateRange, CalendarMode, CalendarSelection } from "../types.js";
 import { normalizeDate } from "./grid.js";
 import { selectRangeDate } from "./selection.js";
@@ -27,13 +26,12 @@ export interface CalendarSelectionState {
 
 // ── Key conversion ──────────────────────────────────────────────────
 
-export function dateToSelectionKey(date: Date, context: ResolvedDateFnsContext): string {
-  return format(normalizeDate(date, context), "yyyy-MM-dd", context);
+export function dateToSelectionKey(date: Date, context: ResolvedCalendarContext): string {
+  return context.adapter.toSelectionKey(normalizeDate(date, context), context);
 }
 
-export function selectionKeyToDate(key: string, context: ResolvedDateFnsContext): Date {
-  const [y, m, d] = key.split("-").map(Number);
-  return normalizeDate(new Date(y, m - 1, d), context);
+export function selectionKeyToDate(key: string, context: ResolvedCalendarContext): Date {
+  return context.adapter.fromSelectionKey(key, context);
 }
 
 // ── Value conversion ────────────────────────────────────────────────
@@ -41,7 +39,7 @@ export function selectionKeyToDate(key: string, context: ResolvedDateFnsContext)
 export function calendarSelectionToValue(
   selection: CalendarSelection,
   mode: CalendarMode,
-  context: ResolvedDateFnsContext
+  context: ResolvedCalendarContext
 ): SelectionValue {
   if (selection === null) {
     return mode === "multiple" ? [] : null;
@@ -75,7 +73,7 @@ export function calendarSelectionToValue(
 export function valueToCalendarSelection(
   value: SelectionValue,
   mode: CalendarMode,
-  context: ResolvedDateFnsContext
+  context: ResolvedCalendarContext
 ): CalendarSelection {
   if (mode === "single") {
     if (value === null || typeof value === "object") {
@@ -108,7 +106,7 @@ export function ensureCalendarSelection(
   state: CalendarSelectionState,
   mode: CalendarMode,
   selected: CalendarSelection,
-  context: ResolvedDateFnsContext
+  context: ResolvedCalendarContext
 ): void {
   state.mode = mode;
   state.value = calendarSelectionToValue(selected, mode, context);
@@ -116,7 +114,7 @@ export function ensureCalendarSelection(
 
 export function readCalendarSelection(
   state: CalendarSelectionState,
-  context: ResolvedDateFnsContext
+  context: ResolvedCalendarContext
 ): CalendarSelection {
   return valueToCalendarSelection(state.value, state.mode, context);
 }
@@ -125,7 +123,7 @@ export function selectCalendarDate(
   state: CalendarSelectionState,
   current: CalendarSelection,
   day: Date,
-  context: ResolvedDateFnsContext
+  context: ResolvedCalendarContext
 ): CalendarSelection {
   const key = dateToSelectionKey(day, context);
 
@@ -153,7 +151,7 @@ export function selectCalendarDate(
 
 export function clearCalendarSelection(
   state: CalendarSelectionState,
-  context: ResolvedDateFnsContext
+  context: ResolvedCalendarContext
 ): CalendarSelection {
   state.value = state.mode === "multiple" ? [] : null;
   return readCalendarSelection(state, context);

@@ -5,10 +5,10 @@
  * `$overlay` via `bridgeControllerStore` from `@ailuracode/alpine-core`.
  */
 
-import { bridgeControllerStore } from "@ailuracode/alpine-core";
 import type AlpineType from "alpinejs";
 import { createOverlayStore } from "./alpine/store.js";
 import { createOverlay, OVERLAY_SINGLETON_KEY } from "./controller.js";
+import { bridgeControllerStore } from "./core-deps.js";
 import type { OverlayChangeDetail, OverlayOptions, OverlayStackEntry } from "./types.js";
 import { DEFAULT_OVERLAY_STORE_KEY } from "./types.js";
 
