@@ -37,6 +37,32 @@ Alpine.data("pluginEventDemo", () => ({
       source: "api",
     });
   },
+  dispatchToggleNoBubble(target: HTMLElement): void {
+    dispatchPluginEvent(
+      target,
+      "toggle",
+      "change",
+      { previous: false, current: true, source: "toggle" },
+      { bubbles: false }
+    );
+  },
+}));
+
+Alpine.data("cancelableDemo", () => ({
+  closeResult: "",
+  handleBeforeClose(event: Event): void {
+    event.preventDefault();
+  },
+  tryClose(root: HTMLElement): void {
+    const event = dispatchPluginEvent(
+      root,
+      "dialog",
+      "before-close",
+      { reason: "escape" },
+      { cancelable: true }
+    );
+    this.closeResult = event.defaultPrevented ? "blocked" : "allowed";
+  },
 }));
 
 initPluginsSync(Alpine, ["theme"]);

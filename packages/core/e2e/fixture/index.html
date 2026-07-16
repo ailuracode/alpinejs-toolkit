@@ -26,6 +26,41 @@
         <output id="toggle-detail" x-text="toggleDetail ? JSON.stringify(toggleDetail) : ''"></output>
         <output id="theme-detail" x-text="themeDetail ? JSON.stringify(themeDetail) : ''"></output>
       </section>
+
+      <section
+        id="bubbling-demo"
+        x-data="{ parentReceived: false }"
+        @toggle:change="parentReceived = true"
+      >
+        <div id="bubbling-child" x-data="pluginEventDemo">
+          <button
+            type="button"
+            id="dispatch-bubbling"
+            @click="dispatchToggle($el.closest('#bubbling-child'))"
+          >
+            Dispatch bubbling toggle
+          </button>
+          <button
+            type="button"
+            id="dispatch-no-bubble"
+            @click="dispatchToggleNoBubble($el.closest('#bubbling-child'))"
+          >
+            Dispatch non-bubbling toggle
+          </button>
+        </div>
+        <output id="parent-received" x-text="parentReceived ? 'yes' : 'no'"></output>
+      </section>
+
+      <section
+        id="cancelable-demo"
+        x-data="cancelableDemo"
+        @dialog:before-close="handleBeforeClose($event)"
+      >
+        <button type="button" id="try-close" @click="tryClose($el.closest('#cancelable-demo'))">
+          Try dialog close
+        </button>
+        <output id="close-result" x-text="closeResult"></output>
+      </section>
     </main>
     <script type="module" src="/app.js"></script>
   </body>
