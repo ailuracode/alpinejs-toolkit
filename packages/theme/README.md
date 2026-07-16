@@ -5,7 +5,7 @@ Framework-agnostic theme manager for Alpine.js, Blade, Livewire, and any TypeScr
 ## Install
 
 ```bash
-pnpm add @ailuracode/alpine-theme @ailuracode/alpine-core @ailuracode/alpine-toggle alpinejs
+pnpm add @ailuracode/alpine-theme @ailuracode/alpine-core @ailuracode/alpine-ui @ailuracode/alpine-toggle alpinejs
 ```
 
 ## Standalone usage (no Alpine)

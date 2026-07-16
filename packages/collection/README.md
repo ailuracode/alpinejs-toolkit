@@ -6,7 +6,7 @@ grouping, pagination, and active-item navigation over a stable key registry.
 ## Install
 
 ```bash
-pnpm add @ailuracode/alpine-collection
+pnpm add @ailuracode/alpine-collection @ailuracode/alpine-core
 ```
 
 ## Quick start

@@ -51,7 +51,7 @@
     "@types/alpinejs": "^3.13.11"
   },
   "scripts": {
-    "build": "tsup src/index.ts src/controller.ts --format esm --dts --clean --out-dir dist && cp src/global.d.ts dist/global.d.ts",
+    "build": "tsup src/index.ts src/controller.ts --format esm --dts --clean --out-dir dist --minify && cp src/global.d.ts dist/global.d.ts",
     "prepublishOnly": "pnpm run build",
     "size": "size-limit",
     "test": "vitest run --config ../../vitest.config.ts packages/permissions",

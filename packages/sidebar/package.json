@@ -35,6 +35,7 @@
   "peerDependencies": {
     "alpinejs": "^3.0.0",
     "@ailuracode/alpine-core": "^0.2.0",
+    "@ailuracode/alpine-ui": "^1.0.0",
     "@ailuracode/alpine-toggle": "^1.0.0",
     "@ailuracode/alpine-scroll": "^2.0.0"
   },
@@ -56,9 +57,6 @@
     "test:watch": "vitest --config ../../vitest.config.ts packages/sidebar",
     "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.test.json",
     "test:e2e": "playwright test --config playwright.config.ts"
-  },
-  "dependencies": {
-    "@ailuracode/alpine-ui": "workspace:*"
   },
   "devDependencies": {
     "@ailuracode/alpine-core": "workspace:*",
@@ -93,6 +91,7 @@
       "ignore": [
         "alpinejs",
         "@ailuracode/alpine-core",
+        "@ailuracode/alpine-ui",
         "@ailuracode/alpine-toggle",
         "@ailuracode/alpine-scroll"
       ],

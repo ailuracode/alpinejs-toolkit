@@ -12,6 +12,7 @@ const REQUIRED_MANIFEST_FIELDS = ["license", "homepage", "exports", "files"];
 const REQUIRED_REPO_FIELDS = ["type", "url", "directory"];
 const REQUIRED_PACKAGE_FILES = ["README.md", "CHANGELOG.md"];
 const REQUIRED_PUBLISH_FILES = ["dist", "README.md"];
+const PEER_ONLY_TOOLKIT_DEPENDENCIES = ["@ailuracode/alpine-core", "@ailuracode/alpine-ui"];
 const BUNDLE_BUDGET_CATEGORIES = new Set([
   "primitive",
   "infrastructure",
@@ -446,6 +447,47 @@ export function validateSideEffectsMetadata(pkg) {
  * @param {DiscoveredPackage} pkg
  * @returns {string[]}
  */
+export function validateCoreDependencyMetadata(pkg) {
+  const errors = [];
+
+  if (pkg.isPrivate || pkg.folder === "core") {
+    return errors;
+  }
+
+  const dependencies = pkg.manifest.dependencies;
+  const devDependencies = pkg.manifest.devDependencies;
+  const peerDependencies = pkg.manifest.peerDependencies;
+
+  for (const dependencyName of PEER_ONLY_TOOLKIT_DEPENDENCIES) {
+    if (dependencies && typeof dependencies === "object" && dependencyName in dependencies) {
+      errors.push(
+        `${pkg.name}: ${dependencyName} must be a peer dependency, not a runtime dependency`
+      );
+    }
+
+    if (
+      devDependencies &&
+      typeof devDependencies === "object" &&
+      dependencyName in devDependencies &&
+      !(
+        peerDependencies &&
+        typeof peerDependencies === "object" &&
+        dependencyName in peerDependencies
+      )
+    ) {
+      errors.push(
+        `${pkg.name}: ${dependencyName} devDependency must be paired with peerDependencies`
+      );
+    }
+  }
+
+  return errors;
+}
+
+/**
+ * @param {DiscoveredPackage} pkg
+ * @returns {string[]}
+ */
 function validatePublishMetadata(pkg) {
   const errors = [];
   const files = pkg.manifest.files;
@@ -511,7 +553,8 @@ function validatePackageMetadata(pkg, requireBuilt) {
     ...validateManifestFields(pkg),
     ...validateRepositoryMetadata(pkg),
     ...validatePublishMetadata(pkg),
-    ...validateSideEffectsMetadata(pkg)
+    ...validateSideEffectsMetadata(pkg),
+    ...validateCoreDependencyMetadata(pkg)
   );
 
   if (requireBuilt) {
