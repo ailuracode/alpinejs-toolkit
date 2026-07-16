@@ -10,8 +10,8 @@
  * event stream.
  */
 
-import { ToolkitError } from "@ailuracode/alpine-core/controller";
 import type { PluginCallback } from "alpinejs";
+import { ToolkitError } from "./core-deps.js";
 import { emitLoadError } from "./registry";
 import type {
   AlpinePluginCallback,

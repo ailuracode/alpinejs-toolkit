@@ -25,7 +25,7 @@
  * base controller) are reused — see {@link ScrollError.code} note.
  */
 
-import { ToolkitError, type ToolkitErrorCode } from "@ailuracode/alpine-core/controller";
+import { ToolkitError, type ToolkitErrorCode } from "./core-deps.js";
 
 /**
  * Stable, scroll-specific error codes. Runtime guard at the bottom

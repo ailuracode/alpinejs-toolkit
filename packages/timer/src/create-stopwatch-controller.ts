@@ -2,7 +2,7 @@
  * Stopwatch controller — lap state layered on the shared timer engine.
  */
 
-import { generateId, ToolkitError } from "@ailuracode/alpine-core/controller";
+import { generateId, ToolkitError } from "./core-deps.js";
 import type { TimerControllerImpl } from "./create-timer.js";
 import { syncReactiveTimerView } from "./create-timer.js";
 import { createFormat } from "./format-pattern.js";

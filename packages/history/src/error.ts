@@ -2,7 +2,7 @@
  * Public errors for `@ailuracode/alpine-history`.
  */
 
-import { ToolkitError, type ToolkitErrorCode } from "@ailuracode/alpine-core/controller";
+import { ToolkitError, type ToolkitErrorCode } from "./core-deps.js";
 
 export type HistoryErrorCode =
   | "CONTROLLER_DESTROYED"

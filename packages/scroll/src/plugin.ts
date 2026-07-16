@@ -26,10 +26,10 @@
  *    `typeof === "function"` check for older Alpine versions).
  */
 
-import { bridgeControllerStore } from "@ailuracode/alpine-core/bridge";
 import type { Alpine } from "alpinejs";
 import { createScrollStore as buildStore } from "./alpine/store";
 import { createScroll, type ScrollController } from "./controller";
+import { bridgeControllerStore } from "./core-deps.js";
 import {
   DEFAULT_SCROLL_MAGIC_KEY,
   DEFAULT_SCROLL_STORE_KEY,

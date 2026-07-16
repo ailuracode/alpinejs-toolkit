@@ -2,9 +2,9 @@
  * Alpine.js integration for `@ailuracode/alpine-form`.
  */
 
-import { bridgeControllerStore } from "@ailuracode/alpine-core/bridge";
 import type { Alpine } from "alpinejs";
 import { FormController } from "./controller.js";
+import { bridgeControllerStore } from "./core-deps.js";
 import { normalizeFormPluginOptions } from "./options.js";
 import { createFormStoreFromController, syncInstanceRegistry } from "./store.js";
 import {

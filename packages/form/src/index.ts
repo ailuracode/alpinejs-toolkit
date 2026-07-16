@@ -2,7 +2,6 @@
  * Public entrypoint for `@ailuracode/alpine-form`.
  */
 
-export type { Unsubscribe } from "@ailuracode/alpine-core/types";
 export {
   announceFormErrors,
   buildErrorAnnouncement,
@@ -10,6 +9,7 @@ export {
   focusFirstInvalidField,
 } from "./accessibility.js";
 export { createFormController, FormController } from "./controller.js";
+export type { Unsubscribe } from "./core-deps.js";
 export { createForm, createFormOptions } from "./create-form.js";
 export { FormError, type FormErrorCode, isFormErrorCode } from "./error.js";
 export type { FormEvents } from "./events.js";

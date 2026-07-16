@@ -3,13 +3,13 @@
  * `@ailuracode/alpine-form`.
  */
 
-import { BaseController, generateId } from "@ailuracode/alpine-core/controller";
 import {
   announceFormErrors,
   buildErrorAnnouncement,
   createFieldAriaProps,
   focusFirstInvalidField,
 } from "./accessibility.js";
+import { BaseController, generateId } from "./core-deps.js";
 import { FormError } from "./error.js";
 import type { FormEvents } from "./events.js";
 import { AsyncGuard } from "./internal/async-guard.js";

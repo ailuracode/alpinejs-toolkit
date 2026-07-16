@@ -6,10 +6,10 @@
  * (see `AGENTS.md` for the integration contract).
  */
 
-import { bridgeControllerStore } from "@ailuracode/alpine-core/bridge";
 import type { Alpine } from "alpinejs";
 import type { LangController } from "./controller";
 import { createLang } from "./controller";
+import { bridgeControllerStore } from "./core-deps.js";
 import type { LangAlpine, LangPluginCallback, LangPluginOptions, LangStore } from "./types";
 import { DEFAULT_LANG_STORE_KEY } from "./types";
 

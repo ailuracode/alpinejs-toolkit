@@ -5,9 +5,9 @@
  * `$store.carousel` and the `$carousel` magic.
  */
 
-import { bridgeControllerStore, syncRecordFromSnapshot } from "@ailuracode/alpine-core/bridge";
 import type { Alpine } from "alpinejs";
 import { CarouselController } from "./controller.js";
+import { bridgeControllerStore, syncRecordFromSnapshot } from "./core-deps.js";
 import { createCarouselStoreFromController } from "./store.js";
 import type { CarouselAlpine, CarouselPluginCallback, CreateCarouselOptions } from "./types.js";
 import { DEFAULT_CAROUSEL_STORE_KEY } from "./types.js";

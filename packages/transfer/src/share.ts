@@ -1,5 +1,5 @@
-import { guardMagic } from "@ailuracode/alpine-core/registration";
 import type AlpineType from "alpinejs";
+import { guardMagic } from "./core-deps.js";
 import { DEFAULT_TRANSFER_SHARE_KEY } from "./types.js";
 
 export type ShareMagic = ((data: ShareData) => Promise<boolean>) & {

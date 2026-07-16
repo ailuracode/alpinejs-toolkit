@@ -6,10 +6,10 @@
  * (see `AGENTS.md` for the integration contract).
  */
 
-import { bridgeControllerStore } from "@ailuracode/alpine-core/bridge";
 import type { Alpine } from "alpinejs";
 import type { ThemeController } from "./controller";
 import { createTheme } from "./controller";
+import { bridgeControllerStore } from "./core-deps.js";
 import {
   type CreateThemeOptions,
   DEFAULT_THEME_MAGIC_KEY,

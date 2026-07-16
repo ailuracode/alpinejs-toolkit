@@ -53,14 +53,19 @@
  * is a leaf in the toolkit's hierarchy.
  */
 
-import { BaseController, generateId, ToolkitError } from "@ailuracode/alpine-core/controller";
-import { createSingleton, releaseSingleton } from "@ailuracode/alpine-core/singleton";
-import type { Unsubscribe } from "@ailuracode/alpine-core/types";
 import {
   resolveBreakpointFromQueries,
   resolveIntervals,
   resolveMediaBreakpoint,
 } from "./breakpoint";
+import type { Unsubscribe } from "./core-deps.js";
+import {
+  BaseController,
+  createSingleton,
+  generateId,
+  releaseSingleton,
+  ToolkitError,
+} from "./core-deps.js";
 import type { MediaEvents } from "./events";
 import { createMatchMediaWatcher } from "./internal/match-media";
 import {

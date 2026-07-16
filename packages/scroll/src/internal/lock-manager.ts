@@ -19,8 +19,7 @@
  * the SSR boundary).
  */
 
-import { isBrowser, safeDocument } from "@ailuracode/alpine-core/browser";
-import { ToolkitError } from "@ailuracode/alpine-core/controller";
+import { isBrowser, safeDocument, ToolkitError } from "../core-deps.js";
 import { ScrollError } from "../error";
 import type { ScrollLockAxis, ScrollLockChangeDetail } from "../types";
 import { applyScrollbarGap, clearScrollbarGap, measureScrollbarWidth } from "./scrollbar-gap";

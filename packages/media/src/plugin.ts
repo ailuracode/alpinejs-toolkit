@@ -11,9 +11,9 @@
  * on their intervals array without losing literal type inference.
  */
 
-import { bridgeControllerStore } from "@ailuracode/alpine-core/bridge";
 import type { Alpine } from "alpinejs";
 import { createMedia, MEDIA_SINGLETON_KEY, MediaController } from "./controller";
+import { bridgeControllerStore } from "./core-deps.js";
 import type {
   CreateMediaOptions,
   MediaAlpine,

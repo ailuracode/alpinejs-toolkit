@@ -5,9 +5,9 @@
  * `$store.tooltip` and the `$tooltip` magic.
  */
 
-import { bridgeControllerStore, syncRecordFromSnapshot } from "@ailuracode/alpine-core/bridge";
 import type { Alpine } from "alpinejs";
 import { TooltipController } from "./controller.js";
+import { bridgeControllerStore, syncRecordFromSnapshot } from "./core-deps.js";
 import { createTooltipStoreFromController } from "./store.js";
 import type { CreateTooltipOptions, TooltipAlpine, TooltipPluginCallback } from "./types.js";
 import { DEFAULT_TOOLTIP_STORE_KEY } from "./types.js";

@@ -2,8 +2,8 @@
  * Public entrypoint for `@ailuracode/alpine-history`.
  */
 
-export type { Unsubscribe } from "@ailuracode/alpine-core/types";
 export { createHistoryController, HistoryController } from "./controller.js";
+export type { Unsubscribe } from "./core-deps.js";
 export { HistoryError, type HistoryErrorCode } from "./error.js";
 export type { HistoryChangeDetail, HistoryEvents } from "./events.js";
 export {

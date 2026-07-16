@@ -4,8 +4,8 @@
  * Per public-api instructions, this file MUST only contain re-exports.
  */
 
-export type { Unsubscribe } from "@ailuracode/alpine-core/types";
 export { createTabsController, createTabsStore, TabsController } from "./controller";
+export type { Unsubscribe } from "./core-deps.js";
 export type { TabsEvents } from "./events";
 export { tabsOptions, tabsPlugin, tabsPlugin as default } from "./plugin";
 export type {

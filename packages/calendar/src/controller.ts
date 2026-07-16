@@ -8,7 +8,6 @@
  * @module
  */
 
-import { BaseController } from "@ailuracode/alpine-core/controller";
 import type { Day, Locale } from "date-fns";
 import {
   addMonths,
@@ -21,6 +20,7 @@ import {
   subMonths,
 } from "date-fns";
 import { resolveDateFnsContext } from "./context.js";
+import { BaseController } from "./core-deps.js";
 import type { CalendarEvents, CalendarSelectDetail } from "./events.js";
 import { chunkWeeks, getMonthDays, getWeekdayLabels, normalizeDate } from "./internal/grid.js";
 import {

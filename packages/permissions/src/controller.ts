@@ -1,4 +1,4 @@
-import { BaseController } from "@ailuracode/alpine-core/controller";
+import { BaseController } from "./core-deps.js";
 import { PermissionError } from "./errors.js";
 import { createInitialSnapshot, deriveCanRequest, normalizePermissionState } from "./snapshot.js";
 import type {

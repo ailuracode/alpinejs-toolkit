@@ -7,8 +7,8 @@
  * exposes a deterministic recognition lifecycle.
  */
 
-import type { Alpine, PluginCallback } from "@ailuracode/alpine-core/types";
 import type { Alpine as AlpineBase } from "alpinejs";
+import type { Alpine, PluginCallback } from "./core-deps.js";
 
 /* -------------------------------------------------------------------------- */
 /*                              Gesture types                                 */

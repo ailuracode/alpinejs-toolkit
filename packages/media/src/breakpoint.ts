@@ -10,7 +10,7 @@
  * booting the controller.
  */
 
-import { ToolkitError } from "@ailuracode/alpine-core/controller";
+import { ToolkitError } from "./core-deps.js";
 import type { MediaInterval, MediaSnapshot } from "./types";
 import { DEFAULT_MEDIA_INTERVALS, SSR_MEDIA_DEFAULTS } from "./types";
 

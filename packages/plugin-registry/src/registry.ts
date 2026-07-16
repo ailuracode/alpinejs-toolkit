@@ -20,9 +20,9 @@
  * that actually matters.
  */
 
-import { ToolkitError } from "@ailuracode/alpine-core/controller";
-import type { DebugLogger } from "@ailuracode/alpine-core/types";
 import type { Alpine } from "alpinejs";
+import type { DebugLogger } from "./core-deps.js";
+import { ToolkitError } from "./core-deps.js";
 import { assertValidDefinition } from "./internal/assert";
 import {
   isRuntimePluginInitialized,

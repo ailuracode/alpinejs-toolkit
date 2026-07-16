@@ -1,5 +1,5 @@
-import { guardMagic } from "@ailuracode/alpine-core/registration";
 import type AlpineType from "alpinejs";
+import { guardMagic } from "./core-deps.js";
 import { DEFAULT_TRANSFER_EXPORT_KEY } from "./types.js";
 
 export type ExportOptions = {

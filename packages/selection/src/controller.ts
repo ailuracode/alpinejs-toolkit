@@ -3,7 +3,7 @@
  * `@ailuracode/alpine-selection`.
  */
 
-import { BaseController, generateId, ToolkitError } from "@ailuracode/alpine-core/controller";
+import { BaseController, generateId, ToolkitError } from "./core-deps.js";
 import { SelectionError } from "./error.js";
 import type { SelectionChangeDetail, SelectionEvents } from "./events.js";
 import {

@@ -3,7 +3,7 @@
  * `@ailuracode/alpine-history`.
  */
 
-import { BaseController, generateId, ToolkitError } from "@ailuracode/alpine-core/controller";
+import { BaseController, generateId, ToolkitError } from "./core-deps.js";
 import type { HistoryChangeDetail, HistoryEvents } from "./events.js";
 import type {
   CloneStrategy,

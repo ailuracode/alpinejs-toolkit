@@ -30,8 +30,7 @@
  * - `destroy()` MUST be idempotent.
  */
 
-import { BaseController, generateId } from "@ailuracode/alpine-core/controller";
-import { createSingleton, releaseSingleton } from "@ailuracode/alpine-core/singleton";
+import { BaseController, createSingleton, generateId, releaseSingleton } from "./core-deps.js";
 import type { LangEvents } from "./events";
 import { normalizeLanguageTag, parseLanguageTag } from "./language-tag";
 import type {

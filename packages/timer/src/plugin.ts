@@ -2,9 +2,9 @@
  * Alpine.js integration for `@ailuracode/alpine-timer`.
  */
 
-import { guardMagic } from "@ailuracode/alpine-core/registration";
-import type { Unsubscribe } from "@ailuracode/alpine-core/types";
 import type { Alpine as AlpineBase } from "alpinejs";
+import type { Unsubscribe } from "./core-deps.js";
+import { guardMagic } from "./core-deps.js";
 import {
   createStopwatchController,
   type StopwatchReactiveShape,

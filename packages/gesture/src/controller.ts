@@ -12,8 +12,7 @@
  * - `destroy()` cleans up all listeners and pointer capture.
  */
 
-import { isBrowser } from "@ailuracode/alpine-core/browser";
-import { BaseController, ToolkitError } from "@ailuracode/alpine-core/controller";
+import { BaseController, isBrowser, ToolkitError } from "./core-deps.js";
 import type { GestureEvents } from "./events";
 import {
   applyAxisLock,

@@ -14,10 +14,10 @@
  *    that wires the controller into `$store.dialog` and `$dialog`.
  */
 
-// --- Re-export core types ------------------------------------------------
-export type { Unsubscribe } from "@ailuracode/alpine-core/types";
 // --- Controller (framework-agnostic) -------------------------------------
 export { createDialogController, DialogController } from "./controller";
+// --- Re-export core types ------------------------------------------------
+export type { Unsubscribe } from "./core-deps.js";
 // --- Event surface -------------------------------------------------------
 export type { DialogEvents } from "./events";
 // --- Focus utilities (internal, re-exported for advanced use) ------------

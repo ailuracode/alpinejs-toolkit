@@ -7,10 +7,8 @@
  * to a field name or type are breaking changes.
  */
 
-import type { Unsubscribe } from "@ailuracode/alpine-core/controller";
-import type { SingletonScope } from "@ailuracode/alpine-core/singleton";
-import type { Alpine, PluginCallback } from "@ailuracode/alpine-core/types";
 import type { Alpine as AlpineBase } from "alpinejs";
+import type { Alpine, PluginCallback, SingletonScope, Unsubscribe } from "./core-deps.js";
 
 /** Re-exported so consumers can grab every lang type from one path. */
 export type { Unsubscribe };

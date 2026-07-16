@@ -6,8 +6,8 @@
  * Alpine adapter; do NOT inline duplicate shapes in either module.
  */
 
-import type { SingletonScope } from "@ailuracode/alpine-core/singleton";
 import type { Unsubscribe } from "@ailuracode/alpine-ui";
+import type { SingletonScope } from "./core-deps.js";
 
 /**
  * Options accepted by {@link OverlayController.configure} and the

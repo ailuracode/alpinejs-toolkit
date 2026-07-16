@@ -3,9 +3,9 @@
  * `@ailuracode/alpine-command`.
  */
 
-import { BaseController, generateId } from "@ailuracode/alpine-core/controller";
 import type { ScrollStore } from "@ailuracode/alpine-scroll";
 import { createCommandAlpineStore, syncCommandStore } from "./alpine/store.js";
+import { BaseController, generateId } from "./core-deps.js";
 import { isEditableTarget, isTypingKey } from "./editable.js";
 import { CommandError } from "./errors.js";
 import type { CommandEvents } from "./events.js";

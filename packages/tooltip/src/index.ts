@@ -7,10 +7,10 @@
  * `./types.ts` and `./events.ts`.
  */
 
-// --- Re-export core types ------------------------------------------------
-export type { Unsubscribe } from "@ailuracode/alpine-core/types";
 // --- Controller (framework-agnostic) -------------------------------------
 export { createTooltipController, TooltipController } from "./controller";
+// --- Re-export core types ------------------------------------------------
+export type { Unsubscribe } from "./core-deps.js";
 // --- Event surface -------------------------------------------------------
 export type { TooltipEvents } from "./events";
 // --- Alpine integration --------------------------------------------------

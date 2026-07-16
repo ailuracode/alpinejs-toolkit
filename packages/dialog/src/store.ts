@@ -2,8 +2,8 @@
  * Store factory for `@ailuracode/alpine-dialog`.
  */
 
-import { syncRecordFromSnapshot } from "@ailuracode/alpine-core/bridge";
 import { DialogController } from "./controller.js";
+import { syncRecordFromSnapshot } from "./core-deps.js";
 import type { DialogInstance, DialogStore, DialogStoreConfig } from "./types.js";
 
 function syncInstances(target: Record<string, DialogInstance>, controller: DialogController): void {

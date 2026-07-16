@@ -1,6 +1,6 @@
-import { guardMagic } from "@ailuracode/alpine-core/registration";
 import type AlpineType from "alpinejs";
 import { copyToClipboard, registerClipboardMagic } from "./clipboard.js";
+import { guardMagic } from "./core-deps.js";
 import { createExportMagic, registerExportMagic } from "./export.js";
 import { createShareMagic, registerShareMagic } from "./share.js";
 import type { TransferPluginOptions } from "./types.js";

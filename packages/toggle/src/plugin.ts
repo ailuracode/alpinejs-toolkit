@@ -9,10 +9,10 @@
  * transition back through Alpine's reactive proxy.
  */
 
-import { guardMagic } from "@ailuracode/alpine-core/registration";
-import type { Unsubscribe } from "@ailuracode/alpine-core/types";
 import type { Alpine as AlpineBase } from "alpinejs";
 import { ToggleController } from "./controller";
+import type { Unsubscribe } from "./core-deps.js";
+import { guardMagic } from "./core-deps.js";
 import { buildReactiveToggleView, syncReactiveToggleView } from "./internal/reactive-adapter";
 import type {
   CreateToggleOptions,

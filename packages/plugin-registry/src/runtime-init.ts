@@ -6,8 +6,8 @@
  * shared promise per runtime/plugin pair.
  */
 
-import { ToolkitError } from "@ailuracode/alpine-core/controller";
 import type { Alpine } from "alpinejs";
+import { ToolkitError } from "./core-deps.js";
 
 /** Mutable initialization state for one plugin on one Alpine runtime. */
 export interface PluginRuntimeInitState {

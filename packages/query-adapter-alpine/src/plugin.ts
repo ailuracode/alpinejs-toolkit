@@ -1,4 +1,3 @@
-import { guardStore } from "@ailuracode/alpine-core/registration";
 import type { QueryPluginOptions, QueryStateAdapter } from "@ailuracode/alpine-query";
 import {
   createQueryStore,
@@ -9,6 +8,7 @@ import {
 } from "@ailuracode/alpine-query";
 import type AlpineType from "alpinejs";
 import { createAlpineStoreAdapter } from "./adapter.js";
+import { guardStore } from "./core-deps.js";
 
 export { alpineStoreQueryAdapter, createAlpineStoreAdapter } from "./adapter.js";
 export {

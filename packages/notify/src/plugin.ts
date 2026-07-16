@@ -1,10 +1,10 @@
-import { guardMagic } from "@ailuracode/alpine-core/registration";
 import type AlpineType from "alpinejs";
 import {
   createNotifyMagic,
   registerNotifyServiceWorker,
   resolveNotifyConfig,
 } from "./controller.js";
+import { guardMagic } from "./core-deps.js";
 import type { NotifyPluginOptions } from "./types.js";
 import { DEFAULT_NOTIFY_MAGIC_KEY } from "./types.js";
 

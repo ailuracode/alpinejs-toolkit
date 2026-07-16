@@ -2,8 +2,8 @@
  * Headless timer controller — drift-resistant timing engine.
  */
 
-import type { Unsubscribe } from "@ailuracode/alpine-core/controller";
-import { EventEmitter, generateId } from "@ailuracode/alpine-core/controller";
+import type { Unsubscribe } from "./core-deps.js";
+import { EventEmitter, generateId } from "./core-deps.js";
 import type { TimerEvents } from "./events.js";
 import { buildFormatParts } from "./format-duration.js";
 import { type NormalizedTimerOptions, normalizeCreateTimerOptions } from "./options.js";

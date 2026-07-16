@@ -23,7 +23,6 @@
  * @module
  */
 
-import { bridgeControllerStore, type Destroyable } from "@ailuracode/alpine-core/bridge";
 import type { Alpine } from "alpinejs";
 import type { RealtimeTransportAdapter } from "../adapters/RealtimeTransportAdapter";
 import type { SseTransportAdapterOptions } from "../adapters/SseTransportAdapter";
@@ -37,6 +36,7 @@ import { RealtimeController } from "../controller/RealtimeController";
 import type { RealtimeControllerConfig } from "../controller/RealtimeControllerConfig";
 import type { RealtimeControllerState } from "../controller/RealtimeControllerState";
 import { RealtimeError } from "../controller/RealtimeError";
+import { bridgeControllerStore, type Destroyable } from "../core-deps.js";
 
 /**
  * Default `Alpine.store` key the plugin registers. Consumers

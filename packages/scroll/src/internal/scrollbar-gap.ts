@@ -16,7 +16,7 @@
  *   {@link clearScrollbarGap}; kept so v0.x consumers don't break.
  */
 
-import { isBrowser, safeDocument } from "@ailuracode/alpine-core/browser";
+import { isBrowser, safeDocument } from "../core-deps.js";
 
 /** CSS variable name registered by `@ailuracode/alpine-scroll`. */
 export const SCROLLBAR_GAP_VAR = "--ailura-scrollbar-gap";

@@ -2,8 +2,8 @@
  * Store factory for `@ailuracode/alpine-selection`.
  */
 
-import { syncRecordFromSnapshot } from "@ailuracode/alpine-core/bridge";
 import { SelectionController } from "./controller.js";
+import { syncRecordFromSnapshot } from "./core-deps.js";
 import { toKeyString } from "./options.js";
 import type { SelectionInstance, SelectionKey, SelectionStore } from "./types.js";
 
