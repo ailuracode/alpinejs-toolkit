@@ -2,7 +2,7 @@
  * Public error type for `@ailuracode/alpine-gesture`.
  */
 
-import { ToolkitError, type ToolkitErrorCode } from "@ailuracode/alpine-core";
+import { ToolkitError, type ToolkitErrorCode } from "@ailuracode/alpine-core/controller";
 
 export type GestureErrorCode =
   | "GESTURE_NOT_BROWSER"

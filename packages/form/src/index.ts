@@ -2,7 +2,7 @@
  * Public entrypoint for `@ailuracode/alpine-form`.
  */
 
-export type { Unsubscribe } from "@ailuracode/alpine-core";
+export type { Unsubscribe } from "@ailuracode/alpine-core/types";
 export {
   announceFormErrors,
   buildErrorAnnouncement,

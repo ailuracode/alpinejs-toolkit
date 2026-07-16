@@ -7,7 +7,7 @@
  * programmatically.
  */
 
-import { BaseController, generateId } from "@ailuracode/alpine-core";
+import { BaseController, generateId } from "@ailuracode/alpine-core/controller";
 import type { ScrollStore } from "@ailuracode/alpine-scroll";
 import type { DialogEvents } from "./events";
 import { createFocusTrap, type FocusTrap } from "./focus.js";

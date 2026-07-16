@@ -9,17 +9,58 @@ const packagesDir = path.resolve(root, "packages");
 const packageAliases = Object.fromEntries(
   readdirSync(packagesDir, { withFileTypes: true })
     .filter((entry) => entry.isDirectory())
+    .filter((entry) => entry.name !== "core" && entry.name !== "plugin-registry")
     .map((entry) => [
       `@ailuracode/alpine-${entry.name}`,
       path.resolve(packagesDir, entry.name, "src/index.ts"),
     ])
 );
 
+const coreSubpathAliases: Array<{ find: string; replacement: string }> = [
+  {
+    find: "@ailuracode/alpine-core/browser",
+    replacement: path.resolve(packagesDir, "core/src/browser.ts"),
+  },
+  {
+    find: "@ailuracode/alpine-core/controller",
+    replacement: path.resolve(packagesDir, "core/src/exports/controller.ts"),
+  },
+  {
+    find: "@ailuracode/alpine-core/bridge",
+    replacement: path.resolve(packagesDir, "core/src/exports/bridge.ts"),
+  },
+  {
+    find: "@ailuracode/alpine-core/registration",
+    replacement: path.resolve(packagesDir, "core/src/exports/registration.ts"),
+  },
+  {
+    find: "@ailuracode/alpine-core/singleton",
+    replacement: path.resolve(packagesDir, "core/src/exports/singleton.ts"),
+  },
+  {
+    find: "@ailuracode/alpine-core/events",
+    replacement: path.resolve(packagesDir, "core/src/exports/events.ts"),
+  },
+  {
+    find: "@ailuracode/alpine-core/types",
+    replacement: path.resolve(packagesDir, "core/src/public-types.ts"),
+  },
+  {
+    find: "@ailuracode/alpine-core",
+    replacement: path.resolve(packagesDir, "core/src/index.ts"),
+  },
+  {
+    find: "@ailuracode/alpine-plugin-registry",
+    replacement: path.resolve(packagesDir, "plugin-registry/src/index.ts"),
+  },
+];
+
 const subpathAliases: Array<{ find: string | RegExp; replacement: string }> = [
   {
     find: "@ailuracode/alpine-query-kit/devtools",
     replacement: path.resolve(packagesDir, "query-kit/src/devtools-entry.ts"),
   },
+  ...coreSubpathAliases,
 ];
 
 export default defineConfig({

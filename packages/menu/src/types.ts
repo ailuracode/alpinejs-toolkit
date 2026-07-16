@@ -5,7 +5,7 @@
  * them without pulling the implementation. The shape IS the contract.
  */
 
-import type { Alpine, PluginCallback } from "@ailuracode/alpine-core";
+import type { Alpine, PluginCallback } from "@ailuracode/alpine-core/types";
 import type { ScrollStore } from "@ailuracode/alpine-scroll";
 import type { Alpine as AlpineBase } from "alpinejs";
 

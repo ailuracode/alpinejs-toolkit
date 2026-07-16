@@ -14,7 +14,7 @@
  * when the runtime does not expose `window.matchMedia`).
  */
 
-import { safeMatchMedia } from "@ailuracode/alpine-core";
+import { safeMatchMedia } from "@ailuracode/alpine-core/browser";
 
 export function createMatchMediaWatcher(
   queryOrList: string | MediaQueryList,

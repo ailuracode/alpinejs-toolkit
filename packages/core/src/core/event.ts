@@ -12,6 +12,7 @@ export interface ListenerRecord<EventMap> {
 
 export class EventEmitter<EventMap extends Record<string, unknown>> {
   readonly #listeners: ListenerRecord<EventMap>[] = [];
+  #onceCount = 0;
 
   on<Key extends keyof EventMap>(event: Key, listener: EventListener<EventMap, Key>): Unsubscribe {
     return this.#subscribe(event, listener, false);
@@ -38,9 +39,24 @@ export class EventEmitter<EventMap extends Record<string, unknown>> {
 
   removeAllListeners(): void {
     this.#listeners.length = 0;
+    this.#onceCount = 0;
   }
 
   emit<Key extends keyof EventMap>(event: Key, detail: EventMap[Key]): void {
+    if (this.#onceCount === 0 && this.#listeners.length <= 1) {
+      const listeners = this.#listeners;
+
+      for (let i = 0, len = listeners.length; i < len; i++) {
+        const record = listeners[i];
+
+        if (record.event === event) {
+          record.listener(detail);
+        }
+      }
+
+      return;
+    }
+
     const snapshot = this.#listeners.slice();
 
     for (let i = 0, len = snapshot.length; i < len; i++) {
@@ -88,6 +104,9 @@ export class EventEmitter<EventMap extends Record<string, unknown>> {
     };
 
     this.#listeners.push(record);
+    if (once) {
+      this.#onceCount += 1;
+    }
 
     return () => this.#remove(record);
   }
@@ -97,6 +116,9 @@ export class EventEmitter<EventMap extends Record<string, unknown>> {
 
     if (index >= 0) {
       this.#listeners.splice(index, 1);
+      if (record.once) {
+        this.#onceCount -= 1;
+      }
     }
   }
 }

@@ -29,12 +29,7 @@ pnpm add @ailuracode/alpine-core alpinejs
 
 ```ts
 import Alpine from 'alpinejs';
-import {
-  createAlpinePlugin,
-  definePlugin,
-  pluginLoader,
-  registerPlugin,
-} from '@ailuracode/alpine-core';
+import { createAlpinePlugin, definePlugin, pluginLoader, registerPlugin } from "@ailuracode/alpine-plugin-registry";
 import { themePlugin } from '@ailuracode/alpine-theme';
 
 registerPlugin(
@@ -81,7 +76,7 @@ definePlugin(['magic', 'store'], {
 ## Quick start — headless controller
 
 ```ts
-import { BaseController } from '@ailuracode/alpine-core';
+import { BaseController } from "@ailuracode/alpine-core/controller";
 
 interface CounterEvents extends Record<string, unknown> {
   increment: { value: number };
@@ -128,7 +123,7 @@ class CounterController extends BaseController<CounterEvents> {
 ## Lazy dynamic imports
 
 ```ts
-import { initPlugins, lazyPlugin, registerPlugin } from '@ailuracode/alpine-core';
+import { initPlugins, lazyPlugin, registerPlugin } from "@ailuracode/alpine-plugin-registry";
 
 registerPlugin(
   'share',
@@ -340,7 +335,7 @@ to `registrationOverride: false` when the host application or a sibling
 plugin is expected to register the same directive name.
 
 ```ts
-import { bridgeControllerDirective } from "@ailuracode/alpine-core";
+import { bridgeControllerDirective } from "@ailuracode/alpine-core/bridge";
 
 bridgeControllerDirective({
   alpine,
@@ -388,12 +383,7 @@ loser disappears with no warning. Core ships a thin guard layer so every feature
 plugin refuses a collision the same way.
 
 ```ts
-import {
-  guardDirective,
-  guardMagic,
-  guardStore,
-  RegistrationError,
-} from "@ailuracode/alpine-core";
+import { guardDirective, guardMagic, guardStore, RegistrationError } from "@ailuracode/alpine-core/registration";
 
 guardStore(Alpine, "theme", themeStore, "alpine-theme");
 // → registers $store.theme, or throws RegistrationError("REGISTRATION_COLLISION")

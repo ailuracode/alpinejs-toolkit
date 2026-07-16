@@ -9,8 +9,9 @@
  * escape hatch — production code reads the thrown error, not the
  * event stream.
  */
+
+import { ToolkitError } from "@ailuracode/alpine-core/controller";
 import type { PluginCallback } from "alpinejs";
-import { ToolkitError } from "./core/error";
 import { emitLoadError } from "./registry";
 import type {
   AlpinePluginCallback,

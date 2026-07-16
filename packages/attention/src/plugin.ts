@@ -9,7 +9,7 @@
  * @module
  */
 
-import { guardMagic } from "@ailuracode/alpine-core";
+import { guardMagic } from "@ailuracode/alpine-core/registration";
 import type AlpineType from "alpinejs";
 import { IdleController } from "./idle-controller.js";
 import type { CreateAttentionPluginOptions } from "./types.js";

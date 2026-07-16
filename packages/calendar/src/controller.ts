@@ -8,7 +8,7 @@
  * @module
  */
 
-import { BaseController } from "@ailuracode/alpine-core";
+import { BaseController } from "@ailuracode/alpine-core/controller";
 import type { Day, Locale } from "date-fns";
 import {
   addMonths,

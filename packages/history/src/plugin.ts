@@ -2,7 +2,7 @@
  * Alpine.js integration for `@ailuracode/alpine-history`.
  */
 
-import { bridgeControllerStore } from "@ailuracode/alpine-core";
+import { bridgeControllerStore } from "@ailuracode/alpine-core/bridge";
 import type { Alpine } from "alpinejs";
 import { HistoryController } from "./controller.js";
 import { wrapHistoryStore } from "./store.js";

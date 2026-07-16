@@ -21,7 +21,7 @@
  * Migration from v0.x: see `.changeset/scroll-migration.md`.
  */
 
-export type { Unsubscribe } from "@ailuracode/alpine-core";
+export type { Unsubscribe } from "@ailuracode/alpine-core/types";
 export { createScroll, SCROLL_SINGLETON_KEY, ScrollController } from "./controller.js";
 // --- Public types (state contracts, options, plugin callback) --------
 export type { ScrollErrorCode } from "./error.js";

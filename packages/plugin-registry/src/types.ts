@@ -1,5 +1,5 @@
 /**
- * Public type contracts for `@ailuracode/alpine-core`.
+ * Public type contracts for `@ailuracode/alpine-plugin-registry`.
  * Imported by every internal module and by consuming feature packages.
  */
 import type { Alpine as AlpineBase } from "alpinejs";

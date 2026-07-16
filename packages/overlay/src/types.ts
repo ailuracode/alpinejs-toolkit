@@ -6,7 +6,7 @@
  * Alpine adapter; do NOT inline duplicate shapes in either module.
  */
 
-import type { SingletonScope } from "@ailuracode/alpine-core";
+import type { SingletonScope } from "@ailuracode/alpine-core/singleton";
 import type { Unsubscribe } from "@ailuracode/alpine-ui";
 
 /**

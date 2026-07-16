@@ -1,15 +1,13 @@
 {
   "name": "@ailuracode/alpine-core",
   "version": "0.2.0",
-  "description": "Lazy plugin registry, initializer, and browser capability helpers for Alpine.js.",
+  "description": "Headless controller primitives, Alpine bridge helpers, and browser capability utilities for Alpine.js.",
   "keywords": [
     "alpine",
     "alpinejs",
     "controller",
     "headless",
-    "lazy",
     "plugin",
-    "registry",
     "tree-shaking"
   ],
   "homepage": "https://github.com/ailuracode/alpinejs-toolkit/tree/main/packages/core#readme",
@@ -35,6 +33,33 @@
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
     },
+    "./browser": {
+      "types": "./dist/browser.d.ts",
+      "default": "./dist/browser.js"
+    },
+    "./controller": {
+      "types": "./dist/controller.d.ts",
+      "default": "./dist/controller.js"
+    },
+    "./bridge": {
+      "types": "./dist/bridge.d.ts",
+      "default": "./dist/bridge.js"
+    },
+    "./registration": {
+      "types": "./dist/registration.d.ts",
+      "default": "./dist/registration.js"
+    },
+    "./singleton": {
+      "types": "./dist/singleton.d.ts",
+      "default": "./dist/singleton.js"
+    },
+    "./events": {
+      "types": "./dist/events.d.ts",
+      "default": "./dist/events.js"
+    },
+    "./types": {
+      "types": "./dist/types.d.ts"
+    },
     "./global": {
       "types": "./dist/global.d.ts"
     }
@@ -43,7 +68,7 @@
     "access": "public"
   },
   "scripts": {
-    "build": "tsup src/index.ts --format esm --dts --clean --out-dir dist && cp src/global.d.ts dist/global.d.ts",
+    "build": "tsup --config tsup.config.ts && cp src/global.d.ts dist/global.d.ts",
     "clean": "rm -rf dist",
     "size": "size-limit",
     "test": "vitest run --config ../../vitest.config.ts packages/core",
@@ -73,20 +98,31 @@
   },
   "size-limit": [
     {
-      "name": "minimal (registerPlugin + definePlugin)",
-      "path": "dist/index.js",
-      "import": "{ registerPlugin, definePlugin }",
+      "name": "browser",
+      "path": "dist/browser.js",
+      "import": "*",
       "ignore": [
         "alpinejs"
       ],
       "gzip": true,
       "brotli": true,
-      "limit": "400 B"
+      "limit": "230 B"
     },
     {
-      "name": "typical (registry + browser helpers)",
-      "path": "dist/index.js",
-      "import": "{ registerPlugin, definePlugin, initPlugins, isBrowser, safeWindow }",
+      "name": "controller",
+      "path": "dist/controller.js",
+      "import": "*",
+      "ignore": [
+        "alpinejs"
+      ],
+      "gzip": true,
+      "brotli": true,
+      "limit": "1.2 kB"
+    },
+    {
+      "name": "bridge",
+      "path": "dist/bridge.js",
+      "import": "*",
       "ignore": [
         "alpinejs"
       ],
@@ -103,7 +139,7 @@
       ],
       "gzip": true,
       "brotli": true,
-      "limit": "4.5 kB"
+      "limit": "3.5 kB"
     }
   ]
 }

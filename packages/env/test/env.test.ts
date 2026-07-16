@@ -1,4 +1,4 @@
-import { clearAllSingletons } from "@ailuracode/alpine-core";
+import { clearAllSingletons } from "@ailuracode/alpine-core/singleton";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { createMagicHarness } from "../../../test/mock-alpine.js";
 import envPlugin, {

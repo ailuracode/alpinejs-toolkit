@@ -1,4 +1,4 @@
-import { clearAllSingletons } from "@ailuracode/alpine-core";
+import { clearAllSingletons } from "@ailuracode/alpine-core/singleton";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { createEnv, EnvController } from "../src/controller.js";
 import type { BatteryManagerLike } from "../src/internal/battery.js";

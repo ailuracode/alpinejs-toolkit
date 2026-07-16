@@ -2,7 +2,7 @@
  * Store factory for `@ailuracode/alpine-dialog`.
  */
 
-import { syncRecordFromSnapshot } from "@ailuracode/alpine-core";
+import { syncRecordFromSnapshot } from "@ailuracode/alpine-core/bridge";
 import { DialogController } from "./controller.js";
 import type { DialogInstance, DialogStore, DialogStoreConfig } from "./types.js";
 

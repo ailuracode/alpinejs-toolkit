@@ -39,16 +39,10 @@
  *   so the change event can carry the caller-supplied intent.
  */
 
-import {
-  BaseController,
-  createSingleton,
-  generateId,
-  isBrowser,
-  releaseSingleton,
-  safeWindow,
-  ToolkitError,
-  type Unsubscribe,
-} from "@ailuracode/alpine-core";
+import { isBrowser, safeWindow } from "@ailuracode/alpine-core/browser";
+import { BaseController, generateId, ToolkitError } from "@ailuracode/alpine-core/controller";
+import { createSingleton, releaseSingleton } from "@ailuracode/alpine-core/singleton";
+import type { Unsubscribe } from "@ailuracode/alpine-core/types";
 import type { ScrollEvents } from "./events";
 import { type LockChangeDetail, LockManager } from "./internal/lock-manager";
 import { readScrollSnapshot } from "./internal/metrics";

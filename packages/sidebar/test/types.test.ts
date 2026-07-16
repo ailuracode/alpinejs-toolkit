@@ -10,7 +10,7 @@
  * 6 tests map to the spec matrix rows #33–#38.
  */
 
-import type { Unsubscribe } from "@ailuracode/alpine-core";
+import type { Unsubscribe } from "@ailuracode/alpine-core/controller";
 import { describe, expectTypeOf, it } from "vitest";
 import type {
   CreateSidebarOptions,

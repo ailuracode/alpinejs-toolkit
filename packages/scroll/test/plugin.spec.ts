@@ -8,7 +8,7 @@
  * `scrollPlugin` / `createScrollStore` surface.
  */
 
-import { clearAllSingletons } from "@ailuracode/alpine-core";
+import { clearAllSingletons } from "@ailuracode/alpine-core/singleton";
 import type { Alpine as AlpineBase } from "alpinejs";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { createScroll, ScrollController, type ScrollStore, scrollPlugin } from "../src/index";

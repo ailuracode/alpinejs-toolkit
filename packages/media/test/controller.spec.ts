@@ -6,7 +6,7 @@
  */
 
 import assert from "node:assert/strict";
-import { ToolkitError } from "@ailuracode/alpine-core";
+import { ToolkitError } from "@ailuracode/alpine-core/controller";
 import { afterEach, beforeEach, describe, expect, expectTypeOf, it, vi } from "vitest";
 import { readMediaSnapshot, resolveMediaBreakpoint } from "../src/breakpoint.js";
 import { createMedia, MediaController } from "../src/controller.js";

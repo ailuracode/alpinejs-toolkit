@@ -8,7 +8,7 @@
  * consumers can react programmatically.
  */
 
-import { BaseController, generateId } from "@ailuracode/alpine-core";
+import { BaseController, generateId } from "@ailuracode/alpine-core/controller";
 import EmblaCarousel, { type EmblaCarouselType, type EmblaOptionsType } from "embla-carousel";
 import Autoplay, { type AutoplayType } from "embla-carousel-autoplay";
 import type { CarouselEvents } from "./events";

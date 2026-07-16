@@ -14,7 +14,7 @@
  * ```
  */
 
-import { bridgeControllerDirective, bridgeControllerStore } from "@ailuracode/alpine-core";
+import { bridgeControllerDirective, bridgeControllerStore } from "@ailuracode/alpine-core/bridge";
 import type { Alpine } from "alpinejs";
 import { GestureController } from "./controller";
 import type {

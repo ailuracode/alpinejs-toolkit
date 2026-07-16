@@ -18,7 +18,8 @@
  * SSR consumers call it to seed the manager before boot.
  */
 
-import { safeMatchMedia, type Unsubscribe } from "@ailuracode/alpine-core";
+import { safeMatchMedia } from "@ailuracode/alpine-core/browser";
+import type { Unsubscribe } from "@ailuracode/alpine-core/types";
 import type { ResolvedTheme } from "./types";
 
 /** Stable media query string — kept in one place so tests can target it. */

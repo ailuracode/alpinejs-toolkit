@@ -11,7 +11,7 @@
  * themselves.
  */
 
-import { isBrowser, safeWindow } from "@ailuracode/alpine-core";
+import { isBrowser, safeWindow } from "@ailuracode/alpine-core/browser";
 import type {
   ScrollBehavior,
   ScrollIntoViewAbsoluteOptions,

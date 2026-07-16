@@ -2,7 +2,7 @@
  * Alpine.js integration for `@ailuracode/alpine-virtual`.
  */
 
-import { bridgeControllerStore, syncRecordFromSnapshot } from "@ailuracode/alpine-core";
+import { bridgeControllerStore, syncRecordFromSnapshot } from "@ailuracode/alpine-core/bridge";
 import type { Alpine } from "alpinejs";
 import { VirtualController } from "./controller.js";
 import { createVirtualStoreFromController } from "./store.js";

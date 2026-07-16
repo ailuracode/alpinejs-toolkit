@@ -2,7 +2,7 @@
  * Public entrypoint for `@ailuracode/alpine-command`.
  */
 
-export type { Unsubscribe } from "@ailuracode/alpine-core";
+export type { Unsubscribe } from "@ailuracode/alpine-core/types";
 export { createCommandAlpineStore, syncCommandStore } from "./alpine/store.js";
 export {
   CommandController,

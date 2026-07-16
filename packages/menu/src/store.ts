@@ -6,7 +6,7 @@
  * standalone and integrated consumers share one adapter shape.
  */
 
-import { syncRecordFromSnapshot } from "@ailuracode/alpine-core";
+import { syncRecordFromSnapshot } from "@ailuracode/alpine-core/bridge";
 import { MenuController } from "./controller.js";
 import type { MenuControllerConfig, MenuInstance, MenuStore } from "./types.js";
 

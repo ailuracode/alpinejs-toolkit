@@ -4,7 +4,7 @@
  * All DOM access is isolated here and only runs after bind/mount.
  */
 
-import { isBrowser } from "@ailuracode/alpine-core";
+import { isBrowser } from "@ailuracode/alpine-core/browser";
 
 export type ScrollRect = {
   width: number;

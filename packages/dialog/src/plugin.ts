@@ -5,7 +5,7 @@
  * `$store.dialog` and the `$dialog` magic.
  */
 
-import { bridgeControllerStore, syncRecordFromSnapshot } from "@ailuracode/alpine-core";
+import { bridgeControllerStore, syncRecordFromSnapshot } from "@ailuracode/alpine-core/bridge";
 import type { Alpine } from "alpinejs";
 import { DialogController } from "./controller.js";
 import { createDialogStoreFromController } from "./store.js";

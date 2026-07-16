@@ -13,7 +13,8 @@
  * needing a separate callback signature.
  */
 
-import { safeMatchMedia, type Unsubscribe } from "@ailuracode/alpine-core";
+import { safeMatchMedia } from "@ailuracode/alpine-core/browser";
+import type { Unsubscribe } from "@ailuracode/alpine-core/types";
 
 /**
  * Subscribes to changes of a CSS media query. Returns a cleanup

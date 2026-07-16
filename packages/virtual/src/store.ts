@@ -2,7 +2,7 @@
  * Store factory for `@ailuracode/alpine-virtual`.
  */
 
-import { syncRecordFromSnapshot } from "@ailuracode/alpine-core";
+import { syncRecordFromSnapshot } from "@ailuracode/alpine-core/bridge";
 import { VirtualController } from "./controller.js";
 import type { VirtualInstance, VirtualStore } from "./types.js";
 

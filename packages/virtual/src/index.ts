@@ -2,7 +2,7 @@
  * Public entrypoint for `@ailuracode/alpine-virtual`.
  */
 
-export type { Unsubscribe } from "@ailuracode/alpine-core";
+export type { Unsubscribe } from "@ailuracode/alpine-core/types";
 export { createVirtualController, VirtualController } from "./controller.js";
 export { VirtualError, type VirtualErrorCode } from "./error.js";
 export type {

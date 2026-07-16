@@ -31,12 +31,7 @@ Register plugins in your app entry (`main.js`, `app.ts`, etc.). Only the plugins
 
 ```js
 import Alpine from "alpinejs";
-import {
-  createAlpinePlugin,
-  definePlugin,
-  lazyPlugin,
-  registerPlugin,
-} from "@ailuracode/alpine-core";
+import { createAlpinePlugin, definePlugin, lazyPlugin, registerPlugin } from "@ailuracode/alpine-plugin-registry";
 import { themePlugin } from "@ailuracode/alpine-theme";
 
 registerPlugin(
@@ -73,7 +68,7 @@ Alpine.start();
 
 ```js
 import Alpine from "alpinejs";
-import { initPlugins, lazyPlugin, registerPlugin } from "@ailuracode/alpine-core";
+import { initPlugins, lazyPlugin, registerPlugin } from "@ailuracode/alpine-plugin-registry";
 
 registerPlugin(
   "scroll",

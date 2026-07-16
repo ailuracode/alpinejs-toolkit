@@ -1,4 +1,4 @@
-import type { SingletonScope } from "@ailuracode/alpine-core";
+import type { SingletonScope } from "@ailuracode/alpine-core/singleton";
 
 export type VisibilityState = "visible" | "hidden" | "prerender";
 

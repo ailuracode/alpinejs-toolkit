@@ -5,7 +5,7 @@
  * `$store.geo` and the `$geo` magic.
  */
 
-import { bridgeControllerStore } from "@ailuracode/alpine-core";
+import { bridgeControllerStore } from "@ailuracode/alpine-core/bridge";
 import type { Alpine } from "alpinejs";
 import { GeoController } from "./controller";
 import {

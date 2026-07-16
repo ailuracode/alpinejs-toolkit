@@ -1,73 +1,41 @@
 /**
  * Public entrypoint for `@ailuracode/alpine-core`.
  *
- * Per [.cursor/rules/new-package.mdc](../../../.cursor/rules/new-package.mdc),
- * this file MUST only contain re-exports. Implementations live under
- * `./core/` (the truly internal toolkit helpers) and at the root for the
- * stable public modules (`./browser`, `./define`, `./init`, `./loader`,
- * `./registry`, `./singleton`).
+ * Feature packages SHOULD import granular subpaths instead of this barrel:
  *
- * Core exposes two layers of functionality:
+ * - `@ailuracode/alpine-core/browser`
+ * - `@ailuracode/alpine-core/controller`
+ * - `@ailuracode/alpine-core/bridge`
+ * - `@ailuracode/alpine-core/registration`
+ * - `@ailuracode/alpine-core/singleton`
+ * - `@ailuracode/alpine-core/events`
+ * - `@ailuracode/alpine-core/types` (type-only)
  *
- * 1. **Plugin registry + Alpine bridge** — register plugins at import time,
- *    initialize them on demand, support both sync and dynamic `import()`
- *    loaders, and stay SSR-safe.
- * 2. **Headless controller primitives** — `BaseController`,
- *    `EventEmitter`, `CleanupStack`, `InstanceRegistry`, and
- *    `ToolkitError`, which every feature package in this monorepo is
- *    expected to use.
- *
- * Imports omit the extension so the file compiles cleanly to ESM under
- * `tsc` (which resolves bare specifiers against the package's own
- * `package.json#type=module`). `allowImportingTsExtensions` is intentionally
- * NOT enabled here because the public source is the `dist/` emitted by
- * the build, not the in-repo source.
- *
- * Re-exports NEVER target `./internal/`. Anything truly private stays
- * inside `./internal/` (currently only `assert.ts`); anything exported
- * from this barrel lives at `src/*` so the public surface is
- * mechanically auditable.
+ * Plugin registry APIs live in `@ailuracode/alpine-plugin-registry`.
  */
 
-// --- Browser capability helpers (SSR-safe) -------------------------------
-export { isBrowser, safeDocument, safeMatchMedia, safeWindow } from "./browser";
-// --- Controller primitives (used by every feature package) ---------------
-export { BaseController } from "./controller";
-export { CleanupStack } from "./core/cleanup";
-export type { LifecyclePhase } from "./core/controller";
-// --- Controller + event-emitter type helpers -----------------------------
-export { generateId } from "./core/controller-id";
-export type { DebugEvent, DebugLogger, DebugOption } from "./core/debug";
-export type { ToolkitErrorCode } from "./core/error";
-export { ToolkitError } from "./core/error";
-export type { EventListener, Unsubscribe } from "./core/event";
-export { EventEmitter } from "./core/event";
+export { isBrowser, safeDocument, safeMatchMedia, safeWindow } from "./browser.js";
+export { BaseController } from "./controller.js";
+export { CleanupStack } from "./core/cleanup.js";
+export type { LifecyclePhase } from "./core/controller.js";
+export { generateId } from "./core/controller-id.js";
+export type { DebugEvent, DebugLogger, DebugOption } from "./core/debug.js";
+export type { ToolkitErrorCode } from "./core/error.js";
+export { ToolkitError } from "./core/error.js";
+export type { EventListener, Unsubscribe } from "./core/event.js";
+export { EventEmitter } from "./core/event.js";
 export type {
   ChangeSource,
+  DispatchPluginEventClone,
   DispatchPluginEventOptions,
   PluginCustomEvent,
   PluginEventMap,
   PluginEventName,
-} from "./core/plugin-event";
-export { dispatchPluginEvent } from "./core/plugin-event";
-export type { RegisteredInstance } from "./core/registry";
-export { InstanceRegistry } from "./core/registry";
-// --- Generic Alpine typings ----------------------------------------------
-export type { Alpine, PluginCallback } from "./core/type";
-// --- Plugin definition helpers -------------------------------------------
-export {
-  type DefinePluginOptions,
-  definePlugin,
-  type LazyPluginOptions,
-  lazyPlugin,
-} from "./define";
-// --- Plugin initialization ----------------------------------------------
-export {
-  createAlpinePlugin,
-  initPlugins,
-  initPluginsSync,
-} from "./init";
-// --- Controller-backed Alpine adapter lifecycle bridge -------------------
+} from "./core/plugin-event.js";
+export { dispatchPluginEvent } from "./core/plugin-event.js";
+export type { RegisteredInstance } from "./core/registry.js";
+export { InstanceRegistry } from "./core/registry.js";
+export type { Alpine, PluginCallback } from "./core/type.js";
 export type {
   AlpineLifecycleHost,
   BridgeControllerDirectiveOptions,
@@ -76,7 +44,7 @@ export type {
   Destroyable,
   ReactiveStoreRegistration,
   WireControllerLifecycleOptions,
-} from "./lifecycle-bridge";
+} from "./exports/bridge.js";
 export {
   bridgeControllerDirective,
   bridgeControllerStore,
@@ -84,45 +52,21 @@ export {
   registerStoreMagic,
   syncRecordFromSnapshot,
   wireControllerLifecycle,
-} from "./lifecycle-bridge";
-// --- Errors --------------------------------------------------------------
-export {
-  isPluginSource,
-  normalizePluginInput,
-  PluginLoaderError,
-  pluginCallback,
-  pluginLoader,
-} from "./loader";
-// --- Registration guards (collision detection for Alpine.store / magic / directive) ---
+} from "./exports/bridge.js";
 export type {
   GuardedStoreResult,
   RegistrationErrorCode,
   RegistrationGuardOptions,
   RegistrationKind,
-} from "./registration";
+} from "./exports/registration.js";
 export {
   guardDirective,
   guardMagic,
   guardStore,
   RegistrationError,
   resetRegistrationTracking,
-} from "./registration";
-// --- Plugin registry -----------------------------------------------------
-export {
-  getRegisteredPlugin,
-  getRegisteredPlugins,
-  getRegistryDebugSink,
-  isPluginInitialized,
-  markPluginInitialized,
-  type RegistryEventLike,
-  registerPlugin,
-  resetPluginRegistry,
-  resolvePluginEntries,
-  setRegistryDebugSink,
-  unregisterPlugin,
-} from "./registry";
-export type { SingletonInitOptions, SingletonScope } from "./singleton";
-// --- Singleton helper (intended for toolkit-internal singleton feature controllers) ---
+} from "./exports/registration.js";
+export type { SingletonInitOptions, SingletonScope } from "./singleton.js";
 export {
   attachSingletonScope,
   clearAllSingletons,
@@ -136,17 +80,4 @@ export {
   resolveSingletonScope,
   runWithSingletonScope,
   setSingleton,
-} from "./singleton";
-// --- Public types --------------------------------------------------------
-export type {
-  AlpinePluginCallback,
-  PluginCallbackSource,
-  PluginDefinition,
-  PluginKind,
-  PluginLoader,
-  PluginLoaderSource,
-  PluginNames,
-  PluginRegistryEntry,
-  PluginSource,
-  RegisteredPlugin,
-} from "./types";
+} from "./singleton.js";

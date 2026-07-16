@@ -8,7 +8,7 @@
  * so the contract is fully testable without a DOM.
  */
 
-import { isBrowser, safeDocument, safeWindow } from "@ailuracode/alpine-core";
+import { isBrowser, safeDocument, safeWindow } from "@ailuracode/alpine-core/browser";
 import type { ScrollDirection } from "../types";
 
 /** Vertical scroll direction constants. Re-exported as a frozen tuple. */

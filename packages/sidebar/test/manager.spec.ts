@@ -483,7 +483,7 @@ describe("SidebarController — leak detection", () => {
 
 describe("SidebarController — safeMatchMedia contract", () => {
   it("uses safeMatchMedia from @ailuracode/alpine-core (NOT raw window.matchMedia)", async () => {
-    const core = await import("@ailuracode/alpine-core");
+    const core = await import("@ailuracode/alpine-core/browser");
     const spy = vi.spyOn(core, "safeMatchMedia");
     const controller = createSidebar({
       breakpoint: { query: MIN_WIDTH_1024, onMismatch: "hide" },

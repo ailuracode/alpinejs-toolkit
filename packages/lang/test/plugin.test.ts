@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { clearAllSingletons } from "@ailuracode/alpine-core";
+import { clearAllSingletons } from "@ailuracode/alpine-core/singleton";
 import Alpine from "alpinejs";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { startAlpine } from "../../../test/helpers.js";

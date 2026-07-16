@@ -7,7 +7,7 @@
  * `safeWindow`, `safeDocument`, `safeMatchMedia`).
  */
 
-import { isBrowser, safeMatchMedia, safeWindow } from "@ailuracode/alpine-core";
+import { isBrowser, safeMatchMedia, safeWindow } from "@ailuracode/alpine-core/browser";
 
 /**
  * Invokes a listener inside a try/catch so a misbehaving consumer

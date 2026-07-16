@@ -35,8 +35,8 @@
  * with `EventEmitter` keeps both names available.
  */
 
-import type { Unsubscribe } from "@ailuracode/alpine-core";
-import { EventEmitter, generateId } from "@ailuracode/alpine-core";
+import type { Unsubscribe } from "@ailuracode/alpine-core/controller";
+import { EventEmitter, generateId } from "@ailuracode/alpine-core/controller";
 import type { ToggleEvents } from "./events";
 import {
   buildStateCycle,

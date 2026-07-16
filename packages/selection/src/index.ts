@@ -2,7 +2,7 @@
  * Public entrypoint for `@ailuracode/alpine-selection`.
  */
 
-export type { Unsubscribe } from "@ailuracode/alpine-core";
+export type { Unsubscribe } from "@ailuracode/alpine-core/types";
 export { createControlledAdapter, createUncontrolledAdapter } from "./adapter.js";
 export { createSelectionController, SelectionController } from "./controller.js";
 export { SelectionError, type SelectionErrorCode } from "./error.js";

@@ -16,7 +16,7 @@
  *    `$gesture`, and the `x-gesture` directive.
  */
 
-export type { Unsubscribe } from "@ailuracode/alpine-core";
+export type { Unsubscribe } from "@ailuracode/alpine-core/types";
 // --- Controller (framework-agnostic) ---------------------------------
 export { GESTURE_SINGLETON_KEY, GestureController } from "./controller.js";
 export type { GestureErrorCode } from "./error.js";

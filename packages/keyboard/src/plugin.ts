@@ -1,5 +1,5 @@
-import type { Alpine } from "@ailuracode/alpine-core";
-import { bridgeControllerStore } from "@ailuracode/alpine-core";
+import { bridgeControllerStore } from "@ailuracode/alpine-core/bridge";
+import type { Alpine } from "@ailuracode/alpine-core/types";
 import type AlpineType from "alpinejs";
 import { createKeyboard, type KeyboardController } from "./controller.js";
 import type {

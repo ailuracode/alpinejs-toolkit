@@ -1,4 +1,4 @@
-import { guardMagic } from "@ailuracode/alpine-core";
+import { guardMagic } from "@ailuracode/alpine-core/registration";
 import type AlpineType from "alpinejs";
 import { DEFAULT_TRANSFER_SHARE_KEY } from "./types.js";
 

@@ -4,11 +4,12 @@ Guidance for AI agents and contributors working on **@ailuracode/alpinejs-toolki
 
 ## Project
 
-Alpine.js plugin monorepo by **ailuracode**. 38 independent npm packages under `packages/`, plus shared tests and docs. The root package `@ailuracode/alpinejs-toolkit` is **private** and never published.
+Alpine.js plugin monorepo by **ailuracode**. 39 independent npm packages under `packages/`, plus shared tests and docs. The root package `@ailuracode/alpinejs-toolkit` is **private** and never published.
 
 | Package | Type | Store / Magic |
 |---------|------|---------------|
-| `@ailuracode/alpine-core` | Core | Plugin registry (`registerPlugin`, `initPlugins`) |
+| `@ailuracode/alpine-core` | Core | Headless controllers + Alpine bridge subpaths (`/browser`, `/controller`, `/bridge`, …) |
+| `@ailuracode/alpine-plugin-registry` | Core | Plugin registry (`registerPlugin`, `initPlugins`) for app entrypoints |
 | `@ailuracode/alpine-permissions` | Store | `$store.permissions` / `$permissions` — adapter registry |
 | `@ailuracode/alpine-keyboard` | Store | `$store.keyboard` / `$keyboard` — scoped shortcut registry |
 | `@ailuracode/alpine-theme` | Store | `$store.theme` |

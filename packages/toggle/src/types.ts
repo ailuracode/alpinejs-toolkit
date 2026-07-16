@@ -14,7 +14,7 @@
  * or any value that is genuinely neither on nor off.
  */
 
-import type { Alpine, PluginCallback } from "@ailuracode/alpine-core";
+import type { Alpine, PluginCallback } from "@ailuracode/alpine-core/types";
 import type { Alpine as AlpineBase } from "alpinejs";
 
 /**

@@ -15,7 +15,7 @@
  */
 
 // --- Re-export core types ------------------------------------------------
-export type { Unsubscribe } from "@ailuracode/alpine-core";
+export type { Unsubscribe } from "@ailuracode/alpine-core/types";
 // --- Controller (framework-agnostic) -------------------------------------
 export { AccordionController, createAccordionController } from "./controller";
 // --- Event surface -------------------------------------------------------

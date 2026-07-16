@@ -14,7 +14,8 @@
  * subscriber cannot crash the IntersectionObserver callback.
  */
 
-import { isBrowser, safeWindow, type Unsubscribe } from "@ailuracode/alpine-core";
+import { isBrowser, safeWindow } from "@ailuracode/alpine-core/browser";
+import type { Unsubscribe } from "@ailuracode/alpine-core/types";
 import { safeNotify } from "./util";
 
 export interface SectionObserverSection {

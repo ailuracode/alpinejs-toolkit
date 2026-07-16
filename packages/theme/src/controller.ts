@@ -49,12 +49,8 @@
  * - `destroy()` MUST be idempotent.
  */
 
-import {
-  BaseController,
-  createSingleton,
-  generateId,
-  releaseSingleton,
-} from "@ailuracode/alpine-core";
+import { BaseController, generateId } from "@ailuracode/alpine-core/controller";
+import { createSingleton, releaseSingleton } from "@ailuracode/alpine-core/singleton";
 import { type ToggleChangeDetail, ToggleController } from "@ailuracode/alpine-toggle";
 import type { ThemeEvents } from "./events";
 import { createDomStrategy } from "./internal/dom-strategy";

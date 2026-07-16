@@ -8,7 +8,7 @@
  * @module
  */
 
-import { BaseController } from "@ailuracode/alpine-core";
+import { BaseController } from "@ailuracode/alpine-core/controller";
 import { getIdleDetectorConstructor } from "./browser.js";
 import type { IdleEvents } from "./events.js";
 import { createIdlePermissionAdapter } from "./permission-adapter.js";

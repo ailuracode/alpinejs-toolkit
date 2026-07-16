@@ -1,4 +1,4 @@
-import { bridgeControllerStore } from "@ailuracode/alpine-core";
+import { bridgeControllerStore } from "@ailuracode/alpine-core/bridge";
 import type AlpineType from "alpinejs";
 import { createPermissions, type PermissionsController } from "./controller.js";
 import type {

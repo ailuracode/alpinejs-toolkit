@@ -2,7 +2,7 @@
  * Public errors for `@ailuracode/alpine-selection`.
  */
 
-import { ToolkitError, type ToolkitErrorCode } from "@ailuracode/alpine-core";
+import { ToolkitError, type ToolkitErrorCode } from "@ailuracode/alpine-core/controller";
 
 export type SelectionErrorCode = "INSTANCE_NOT_FOUND" | "INVALID_KEY" | "INVALID_VALUE";
 

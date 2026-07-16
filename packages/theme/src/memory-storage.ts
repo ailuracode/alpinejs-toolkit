@@ -16,7 +16,7 @@
  * it is part of the documented plugin options surface.
  */
 
-import type { Unsubscribe } from "@ailuracode/alpine-core";
+import type { Unsubscribe } from "@ailuracode/alpine-core/controller";
 import type { ThemePreference, ThemeStorage } from "./types";
 
 export function createMemoryThemeStorage(

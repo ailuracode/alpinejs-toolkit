@@ -5,7 +5,7 @@
  * `$overlay` via `bridgeControllerStore` from `@ailuracode/alpine-core`.
  */
 
-import { bridgeControllerStore } from "@ailuracode/alpine-core";
+import { bridgeControllerStore } from "@ailuracode/alpine-core/bridge";
 import type AlpineType from "alpinejs";
 import { createOverlayStore } from "./alpine/store.js";
 import { createOverlay, OVERLAY_SINGLETON_KEY } from "./controller.js";

@@ -8,6 +8,7 @@
  * idempotent reset.
  */
 import assert from "node:assert/strict";
+import { ToolkitError } from "@ailuracode/alpine-core/controller";
 import type { Alpine } from "alpinejs";
 import { afterEach, describe, it } from "vitest";
 import {
@@ -18,7 +19,6 @@ import {
   markPluginInitialized,
   registerPlugin,
   resetPluginRegistry,
-  ToolkitError,
   unregisterPlugin,
 } from "../src/index";
 

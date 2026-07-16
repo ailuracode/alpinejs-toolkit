@@ -6,7 +6,7 @@
  * (see `AGENTS.md` for the integration contract).
  */
 
-import { bridgeControllerStore } from "@ailuracode/alpine-core";
+import { bridgeControllerStore } from "@ailuracode/alpine-core/bridge";
 import type { Alpine } from "alpinejs";
 import type { LangController } from "./controller";
 import { createLang } from "./controller";

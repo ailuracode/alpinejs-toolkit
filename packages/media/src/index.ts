@@ -23,7 +23,7 @@
  * in one pass: factory → Alpine adapter → types → events → constants.
  */
 
-export type { Unsubscribe } from "@ailuracode/alpine-core";
+export type { Unsubscribe } from "@ailuracode/alpine-core/types";
 // --- Pure helpers (re-exported for SSR snapshots / userland) ---------
 export { resolveMediaBreakpoint } from "./breakpoint";
 // --- Controller primitives shared with other feature packages --------

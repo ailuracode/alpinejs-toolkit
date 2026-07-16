@@ -24,7 +24,7 @@
  */
 
 // --- Controller primitives shared with other feature packages --------
-export type { Unsubscribe } from "@ailuracode/alpine-core";
+export type { Unsubscribe } from "@ailuracode/alpine-core/types";
 export { ToggleController } from "./controller";
 // --- Event surface ---------------------------------------------------
 export type { ToggleEvents } from "./events";

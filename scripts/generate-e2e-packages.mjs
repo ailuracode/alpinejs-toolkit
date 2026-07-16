@@ -12,7 +12,7 @@ const packagesDir = path.join(root, "packages");
 /** @type {Record<string, { main: string; html: string; spec: string }>} */
 const PACKAGES = {
   core: {
-    main: `import { definePlugin, initPluginsSync, registerPlugin } from "@ailuracode/alpine-core";
+    main: `import { definePlugin, initPluginsSync, registerPlugin } from "@ailuracode/alpine-plugin-registry";
 import themePlugin from "@ailuracode/alpine-theme";
 import Alpine from "alpinejs";
 

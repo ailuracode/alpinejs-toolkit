@@ -12,7 +12,8 @@
  * the bundle slim.
  */
 
-import { BaseController, generateId, safeWindow } from "@ailuracode/alpine-core";
+import { safeWindow } from "@ailuracode/alpine-core/browser";
+import { BaseController, generateId } from "@ailuracode/alpine-core/controller";
 import type { TabsEvents } from "./events";
 import type { TabsGroup, TabsGroupOptions, TabsStore } from "./types";
 

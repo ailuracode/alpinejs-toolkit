@@ -19,10 +19,16 @@ interface TreeShakingFixture {
 
 const REPRESENTATIVE_PACKAGES: TreeShakingFixture[] = [
   {
-    label: "core",
-    entry: path.join(root, "packages/core/dist/index.js"),
+    label: "core-controller",
+    entry: path.join(root, "packages/core/dist/controller.js"),
+    namedImport: "BaseController",
+    marker: "bridgeControllerStore",
+  },
+  {
+    label: "plugin-registry",
+    entry: path.join(root, "packages/plugin-registry/dist/index.js"),
     namedImport: "registerPlugin",
-    marker: "CleanupStack",
+    marker: "bridgeControllerStore",
   },
   {
     label: "theme",
@@ -51,7 +57,12 @@ async function bundleNamedImport(entry: string, namedImport: string): Promise<st
     format: "esm",
     platform: "neutral",
     treeShaking: true,
-    external: ["alpinejs", "@ailuracode/alpine-core", "@types/alpinejs"],
+    external: [
+      "alpinejs",
+      "@ailuracode/alpine-core",
+      "@ailuracode/alpine-plugin-registry",
+      "@types/alpinejs",
+    ],
   });
 
   return result.outputFiles[0]?.text ?? "";

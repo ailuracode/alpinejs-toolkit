@@ -1,11 +1,11 @@
 /**
  * Plugin registry — module-level singleton that tracks every plugin registered
- * with `@ailuracode/alpine-core`. Validation of definition shape lives here
+ * with `@ailuracode/alpine-plugin-registry`. Validation of definition shape lives here
  * so consumers get early failures at import time rather than at
  * `initPlugins()`.
  *
  * Errors thrown from this module extend {@link ToolkitError} with stable
- * codes — see `src/core/error.ts`.
+ * codes — see `@ailuracode/alpine-core/controller`.
  *
  * ## Diagnostic logging
  *
@@ -19,9 +19,10 @@
  * (`PLUGIN_DUPLICATE`, `PLUGIN_UNKNOWN`, …) cover the diagnostic surface
  * that actually matters.
  */
+
+import { ToolkitError } from "@ailuracode/alpine-core/controller";
+import type { DebugLogger } from "@ailuracode/alpine-core/types";
 import type { Alpine } from "alpinejs";
-import type { DebugLogger } from "./core/debug";
-import { ToolkitError } from "./core/error";
 import { assertValidDefinition } from "./internal/assert";
 import {
   isRuntimePluginInitialized,

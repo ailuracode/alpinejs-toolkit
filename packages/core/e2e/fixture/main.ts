@@ -1,9 +1,5 @@
-import {
-  definePlugin,
-  dispatchPluginEvent,
-  initPluginsSync,
-  registerPlugin,
-} from "@ailuracode/alpine-core";
+import { dispatchPluginEvent } from "@ailuracode/alpine-core/events";
+import { definePlugin, initPluginsSync, registerPlugin } from "@ailuracode/alpine-plugin-registry";
 import themePlugin from "@ailuracode/alpine-theme";
 import Alpine from "alpinejs";
 

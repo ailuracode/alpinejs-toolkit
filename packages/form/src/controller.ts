@@ -3,7 +3,7 @@
  * `@ailuracode/alpine-form`.
  */
 
-import { BaseController, generateId } from "@ailuracode/alpine-core";
+import { BaseController, generateId } from "@ailuracode/alpine-core/controller";
 import {
   announceFormErrors,
   buildErrorAnnouncement,

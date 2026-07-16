@@ -1,4 +1,4 @@
-import { clearAllSingletons } from "@ailuracode/alpine-core";
+import { clearAllSingletons } from "@ailuracode/alpine-core/singleton";
 import type AlpineType from "alpinejs";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import toastPlugin, {

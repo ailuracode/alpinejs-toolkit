@@ -23,7 +23,7 @@
  * @module
  */
 
-import { bridgeControllerStore, type Destroyable } from "@ailuracode/alpine-core";
+import { bridgeControllerStore, type Destroyable } from "@ailuracode/alpine-core/bridge";
 import type { Alpine } from "alpinejs";
 import type { RealtimeTransportAdapter } from "../adapters/RealtimeTransportAdapter";
 import type { SseTransportAdapterOptions } from "../adapters/SseTransportAdapter";

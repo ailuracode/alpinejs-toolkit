@@ -2,7 +2,7 @@
  * Public type contracts for `@ailuracode/alpine-timer`.
  */
 
-import type { PluginCallback } from "@ailuracode/alpine-core";
+import type { PluginCallback } from "@ailuracode/alpine-core/types";
 import type { Alpine as AlpineBase } from "alpinejs";
 import type { FormatPatternOptions, TimerFormatPattern } from "./format-pattern.js";
 

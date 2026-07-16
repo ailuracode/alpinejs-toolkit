@@ -1,10 +1,21 @@
 import { ToolkitError } from "./error.js";
 
+/** How {@link dispatchPluginEvent} copies object `detail` payloads before dispatch. */
+export type DispatchPluginEventClone = false | "shallow" | "deep";
+
 /** Options forwarded to the underlying `CustomEvent` constructor. */
 export interface DispatchPluginEventOptions {
   readonly bubbles?: boolean;
   readonly composed?: boolean;
   readonly cancelable?: boolean;
+  /**
+   * Controls defensive copying of object details.
+   *
+   * - `false` (default) — pass `detail` through unchanged.
+   * - `"shallow"` — shallow clone plain objects.
+   * - `"deep"` — `structuredClone` when available.
+   */
+  readonly clone?: DispatchPluginEventClone;
 }
 
 /**
@@ -47,6 +58,21 @@ function assertKebabCaseSegment(value: string): void {
   }
 }
 
+function clonePluginEventDetail<TDetail>(
+  detail: TDetail,
+  clone: DispatchPluginEventClone
+): TDetail {
+  if (clone === false || detail === null || typeof detail !== "object") {
+    return detail;
+  }
+
+  if (clone === "shallow") {
+    return { ...(detail as Record<string, unknown>) } as TDetail;
+  }
+
+  return structuredClone(detail);
+}
+
 /**
  * Dispatches a namespaced toolkit `CustomEvent` using the `@package:event`
  * convention (`toggle:change`, `dialog:before-close`, …).
@@ -70,8 +96,7 @@ export function dispatchPluginEvent<TNamespace extends string, TEvent extends st
   assertKebabCaseSegment(namespace);
   assertKebabCaseSegment(event);
 
-  const immutableDetail =
-    detail !== null && typeof detail === "object" ? structuredClone(detail) : detail;
+  const immutableDetail = clonePluginEventDetail(detail, options.clone ?? false);
 
   const customEvent = new CustomEvent<TDetail>(`${namespace}:${event}`, {
     bubbles: options.bubbles ?? true,

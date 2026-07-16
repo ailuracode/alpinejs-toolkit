@@ -2,7 +2,7 @@
  * Normalizes and validates timer options.
  */
 
-import { ToolkitError } from "@ailuracode/alpine-core";
+import { ToolkitError } from "@ailuracode/alpine-core/controller";
 import { defaultCountdownFormatter, defaultDurationFormatter } from "./format-duration.js";
 import { createFormat } from "./format-pattern.js";
 import type { CreateTimerOptions, TimerDirection, TimerFormatter } from "./types.js";

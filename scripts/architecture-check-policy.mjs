@@ -37,6 +37,7 @@ export const ARCHITECTURE_CHECK_POLICY = {
     "env",
     "json-api",
     "notify",
+    "plugin-registry",
     "query",
     "query-adapter-alpine",
     "query-adapter-zustand",

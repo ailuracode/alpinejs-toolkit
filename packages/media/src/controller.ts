@@ -53,14 +53,9 @@
  * is a leaf in the toolkit's hierarchy.
  */
 
-import {
-  BaseController,
-  createSingleton,
-  generateId,
-  releaseSingleton,
-  ToolkitError,
-  type Unsubscribe,
-} from "@ailuracode/alpine-core";
+import { BaseController, generateId, ToolkitError } from "@ailuracode/alpine-core/controller";
+import { createSingleton, releaseSingleton } from "@ailuracode/alpine-core/singleton";
+import type { Unsubscribe } from "@ailuracode/alpine-core/types";
 import {
   resolveBreakpointFromQueries,
   resolveIntervals,

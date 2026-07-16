@@ -12,7 +12,7 @@
  * the bundle slim.
  */
 
-import { BaseController, generateId } from "@ailuracode/alpine-core";
+import { BaseController, generateId } from "@ailuracode/alpine-core/controller";
 import type { AccordionEvents } from "./events";
 import type {
   AccordionChangeSource,

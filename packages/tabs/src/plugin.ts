@@ -5,7 +5,7 @@
  * `$store.tabs` and the `$tabs` magic.
  */
 
-import { bridgeControllerStore } from "@ailuracode/alpine-core";
+import { bridgeControllerStore } from "@ailuracode/alpine-core/bridge";
 import type { Alpine } from "alpinejs";
 import { TabsController } from "./controller";
 import {

@@ -2,7 +2,7 @@
  * TanStack Form-like `createForm()` factory for `@ailuracode/alpine-form`.
  */
 
-import { generateId } from "@ailuracode/alpine-core";
+import { generateId } from "@ailuracode/alpine-core/controller";
 import { createFormController, type FormController } from "./controller.js";
 import { createFieldApi } from "./field-api.js";
 import type { StandardSchemaV1 } from "./standard-schema.js";

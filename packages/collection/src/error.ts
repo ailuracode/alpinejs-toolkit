@@ -2,7 +2,7 @@
  * Public errors for `@ailuracode/alpine-collection`.
  */
 
-import { ToolkitError, type ToolkitErrorCode } from "@ailuracode/alpine-core";
+import { ToolkitError, type ToolkitErrorCode } from "@ailuracode/alpine-core/controller";
 
 export type CollectionErrorCode =
   | "INVALID_OPTIONS"

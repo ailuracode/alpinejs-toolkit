@@ -10,7 +10,7 @@
  * Kept under `internal/` because consumers never import these helpers
  * directly — they receive the error, not the validator.
  */
-import { ToolkitError } from "../core/error";
+import { ToolkitError } from "@ailuracode/alpine-core/controller";
 import type { PluginDefinition, PluginKind } from "../types";
 
 /**

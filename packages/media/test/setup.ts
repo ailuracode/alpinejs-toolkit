@@ -16,7 +16,7 @@
  * convention used by `@ailuracode/alpine-theme`).
  */
 
-import { clearAllSingletons } from "@ailuracode/alpine-core";
+import { clearAllSingletons } from "@ailuracode/alpine-core/singleton";
 import { afterAll, afterEach, beforeEach, vi } from "vitest";
 
 interface MockMediaQueryList {

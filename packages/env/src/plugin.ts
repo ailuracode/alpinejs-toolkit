@@ -1,4 +1,4 @@
-import { guardMagic } from "@ailuracode/alpine-core";
+import { guardMagic } from "@ailuracode/alpine-core/registration";
 import type AlpineType from "alpinejs";
 import { type BatteryManagerLike, readBatteryState } from "./internal/battery.js";
 import { readNetworkState } from "./internal/network.js";

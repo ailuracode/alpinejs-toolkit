@@ -7,6 +7,7 @@ import { buildDocsSidebar } from "./src/catalog/docs-navigation.ts";
 
 const root = fileURLToPath(new URL(".", import.meta.url));
 const pkg = (name: string) => `${root}../../packages/${name}/src/index.ts`;
+const coreSubpath = (entry: string) => `${root}../../packages/core/src/${entry}`;
 
 const site =
   process.env.VERCEL_ENV === "production"
@@ -66,7 +67,15 @@ export default defineConfig({
         "@ailuracode/alpine-carousel": pkg("carousel"),
         "@ailuracode/alpine-virtual": pkg("virtual"),
         "@ailuracode/alpine-selection": pkg("selection"),
+        "@ailuracode/alpine-core/browser": coreSubpath("browser.ts"),
+        "@ailuracode/alpine-core/controller": coreSubpath("exports/controller.ts"),
+        "@ailuracode/alpine-core/bridge": coreSubpath("exports/bridge.ts"),
+        "@ailuracode/alpine-core/registration": coreSubpath("exports/registration.ts"),
+        "@ailuracode/alpine-core/singleton": coreSubpath("exports/singleton.ts"),
+        "@ailuracode/alpine-core/events": coreSubpath("exports/events.ts"),
+        "@ailuracode/alpine-core/types": coreSubpath("public-types.ts"),
         "@ailuracode/alpine-core": pkg("core"),
+        "@ailuracode/alpine-plugin-registry": pkg("plugin-registry"),
         "@ailuracode/alpine-toast": pkg("toast"),
         "@ailuracode/alpine-geo": pkg("geo"),
         "@ailuracode/alpine-json-api": pkg("json-api"),

@@ -18,7 +18,7 @@
  * Alpine APIs.
  */
 
-import { guardDirective } from "@ailuracode/alpine-core";
+import { guardDirective } from "@ailuracode/alpine-core/registration";
 import type { Alpine } from "alpinejs";
 import {
   clearTransferredAttributes,

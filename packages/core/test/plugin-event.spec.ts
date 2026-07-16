@@ -5,7 +5,8 @@
  */
 import assert from "node:assert/strict";
 import { describe, it } from "vitest";
-import { dispatchPluginEvent, ToolkitError } from "../src/index";
+import { ToolkitError } from "../src/exports/controller.js";
+import { dispatchPluginEvent } from "../src/exports/events.js";
 
 interface ToggleChangeDetail {
   previous: boolean;
@@ -97,7 +98,7 @@ describe("dispatchPluginEvent", () => {
     assert.equal(parentReceived, false);
   });
 
-  it("does not mutate the supplied detail object", () => {
+  it("clones object details only when clone is enabled", () => {
     const target = document.createElement("div");
     const detail = { previous: false, current: true, nested: { count: 1 } };
     let received: typeof detail | undefined;
@@ -106,11 +107,26 @@ describe("dispatchPluginEvent", () => {
       received = (event as CustomEvent<typeof detail>).detail;
     });
 
-    dispatchPluginEvent(target, "toggle", "change", detail);
+    dispatchPluginEvent(target, "toggle", "change", detail, { clone: "deep" });
     detail.current = false;
     detail.nested.count = 99;
 
     assert.deepEqual(received, { previous: false, current: true, nested: { count: 1 } });
+  });
+
+  it("passes object details by reference by default", () => {
+    const target = document.createElement("div");
+    const detail = { value: 1 };
+    let received: typeof detail | undefined;
+
+    target.addEventListener("toggle:change", (event) => {
+      received = (event as CustomEvent<typeof detail>).detail;
+    });
+
+    dispatchPluginEvent(target, "toggle", "change", detail);
+    detail.value = 2;
+
+    assert.equal(received?.value, 2);
   });
 
   it("dispatches from window for global store listeners", () => {

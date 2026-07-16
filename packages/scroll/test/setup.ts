@@ -13,7 +13,7 @@
  * `setMatchMedia(query, matches)` is called.
  */
 
-import { clearAllSingletons } from "@ailuracode/alpine-core";
+import { clearAllSingletons } from "@ailuracode/alpine-core/singleton";
 import { afterEach, beforeEach, vi } from "vitest";
 
 interface MockMediaQueryList {

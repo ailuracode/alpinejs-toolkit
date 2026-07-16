@@ -7,7 +7,7 @@
  * to the end of the file (do not renumber).
  */
 
-import { ToolkitError } from "@ailuracode/alpine-core";
+import { ToolkitError } from "@ailuracode/alpine-core/controller";
 import type { Alpine as AlpineBase } from "alpinejs";
 import { describe, expect, it, vi } from "vitest";
 import { ScrollController } from "../src/controller";

@@ -9,7 +9,7 @@
  * framework adapters.
  */
 
-import { BaseController, generateId } from "@ailuracode/alpine-core";
+import { BaseController, generateId } from "@ailuracode/alpine-core/controller";
 import type { ScrollStore } from "@ailuracode/alpine-scroll";
 import type { MenuEvents } from "./events";
 import type {

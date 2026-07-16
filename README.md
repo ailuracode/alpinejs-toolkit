@@ -2,11 +2,11 @@
 
 Modular **Alpine.js toolkit** — lazy plugin init, headless stores and magics, TypeScript-first DX. Framework-agnostic: works with Vite, Astro, static HTML, or any ESM bundler.
 
-Built by **ailuracode**. 38 independent npm packages; install only what you need.
+Built by **ailuracode**. 39 independent npm packages; install only what you need.
 
 ## Why this exists
 
-Alpine gives you reactivity in HTML. This monorepo adds **headless, tree-shakeable modules** coordinated by a **lazy registry** (`@ailuracode/alpine-core`):
+Alpine gives you reactivity in HTML. This monorepo adds **headless, tree-shakeable modules** coordinated by a **lazy registry** (`@ailuracode/alpine-plugin-registry`) and **shared primitives** (`@ailuracode/alpine-core`):
 
 - Register plugins without running them at import time
 - Load plugin code on demand with dynamic `import()`
@@ -16,7 +16,7 @@ Alpine gives you reactivity in HTML. This monorepo adds **headless, tree-shakeab
 ## Quick start
 
 ```bash
-pnpm add alpinejs @ailuracode/alpine-core @ailuracode/alpine-theme @ailuracode/alpine-toast
+pnpm add alpinejs @ailuracode/alpine-core @ailuracode/alpine-plugin-registry @ailuracode/alpine-theme @ailuracode/alpine-toast
 ```
 
 ```js
@@ -26,7 +26,7 @@ import {
   definePlugin,
   lazyPlugin,
   registerPlugin,
-} from "@ailuracode/alpine-core";
+} from "@ailuracode/alpine-plugin-registry";
 import { themePlugin } from "@ailuracode/alpine-theme";
 
 registerPlugin(
@@ -62,7 +62,8 @@ See [Getting started](./docs/getting-started.md) for essentials, lazy init, and 
 
 | Package | Description |
 |---------|-------------|
-| [`@ailuracode/alpine-core`](./packages/core/README.md) | Lazy plugin registry, deferred init, dynamic imports |
+| [`@ailuracode/alpine-core`](./packages/core/README.md) | Headless controllers, Alpine bridge helpers, browser utilities |
+| [`@ailuracode/alpine-plugin-registry`](./packages/plugin-registry/README.md) | Lazy plugin registry, deferred init, dynamic imports |
 
 ### Essentials
 

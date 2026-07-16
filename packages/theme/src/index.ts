@@ -25,7 +25,7 @@
  * system helper → constants → types.
  */
 
-export type { Unsubscribe } from "@ailuracode/alpine-core";
+export type { Unsubscribe } from "@ailuracode/alpine-core/types";
 // --- Public factory (framework-agnostic) -----------------------------
 export { createTheme, ThemeController } from "./controller";
 // --- Event surface ---------------------------------------------------

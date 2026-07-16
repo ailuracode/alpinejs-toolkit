@@ -5,7 +5,7 @@
  * `$store.tooltip` and the `$tooltip` magic.
  */
 
-import { bridgeControllerStore, syncRecordFromSnapshot } from "@ailuracode/alpine-core";
+import { bridgeControllerStore, syncRecordFromSnapshot } from "@ailuracode/alpine-core/bridge";
 import type { Alpine } from "alpinejs";
 import { TooltipController } from "./controller.js";
 import { createTooltipStoreFromController } from "./store.js";

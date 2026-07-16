@@ -3,7 +3,7 @@
  * `@ailuracode/alpine-command`.
  */
 
-import { BaseController, generateId } from "@ailuracode/alpine-core";
+import { BaseController, generateId } from "@ailuracode/alpine-core/controller";
 import type { ScrollStore } from "@ailuracode/alpine-scroll";
 import { createCommandAlpineStore, syncCommandStore } from "./alpine/store.js";
 import { isEditableTarget, isTypingKey } from "./editable.js";

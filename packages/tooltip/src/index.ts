@@ -8,7 +8,7 @@
  */
 
 // --- Re-export core types ------------------------------------------------
-export type { Unsubscribe } from "@ailuracode/alpine-core";
+export type { Unsubscribe } from "@ailuracode/alpine-core/types";
 // --- Controller (framework-agnostic) -------------------------------------
 export { createTooltipController, TooltipController } from "./controller";
 // --- Event surface -------------------------------------------------------

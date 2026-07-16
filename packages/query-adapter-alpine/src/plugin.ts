@@ -1,4 +1,4 @@
-import { guardStore } from "@ailuracode/alpine-core";
+import { guardStore } from "@ailuracode/alpine-core/registration";
 import type { QueryPluginOptions, QueryStateAdapter } from "@ailuracode/alpine-query";
 import {
   createQueryStore,

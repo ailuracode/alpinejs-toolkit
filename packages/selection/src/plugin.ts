@@ -2,7 +2,7 @@
  * Alpine.js integration for `@ailuracode/alpine-selection`.
  */
 
-import { bridgeControllerStore, syncRecordFromSnapshot } from "@ailuracode/alpine-core";
+import { bridgeControllerStore, syncRecordFromSnapshot } from "@ailuracode/alpine-core/bridge";
 import type { Alpine } from "alpinejs";
 import { SelectionController } from "./controller.js";
 import { createSelectionStoreFromController } from "./store.js";
