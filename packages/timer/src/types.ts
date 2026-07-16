@@ -4,6 +4,13 @@
 
 import type { PluginCallback } from "@ailuracode/alpine-core";
 import type { Alpine as AlpineBase } from "alpinejs";
+import type { FormatPatternOptions, TimerFormatPattern } from "./format-pattern.js";
+
+export type {
+  FormatPatternOptions,
+  TimerFormatField,
+  TimerFormatPattern,
+} from "./format-pattern.js";
 
 export const DEFAULT_TIMER_MAGIC_KEY = "timer";
 
@@ -46,6 +53,9 @@ export interface TimerController {
   readonly formatted: string;
   readonly iteration: number;
 
+  /** Formats the current timer state with a pattern such as `mm:ss` or `hh:mm`. */
+  format(pattern: TimerFormatPattern, options?: FormatPatternOptions): string;
+
   start(): void;
   pause(): void;
   resume(): void;
@@ -63,6 +73,9 @@ export interface CreateTimerOptions {
   readonly precision?: number;
   readonly repeat?: boolean | number;
   readonly format?: TimerFormatter;
+  /** Pattern shorthand — e.g. `mm:ss`, `hh:mm`, `hh:mm:ss.SSS`. */
+  readonly formatPattern?: TimerFormatPattern;
+  readonly formatPatternOptions?: FormatPatternOptions;
   readonly onTick?: (timer: TimerSnapshot) => void;
   readonly onComplete?: (timer: TimerSnapshot) => void;
   readonly id?: string;
@@ -87,6 +100,8 @@ export interface StopwatchLap {
 
 export interface StopwatchOptions extends Omit<CountupOptions, "limit"> {
   readonly lapFormat?: TimerFormatter;
+  readonly lapFormatPattern?: TimerFormatPattern;
+  readonly lapFormatPatternOptions?: FormatPatternOptions;
   readonly onLap?: (lap: StopwatchLap, stopwatch: StopwatchController) => void;
 }
 

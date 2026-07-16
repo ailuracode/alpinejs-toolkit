@@ -2,25 +2,12 @@
  * Stopwatch formatter with sub-second precision.
  */
 
+import { formatPattern, toDurationParts } from "./format-pattern.js";
 import type { TimerFormatParts, TimerFormatter } from "./types.js";
 
-function toStopwatchParts(
-  ms: number
-): Pick<TimerFormatParts, "hours" | "minutes" | "seconds" | "milliseconds"> {
-  const safe = Math.max(0, ms);
-  const totalSeconds = Math.floor(safe / 1000);
-  const hours = Math.floor(totalSeconds / 3600);
-  const minutes = Math.floor((totalSeconds % 3600) / 60);
-  const seconds = totalSeconds % 60;
-  const milliseconds = safe % 1000;
-
-  return { hours, minutes, seconds, milliseconds };
-}
-
-/** Formats milliseconds as `mm:ss.mmm`. */
+/** Formats milliseconds as `mm:ss.SSS`. */
 export function formatStopwatch(ms: number): string {
-  const { minutes, seconds, milliseconds } = toStopwatchParts(ms);
-  return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}.${String(milliseconds).padStart(3, "0")}`;
+  return formatPattern("mm:ss.SSS", ms);
 }
 
 /** Default stopwatch formatter with sub-second precision. */
@@ -29,7 +16,7 @@ export const defaultStopwatchFormatter: TimerFormatter = (parts) => {
 };
 
 export function buildStopwatchFormatParts(elapsed: number): TimerFormatParts {
-  const parts = toStopwatchParts(elapsed);
+  const parts = toDurationParts(elapsed);
   return {
     ...parts,
     elapsed,

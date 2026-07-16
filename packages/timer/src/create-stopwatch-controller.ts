@@ -2,9 +2,10 @@
  * Stopwatch controller — lap state layered on the shared timer engine.
  */
 
-import { generateId } from "@ailuracode/alpine-core";
+import { generateId, ToolkitError } from "@ailuracode/alpine-core";
 import type { TimerControllerImpl } from "./create-timer.js";
 import { syncReactiveTimerView } from "./create-timer.js";
+import { createFormat } from "./format-pattern.js";
 import { buildStopwatchFormatParts, defaultStopwatchFormatter } from "./format-stopwatch.js";
 import type {
   StopwatchController,
@@ -26,7 +27,7 @@ export function createStopwatchController(
   timer: TimerControllerImpl,
   options: StopwatchOptions = {}
 ): StopwatchReactiveShape {
-  const lapFormat: TimerFormatter = options.lapFormat ?? defaultStopwatchFormatter;
+  const lapFormat = resolveLapFormat(options);
   const onLap = options.onLap;
 
   let laps: StopwatchLap[] = [];
@@ -122,6 +123,9 @@ export function createStopwatchController(
       laps = [];
       syncLaps(view);
     },
+    format(pattern, options) {
+      return timer.format(pattern, options);
+    },
   };
 
   syncLaps(view);
@@ -173,6 +177,27 @@ function resolveExtremeLap(
   }
 
   return selected;
+}
+
+function resolveLapFormat(options: StopwatchOptions): TimerFormatter {
+  if (options.lapFormat && options.lapFormatPattern) {
+    throw new ToolkitError(
+      "Provide either lapFormat or lapFormatPattern, not both.",
+      "TOOLKIT_INVALID_ARGUMENT"
+    );
+  }
+
+  if (options.lapFormat) {
+    return options.lapFormat;
+  }
+
+  if (options.lapFormatPattern) {
+    return createFormat(options.lapFormatPattern, {
+      field: options.lapFormatPatternOptions?.field ?? "elapsed",
+    });
+  }
+
+  return defaultStopwatchFormatter;
 }
 
 export function syncStopwatchView(view: Writable<StopwatchReactiveShape>): void {

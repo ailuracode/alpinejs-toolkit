@@ -11,6 +11,11 @@ export {
   defaultDurationFormatter,
   formatDuration,
 } from "./format-duration.js";
+export {
+  createFormat,
+  format,
+  formatPattern,
+} from "./format-pattern.js";
 export { formatStopwatch } from "./format-stopwatch.js";
 export {
   countdown,
@@ -25,6 +30,7 @@ export type {
   CountupOptions,
   CreateTimerOptions,
   CreateTimerPluginOptions,
+  FormatPatternOptions,
   StopwatchController,
   StopwatchLap,
   StopwatchOptions,
@@ -32,7 +38,9 @@ export type {
   TimerAlpine,
   TimerController as TimerControllerSurface,
   TimerDirection,
+  TimerFormatField,
   TimerFormatParts,
+  TimerFormatPattern,
   TimerFormatter,
   TimerMagic,
   TimerPluginCallback,

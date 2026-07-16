@@ -4,7 +4,8 @@
 
 import { ToolkitError } from "@ailuracode/alpine-core";
 import { defaultCountdownFormatter, defaultDurationFormatter } from "./format-duration.js";
-import type { CreateTimerOptions, TimerDirection } from "./types.js";
+import { createFormat } from "./format-pattern.js";
+import type { CreateTimerOptions, TimerDirection, TimerFormatter } from "./types.js";
 
 export interface NormalizedTimerOptions {
   readonly direction: TimerDirection;
@@ -45,6 +46,15 @@ export function normalizeCreateTimerOptions(
     );
   }
 
+  if (options.format && options.formatPattern) {
+    throw new ToolkitError(
+      "Provide either format or formatPattern, not both.",
+      "TOOLKIT_INVALID_ARGUMENT"
+    );
+  }
+
+  const format = resolveTimerFormat(direction, options);
+
   return {
     direction,
     duration,
@@ -52,13 +62,29 @@ export function normalizeCreateTimerOptions(
     autoStart: options.autoStart ?? false,
     precision,
     repeat,
-    format:
-      options.format ??
-      (direction === "down" ? defaultCountdownFormatter : defaultDurationFormatter),
+    format,
     onTick: options.onTick,
     onComplete: options.onComplete,
     id: options.id,
   };
+}
+
+function resolveTimerFormat(
+  direction: TimerDirection,
+  options: CreateTimerOptions
+): TimerFormatter {
+  if (options.format) {
+    return options.format;
+  }
+
+  if (options.formatPattern) {
+    return createFormat(options.formatPattern, {
+      field:
+        options.formatPatternOptions?.field ?? (direction === "down" ? "remaining" : "elapsed"),
+    });
+  }
+
+  return direction === "down" ? defaultCountdownFormatter : defaultDurationFormatter;
 }
 
 function resolveDuration(direction: TimerDirection, duration: number | undefined): number | null {

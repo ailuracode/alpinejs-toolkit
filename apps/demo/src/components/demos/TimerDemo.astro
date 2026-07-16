@@ -8,6 +8,17 @@ const plugin = getPluginNavItem("timer")!;
 
 <DemoSection id={plugin.id} title={plugin.title} api={plugin.api} description={plugin.description}>
 	<div class="grid gap-6">
+		<div class="grid gap-4" x-data="{ timer: $timer.countdown({ duration: 3_600_000, formatPattern: 'hh:mm' }) }">
+			<p class="text-xs text-[var(--ios-label-secondary)] m-0">Countdown with <code>hh:mm</code> pattern</p>
+			<strong class="text-2xl tabular-nums" x-text="timer.formatted"></strong>
+			<div class="flex flex-wrap gap-2">
+				<DemoButton @click="timer.toggle()">
+					<span x-text="timer.running ? 'Pause' : 'Start'"></span>
+				</DemoButton>
+				<DemoButton @click="timer.reset()">Reset</DemoButton>
+			</div>
+		</div>
+
 		<div class="grid gap-4" x-data="{ timer: $timer.countdown({ duration: 10_000 }) }">
 			<p class="text-xs text-[var(--ios-label-secondary)] m-0">Countdown preset</p>
 			<strong class="text-2xl tabular-nums" x-text="timer.formatted"></strong>
