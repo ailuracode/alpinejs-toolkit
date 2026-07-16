@@ -23,9 +23,15 @@ export function formatDuration(ms: number): string {
   return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
 }
 
-/** Default duration formatter used by countdown and countup presets. */
+/** Default formatter for countup timers — displays elapsed time. */
 export const defaultDurationFormatter: TimerFormatter = (parts) => {
   return formatDuration(parts.elapsed);
+};
+
+/** Default formatter for countdown timers — displays remaining time. */
+export const defaultCountdownFormatter: TimerFormatter = (parts) => {
+  const value = parts.remaining ?? parts.elapsed;
+  return formatDuration(value);
 };
 
 export function buildFormatParts(elapsed: number, remaining: number | null): TimerFormatParts {

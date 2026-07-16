@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ailuracode/alpine-timer E2E fixture</title>
+  </head>
+  <body>
+    <main id="app" data-e2e-ready="true">
+      <h1>Timer E2E fixture</h1>
+
+      <section>
+        <h2>Countdown</h2>
+        <div x-data="{ timer: $timer.countdown({ duration: 3000 }) }">
+          <output id="countdown-display" data-testid="countdown-display" x-text="timer.formatted"></output>
+          <button type="button" @click="timer.start()">Start countdown</button>
+          <button type="button" @click="timer.reset()">Reset countdown</button>
+        </div>
+      </section>
+
+      <section>
+        <h2>Stopwatch</h2>
+        <div x-data="{ stopwatch: $timer.stopwatch() }">
+          <output id="stopwatch-display" data-testid="stopwatch-display" x-text="stopwatch.formatted"></output>
+          <button type="button" @click="stopwatch.start()">Start stopwatch</button>
+          <button type="button" @click="stopwatch.lap()">Record lap</button>
+          <output id="lap-count" data-testid="lap-count" x-text="stopwatch.laps.length"></output>
+        </div>
+      </section>
+    </main>
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>

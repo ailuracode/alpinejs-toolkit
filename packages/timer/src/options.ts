@@ -3,6 +3,7 @@
  */
 
 import { ToolkitError } from "@ailuracode/alpine-core";
+import { defaultCountdownFormatter, defaultDurationFormatter } from "./format-duration.js";
 import type { CreateTimerOptions, TimerDirection } from "./types.js";
 
 export interface NormalizedTimerOptions {
@@ -51,7 +52,9 @@ export function normalizeCreateTimerOptions(
     autoStart: options.autoStart ?? false,
     precision,
     repeat,
-    format: options.format ?? ((parts) => formatFallback(parts.elapsed)),
+    format:
+      options.format ??
+      (direction === "down" ? defaultCountdownFormatter : defaultDurationFormatter),
     onTick: options.onTick,
     onComplete: options.onComplete,
     id: options.id,
@@ -84,11 +87,4 @@ function normalizeNonNegative(value: number, field: string): number {
     );
   }
   return value;
-}
-
-function formatFallback(elapsed: number): string {
-  const totalSeconds = Math.max(0, Math.floor(elapsed / 1000));
-  const minutes = Math.floor(totalSeconds / 60);
-  const seconds = totalSeconds % 60;
-  return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
 }

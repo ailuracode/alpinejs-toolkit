@@ -15,6 +15,7 @@ import {
   syncReactiveTimerView,
   type TimerControllerImpl,
 } from "./create-timer.js";
+import { defaultStopwatchFormatter } from "./format-stopwatch.js";
 import { countdown as countdownPreset } from "./presets/countdown.js";
 import { countup as countupPreset } from "./presets/countup.js";
 import { stopwatch as stopwatchPreset } from "./presets/stopwatch.js";
@@ -91,6 +92,7 @@ export function timerPlugin(options: CreateTimerPluginOptions = {}): TimerPlugin
       const timer = createTimer({
         ...options,
         direction: "up",
+        format: options?.format ?? defaultStopwatchFormatter,
       });
       const stopwatch = createStopwatchController(timer, options);
       const view = Alpine.reactive(stopwatch) as StopwatchReactiveView;

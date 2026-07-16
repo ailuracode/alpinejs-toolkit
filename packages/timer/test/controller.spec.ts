@@ -167,6 +167,20 @@ describe("@ailuracode/alpine-timer controller", () => {
     expect(onComplete).toHaveBeenCalledTimes(2);
   });
 
+  it("formats countdown from remaining time", () => {
+    const harness = createTestHarness();
+    const timer = new TimerControllerImpl(
+      { direction: "down", duration: 10_000, precision: 100 },
+      { clock: harness.clock, scheduler: harness.scheduler }
+    );
+    timer.mount();
+    expect(timer.formatted).toBe("00:10");
+    timer.start();
+    harness.advance(1_000);
+    expect(timer.formatted).toBe("00:09");
+    timer.dispose();
+  });
+
   it("formats durations and stopwatch values", () => {
     expect(formatDuration(65_432)).toBe("01:05");
     expect(formatStopwatch(65_432)).toBe("01:05.432");

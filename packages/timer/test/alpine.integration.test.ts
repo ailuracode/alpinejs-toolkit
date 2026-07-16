@@ -53,7 +53,7 @@ describe("@ailuracode/alpine-timer alpine integration", () => {
     document.querySelector("#create")?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
     await Alpine.nextTick();
 
-    expect(document.querySelector("#elapsed")?.textContent).toBe("00:00");
+    expect(document.querySelector("#elapsed")?.textContent).toBe("00:01");
   });
 
   it("records stopwatch laps from the $timer magic", async () => {

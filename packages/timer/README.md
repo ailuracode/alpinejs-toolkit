@@ -61,7 +61,7 @@ Alpine.plugin(timerPlugin());
 
 ### Countdown
 
-Equivalent to `$timer.create({ direction: 'down', duration })`.
+Equivalent to `$timer.create({ direction: 'down', duration })`. The default formatter shows **remaining** time (counts down).
 
 ### Countup
 

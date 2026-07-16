@@ -47,11 +47,14 @@
     "clean": "rm -rf dist",
     "size": "size-limit",
     "test": "vitest run --config ../../vitest.config.ts test",
+    "test:e2e": "playwright test --config playwright.config.ts",
+    "test:e2e:report": "playwright show-report e2e/playwright-report",
     "test:watch": "vitest --config ../../vitest.config.ts",
     "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.test.json"
   },
   "devDependencies": {
     "@ailuracode/alpine-core": "workspace:*",
+    "@playwright/test": "^1.56.1",
     "@types/alpinejs": "^3.13.10",
     "@types/node": "^26.1.0",
     "tsup": "^8.5.0"
