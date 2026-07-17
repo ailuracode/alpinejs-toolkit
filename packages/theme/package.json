@@ -1,6 +1,6 @@
 {
   "name": "@ailuracode/alpine-theme",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Light, dark, and system theme store for Alpine.js — exposed as a single $store.theme store and $theme magic.",
   "keywords": [
     "alpine",
