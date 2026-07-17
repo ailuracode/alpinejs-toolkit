@@ -114,7 +114,7 @@ const TIMER_SIDE_EFFECTS = {
  * @returns {ConstructorSideEffectId | null}
  */
 function lookupSideEffect(map, name) {
-  return Object.prototype.hasOwnProperty.call(map, name) ? (map[name] ?? null) : null;
+  return Object.hasOwn(map, name) ? (map[name] ?? null) : null;
 }
 
 /**

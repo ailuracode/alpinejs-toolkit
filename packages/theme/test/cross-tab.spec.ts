@@ -113,8 +113,8 @@ describe("cross-tab synchronization", () => {
   it("applies the default when another tab clears the storage key", () => {
     const theme = createTheme({ defaultTheme: "system" });
     // Move off the default so the cross-tab clear triggers an actual
-    // transition (applySet short-circuits when value === current and
-    // the source is not `'reset'`).
+    // transition (the cross-tab path short-circuits when the incoming
+    // value matches the current one).
     theme.set("dark");
     let received: { source: string; current: string } | null = null;
     theme.on("change", (detail) => {
