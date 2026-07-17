@@ -36,7 +36,7 @@
     "alpinejs": "^3.0.0",
     "@ailuracode/alpine-core": "^0.3.0",
     "@ailuracode/alpine-ui": "^1.0.1",
-    "@ailuracode/alpine-toggle": "^2.0.0",
+    "@ailuracode/alpine-toggle": "^2.0.1",
     "@ailuracode/alpine-scroll": "^3.0.0"
   },
   "peerDependenciesMeta": {
