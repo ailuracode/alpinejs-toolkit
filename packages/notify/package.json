@@ -1,6 +1,6 @@
 {
   "name": "@ailuracode/alpine-notify",
-  "version": "1.0.2",
+  "version": "2.0.0",
   "description": "Alpine.js Web Notifications API magic",
   "type": "module",
   "license": "MIT",
@@ -43,8 +43,8 @@
     "alpinejs": "^3.15.12"
   },
   "peerDependencies": {
-    "@ailuracode/alpine-core": "^0.2.2",
-    "@ailuracode/alpine-permissions": "^0.0.2",
+    "@ailuracode/alpine-core": "^0.3.0",
+    "@ailuracode/alpine-permissions": "^1.0.0",
     "alpinejs": "^3.0.0",
     "@types/alpinejs": "^3.13.11"
   },

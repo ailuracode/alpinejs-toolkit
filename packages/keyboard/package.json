@@ -1,6 +1,6 @@
 {
   "name": "@ailuracode/alpine-keyboard",
-  "version": "0.1.1",
+  "version": "1.0.0",
   "description": "Headless scoped keyboard shortcut registry with chords, sequences, and conflict resolution",
   "type": "module",
   "license": "MIT",
@@ -37,7 +37,7 @@
   },
   "types": "./dist/global.d.ts",
   "peerDependencies": {
-    "@ailuracode/alpine-core": "^0.2.2",
+    "@ailuracode/alpine-core": "^0.3.0",
     "alpinejs": "^3.0.0",
     "@types/alpinejs": "^3.13.11"
   },

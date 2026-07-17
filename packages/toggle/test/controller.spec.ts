@@ -12,9 +12,8 @@
 import assert from "node:assert/strict";
 import { describe, expect, expectTypeOf, it } from "vitest";
 import { ToggleController } from "../src/controller.js";
-import type { ToggleEvents } from "../src/events.js";
 import { createToggle } from "../src/plugin.js";
-import type { ToggleChangeDetail, ToggleInstance } from "../src/types.js";
+import type { ToggleChangeDetail, ToggleEvents, ToggleInstance } from "../src/types.js";
 
 describe("createToggle() — binary (the primary case)", () => {
   it("exposes the configured states and defaults to `on`", () => {

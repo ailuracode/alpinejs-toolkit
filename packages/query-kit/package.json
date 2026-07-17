@@ -1,6 +1,6 @@
 {
   "name": "@ailuracode/alpine-query-kit",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Alpine query cache with Nanostores adapter and devtools panel",
   "type": "module",
   "license": "MIT",

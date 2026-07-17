@@ -2,14 +2,13 @@
 
 Modular **Alpine.js toolkit** — headless stores, magics, directives, and shared infrastructure. TypeScript-first, tree-shakeable, SSR-safe. Framework-agnostic: works with Vite, Astro, static HTML, or any ESM bundler.
 
-Built by **ailuracode**. **39 independent npm packages**; install only what you need.
+Built by **ailuracode**. **38 independent npm packages**; install only what you need.
 
 ## Why this exists
 
-Alpine gives you reactivity in HTML. This monorepo adds **headless, framework-agnostic modules** coordinated by two shared layers:
+Alpine gives you reactivity in HTML. This monorepo adds **headless, framework-agnostic modules** coordinated by a shared core:
 
 - **`@ailuracode/alpine-core`** — controller primitives (`BaseController`, `EventEmitter`, `CleanupStack`, `ToolkitError`), the singleton registry, and Alpine **registration guards** that throw `RegistrationError` on collisions instead of silently overwriting your `$store`.
-- **`@ailuracode/alpine-ui`** — SSR-safe infrastructure primitives shared by feature packages: `createLocalStorageAdapter`, `createMemoryAdapter`, `createMediaQueryListener`, `createPortalRoot`.
 
 You wire your own CSS — no Tailwind or `data-theme` baked in. Plugin logic lives in headless controllers so you can drive state from any stack (Blade, Livewire, Astro, vanilla TS) and bridge it into Alpine when you want reactive UIs.
 
@@ -18,7 +17,6 @@ You wire your own CSS — no Tailwind or `data-theme` baked in. Plugin logic liv
 ```bash
 pnpm add alpinejs \
   @ailuracode/alpine-core \
-  @ailuracode/alpine-ui \
   @ailuracode/alpine-theme \
   @ailuracode/alpine-media \
   @ailuracode/alpine-scroll \
@@ -68,7 +66,6 @@ See [Getting started](./docs/getting-started.md) for HTML usage, registration gu
 | Package | Description |
 |---------|-------------|
 | [`@ailuracode/alpine-core`](./packages/core/README.md) | Controller primitives, singleton registry, Alpine registration guards, controller↔store/directive bridge |
-| [`@ailuracode/alpine-ui`](./packages/ui/README.md) | SSR-safe storage adapters, media query helpers, portal roots — shared by feature packages |
 
 ### Essentials
 

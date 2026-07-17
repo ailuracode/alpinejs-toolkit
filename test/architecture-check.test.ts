@@ -193,4 +193,21 @@ describe("architecture:check AST fixtures", () => {
     expect(importsPackageEntrypoint('import { x } from "../../src/index.ts";')).toBe(true);
     expect(importsPackageEntrypoint('import { x } from "../../src/controller.ts";')).toBe(false);
   });
+
+  it("does not flag identifiers that shadow Object.prototype members", () => {
+    // Regression: identifiers like `toString`, `valueOf`, `hasOwnProperty`
+    // walked the prototype chain on `MAP[name]` lookups and were
+    // misreported as storage / timer / global side effects.
+    const source = `
+      class Demo {
+        #counter = 0;
+        constructor() {
+          this.#counter = (this.#counter + 1).toString(36);
+          const label = { valueOf: () => 1 }.valueOf();
+        }
+      }
+    `;
+
+    expect(findConstructorSideEffectsInSource(source)).toEqual([]);
+  });
 });

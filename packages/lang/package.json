@@ -1,6 +1,6 @@
 {
   "name": "@ailuracode/alpine-lang",
-  "version": "1.1.1",
+  "version": "2.0.0",
   "description": "Alpine.js language store: detect, query, and manage the current application language.",
   "type": "module",
   "license": "MIT",
@@ -33,7 +33,7 @@
     }
   },
   "peerDependencies": {
-    "@ailuracode/alpine-core": "^0.2.2",
+    "@ailuracode/alpine-core": "^0.3.0",
     "alpinejs": "^3.0.0"
   },
   "peerDependenciesMeta": {

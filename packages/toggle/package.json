@@ -1,6 +1,6 @@
 {
   "name": "@ailuracode/alpine-toggle",
-  "version": "1.0.2",
+  "version": "2.0.0",
   "description": "Alpine.js toggle magic for binary and ternary state machines with typed change events.",
   "keywords": [
     "alpine",
@@ -58,7 +58,7 @@
     "alpinejs": "^3.15.12"
   },
   "peerDependencies": {
-    "@ailuracode/alpine-core": "^0.2.2",
+    "@ailuracode/alpine-core": "^0.3.0",
     "alpinejs": "^3.0.0"
   },
   "peerDependenciesMeta": {

@@ -1,5 +1,15 @@
 # @ailuracode/alpine-sidebar
 
+## 4.0.0
+
+### Patch Changes
+
+- Updated dependencies [9b88155]
+- Updated dependencies [9b88155]
+  - @ailuracode/alpine-core@0.3.0
+  - @ailuracode/alpine-scroll@3.0.0
+  - @ailuracode/alpine-toggle@2.0.0
+
 ## 3.1.1
 
 ### Patch Changes

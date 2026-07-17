@@ -104,6 +104,20 @@ const TIMER_SIDE_EFFECTS = {
 };
 
 /**
+ * Lookup helper that ignores inherited prototype members
+ * (e.g. `Object.prototype.toString`). Without this guard, identifiers
+ * named after inherited methods were misclassified as side effects
+ * because `MAP[name]` walked the prototype chain.
+ *
+ * @param {Record<string, ConstructorSideEffectId>} map
+ * @param {string} name
+ * @returns {ConstructorSideEffectId | null}
+ */
+function lookupSideEffect(map, name) {
+  return Object.prototype.hasOwnProperty.call(map, name) ? (map[name] ?? null) : null;
+}
+
+/**
  * @param {ts.Node} node
  * @returns {ConstructorSideEffectId | null}
  */
@@ -117,7 +131,7 @@ function getGlobalAccessSideEffect(node) {
   }
 
   const root = getGlobalRootIdentifier(node.expression);
-  return root ? (GLOBAL_ACCESS_SIDE_EFFECTS[root] ?? null) : null;
+  return root ? lookupSideEffect(GLOBAL_ACCESS_SIDE_EFFECTS, root) : null;
 }
 
 /**
@@ -129,7 +143,7 @@ function getStorageSideEffect(node) {
     return null;
   }
 
-  return STORAGE_SIDE_EFFECTS[node.text] ?? null;
+  return lookupSideEffect(STORAGE_SIDE_EFFECTS, node.text);
 }
 
 /**
@@ -141,7 +155,7 @@ function getTimerSideEffect(node) {
     return null;
   }
 
-  return TIMER_SIDE_EFFECTS[node.expression.text] ?? null;
+  return lookupSideEffect(TIMER_SIDE_EFFECTS, node.expression.text);
 }
 
 /**
