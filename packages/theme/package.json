@@ -53,7 +53,6 @@
   },
   "devDependencies": {
     "@ailuracode/alpine-core": "workspace:*",
-    "@ailuracode/alpine-toggle": "workspace:*",
     "@ailuracode/alpine-ui": "workspace:*",
     "@types/alpinejs": "^3.13.10",
     "@types/node": "^26.1.0",
@@ -64,7 +63,6 @@
   "peerDependencies": {
     "@ailuracode/alpine-core": "^0.3.0",
     "@ailuracode/alpine-ui": "^1.0.1",
-    "@ailuracode/alpine-toggle": "^2.0.1",
     "alpinejs": "^3.0.0"
   },
   "peerDependenciesMeta": {
@@ -85,12 +83,11 @@
       "ignore": [
         "alpinejs",
         "@ailuracode/alpine-core",
-        "@ailuracode/alpine-ui",
-        "@ailuracode/alpine-toggle"
+        "@ailuracode/alpine-ui"
       ],
       "gzip": true,
       "brotli": true,
-      "limit": "2.6 kB"
+      "limit": "2 kB"
     }
   ]
 }

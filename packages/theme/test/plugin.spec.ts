@@ -254,7 +254,9 @@ describe("themePlugin — DOM re-apply on navigation events", () => {
   it("re-applies the theme class when 'astro:after-swap' fires", () => {
     setMatchMedia(PREFERS_DARK, false);
     const Alpine = createMockAlpine();
-    themePlugin({ defaultTheme: "light" })(Alpine as never);
+    themePlugin({ defaultTheme: "light", reapplyEvents: ["astro:after-swap", "astro:page-load"] })(
+      Alpine as never
+    );
     const store = Alpine.stores.theme as ThemeStore;
     // Toggle to dark — the DOM receives `class="dark"`.
     store.set("dark");
@@ -274,7 +276,9 @@ describe("themePlugin — DOM re-apply on navigation events", () => {
   it("re-applies the theme class when 'astro:page-load' fires", () => {
     setMatchMedia(PREFERS_DARK, false);
     const Alpine = createMockAlpine();
-    themePlugin({ defaultTheme: "dark" })(Alpine as never);
+    themePlugin({ defaultTheme: "dark", reapplyEvents: ["astro:after-swap", "astro:page-load"] })(
+      Alpine as never
+    );
     // Simulate external DOM corruption.
     document.documentElement.classList.remove("dark");
     fire("astro:page-load");
@@ -295,10 +299,17 @@ describe("themePlugin — DOM re-apply on navigation events", () => {
   it("removes the listeners on Alpine cleanup", () => {
     setMatchMedia(PREFERS_DARK, false);
     const Alpine = createMockAlpine();
-    themePlugin()(Alpine as never);
+    themePlugin({ reapplyEvents: ["astro:after-swap", "astro:page-load"] })(Alpine as never);
     assert.ok(listeners.get("astro:after-swap")?.size === 1);
     assert.ok(listeners.get("astro:page-load")?.size === 1);
     Alpine.cleanups[0]();
+    assert.equal(listeners.get("astro:after-swap")?.size ?? 0, 0);
+    assert.equal(listeners.get("astro:page-load")?.size ?? 0, 0);
+  });
+
+  it("does not register navigation listeners when reapplyEvents is omitted", () => {
+    const Alpine = createMockAlpine();
+    themePlugin()(Alpine as never);
     assert.equal(listeners.get("astro:after-swap")?.size ?? 0, 0);
     assert.equal(listeners.get("astro:page-load")?.size ?? 0, 0);
   });

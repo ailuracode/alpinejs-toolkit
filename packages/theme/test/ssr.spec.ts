@@ -1,22 +1,7 @@
-/**
- * SSR-safe import tests for `@ailuracode/alpine-theme`.
- *
- * Per `.cursor/rules/formatting.mdc` and
- * `.cursor/rules/testing.mdc`, importing the package
- * MUST work in a runtime without `window` / `document`. These tests
- * shadow the globals with `undefined` and assert the public surface
- * stays usable.
- */
-
 import assert from "node:assert/strict";
 import { describe, it } from "vitest";
-import {
-  createMemoryThemeStorage,
-  createTheme,
-  DEFAULT_THEME_PREFERENCE,
-  readSystemTheme,
-  themePlugin,
-} from "../src/index";
+import { createMemoryThemeStorage, createTheme, themePlugin } from "../src/index";
+import { readSystemTheme } from "../src/system-observer";
 
 function shadowGlobals(): () => void {
   const originalWindow = Object.getOwnPropertyDescriptor(globalThis, "window");
@@ -54,7 +39,6 @@ describe("SSR-safe package surface", () => {
   it("importing the package does not touch the DOM", () => {
     assert.equal(typeof createTheme, "function");
     assert.equal(typeof themePlugin, "function");
-    assert.equal(DEFAULT_THEME_PREFERENCE, "system");
   });
 
   it("readSystemTheme returns the SSR default without window", () => {

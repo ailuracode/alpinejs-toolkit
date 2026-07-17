@@ -271,21 +271,24 @@ theme.destroy() // idempotent, releases all listeners
 // already own $store.theme or $theme.
 Alpine.plugin(themePlugin({
   // ...createTheme options...
-  storeKey?: string,    // default: DEFAULT_THEME_STORE_KEY ('theme')
-  magicKey?: string,    // default: DEFAULT_THEME_MAGIC_KEY ('theme'); follows storeKey when renamed
+  storeKey?: string,    // default: 'theme'
+  magicKey?: string,    // default: follows storeKey, otherwise 'theme'
+  // re-apply the theme on document-level events (Astro, Turbo, View Transitions API, …)
+  reapplyEvents?: readonly string[],
 }));
 ```
 
 `toggle()` creates an explicit user preference — the manager does NOT return to `'system'`. `reset()` removes the persisted value and applies the configured `defaultTheme`. `apply()` re-runs the DOM strategy with the currently resolved value, bypassing the strategy's last-applied cache — useful when something else (Astro view transitions, browser extensions, hot reloads) has removed the class / attribute the strategy set on mount. It does not change internal state, persistence, or emit a `change` event.
 
-## Constants
+## Astro View Transitions
 
-| Export                          | Value     | Used by                                       |
-| ------------------------------- | --------- | --------------------------------------------- |
-| `DEFAULT_THEME_PREFERENCE`      | `'system'`| `createTheme({ defaultTheme })` fallback      |
-| `DEFAULT_THEME_STORAGE_KEY`     | `'theme'` | Built-in localStorage adapter key             |
-| `DEFAULT_THEME_STORE_KEY`       | `'theme'` | `themePlugin({ storeKey })` fallback          |
-| `DEFAULT_THEME_MAGIC_KEY`       | `'theme'` | `themePlugin({ magicKey })` fallback          |
+```ts
+import themePlugin from "@ailuracode/alpine-theme";
+
+Alpine.plugin(themePlugin({
+  reapplyEvents: ["astro:after-swap", "astro:page-load"],
+}));
+```
 
 ## Initialization order
 

@@ -14,7 +14,6 @@ import {
   type ResolvedTheme,
   ThemeController,
   type ThemeListener,
-  type ThemeManager,
   type ThemePreference,
 } from "../src/index";
 import { setMatchMedia } from "./setup";
@@ -90,7 +89,7 @@ describe("createTheme — initial state", () => {
 });
 
 describe("createTheme — set()", () => {
-  let theme: ThemeManager;
+  let theme: ThemeController;
   beforeEach(() => {
     theme = createTheme({ defaultTheme: "light" });
   });

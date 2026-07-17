@@ -1,9 +1,7 @@
 /**
  * Tests for {@link ThemeController} id generation. Verifies the
  * `theme-*` prefix is applied when the consumer omits `options.id`
- * and the explicit value is preserved otherwise. The inner toggle's
- * id must follow the same root so debug logs from both controllers
- * stay correlated.
+ * and the explicit value is preserved otherwise.
  */
 import assert from "node:assert/strict";
 import { describe, it } from "vitest";
@@ -15,7 +13,7 @@ describe("ThemeController id", () => {
     assert.match(controller.id, /^theme-[a-z0-9]+$/);
   });
 
-  it("preserves an explicit id and forwards it to the inner toggle with `-current` suffix", () => {
+  it("preserves an explicit id", () => {
     const controller = new ThemeController({ id: "my-theme" });
     assert.equal(controller.id, "my-theme");
     assert.equal(controller.current, "system");

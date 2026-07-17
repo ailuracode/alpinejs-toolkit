@@ -1,19 +1,3 @@
-/**
- * Ambient type surface for `@ailuracode/alpine-theme`.
- *
- * Re-exports the {@link ThemeStore} shape so consumers can include this
- * file via the global.d.ts triple-slash directive and typecheck
- * `$store.theme` / `$theme` references without pulling the runtime
- * entrypoint.
- *
- * Per core's `global.d.ts` convention, this package does NOT augment
- * external modules. The `Alpine.Stores` / `Alpine.Magics<T>` augmentation
- * that earlier drafts proposed has been removed — consumers that need
- * typed `$store.theme` access should declare the augmentation in their
- * own `*.d.ts` (or use the typed `Alpine<{ theme: ThemeStore }>` view
- * from `@ailuracode/alpine-core` directly).
- */
-
 /// <reference types="@types/alpinejs" />
 
 export type { ThemeStore };
