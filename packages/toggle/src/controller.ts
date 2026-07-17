@@ -1,99 +1,50 @@
-/**
- * Toggle controller — the framework-agnostic core of
- * `@ailuracode/alpine-toggle`. Owns every piece of toggle state and
- * exposes a typed `change` event through a composition with
- * {@link EventEmitter} from `@ailuracode/alpine-core`.
- *
- * Responsibilities:
- *
- * 1. State — owns `value` plus the `on` / `off` / `indeterminate`
- *    shorthands.
- * 2. Transitions — `set`, `toggle`, `next`, `reset`. Each emits a
- *    typed `change` event with the previous snapshot.
- * 3. Lifecycle — `mount()` schedules the initialization event;
- *    `destroy()` is idempotent and tears down every listener.
- *
- * Construction rules (per
- * `.cursor/rules/new-package.mdc`):
- *
- * - The constructor MUST NOT access `window` / `document` /
- *   `localStorage`, schedule microtasks, or emit events. The
- *   controller is pure logic — no browser APIs.
- * - `mount()` MUST be idempotent and schedules the initialization
- *   event on a microtask so subscribers can attach synchronously
- *   after `mount()` returns.
- * - `destroy()` MUST be idempotent.
- *
- * The controller is generic over the configured state types so
- * subscribers receive a typed `change` payload without casts. The
- * `TN` defaults to `undefined` for the binary case.
- *
- * Why composition over inheritance: `BaseController` exposes typed
- * `on()` / `off()` event methods. The toggle state model also wants
- * `on` / `off` property getters for the configured extremes.
- * Extending `BaseController` would force a collision; composition
- * with `EventEmitter` keeps both names available.
- */
-
 import type { Unsubscribe } from "@ailuracode/alpine-core";
-import { EventEmitter, generateId } from "@ailuracode/alpine-core";
-import type { ToggleEvents } from "./events";
-import {
-  buildStateCycle,
-  hasIndeterminateState,
-  isConfiguredState,
-  resolveInitial,
-} from "./internal/validation";
-import type { ToggleChangeSource, ToggleInstance, ToggleOptions, ToggleStatesView } from "./types";
+import type {
+  ToggleChangeSource,
+  ToggleEvents,
+  ToggleInstance,
+  ToggleOptions,
+  ToggleStatesView,
+} from "./types";
 
-/**
- * Public, framework-agnostic controller returned by
- * {@link createToggle} and every call to `$toggle(options)` inside an
- * Alpine template.
- */
+type ChangeListener<TA, TB, TN> = (detail: ToggleEvents<TA, TB, TN>["change"]) => void;
+
+let toggleIdCounter = 0;
+
 export class ToggleController<TA, TB, TN, V extends TA | TB | TN = TA | TB | TN>
   implements ToggleInstance<TA, TB, TN, V>
 {
-  readonly #emitter: EventEmitter<ToggleEvents<TA, TB, TN>>;
   readonly #id: string;
   readonly #states: ToggleStatesView<TA, TB, TN>;
   readonly #cycle: readonly (TA | TB | TN)[];
   readonly #initial: TA | TB | TN;
   readonly #hasTernary: boolean;
+  readonly #isConfigured: (candidate: unknown) => boolean;
 
   #value: TA | TB | TN;
   #destroyed = false;
   #mounted = false;
+  #listeners = new Set<ChangeListener<TA, TB, TN>>();
 
   constructor(options: ToggleOptions<TA, TB, TN>) {
-    this.#id = options.id ?? generateId("toggle");
-
-    const hasTernary = hasIndeterminateState(options.states);
-    this.#hasTernary = hasTernary;
-
+    const states = options.states;
+    const hasTernary = "indeterminate" in states;
+    const on = states.on;
+    const off = states.off;
     const indeterminate = (
-      hasTernary ? (options.states as { readonly indeterminate: TN }).indeterminate : undefined
+      hasTernary ? (states as { readonly indeterminate: TN }).indeterminate : undefined
     ) as TN;
 
-    this.#states = Object.freeze({
-      on: options.states.on,
-      off: options.states.off,
-      indeterminate,
-    });
-
-    this.#cycle = Object.freeze(buildStateCycle(options.states).slice()) as readonly (
-      | TA
-      | TB
-      | TN
-    )[];
-
-    this.#initial = resolveInitial(options.states, options.initial) as TA | TB | TN;
+    this.#id = options.id ?? `toggle-${(++toggleIdCounter).toString(36)}`;
+    this.#hasTernary = hasTernary;
+    this.#states = Object.freeze({ on, off, indeterminate });
+    this.#cycle = hasTernary ? [on, off, indeterminate] : [on, off];
+    this.#initial =
+      options.initial !== undefined ? options.initial : hasTernary ? indeterminate : on;
     this.#value = this.#initial;
-
-    this.#emitter = new EventEmitter<ToggleEvents<TA, TB, TN>>();
+    this.#isConfigured = (candidate) =>
+      candidate === on || candidate === off || (hasTernary && candidate === indeterminate);
   }
-
-  // ── Public identity ────────────────────────────────────────────
 
   get id(): string {
     return this.#id;
@@ -107,8 +58,6 @@ export class ToggleController<TA, TB, TN, V extends TA | TB | TN = TA | TB | TN>
     return this.#mounted;
   }
 
-  // ── Public state surface ────────────────────────────────────────
-
   get value(): V {
     return this.#value as V;
   }
@@ -121,40 +70,48 @@ export class ToggleController<TA, TB, TN, V extends TA | TB | TN = TA | TB | TN>
     return this.#value === candidate;
   }
 
-  // ── Event surface (typed event bus) ─────────────────────────────
-
   on<K extends keyof ToggleEvents<TA, TB, TN>>(
-    event: K,
+    _: K,
     listener: (detail: ToggleEvents<TA, TB, TN>[K]) => void
   ): Unsubscribe {
-    return this.#emitter.on(event, listener);
+    const l: ChangeListener<TA, TB, TN> = listener;
+    this.#listeners.add(l);
+    return () => {
+      this.#listeners.delete(l);
+    };
   }
 
   once<K extends keyof ToggleEvents<TA, TB, TN>>(
-    event: K,
+    _: K,
     listener: (detail: ToggleEvents<TA, TB, TN>[K]) => void
   ): Unsubscribe {
-    return this.#emitter.once(event, listener);
+    const l: ChangeListener<TA, TB, TN> = listener;
+    const wrap: ChangeListener<TA, TB, TN> = (detail) => {
+      this.#listeners.delete(wrap);
+      l(detail);
+    };
+    this.#listeners.add(wrap);
+    return () => {
+      this.#listeners.delete(wrap);
+    };
   }
 
   off<K extends keyof ToggleEvents<TA, TB, TN>>(
-    event: K,
+    _: K,
     listener: (detail: ToggleEvents<TA, TB, TN>[K]) => void
   ): void {
-    this.#emitter.off(event, listener);
+    this.#listeners.delete(listener);
   }
 
   removeAllListeners(): void {
-    this.#emitter.removeAllListeners();
+    this.#listeners.clear();
   }
-
-  // ── Public commands ─────────────────────────────────────────────
 
   set(value: V): void {
     if (this.#destroyed) {
       return;
     }
-    if (!isConfiguredState(this.#states, value)) {
+    if (!this.#isConfigured(value)) {
       return;
     }
     if (this.#value === value) {
@@ -163,45 +120,28 @@ export class ToggleController<TA, TB, TN, V extends TA | TB | TN = TA | TB | TN>
     this.#applySet(value, "user");
   }
 
-  /**
-   * Sets the value without emitting a `change` event and without
-   * updating `#lastWritten` markers — escape hatch for hydration
-   * paths where the consumer has authoritative state (e.g. read
-   * from `localStorage`) and wants the controller to start from
-   * that value without broadcasting a transition.
-   *
-   * Silent semantics:
-   *
-   * - No `change` event is emitted — listeners stay quiet.
-   * - `#initial` is NOT updated — `reset()` still restores the
-   *   originally-configured `initial`, not the hydrated value.
-   *   Callers that want a different reset target should pass the
-   *   hydrated value through the constructor's `initial` option
-   *   instead.
-   * - The queued initialization microtask (if `mount()` was called
-   *   and the microtask hasn't fired yet) preserves the hydrated
-   *   value instead of resetting to `#initial` — see `mount()` for
-   *   details.
-   *
-   * Invalid values (not in `states`) are silently rejected, same
-   * as `set()`. `destroy()`d controllers ignore the call.
-   */
   setSilently(value: V): void {
     if (this.#destroyed) {
       return;
     }
-    if (!isConfiguredState(this.#states, value)) {
+    if (!this.#isConfigured(value)) {
       return;
     }
-    this.#value = value as TA | TB | TN;
+    this.#value = value;
   }
 
   toggle(): V {
     if (this.#destroyed) {
       return this.#value as V;
     }
-    const next = this.#resolveToggleTarget();
-    if (next !== this.#value) {
+    const cur = this.#value;
+    const next =
+      this.#hasTernary && cur === this.#states.indeterminate
+        ? this.#states.on
+        : cur === this.#states.on
+          ? this.#states.off
+          : this.#states.on;
+    if (next !== cur) {
       this.#applySet(next, "user");
     }
     return next as V;
@@ -212,7 +152,7 @@ export class ToggleController<TA, TB, TN, V extends TA | TB | TN = TA | TB | TN>
       return this.#value as V;
     }
     const idx = this.#cycle.indexOf(this.#value);
-    const nextValue = this.#cycle[(idx + 1) % this.#cycle.length] as TA | TB | TN;
+    const nextValue = this.#cycle[(idx + 1) % this.#cycle.length];
     if (nextValue !== this.#value) {
       this.#applySet(nextValue, "user");
     }
@@ -229,23 +169,6 @@ export class ToggleController<TA, TB, TN, V extends TA | TB | TN = TA | TB | TN>
     return this.#initial as V;
   }
 
-  // ── Lifecycle ───────────────────────────────────────────────────
-
-  /**
-   * Starts the controller and schedules the initialization event on a
-   * microtask so consumers can subscribe synchronously after
-   * `mount()` returns and still receive the initial state. Mirrors
-   * the behaviour of `@ailuracode/alpine-theme`'s controller.
-   *
-   * The emit targets `#value` (current) rather than `#initial` so
-   * consumers who call `setSilently(...)` before the microtask
-   * fires (a common hydration pattern) keep their hydrated value.
-   * The `previous` field stays `null` per the initialization
-   * contract — listeners can distinguish init from any later change
-   * via the `source` discriminator.
-   *
-   * Idempotent — subsequent calls are no-ops. No-ops when destroyed.
-   */
   mount(): void {
     if (this.#destroyed || this.#mounted) {
       return;
@@ -255,51 +178,27 @@ export class ToggleController<TA, TB, TN, V extends TA | TB | TN = TA | TB | TN>
       if (this.#destroyed) {
         return;
       }
-      this.#emitter.emit("change", {
-        current: this.#value,
-        previous: null,
-        source: "initialization",
-      });
+      this.#emit({ current: this.#value, previous: null, source: "initialization" });
     });
   }
 
-  /**
-   * Tears down every listener and marks the controller destroyed.
-   * Idempotent — subsequent calls are no-ops.
-   */
   destroy(): void {
     if (this.#destroyed) {
       return;
     }
     this.#destroyed = true;
-    this.#emitter.removeAllListeners();
+    this.#listeners.clear();
   }
 
-  // ── Private transitions ─────────────────────────────────────────
-
-  /**
-   * Computes the next value for `toggle()`. Independent of `next()`
-   * because `toggle()` skips the ternary state — from
-   * `indeterminate` it moves to `on`, not to `off`.
-   */
-  #resolveToggleTarget(): TA | TB | TN {
-    if (this.#hasTernary && this.#value === this.#states.indeterminate) {
-      return this.#states.on;
+  #emit(detail: ToggleEvents<TA, TB, TN>["change"]): void {
+    for (const listener of this.#listeners) {
+      listener(detail);
     }
-    return this.#value === this.#states.on ? this.#states.off : this.#states.on;
   }
 
-  /**
-   * Applies a new value and emits the `change` event. The first
-   * emit (source `'initialization'`) carries `previous: null`.
-   */
   #applySet(next: TA | TB | TN, source: ToggleChangeSource): void {
     const previous = source === "initialization" ? null : this.#value;
     this.#value = next;
-    this.#emitter.emit("change", {
-      current: next,
-      previous,
-      source,
-    });
+    this.#emit({ current: next, previous, source });
   }
 }
