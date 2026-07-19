@@ -46,6 +46,41 @@ function formatSelectionLabel(cal: CalendarInstance): string {
   return "None";
 }
 
+type CalendarRangeDemoData = {
+  cal: CalendarInstance | null;
+  init(): void;
+  clear(): void;
+  selectionLabel(): string;
+};
+
+type CalendarRangeDemoComponent = CalendarRangeDemoData & {
+  $calendar: CalendarMagic;
+};
+
+function createBoundedCalendarOptions(
+  $calendar: CalendarMagic,
+  options: {
+    locale: ReturnType<typeof localeFor>;
+    mode: CalendarMode;
+    numberOfMonths?: number;
+  }
+): CalendarInstance {
+  const today = new Date();
+  const minDate = new Date(today.getFullYear(), today.getMonth(), 1);
+  const maxDate = addMonths(minDate, 3);
+
+  return $calendar({
+    locale: options.locale,
+    weekStartsOn: 1,
+    mode: options.mode,
+    month: minDate,
+    minDate,
+    maxDate,
+    disabled: { dayOfWeek: [0, 6] },
+    numberOfMonths: options.numberOfMonths,
+  });
+}
+
 export function registerCalendarDemo(Alpine: AlpineInstance): void {
   Alpine.data(
     "calendarDemo",
@@ -59,17 +94,9 @@ export function registerCalendarDemo(Alpine: AlpineInstance): void {
       },
 
       createCalendar(this: CalendarDemoComponent) {
-        const today = new Date();
-        const minDate = new Date(today.getFullYear(), today.getMonth(), 1);
-        const maxDate = addMonths(minDate, 3);
-
-        this.cal = this.$calendar({
+        this.cal = createBoundedCalendarOptions(this.$calendar, {
           locale: localeFor(this.localeCode),
-          weekStartsOn: 1,
           mode: this.mode,
-          minDate,
-          maxDate,
-          disabled: { dayOfWeek: [0, 6] },
         });
       },
 
@@ -96,6 +123,29 @@ export function registerCalendarDemo(Alpine: AlpineInstance): void {
       },
 
       selectionLabel(this: CalendarDemoComponent): string {
+        return this.cal ? formatSelectionLabel(this.cal) : "";
+      },
+    })
+  );
+
+  Alpine.data(
+    "calendarRangeDemo",
+    (): CalendarRangeDemoData => ({
+      cal: null,
+
+      init(this: CalendarRangeDemoComponent) {
+        this.cal = createBoundedCalendarOptions(this.$calendar, {
+          locale: enUS,
+          mode: "range",
+          numberOfMonths: 2,
+        });
+      },
+
+      clear(this: CalendarRangeDemoComponent) {
+        this.cal?.clear();
+      },
+
+      selectionLabel(this: CalendarRangeDemoComponent): string {
         return this.cal ? formatSelectionLabel(this.cal) : "";
       },
     })

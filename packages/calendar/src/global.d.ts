@@ -14,6 +14,7 @@ export type {
   CalendarMagic,
   CalendarMatcher,
   CalendarMatcherFn,
+  CalendarMonthView,
   ResolvedDateFnsContext,
 } from "./index.js";
 

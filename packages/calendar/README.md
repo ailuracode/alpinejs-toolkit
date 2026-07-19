@@ -58,6 +58,7 @@ The exposed constant `DEFAULT_CALENDAR_MAGIC_KEY` keeps the rename discoverable 
 | `month` | `Date` | current month | Initial visible month |
 | `selected` | `Date` \| `Date[]` \| `{ from?, to? }` \| `null` | `null` | Initial selection |
 | `disabled` | `CalendarMatcher` \| `CalendarMatcher[]` | — | Dates that cannot be selected |
+| `numberOfMonths` | `number` | `1` | Consecutive months to display (clamped to `1`–`12`) |
 | `dateFns` | `CalendarDateFnsOptions` | — | Extra date-fns context (locale, `in`, week options, format tokens) |
 
 ## Disabling dates
@@ -127,22 +128,33 @@ The resolved context is exposed on each instance as `cal.dateFns` and is passed 
 
 | Property | Type | Description |
 |----------|------|-------------|
-| `month` | `Date` | Visible month (first day of month) |
+| `month` | `Date` | Anchor month — first visible month (`months[0].month`) |
+| `numberOfMonths` | `number` | Count of consecutive visible months |
+| `months` | `CalendarMonthView[]` | Month grids for rendering (`month` + `weeks` per entry) |
 | `mode` | `CalendarMode` | Selection mode |
 | `selected` | `Date` \| `Date[]` \| `{ from?, to? }` \| `null` | Current selection |
 | `locale` | `Locale` | Active locale |
 | `weekStartsOn` | `0`–`6` | Week start day |
 | `dateFns` | `CalendarDateFnsOptions` | Resolved date-fns context |
-| `weeks` | `CalendarDay[][]` | Month grid for rendering |
+| `weeks` | `CalendarDay[][]` | First month grid — same as `months[0].weeks` |
 | `weekdayLabels` | `string[]` | Localized weekday headers |
+
+Each `CalendarMonthView` exposes:
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `month` | `Date` | Start of that month |
+| `weeks` | `CalendarDay[][]` | Grid for that month |
+
+Day cells in every month share the same global selection. `isCurrentMonth` is computed relative to each month view, not only the anchor.
 
 ### Navigation
 
 | Method | Description |
 |--------|-------------|
-| `prevMonth()` | Go to previous month |
-| `nextMonth()` | Go to next month |
-| `goToMonth(date)` | Jump to the month containing `date` |
+| `prevMonth()` | Move the anchor back by `numberOfMonths` months |
+| `nextMonth()` | Move the anchor forward by `numberOfMonths` months |
+| `goToMonth(date)` | Jump to the month containing `date` (anchor = start of that month) |
 | `goToToday()` | Jump to the current month |
 
 ### Selection
@@ -250,6 +262,61 @@ The resolved context is exposed on each instance as `cal.dateFns` and is passed 
 </div>
 ```
 
+### Two-month range picker
+
+Use `numberOfMonths: 2` and loop `cal.months` for side-by-side grids (react-day-picker style). Global prev/next arrows move the anchor by two months.
+
+```html
+<div
+  x-data="{
+    cal: $calendar({
+      mode: 'range',
+      weekStartsOn: 1,
+      numberOfMonths: 2,
+      month: new Date(2024, 0, 1)
+    })
+  }"
+>
+  <div class="calendar-header">
+    <button type="button" @click="cal.prevMonth()">Previous</button>
+    <button type="button" @click="cal.nextMonth()">Next</button>
+  </div>
+
+  <div class="calendar-months">
+    <template x-for="monthView in cal.months" :key="monthView.month.toISOString()">
+      <div class="calendar-month">
+        <strong x-text="cal.formatMonth(monthView.month)"></strong>
+
+        <div class="calendar-weekdays">
+          <template x-for="label in cal.weekdayLabels" :key="label">
+            <span x-text="label"></span>
+          </template>
+        </div>
+
+        <template x-for="week in monthView.weeks" :key="week[0].date.toISOString()">
+          <div class="calendar-week">
+            <template x-for="day in week" :key="day.date.toISOString()">
+              <button
+                type="button"
+                :disabled="day.isDisabled"
+                :class="{
+                  'is-outside': !day.isCurrentMonth,
+                  'is-range-start': day.isRangeStart,
+                  'is-range-end': day.isRangeEnd,
+                  'is-in-range': day.isInRange
+                }"
+                @click="cal.select(day.date)"
+                x-text="cal.format(day.date, 'd')"
+              ></button>
+            </template>
+          </div>
+        </template>
+      </div>
+    </template>
+  </div>
+</div>
+```
+
 ### Spanish locale
 
 ```js
@@ -317,7 +384,7 @@ controller.destroy();
 | Event | Detail | When |
 |-------|--------|------|
 | `select` | `Date` | After selection changes |
-| `monthChange` | `{ month: Date }` | After navigation |
+| `monthChange` | `{ month: Date }` | After navigation — `month` is the anchor (first visible month) |
 | `clear` | `undefined` | After selection is cleared |
 
 ### `toStore()`
