@@ -1,6 +1,6 @@
 {
   "name": "@ailuracode/alpine-calendar",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Alpine.js calendar date logic powered by date-fns",
   "type": "module",
   "license": "MIT",
