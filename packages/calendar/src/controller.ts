@@ -44,15 +44,35 @@ import type {
   CalendarInstance,
   CalendarMagic,
   CalendarMode,
+  CalendarMonthView,
   CalendarOptions,
   CalendarSelection,
   ResolvedCalendarConfig,
 } from "./types.js";
+import { MAX_NUMBER_OF_MONTHS, MIN_NUMBER_OF_MONTHS } from "./types.js";
 
 /** Strips `readonly` modifiers so reactive methods can write through `this`. */
 type Writable<T> = {
   -readonly [K in keyof T]: T[K];
 };
+
+function normalizeNumberOfMonths(value?: number): number {
+  if (value === undefined) {
+    return MIN_NUMBER_OF_MONTHS;
+  }
+
+  const integer = Math.trunc(value);
+
+  if (integer < MIN_NUMBER_OF_MONTHS) {
+    return MIN_NUMBER_OF_MONTHS;
+  }
+
+  if (integer > MAX_NUMBER_OF_MONTHS) {
+    return MAX_NUMBER_OF_MONTHS;
+  }
+
+  return integer;
+}
 
 function resolveConfig(options: CalendarOptions = {}): ResolvedCalendarConfig {
   const context = resolveDateFnsContext(options);
@@ -63,6 +83,7 @@ function resolveConfig(options: CalendarOptions = {}): ResolvedCalendarConfig {
     maxDate: options.maxDate ? normalizeDate(options.maxDate, context) : undefined,
     mode: options.mode ?? "single",
     month: startOfMonth(options.month ?? new Date(), context),
+    numberOfMonths: normalizeNumberOfMonths(options.numberOfMonths),
     selected: normalizeSelection(options.selected ?? null, options.mode ?? "single", context),
     disabled: normalizeMatchers(options.disabled),
   });
@@ -116,16 +137,19 @@ export class CalendarController extends BaseController<CalendarEvents> {
     return this.#config.context;
   }
 
+  get numberOfMonths(): number {
+    return this.#config.numberOfMonths;
+  }
+
   // ── Derived state ────────────────────────────────────────────────
 
-  get weeks(): CalendarDay[][] {
-    const days = getMonthDays(this.#month, this.#config.context);
-    const currentSelected = this.selected;
+  #buildWeeksForMonth(monthStart: Date, currentSelected: CalendarSelection): CalendarDay[][] {
+    const days = getMonthDays(monthStart, this.#config.context);
 
     return chunkWeeks(days).map((week) =>
       week.map((date) => ({
         date,
-        isCurrentMonth: isSameMonth(date, this.#month, this.#config.context),
+        isCurrentMonth: isSameMonth(date, monthStart, this.#config.context),
         isToday: isTodayDate(date, this.#config.context),
         isSelected: this.#isSelectedWith(currentSelected, date),
         isDisabled: this.isDisabled(date),
@@ -134,6 +158,29 @@ export class CalendarController extends BaseController<CalendarEvents> {
         isInRange: this.isInRange(date),
       }))
     );
+  }
+
+  get months(): CalendarMonthView[] {
+    const currentSelected = this.selected;
+    const views: CalendarMonthView[] = [];
+
+    for (let index = 0; index < this.#config.numberOfMonths; index++) {
+      const monthStart = startOfMonth(
+        addMonths(this.#month, index, this.#config.context),
+        this.#config.context
+      );
+
+      views.push({
+        month: monthStart,
+        weeks: this.#buildWeeksForMonth(monthStart, currentSelected),
+      });
+    }
+
+    return views;
+  }
+
+  get weeks(): CalendarDay[][] {
+    return this.#buildWeeksForMonth(this.#month, this.selected);
   }
 
   get weekdayLabels(): string[] {
@@ -146,7 +193,7 @@ export class CalendarController extends BaseController<CalendarEvents> {
     if (this.isDestroyed) {
       return;
     }
-    this.#month = subMonths(this.#month, 1, this.#config.context);
+    this.#month = subMonths(this.#month, this.#config.numberOfMonths, this.#config.context);
     this.emit("monthChange", { month: this.#month });
   }
 
@@ -154,7 +201,7 @@ export class CalendarController extends BaseController<CalendarEvents> {
     if (this.isDestroyed) {
       return;
     }
-    this.#month = addMonths(this.#month, 1, this.#config.context);
+    this.#month = addMonths(this.#month, this.#config.numberOfMonths, this.#config.context);
     this.emit("monthChange", { month: this.#month });
   }
 
@@ -322,9 +369,18 @@ export class CalendarController extends BaseController<CalendarEvents> {
  * Builds a raw CalendarInstance-shaped object backed by the given controller.
  * Methods use `this` so Alpine.reactive() Proxy routes mutations through the set trap.
  */
+function syncGridState(instance: Writable<CalendarInstance>, controller: CalendarController): void {
+  instance.month = controller.month;
+  instance.numberOfMonths = controller.numberOfMonths;
+  instance.months = controller.months;
+  instance.weeks = controller.weeks;
+}
+
 export function buildReactiveInstance(controller: CalendarController): CalendarInstance {
   return {
     month: controller.month,
+    numberOfMonths: controller.numberOfMonths,
+    months: controller.months,
     mode: controller.mode,
     selected: controller.selected,
     locale: controller.locale,
@@ -335,33 +391,29 @@ export function buildReactiveInstance(controller: CalendarController): CalendarI
 
     prevMonth(this: Writable<CalendarInstance>) {
       controller.prevMonth();
-      this.month = controller.month;
-      this.weeks = controller.weeks;
+      syncGridState(this, controller);
     },
     nextMonth(this: Writable<CalendarInstance>) {
       controller.nextMonth();
-      this.month = controller.month;
-      this.weeks = controller.weeks;
+      syncGridState(this, controller);
     },
     goToMonth(this: Writable<CalendarInstance>, date: Date) {
       controller.goToMonth(date);
-      this.month = controller.month;
-      this.weeks = controller.weeks;
+      syncGridState(this, controller);
     },
     goToToday(this: Writable<CalendarInstance>) {
       controller.goToToday();
-      this.month = controller.month;
-      this.weeks = controller.weeks;
+      syncGridState(this, controller);
     },
     select(this: Writable<CalendarInstance>, date: Date | null) {
       controller.select(date);
       this.selected = controller.selected;
-      this.weeks = controller.weeks;
+      syncGridState(this, controller);
     },
     clear(this: Writable<CalendarInstance>) {
       controller.clear();
       this.selected = controller.selected;
-      this.weeks = controller.weeks;
+      syncGridState(this, controller);
     },
     matches: (date, matcher) => controller.matches(date, matcher),
     isSelected: (date) => controller.isSelected(date),

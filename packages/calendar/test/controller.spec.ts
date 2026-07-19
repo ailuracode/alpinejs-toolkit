@@ -84,6 +84,88 @@ describe("CalendarController", () => {
     });
   });
 
+  describe("numberOfMonths", () => {
+    it("defaults to 1 and keeps weeks aligned with months[0].weeks", () => {
+      const controller = createCalendarController({ month: JAN_2024 });
+
+      expect(controller.numberOfMonths).toBe(1);
+      expect(controller.months).toHaveLength(1);
+      expect(controller.months[0]?.month.getMonth()).toBe(0);
+      expect(controller.weeks).toEqual(controller.months[0]?.weeks);
+    });
+
+    it("exposes two consecutive month views when numberOfMonths is 2", () => {
+      const controller = createCalendarController({ month: JAN_2024, numberOfMonths: 2 });
+
+      expect(controller.numberOfMonths).toBe(2);
+      expect(controller.months).toHaveLength(2);
+      expect(controller.months[0]?.month.getMonth()).toBe(0);
+      expect(controller.months[1]?.month.getMonth()).toBe(1);
+      expect(controller.months[1]?.month.getFullYear()).toBe(2024);
+    });
+
+    it("marks second-month days as isCurrentMonth within their own grid", () => {
+      const controller = createCalendarController({ month: JAN_2024, numberOfMonths: 2 });
+      const februaryGrid = controller.months[1]?.weeks.flat() ?? [];
+
+      expect(februaryGrid.filter((day) => day.isCurrentMonth)).toHaveLength(29);
+      expect(februaryGrid.some((day) => day.date.getMonth() === 0 && day.isCurrentMonth)).toBe(
+        false
+      );
+    });
+
+    it("clamps numberOfMonths to 1–12", () => {
+      expect(createCalendarController({ numberOfMonths: 0 }).numberOfMonths).toBe(1);
+      expect(createCalendarController({ numberOfMonths: 13 }).numberOfMonths).toBe(12);
+      expect(createCalendarController({ numberOfMonths: 2.9 }).numberOfMonths).toBe(2);
+    });
+
+    it("navigates by numberOfMonths when moving prev/next", () => {
+      const controller = createCalendarController({ month: JAN_2024, numberOfMonths: 2 });
+
+      controller.nextMonth();
+      expect(controller.month.getMonth()).toBe(2);
+      expect(controller.months[0]?.month.getMonth()).toBe(2);
+      expect(controller.months[1]?.month.getMonth()).toBe(3);
+
+      controller.prevMonth();
+      expect(controller.month.getMonth()).toBe(0);
+    });
+
+    it("applies range selection across both visible months", () => {
+      const controller = createCalendarController({
+        month: JAN_2024,
+        mode: "range",
+        numberOfMonths: 2,
+      });
+      const start = new Date(2024, 0, 28);
+      const end = new Date(2024, 1, 5);
+      const middle = new Date(2024, 1, 2);
+
+      controller.select(start);
+      controller.select(end);
+
+      const januaryGrid = controller.months[0]?.weeks.flat() ?? [];
+      const februaryGrid = controller.months[1]?.weeks.flat() ?? [];
+
+      expect(
+        januaryGrid.find((day) => day.date.getMonth() === 0 && day.date.getDate() === 28)
+          ?.isRangeStart
+      ).toBe(true);
+      expect(
+        januaryGrid.find((day) => day.date.getMonth() === 0 && day.date.getDate() === 31)?.isInRange
+      ).toBe(true);
+      expect(
+        februaryGrid.find((day) => day.date.getMonth() === 1 && day.date.getDate() === 2)?.isInRange
+      ).toBe(true);
+      expect(
+        februaryGrid.find((day) => day.date.getMonth() === 1 && day.date.getDate() === 5)
+          ?.isRangeEnd
+      ).toBe(true);
+      expect(controller.isInRange(middle)).toBe(true);
+    });
+  });
+
   describe("navigation", () => {
     it("navigates months", () => {
       const controller = createCalendarController({ month: JAN_2024 });
@@ -415,27 +497,35 @@ describe("CalendarController", () => {
     });
 
     it("syncs own properties after mutations (Alpine.reactive compatibility)", () => {
-      const controller = createCalendarController({ month: JAN_2024 });
+      const controller = createCalendarController({ month: JAN_2024, numberOfMonths: 2 });
       const store = controller.toStore();
 
       const monthDesc = Object.getOwnPropertyDescriptor(store, "month");
       expect(monthDesc?.writable).toBe(true);
       expect(monthDesc?.value).toBeInstanceOf(Date);
 
+      expect(store.numberOfMonths).toBe(2);
+      expect(store.months).toHaveLength(2);
+
       store.nextMonth();
-      expect(store.month.getMonth()).toBe(1);
+      expect(store.month.getMonth()).toBe(2);
+      expect(store.months[0]?.month.getMonth()).toBe(2);
+      expect(store.months).toHaveLength(2);
+      expect(store.weeks).toEqual(store.months[0]?.weeks);
 
       store.prevMonth();
       expect(store.month.getMonth()).toBe(0);
 
-      store.goToMonth(FEB_2024);
-      expect(store.month.getMonth()).toBe(1);
-
       store.goToToday();
       expect(store.month.getMonth()).toBe(new Date().getMonth());
 
+      store.goToMonth(JAN_2024);
+      expect(store.month.getMonth()).toBe(0);
+
       store.select(new Date(2024, 0, 5));
       expect(store.selected).toBeInstanceOf(Date);
+      expect(store.isSelected(new Date(2024, 0, 5))).toBe(true);
+      expect(store.months[0]?.weeks.flat().some((day) => day.isSelected)).toBe(true);
 
       store.clear();
       expect(store.selected).toBeNull();

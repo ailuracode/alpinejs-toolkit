@@ -38,6 +38,13 @@ export interface CalendarOptions {
   readonly selected?: CalendarSelection;
   readonly disabled?: CalendarMatcher | CalendarMatcher[];
   readonly dateFns?: CalendarDateFnsOptions;
+  readonly numberOfMonths?: number;
+}
+
+/** One visible month in a multi-month calendar view. */
+export interface CalendarMonthView {
+  readonly month: Date;
+  readonly weeks: CalendarDay[][];
 }
 
 /** A single day cell in the month grid. */
@@ -59,6 +66,8 @@ export interface CalendarDay {
  */
 export interface CalendarInstance {
   readonly month: Date;
+  readonly numberOfMonths: number;
+  readonly months: CalendarMonthView[];
   readonly mode: CalendarMode;
   readonly selected: CalendarSelection;
   readonly locale: Locale;
@@ -110,9 +119,16 @@ export type ResolvedCalendarConfig = {
   readonly maxDate?: Date;
   readonly mode: CalendarMode;
   readonly month: Date;
+  readonly numberOfMonths: number;
   readonly selected: CalendarSelection;
   readonly disabled: CalendarMatcher[];
 };
+
+/** Minimum supported `numberOfMonths` value. */
+export const MIN_NUMBER_OF_MONTHS = 1;
+
+/** Maximum supported `numberOfMonths` value. */
+export const MAX_NUMBER_OF_MONTHS = 12;
 
 export type {
   CalendarDateAfterMatcher,

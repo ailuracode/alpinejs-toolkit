@@ -73,3 +73,61 @@ const plugin = getPluginNavItem("calendar")!;
 		Package: <code>{plugin.package}</code>
 	</p>
 </DemoSection>
+
+<DemoSection
+	title="Range · 2 months"
+	description="Side-by-side grids with numberOfMonths: 2. Global prev/next moves the anchor by two months."
+>
+	<div x-data="calendarRangeDemo" class="grid gap-4">
+		<div class="flex flex-wrap items-center gap-2">
+			<DemoButton @click="cal.prevMonth()">Previous</DemoButton>
+			<DemoButton @click="cal.nextMonth()">Next</DemoButton>
+			<DemoButton @click="cal.goToToday()">Today</DemoButton>
+			<DemoButton @click="clear()">Clear</DemoButton>
+		</div>
+
+		<div class="relative flex flex-col gap-4 md:flex-row md:items-start">
+			<template x-for="monthView in cal.months" :key="monthView.month.toISOString()">
+				<div class="flex w-full min-w-0 flex-col gap-2 rounded-[var(--ios-radius-md)] border border-[var(--ios-separator)] p-3">
+					<strong class="text-sm" x-text="cal.formatMonth(monthView.month)"></strong>
+
+					<div class="grid grid-cols-7 gap-1">
+						<template x-for="label in cal.weekdayLabels" :key="`${monthView.month.toISOString()}-${label}`">
+							<span class="text-center text-xs font-semibold text-[var(--ios-label-secondary)] py-1" x-text="label"></span>
+						</template>
+					</div>
+
+					<template x-for="week in monthView.weeks" :key="week[0].date.toISOString()">
+						<div class="grid grid-cols-7 gap-1">
+							<template x-for="day in week" :key="day.date.toISOString()">
+								<DemoButton
+									type="button"
+									variant="ghost"
+									size="icon"
+									class={calendarDayButtonClass}
+									x-bind:disabled="day.isDisabled"
+									x-bind:class="{
+										'opacity-45': !day.isCurrentMonth,
+										'border border-[var(--ios-blue)] text-primary': day.isToday && !day.isRangeStart && !day.isRangeEnd && !day.isInRange,
+										'bg-[var(--ios-blue)]/15': day.isInRange,
+										'bg-[var(--ios-blue)] text-white hover:bg-[var(--ios-blue)]/80': day.isRangeStart || day.isRangeEnd,
+									}"
+									@click="cal.select(day.date)"
+									x-text="cal.format(day.date, 'd')"
+								/>
+							</template>
+						</div>
+					</template>
+				</div>
+			</template>
+		</div>
+
+		<p class="text-sm text-green-600 dark:text-green-400">
+			Selection:
+			<strong x-text="selectionLabel()"></strong>
+		</p>
+		<p class="text-sm text-[var(--ios-label-secondary)]">
+			Loop <code>cal.months</code> for each grid · shared <code>cal.select()</code> across both months.
+		</p>
+	</div>
+</DemoSection>

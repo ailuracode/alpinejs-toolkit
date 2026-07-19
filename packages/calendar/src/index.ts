@@ -32,8 +32,9 @@ export type {
   CalendarInstance,
   CalendarMagic,
   CalendarMode,
+  CalendarMonthView,
   CalendarOptions,
   CalendarSelection,
   CreateCalendarPluginOptions,
 } from "./types.js";
-export { DEFAULT_CALENDAR_MAGIC_KEY } from "./types.js";
+export { DEFAULT_CALENDAR_MAGIC_KEY, MAX_NUMBER_OF_MONTHS, MIN_NUMBER_OF_MONTHS } from "./types.js";
